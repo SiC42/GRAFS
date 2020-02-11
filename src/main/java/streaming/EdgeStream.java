@@ -4,6 +4,7 @@ import org.apache.flink.api.common.functions.FilterFunction;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.streaming.api.datastream.DataStream;
 
+import java.io.Serializable;
 import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
 
@@ -26,11 +27,11 @@ public class EdgeStream {
         return new EdgeStream(filteredStream);
     }
 
-    public EdgeStream transformVertices(UnaryOperator<String> mapper) {
+    public EdgeStream transformVertices(MapFunction<String,String> mapper) {
         MapFunction<Edge, Edge> transformVerticesFunction =
                 edge -> {
-                    String from = mapper.apply(edge.getFrom());
-                    String to = mapper.apply(edge.getTo());
+                    String from = mapper.map(edge.getFrom());
+                    String to = mapper.map(edge.getTo());
                     return new Edge(from, to, edge.getContent());
                 };
         return transform(transformVerticesFunction);
