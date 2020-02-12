@@ -27,11 +27,11 @@ public class EdgeStream {
         return new EdgeStream(filteredStream);
     }
 
-    public EdgeStream transformVertices(MapFunction<String,String> mapper) {
+    public EdgeStream transformVertices(MapFunction<Vertex,Vertex> mapper) {
         MapFunction<Edge, Edge> transformVerticesFunction =
                 edge -> {
-                    String from = mapper.map(edge.getFrom());
-                    String to = mapper.map(edge.getTo());
+                    Vertex from = mapper.map(edge.getFrom());
+                    Vertex to = mapper.map(edge.getTo());
                     return new Edge(from, to, edge.getContent());
                 };
         return transform(transformVerticesFunction);

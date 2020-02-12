@@ -49,11 +49,20 @@ public class StreamingJob {
                 new Edge("A", "B", "me too"));
 
         EdgeStream messageStream = new EdgeStream(m);
-        EdgeStream filteredStream = messageStream.filter(e -> e.getFrom().equals("A"))
+        EdgeStream filteredStream = messageStream.filter(e -> e.getFrom().get("id").equals("A"))
                 .transform(e -> {
-                    String content = e.getContent().replaceAll("Fuck", "F***");
-                    return new Edge(e.getFrom(), e.getTo(), content);
-                }).transformVertices(s -> s.equals("A") ? "Albert" : "Bernd");
+                    String content = e.get("id").replaceAll("Fuck", "F***");
+                    e.put("id", content);
+                    return e;
+                }).transformVertices(v ->
+                {
+                    if(v.get("id").equals("A")) {
+                        v.put("id", "Albert");
+                    } else {
+                        v.put("id", "Bernd");
+                    }
+                    return v;
+                });
 
         filteredStream.print();
 
