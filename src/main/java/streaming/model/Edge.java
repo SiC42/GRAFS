@@ -4,18 +4,18 @@ import java.util.*;
 
 public class Edge {
 
+    private String label;
     private Vertex source;
     private Vertex target;
     private Map<String, String> properties;
     private Set<Long> memberships;
-    private String label;
 
     public Edge() {
+        label = "";
         this.source = new Vertex();
         this.target = new Vertex();
         this.properties = new HashMap<>();
         this.memberships = new HashSet<>();
-        label = "";
     }
 
 
@@ -55,14 +55,6 @@ public class Edge {
     }
 
 
-    public String getProperty(String key) {
-        return properties.get(key);
-    }
-
-    public void addProperty(String key, String value) {
-        properties.put(key, value);
-    }
-
     public Vertex getSource() {
         return source;
     }
@@ -73,6 +65,14 @@ public class Edge {
 
     public Vertex getTarget() {
         return target;
+    }
+
+    public String getProperty(String key) {
+        return properties.get(key);
+    }
+
+    public void addProperty(String key, String value) {
+        properties.put(key, value);
     }
 
     public Map<String, String> getProperties() {
