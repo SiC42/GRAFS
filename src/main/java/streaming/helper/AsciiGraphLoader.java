@@ -20,7 +20,6 @@ public class AsciiGraphLoader {
             Vertex sourceV = verticesDic.get(source);
             long target = gdlE.getTargetVertexId();
             Vertex targetV = verticesDic.get(target);
-            System.out.println(targetV.getVariable() + ": " + targetV.getGraphs());
             Edge e = new streaming.model.Edge(gdlE,sourceV,targetV);
             edges.add(e);
         }
