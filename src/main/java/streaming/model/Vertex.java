@@ -3,9 +3,9 @@ package streaming.model;
 import java.util.*;
 
 public class Vertex {
+    private String label;
     private Map<String, String> properties;
     private Set<Long> memberships;
-    private String label;
 
     public Vertex(org.s1ck.gdl.model.Vertex gdlVertex){
         this();
@@ -20,6 +20,14 @@ public class Vertex {
         this.properties = new HashMap<>();
         this.memberships = new HashSet<>();
         label = "";
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
     }
 
     public String getProperty(String key) {
