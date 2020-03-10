@@ -3,9 +3,17 @@ package streaming.model;
 import java.util.*;
 
 public class Vertex {
+    private String variable;
     private String label;
     private Map<String, String> properties;
     private Set<Long> memberships;
+
+    public Vertex() {
+        this.properties = new HashMap<>();
+        this.memberships = new HashSet<>();
+        label = "";
+        variable = Integer.toString(this.hashCode());
+    }
 
     public Vertex(org.s1ck.gdl.model.Vertex gdlVertex) {
         this();
@@ -14,12 +22,15 @@ public class Vertex {
         }
         memberships = gdlVertex.getGraphs();
         label = gdlVertex.getLabel();
+        variable = gdlVertex.getVariable();
     }
 
-    public Vertex() {
-        this.properties = new HashMap<>();
-        this.memberships = new HashSet<>();
-        label = "";
+    public String getVariable() {
+        return variable;
+    }
+
+    public void setVariable(String variable) {
+        this.variable = variable;
     }
 
     public String getLabel() {
