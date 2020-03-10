@@ -1,12 +1,8 @@
-package streaming;
+package streaming.model;
 
 import org.apache.flink.api.common.functions.FilterFunction;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.streaming.api.datastream.DataStream;
-
-import java.io.Serializable;
-import java.util.function.Predicate;
-import java.util.function.UnaryOperator;
 
 public class EdgeStream {
 
@@ -30,9 +26,9 @@ public class EdgeStream {
     public EdgeStream transformVertices(MapFunction<Vertex,Vertex> mapper) {
         MapFunction<Edge, Edge> transformVerticesFunction =
                 edge -> {
-                    Vertex from = mapper.map(edge.getFrom());
-                    Vertex to = mapper.map(edge.getTo());
-                    return new Edge(from, to, edge.getContent());
+                    Vertex from = mapper.map(edge.getSource());
+                    Vertex to = mapper.map(edge.getTarget());
+                    return new Edge(from, to, edge.getLabel(), edge.getProperties(), edge.getMemberships());
                 };
         return transform(transformVerticesFunction);
     }
