@@ -7,10 +7,10 @@ public class Vertex {
     private Map<String, String> properties;
     private Set<Long> memberships;
 
-    public Vertex(org.s1ck.gdl.model.Vertex gdlVertex){
+    public Vertex(org.s1ck.gdl.model.Vertex gdlVertex) {
         this();
-        for(Map.Entry<String, Object> prop : gdlVertex.getProperties().entrySet()){
-            properties.put(prop.getKey(),prop.getValue().toString());
+        for (Map.Entry<String, Object> prop : gdlVertex.getProperties().entrySet()) {
+            properties.put(prop.getKey(), prop.getValue().toString());
         }
         memberships = gdlVertex.getGraphs();
         label = gdlVertex.getLabel();
@@ -34,20 +34,24 @@ public class Vertex {
         return properties.get(key);
     }
 
-    public void put(String key, String value) {
-        properties.put(key, value);
+    public String addProperty(String key, String value) {
+        return properties.put(key, value);
+    }
+
+    public String removeProperty(String key) {
+        return properties.remove(key);
     }
 
     public Set<Long> getMemberships() {
         return memberships;
     }
 
-    public void addMembership(Long membership) {
-        this.memberships.add(membership);
+    public boolean addMembership(Long membership) {
+        return this.memberships.add(membership);
     }
 
-    public void removeMembership(String membership) {
-        this.memberships.remove(membership);
+    public boolean removeMembership(String membership) {
+        return this.memberships.remove(membership);
     }
 
     @Override
