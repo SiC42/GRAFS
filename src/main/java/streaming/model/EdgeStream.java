@@ -13,8 +13,16 @@ public class EdgeStream {
         this.edgeStream = edgeStream;
     }
 
-    public EdgeStream filter(FilterFunction<Edge> predicate) {
-        DataStream<Edge> filteredStream = edgeStream.filter(predicate);
+    public EdgeStream vertexInducedSubgraph(FilterFunction<Vertex> vertexPredicate) {
+        FilterFunction<Edge> edgePredicate =
+                edge ->
+                    vertexPredicate.filter(edge.getSource()) && vertexPredicate.filter(edge.getTarget());
+
+        return subgraph(edgePredicate);
+    }
+
+    public EdgeStream subgraph(FilterFunction<Edge> vertexPredicate) {
+       DataStream<Edge> filteredStream = edgeStream.filter(vertexPredicate);
         return new EdgeStream(filteredStream);
     }
 
