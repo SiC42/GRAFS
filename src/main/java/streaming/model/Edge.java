@@ -29,8 +29,8 @@ public class Edge {
 
     public Edge(String fromStr, String toStr, String contentStr) {
         this();
-        source.put("id", fromStr);
-        target.put("id", toStr);
+        source.addProperty("id", fromStr);
+        target.addProperty("id", toStr);
         properties.put("id", contentStr);
         memberships.add(0L);
     }
