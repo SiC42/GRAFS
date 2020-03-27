@@ -16,10 +16,10 @@ public class Edge {
     }
 
 
-    public Edge(Vertex source, Vertex target, String label, Map<String, String> properties, Set<Long> memberships) {
+    public Edge(Vertex source, Vertex target, GraphElementInformation gei) {
         this.source = source;
         this.target = target;
-        this.gei = new GraphElementInformation(label, properties, memberships);
+        this.gei = gei;
     }
 
     public Edge(String fromStr, String toStr, String contentStr) {
