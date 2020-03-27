@@ -59,8 +59,8 @@ public class Edge {
         return source;
     }
 
-    public void setSource(Vertex newFrom) {
-        source = newFrom;
+    public void setSource(Vertex newSource) {
+        source = newSource;
     }
 
     public Vertex getTarget() {
