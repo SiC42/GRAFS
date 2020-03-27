@@ -2,6 +2,7 @@ package streaming.helper;
 
 import org.junit.jupiter.api.Test;
 import streaming.model.Edge;
+import streaming.model.GraphElementInformation;
 import streaming.model.Vertex;
 
 import java.util.Collection;
@@ -47,8 +48,8 @@ class AsciiGraphLoaderTest {
     @Test
     void loadFromString_oneEdgeWithInfo_testVertices() {
         Edge e = loadFromString_oneEdgeWithInfo_init().iterator().next();
-        Vertex from  = e.getSource();
-        Vertex to = e.getTarget();
+        GraphElementInformation from  = e.getSource().getGei();
+        GraphElementInformation to = e.getTarget().getGei();
         assertThat(from.getProperty("name"), equalTo("Alice"));
         assertThat(to.getProperty("name"), equalTo("Bob"));
     }
