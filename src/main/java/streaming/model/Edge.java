@@ -89,6 +89,8 @@ public class Edge {
 
     public void removeMembership(String membership) {
         this.memberships.remove(membership);
+    public void setTarget(Vertex newTarget) {
+        target = newTarget;
     }
 
     @Override
