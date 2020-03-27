@@ -23,9 +23,8 @@ public class Edge {
     }
 
     public Edge(String fromStr, String toStr, String contentStr) {
-        this();
-        source.addProperty("id", fromStr);
-        target.addProperty("id", toStr);
+        this.source = new Vertex(fromStr);
+        this.source = new Vertex(toStr);
         this.gei = new GraphElementInformation();
         gei.addProperty("id", contentStr);
         gei.addMembership(0L);
