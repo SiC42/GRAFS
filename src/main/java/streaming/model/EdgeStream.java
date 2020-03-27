@@ -13,16 +13,20 @@ public class EdgeStream {
         this.edgeStream = edgeStream;
     }
 
-    public EdgeStream vertexInducedSubgraph(FilterFunction<Vertex> vertexPredicate) {
-        FilterFunction<Edge> edgePredicate =
-                edge ->
-                    vertexPredicate.filter(edge.getSource()) && vertexPredicate.filter(edge.getTarget());
+    public EdgeStream vertexInducedSubgraph(FilterFunction<GraphElementInformation> vertexGeiPredicate) {
+        FilterFunction<Edge> edgePredicate = edge ->
+                vertexGeiPredicate.filter(edge.getSource().getGei())&& vertexGeiPredicate.filter(edge.getTarget().getGei());
 
         return subgraph(edgePredicate);
     }
 
+    public EdgeStream edgeInducedSubgraph(FilterFunction<GraphElementInformation> edgeGeiPredicate) {
+        FilterFunction<Edge> edgePredicate = edge -> edgeGeiPredicate.filter(edge.getGei());
+        return subgraph(edgePredicate);
+    }
+
     public EdgeStream subgraph(FilterFunction<Edge> vertexPredicate) {
-       DataStream<Edge> filteredStream = edgeStream.filter(vertexPredicate);
+        DataStream<Edge> filteredStream = edgeStream.filter(vertexPredicate);
         return new EdgeStream(filteredStream);
     }
 
@@ -31,12 +35,12 @@ public class EdgeStream {
         return new EdgeStream(filteredStream);
     }
 
-    public EdgeStream transformVertices(MapFunction<Vertex,Vertex> mapper) {
+    public EdgeStream transformVertices(MapFunction<Vertex, Vertex> mapper) {
         MapFunction<Edge, Edge> transformVerticesFunction =
                 edge -> {
                     Vertex from = mapper.map(edge.getSource());
                     Vertex to = mapper.map(edge.getTarget());
-                    return new Edge(from, to, edge.getLabel(), edge.getProperties(), edge.getMemberships());
+                    return new Edge(from, to, edge.getGei());
                 };
         return transform(transformVerticesFunction);
     }
