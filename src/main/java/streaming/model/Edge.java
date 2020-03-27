@@ -62,7 +62,7 @@ public class Edge {
 
     @Override
     public String toString() {
-        return String.format("%s--%s-->%s",
+        return String.format("%s--[%s]-->%s",
                 source, gei, target);
     }
 

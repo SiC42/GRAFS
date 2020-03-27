@@ -63,7 +63,7 @@ public class GraphElementInformation {
 
     @Override
     public String toString() {
-        return String.format("[%s properties=%s memberships=%s]",
+        return String.format("%s properties=%s memberships=%s",
                 label, properties, memberships);
     }
 
