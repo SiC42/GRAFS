@@ -60,6 +60,14 @@ public class Edge {
         target = newTarget;
     }
 
+    public GraphElementInformation getGei() {
+        return gei;
+    }
+
+    public void setGei(GraphElementInformation gei) {
+        this.gei = gei;
+    }
+
     @Override
     public String toString() {
         return String.format("%s--[%s]-->%s",
