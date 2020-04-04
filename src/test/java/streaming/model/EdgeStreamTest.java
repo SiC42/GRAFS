@@ -46,12 +46,7 @@ class EdgeStreamTest {
         ElementGroupingInformation vertexEgi = new ElementGroupingInformation();
         vertexEgi.groupingKeys.add("n");
         AggregationMapping am = new AggregationMapping();
-        am.addAggregation("a", new AggregationFunction("0") {
-            @Override
-            public String apply(String pV1, String pV2) {
-                return String.valueOf(Double.parseDouble(pV1) + Double.parseDouble(pV2));
-            }
-        });
+        am.addAggregation("a", new AggregationFunction("0", (String pV1, String pV2) -> String.valueOf(Double.parseDouble(pV1) + Double.parseDouble(pV2))));
         es.groupBy(vertexEgi,am, null, null).print();
         env.execute();
     }
