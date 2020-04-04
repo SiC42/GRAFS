@@ -1,5 +1,7 @@
 package streaming.model.grouping;
 
+import java.io.IOException;
+import java.io.ObjectStreamException;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
@@ -14,12 +16,7 @@ public class AggregationMapping implements Serializable {
     }
 
     public void addAggregation(String key, AggregationFunction accumulator){
-        AggregationFunction aF = new AggregationFunction("0"){
-            @Override
-            public String apply(String pV1, String pV2) {
-                return String.valueOf(Double.parseDouble(pV1) + Double.parseDouble(pV2));
-            }
-        };
+        AggregationFunction aF = accumulator;
         aggregationMap.put(key, aF);
     }
 
@@ -33,5 +30,33 @@ public class AggregationMapping implements Serializable {
 
     public boolean contains(String key) {
         return aggregationMap.containsKey(key);
+    }
+
+
+    private void writeObject(java.io.ObjectOutputStream out)
+            throws IOException {
+        out.writeInt(aggregationMap.size());
+        for(Map.Entry<String, AggregationFunction> entry : aggregationMap.entrySet()){
+            out.writeObject(entry.getKey());
+            out.writeObject(entry.getValue());
+        }
+    }
+
+    private void readObject(java.io.ObjectInputStream in)
+            throws IOException, ClassNotFoundException {
+        this.aggregationMap = new HashMap<>();
+        int size = in.readInt();
+        for(int i=0;i<size;i++) {
+            String key = (String) in.readObject();
+            System.out.println(key);
+            AggregationFunction aggFun = (AggregationFunction) in.readObject();
+            System.out.println(aggFun);
+            aggregationMap.put(key, aggFun);
+        }
+
+    }
+    private void readObjectNoData()
+            throws ObjectStreamException {
+
     }
 }

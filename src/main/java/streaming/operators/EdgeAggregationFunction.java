@@ -9,10 +9,11 @@ import streaming.model.grouping.AggregationFunction;
 import streaming.model.grouping.AggregationMapping;
 import streaming.model.grouping.ElementGroupingInformation;
 
+import java.io.Serializable;
 import java.util.Map;
 import java.util.Set;
 
-public class EdgeAggregationFunction implements FlatMapFunction<Set<Edge>, Edge> {
+public class EdgeAggregationFunction implements FlatMapFunction<Set<Edge>, Edge>, Serializable {
 
     private ElementGroupingInformation egi;
     private AggregationMapping aggregationMapping;
