@@ -41,13 +41,13 @@ public class Edge {
     public Edge(org.s1ck.gdl.model.Edge gdlEdge, org.s1ck.gdl.model.Vertex gdlSourceV, org.s1ck.gdl.model.Vertex gdlTargetV) {
         this.source = new Vertex(gdlSourceV);
         this.target = new Vertex(gdlTargetV);
-        HashMap<String,String> properties = new HashMap<>();
+        HashMap<String, String> properties = new HashMap<>();
         for (Map.Entry<String, Object> prop : gdlEdge.getProperties().entrySet()) {
             properties.put(prop.getKey(), prop.getValue().toString());
         }
         Set<Long> memberships = gdlEdge.getGraphs();
         String label = gdlEdge.getLabel();
-        this.gei = new GraphElementInformation(label, properties,memberships);
+        this.gei = new GraphElementInformation(label, properties, memberships);
     }
 
 
