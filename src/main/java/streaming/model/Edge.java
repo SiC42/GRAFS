@@ -9,10 +9,18 @@ public class Edge {
 
     private GraphElementInformation gei;
 
+    private boolean reverse;
+
     public Edge() {
         this.source = new Vertex();
         this.target = new Vertex();
         this.gei = new GraphElementInformation();
+    }
+
+    public Edge(Edge otherEdge) {
+        source = otherEdge.getSource();
+        target = otherEdge.getTarget();
+        gei = otherEdge.getGei();
     }
 
 
@@ -67,10 +75,20 @@ public class Edge {
         this.gei = gei;
     }
 
+    public boolean isReverse() {
+        return reverse;
+    }
+
+    public Edge createReverseEdge() {
+        Edge reverseEdge = new Edge(this.getTarget(), this.getSource(), this.getGei());
+        reverseEdge.reverse = true;
+        return reverseEdge;
+    }
+
     @Override
     public String toString() {
-        return String.format("%s--[%s]-->%s",
-                source, gei, target);
+        return String.format("%s--[%s reverse=%b]-->%s",
+                source, gei, reverse, target);
     }
 
     @Override
