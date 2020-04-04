@@ -44,6 +44,10 @@ public class GraphElementInformation {
         properties.put(key, value);
     }
 
+    public boolean containsProperty(String key) {
+        return properties.containsKey(key);
+    }
+
     public Map<String, String> getProperties() {
         return properties;
     }
