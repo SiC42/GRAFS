@@ -14,6 +14,10 @@ public class Vertex {
         gei.addProperty("id", contentStr);
     }
 
+    public Vertex(GraphElementInformation gei){
+        this.gei = gei;
+    }
+
     public Vertex(org.s1ck.gdl.model.Vertex gdlVertex) {
         HashMap<String,String> properties = new HashMap<>();
         for (Map.Entry<String, Object> prop : gdlVertex.getProperties().entrySet()) {
