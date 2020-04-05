@@ -1,5 +1,9 @@
 package streaming.model;
 
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 import org.apache.flink.api.common.functions.FilterFunction;
 import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.api.common.functions.MapFunction;
@@ -12,129 +16,127 @@ import org.apache.flink.util.Collector;
 import org.apache.flink.util.function.TriFunction;
 import streaming.model.grouping.AggregationMapping;
 import streaming.model.grouping.ElementGroupingInformation;
-import streaming.operators.*;
-
-import java.io.IOException;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
+import streaming.operators.AggregateMode;
+import streaming.operators.EdgeAggregationFunction;
+import streaming.operators.EdgeKeySelector;
+import streaming.operators.GraphElementAggregationFunctionI;
+import streaming.operators.VertexAggregationFunction;
 
 public class EdgeStream {
 
 
-    private DataStream<Edge> edgeStream;
+  private final MapFunction<Edge, Set<Edge>> edgeToSingleSetFunction = new MapFunction<Edge, Set<Edge>>() {
+    @Override
+    public Set<Edge> map(Edge edge) {
+      Set<Edge> singleSet = new HashSet<>();
+      singleSet.add(edge);
+      return singleSet;
+    }
+  };
+  private final ReduceFunction<Set<Edge>> mergeSets = (Set<Edge> eS1, Set<Edge> eS2) -> {
+    eS1.addAll(eS2);
+    return eS1;
+  };
+  private DataStream<Edge> edgeStream;
 
-    private final MapFunction<Edge, Set<Edge>> edgeToSingleSetFunction = new MapFunction<Edge, Set<Edge>>() {
-        @Override
-        public Set<Edge> map(Edge edge) {
-            Set<Edge> singleSet = new HashSet<>();
-            singleSet.add(edge);
-            return singleSet;
+  public EdgeStream(DataStream<Edge> edgeStream) {
+    this.edgeStream = edgeStream.assignTimestampsAndWatermarks(
+        new AscendingTimestampExtractor<Edge>() {
+          @Override
+          public long extractAscendingTimestamp(Edge edge) {
+            return 0;
+          }
         }
-    };
+    );
+  }
 
-    private final ReduceFunction<Set<Edge>> mergeSets = (Set<Edge> eS1, Set<Edge> eS2) -> {
-        eS1.addAll(eS2);
-        return eS1;
-    };
+  public EdgeStream vertexInducedSubgraph(
+      FilterFunction<GraphElementInformation> vertexGeiPredicate) {
+    FilterFunction<Edge> edgePredicate = edge ->
+        vertexGeiPredicate.filter(edge.getSource().getGei()) && vertexGeiPredicate
+            .filter(edge.getTarget().getGei());
 
-    public EdgeStream(DataStream<Edge> edgeStream) {
-        this.edgeStream = edgeStream.assignTimestampsAndWatermarks(
-                new AscendingTimestampExtractor<Edge>() {
-                    @Override
-                    public long extractAscendingTimestamp(Edge edge) {
-                        return 0;
-                    }
-                }
-        );
-    }
+    return subgraph(edgePredicate);
+  }
 
-    public EdgeStream vertexInducedSubgraph(
-            FilterFunction<GraphElementInformation> vertexGeiPredicate) {
-        FilterFunction<Edge> edgePredicate = edge ->
-                vertexGeiPredicate.filter(edge.getSource().getGei()) && vertexGeiPredicate
-                        .filter(edge.getTarget().getGei());
+  public EdgeStream edgeInducedSubgraph(FilterFunction<GraphElementInformation> edgeGeiPredicate) {
+    FilterFunction<Edge> edgePredicate = edge -> edgeGeiPredicate.filter(edge.getGei());
+    return subgraph(edgePredicate);
+  }
 
-        return subgraph(edgePredicate);
-    }
+  public EdgeStream groupBy(ElementGroupingInformation vertexEgi,
+      AggregationMapping vertexAggregationFunctions,
+      ElementGroupingInformation edgeEgi, AggregationMapping edgeAggregationFunctions) {
+    // TODO: Make sure that keys in egi has no intersection with keys in mapping
 
-    public EdgeStream edgeInducedSubgraph(FilterFunction<GraphElementInformation> edgeGeiPredicate) {
-        FilterFunction<Edge> edgePredicate = edge -> edgeGeiPredicate.filter(edge.getGei());
-        return subgraph(edgePredicate);
-    }
+    TriFunction<DataStream<Edge>, AggregateMode, GraphElementAggregationFunctionI, DataStream<Edge>> applyAggregation =
+        (DataStream<Edge> stream,
+            AggregateMode aggregateMode,
+            GraphElementAggregationFunctionI aggregationFunction) ->
+            stream
+                .map(edgeToSingleSetFunction)
+                .keyBy(new EdgeKeySelector(vertexEgi, edgeEgi, aggregateMode))
+                .timeWindow(Time.milliseconds(10)) // TODO: Zeit nach außen tragen
+                .reduce(mergeSets)
+                .flatMap(aggregationFunction);
 
-    public EdgeStream groupBy(ElementGroupingInformation vertexEgi,
-                              AggregationMapping vertexAggregationFunctions,
-                              ElementGroupingInformation edgeEgi, AggregationMapping edgeAggregationFunctions) {
-        // TODO: Make sure that keys in egi has no intersection with keys in mapping
+    DataStream<Edge> aggregatedOnEdgeStream = applyAggregation.apply(
+        edgeStream,
+        AggregateMode.EDGE,
+        new EdgeAggregationFunction(vertexEgi, vertexAggregationFunctions, edgeEgi,
+            edgeAggregationFunctions));
 
-        TriFunction<DataStream<Edge>, AggregateMode, GraphElementAggregationFunctionI, DataStream<Edge>> applyAggregation =
-                (DataStream<Edge> stream,
-                 AggregateMode aggregateMode,
-                 GraphElementAggregationFunctionI aggregationFunction) ->
-                        stream
-                            .map(edgeToSingleSetFunction)
-                            .keyBy(new EdgeKeySelector(vertexEgi, edgeEgi, aggregateMode))
-                            .timeWindow(Time.milliseconds(10)) // TODO: Zeit nach außen tragen
-                            .reduce(mergeSets)
-                            .flatMap(aggregationFunction);
+    // Enrich stream with reverse edges
+    DataStream<Edge> expandedEdgeStream = aggregatedOnEdgeStream
+        .flatMap(new FlatMapFunction<Edge, Edge>() {
+          @Override
+          public void flatMap(Edge value, Collector<Edge> out) {
+            out.collect(value.createReverseEdge());
+            out.collect(value);
+          }
+        });
 
-        DataStream<Edge> aggregatedOnEdgeStream = applyAggregation.apply(
-                edgeStream,
-                AggregateMode.EDGE,
-                new EdgeAggregationFunction(vertexEgi,vertexAggregationFunctions, edgeEgi, edgeAggregationFunctions));
+    AggregateMode vertexAggregateMode = AggregateMode.SOURCE;
+    DataStream<Edge> aggregatedOnSourceStream = applyAggregation.apply(
+        expandedEdgeStream,
+        vertexAggregateMode,
+        new VertexAggregationFunction(vertexEgi, vertexAggregationFunctions, vertexAggregateMode));
 
-        // Enrich stream with reverse edges
-        DataStream<Edge> expandedEdgeStream = aggregatedOnEdgeStream
-                .flatMap(new FlatMapFunction<Edge, Edge>() {
-                    @Override
-                    public void flatMap(Edge value, Collector<Edge> out) {
-                        out.collect(value.createReverseEdge());
-                        out.collect(value);
-                    }
-                });
+    vertexAggregateMode = AggregateMode.TARGET;
+    DataStream<Edge> finalAggregatedStream = applyAggregation.apply(
+        aggregatedOnSourceStream,
+        vertexAggregateMode,
+        new VertexAggregationFunction(vertexEgi, vertexAggregationFunctions, vertexAggregateMode))
+        .filter(e -> !e.isReverse());
 
-        AggregateMode vertexAggregateMode = AggregateMode.SOURCE;
-        DataStream<Edge> aggregatedOnSourceStream = applyAggregation.apply(
-                expandedEdgeStream,
-                vertexAggregateMode,
-                new VertexAggregationFunction(vertexEgi, vertexAggregationFunctions, vertexAggregateMode));
+    return new EdgeStream(finalAggregatedStream);
+  }
 
-        vertexAggregateMode = AggregateMode.TARGET;
-        DataStream<Edge> finalAggregatedStream = applyAggregation.apply(
-                aggregatedOnSourceStream,
-                vertexAggregateMode,
-                new VertexAggregationFunction(vertexEgi, vertexAggregationFunctions, vertexAggregateMode))
-                .filter(e -> !e.isReverse());
+  public EdgeStream subgraph(FilterFunction<Edge> vertexPredicate) {
+    DataStream<Edge> filteredStream = edgeStream.filter(vertexPredicate);
+    return new EdgeStream(filteredStream);
+  }
 
-        return new EdgeStream(finalAggregatedStream);
-    }
+  public EdgeStream transform(MapFunction<Edge, Edge> mapper) {
+    DataStream<Edge> filteredStream = edgeStream.map(mapper);
+    return new EdgeStream(filteredStream);
+  }
 
-    public EdgeStream subgraph(FilterFunction<Edge> vertexPredicate) {
-        DataStream<Edge> filteredStream = edgeStream.filter(vertexPredicate);
-        return new EdgeStream(filteredStream);
-    }
+  public EdgeStream transformVertices(MapFunction<Vertex, Vertex> mapper) {
+    MapFunction<Edge, Edge> transformVerticesFunction =
+        edge -> {
+          Vertex from = mapper.map(edge.getSource());
+          Vertex to = mapper.map(edge.getTarget());
+          return new Edge(from, to, edge.getGei());
+        };
+    return transform(transformVerticesFunction);
+  }
 
-    public EdgeStream transform(MapFunction<Edge, Edge> mapper) {
-        DataStream<Edge> filteredStream = edgeStream.map(mapper);
-        return new EdgeStream(filteredStream);
-    }
+  public void print() {
+    edgeStream.print();
+  }
 
-    public EdgeStream transformVertices(MapFunction<Vertex, Vertex> mapper) {
-        MapFunction<Edge, Edge> transformVerticesFunction =
-                edge -> {
-                    Vertex from = mapper.map(edge.getSource());
-                    Vertex to = mapper.map(edge.getTarget());
-                    return new Edge(from, to, edge.getGei());
-                };
-        return transform(transformVerticesFunction);
-    }
-
-    public void print() {
-        edgeStream.print();
-    }
-
-    public Iterator<Edge> collect() throws IOException {
-        return DataStreamUtils.collect(edgeStream);
-    }
+  public Iterator<Edge> collect() throws IOException {
+    return DataStreamUtils.collect(edgeStream);
+  }
 }
