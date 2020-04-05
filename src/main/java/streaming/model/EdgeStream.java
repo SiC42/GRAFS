@@ -71,7 +71,7 @@ public class EdgeStream {
 
         WindowedStream<Set<Edge>, String, TimeWindow> keyedOnSourceVertexStream = expandedEdgeStream.keyBy(
                 new EdgeKeySelector(vertexEgi, edgeEgi, true))
-                .timeWindow(Time.milliseconds(10));
+                .timeWindow(Time.milliseconds(10)); // TODO: Zeit nach außen tragen
 
         DataStream<Edge> sourceAggregatedStream = keyedOnSourceVertexStream.reduce(
                 (Set<Edge> eS1, Set<Edge> eS2) -> {
