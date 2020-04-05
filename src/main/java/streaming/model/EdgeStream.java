@@ -66,8 +66,7 @@ public class EdgeStream {
                               ElementGroupingInformation edgeEgi, AggregationMapping edgeAggregationFunctions) {
         DataStream<Edge> expandedEdgeStream = edgeStream.flatMap(new FlatMapFunction<Edge, Edge>() {
             @Override
-            public void flatMap(Edge value, Collector<Edge> out)
-                    throws Exception {
+            public void flatMap(Edge value, Collector<Edge> out){
                 out.collect(value.createReverseEdge());
                 out.collect(value);
             }
