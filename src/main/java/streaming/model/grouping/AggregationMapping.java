@@ -48,9 +48,7 @@ public class AggregationMapping implements Serializable {
         int size = in.readInt();
         for(int i=0;i<size;i++) {
             String key = (String) in.readObject();
-            System.out.println(key);
             PropertiesAggregationFunction aggFun = (PropertiesAggregationFunction) in.readObject();
-            System.out.println(aggFun);
             aggregationMap.put(key, aggFun);
         }
 
