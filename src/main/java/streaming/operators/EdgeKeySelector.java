@@ -25,26 +25,38 @@ public class EdgeKeySelector implements KeySelector<Set<Edge>, String> {
         switch (makeKeyFor) {
 
             case SOURCE:
-                return generateKey(edge.getSource().getGei(), edge.getGei(), vertexEgi, edgeEgi);
+                return generateKeyForSingleVertex(edge.getSource().getGei(), vertexEgi);
             case TARGET:
-                return generateKey(edge.getTarget().getGei(), edge.getGei(), vertexEgi, edgeEgi);
+                return generateKeyForSingleVertex(edge.getTarget().getGei(), vertexEgi);
             case EDGE:
-                return null;
+                return generateKeyForEdge(edge, vertexEgi, edgeEgi);
         }
         return null;
     }
 
-    private String generateKey(GraphElementInformation vertexGei, GraphElementInformation
-            edgeGei, ElementGroupingInformation vertexEgi, ElementGroupingInformation edgeEgi) {
+
+    private String generateKeyForSingleVertex(GraphElementInformation vertexGei, ElementGroupingInformation vertexEgi) {
         StringBuilder sb = new StringBuilder();
 
         // Build Key based on Vertex Information
         sb = keyStringBuilder(sb, vertexGei, vertexEgi, "Vertex");
 
-        // Build key based on Edge-Information
-        if (edgeEgi != null) {
-            sb = keyStringBuilder(sb, edgeGei, edgeEgi, "Edge");
+        return sb.toString();
+    }
+
+    private String generateKeyForEdge(Edge edge, ElementGroupingInformation vertexEgi, ElementGroupingInformation edgeEgi) {
+        StringBuilder sb = new StringBuilder();
+
+        // Build Key based on Source Vertex Information
+        sb = keyStringBuilder(sb, edge.getSource().getGei(), vertexEgi, "Source");
+
+        // Build Key based on Edge Information
+        if(edgeEgi != null) {
+            sb = keyStringBuilder(sb, edge.getGei(), edgeEgi, "Edge");
         }
+
+        // Build Key based on Target Vertex Information
+        sb = keyStringBuilder(sb, edge.getTarget().getGei(), vertexEgi, "Target");
 
         return sb.toString();
     }
