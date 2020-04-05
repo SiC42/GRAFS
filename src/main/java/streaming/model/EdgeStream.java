@@ -72,14 +72,14 @@ public class EdgeStream {
             }
         });
 
-        DataStream<Edge> keyedOnSourceVertexStream = expandedEdgeStream
+        DataStream<Edge> aggregatedSourceStream = expandedEdgeStream
                 .map(edgeToSingleSetFunction)
                 .keyBy(new EdgeKeySelector(vertexEgi, edgeEgi, true))
                 .timeWindow(Time.milliseconds(10)) // TODO: Zeit nach außen tragen
                 .reduce(mergeSets)
                 .flatMap(new EdgeAggregationFunction(vertexEgi, vertexAggregationFunctions, true));
 
-        DataStream<Edge> finalAggregatedStream = keyedOnSourceVertexStream
+        DataStream<Edge> finalAggregatedStream = aggregatedSourceStream
                 .map(edgeToSingleSetFunction)
                 .keyBy(new EdgeKeySelector(vertexEgi, edgeEgi, false))
                 .timeWindow(Time.milliseconds(10)) // TODO: Zeit nach außen tragen
