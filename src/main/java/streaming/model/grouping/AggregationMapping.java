@@ -9,22 +9,22 @@ import java.util.Set;
 
 public class AggregationMapping implements Serializable {
 
-    public HashMap<String, AggregationFunction> aggregationMap;
+    public HashMap<String, PropertiesAggregationFunction> aggregationMap;
 
     public AggregationMapping(){
         aggregationMap = new HashMap<>();
     }
 
-    public void addAggregation(String key, AggregationFunction accumulator){
-        AggregationFunction aF = accumulator;
+    public void addAggregation(String key, PropertiesAggregationFunction accumulator){
+        PropertiesAggregationFunction aF = accumulator;
         aggregationMap.put(key, aF);
     }
 
-    public AggregationFunction get(String key){
+    public PropertiesAggregationFunction get(String key){
         return aggregationMap.get(key);
     }
 
-    public Set<Map.Entry<String, AggregationFunction>> entrySet(){
+    public Set<Map.Entry<String, PropertiesAggregationFunction>> entrySet(){
         return aggregationMap.entrySet();
     }
 
@@ -36,7 +36,7 @@ public class AggregationMapping implements Serializable {
     private void writeObject(java.io.ObjectOutputStream out)
             throws IOException {
         out.writeInt(aggregationMap.size());
-        for(Map.Entry<String, AggregationFunction> entry : aggregationMap.entrySet()){
+        for(Map.Entry<String, PropertiesAggregationFunction> entry : aggregationMap.entrySet()){
             out.writeObject(entry.getKey());
             out.writeObject(entry.getValue());
         }
@@ -49,7 +49,7 @@ public class AggregationMapping implements Serializable {
         for(int i=0;i<size;i++) {
             String key = (String) in.readObject();
             System.out.println(key);
-            AggregationFunction aggFun = (AggregationFunction) in.readObject();
+            PropertiesAggregationFunction aggFun = (PropertiesAggregationFunction) in.readObject();
             System.out.println(aggFun);
             aggregationMap.put(key, aggFun);
         }

@@ -4,7 +4,7 @@ import org.apache.flink.util.Collector;
 import org.junit.jupiter.api.Test;
 import streaming.helper.AsciiGraphLoader;
 import streaming.model.Edge;
-import streaming.model.grouping.AggregationFunction;
+import streaming.model.grouping.PropertiesAggregationFunction;
 import streaming.model.grouping.AggregationMapping;
 import streaming.model.grouping.ElementGroupingInformation;
 
@@ -14,14 +14,14 @@ import java.util.Set;
 
 import static org.mockito.Mockito.mock;
 
-class EdgeAggregationFunctionTest {
+class EdgePropertiesAggregationFunctionTest {
 
     @Test
     void flatMap() {
         ElementGroupingInformation egi = new ElementGroupingInformation();
         egi.groupingKeys.add("n");
         AggregationMapping am = new AggregationMapping();
-        am.addAggregation("a", new AggregationFunction("0", (String pV1, String pV2) -> String.valueOf(Double.parseDouble(pV1) + Double.parseDouble(pV2))));
+        am.addAggregation("a", new PropertiesAggregationFunction("0", (String pV1, String pV2) -> String.valueOf(Double.parseDouble(pV1) + Double.parseDouble(pV2))));
 
         EdgeAggregationFunction incrementer = new EdgeAggregationFunction(egi, am, true);
 

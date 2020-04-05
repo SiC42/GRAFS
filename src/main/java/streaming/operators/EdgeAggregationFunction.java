@@ -5,7 +5,7 @@ import org.apache.flink.util.Collector;
 import streaming.model.Edge;
 import streaming.model.GraphElementInformation;
 import streaming.model.Vertex;
-import streaming.model.grouping.AggregationFunction;
+import streaming.model.grouping.PropertiesAggregationFunction;
 import streaming.model.grouping.AggregationMapping;
 import streaming.model.grouping.ElementGroupingInformation;
 
@@ -37,7 +37,7 @@ public class EdgeAggregationFunction implements FlatMapFunction<Set<Edge>, Edge>
                 if (egi.groupingKeys.contains(key)) {
                     aggregatedGei.addProperty(key, property.getValue());
                 } else if(aggregationMapping.contains(key)) {
-                    AggregationFunction aF = aggregationMapping.get(key);
+                    PropertiesAggregationFunction aF = aggregationMapping.get(key);
                     String prevValue = aggregatedGei.containsProperty(key)
                             ? aggregatedGei.getProperty(key)
                             : aF.getIdentity();

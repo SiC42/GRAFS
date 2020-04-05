@@ -5,7 +5,7 @@ import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.junit.jupiter.api.Test;
 import streaming.helper.AsciiGraphLoader;
-import streaming.model.grouping.AggregationFunction;
+import streaming.model.grouping.PropertiesAggregationFunction;
 import streaming.model.grouping.AggregationMapping;
 import streaming.model.grouping.ElementGroupingInformation;
 
@@ -46,7 +46,7 @@ class EdgeStreamTest {
         ElementGroupingInformation vertexEgi = new ElementGroupingInformation();
         vertexEgi.groupingKeys.add("n");
         AggregationMapping am = new AggregationMapping();
-        am.addAggregation("a", new AggregationFunction("0", (String pV1, String pV2) -> String.valueOf(Double.parseDouble(pV1) + Double.parseDouble(pV2))));
+        am.addAggregation("a", new PropertiesAggregationFunction("0", (String pV1, String pV2) -> String.valueOf(Double.parseDouble(pV1) + Double.parseDouble(pV2))));
         es.groupBy(vertexEgi,am, null, null).print();
         env.execute();
     }

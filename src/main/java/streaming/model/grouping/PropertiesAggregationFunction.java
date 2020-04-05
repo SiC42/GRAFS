@@ -3,12 +3,12 @@ package streaming.model.grouping;
 import java.io.IOException;
 import java.io.ObjectStreamException;
 
-public class AggregationFunction implements SerializableBiFunction<String,String, String> {
+public class PropertiesAggregationFunction implements SerializableBiFunction<String,String, String> {
 
     private String identity;
     private SerializableBiFunction<String, String, String> function;
 
-    public AggregationFunction(String identity, SerializableBiFunction<String, String, String> function) {
+    public PropertiesAggregationFunction(String identity, SerializableBiFunction<String, String, String> function) {
         this.identity = identity;
         this.function =  function;
     }
