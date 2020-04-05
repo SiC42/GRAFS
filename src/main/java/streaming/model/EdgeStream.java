@@ -3,7 +3,6 @@ package streaming.model;
 import org.apache.flink.api.common.functions.FilterFunction;
 import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.api.common.functions.MapFunction;
-import org.apache.flink.api.common.functions.ReduceFunction;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.DataStreamUtils;
 import org.apache.flink.streaming.api.datastream.WindowedStream;
@@ -59,7 +58,7 @@ public class EdgeStream {
     }
 
     public EdgeStream groupBy(ElementGroupingInformation vertexEgi, AggregationMapping vertexAggregationFunctions,
-                              ElementGroupingInformation edgeEgi, ReduceFunction<GraphElementInformation> edgeReduceFunction) {
+                              ElementGroupingInformation edgeEgi, AggregationMapping edgeAggregationFunctions) {
         DataStream<Set<Edge>> expandedEdgeStream = edgeStream.flatMap(new FlatMapFunction<Edge, Edge>() {
             @Override
             public void flatMap(Edge value, Collector<Edge> out)
