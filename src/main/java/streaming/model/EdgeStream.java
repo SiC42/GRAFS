@@ -2,8 +2,8 @@ package streaming.model;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import org.apache.flink.api.common.functions.FilterFunction;
 import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.api.common.functions.MapFunction;
@@ -28,7 +28,7 @@ public class EdgeStream {
   private final MapFunction<Edge, Collection<Edge>> edgeToSingleSetFunction = new MapFunction<Edge, Collection<Edge>>() {
     @Override
     public Collection<Edge> map(Edge edge) {
-      Collection<Edge> singleSet = new HashSet<>();
+      Collection<Edge> singleSet = new LinkedList<>();
       singleSet.add(edge);
       return singleSet;
     }
