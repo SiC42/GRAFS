@@ -1,9 +1,9 @@
 package streaming.model;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Set;
 import org.apache.flink.api.common.functions.FilterFunction;
 import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.api.common.functions.MapFunction;
@@ -25,17 +25,17 @@ import streaming.operators.VertexAggregationFunction;
 public class EdgeStream {
 
 
-  private final MapFunction<Edge, Set<Edge>> edgeToSingleSetFunction = new MapFunction<Edge, Set<Edge>>() {
+  private final MapFunction<Edge, Collection<Edge>> edgeToSingleSetFunction = new MapFunction<Edge, Collection<Edge>>() {
     @Override
-    public Set<Edge> map(Edge edge) {
-      Set<Edge> singleSet = new HashSet<>();
+    public Collection<Edge> map(Edge edge) {
+      Collection<Edge> singleSet = new HashSet<>();
       singleSet.add(edge);
       return singleSet;
     }
   };
-  private final ReduceFunction<Set<Edge>> mergeSets = (Set<Edge> eS1, Set<Edge> eS2) -> {
-    eS1.addAll(eS2);
-    return eS1;
+  private final ReduceFunction<Collection<Edge>> mergeCollection = (eColl1, eColl2) -> {
+    eColl1.addAll(eColl2);
+    return eColl1;
   };
   private DataStream<Edge> edgeStream;
 
@@ -77,7 +77,7 @@ public class EdgeStream {
                 .map(edgeToSingleSetFunction)
                 .keyBy(new EdgeKeySelector(vertexEgi, edgeEgi, aggregateMode))
                 .timeWindow(Time.milliseconds(10)) // TODO: Zeit nach außen tragen
-                .reduce(mergeSets)
+                .reduce(mergeCollection)
                 .flatMap(aggregationFunction);
 
     DataStream<Edge> aggregatedOnEdgeStream = applyAggregation.apply(

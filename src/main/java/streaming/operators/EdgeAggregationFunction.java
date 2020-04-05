@@ -1,6 +1,6 @@
 package streaming.operators;
 
-import java.util.Set;
+import java.util.Collection;
 import org.apache.flink.util.Collector;
 import streaming.model.Edge;
 import streaming.model.GraphElementInformation;
@@ -27,7 +27,7 @@ public class EdgeAggregationFunction implements GraphElementAggregationFunctionI
 
 
   @Override
-  public void flatMap(Set<Edge> edgeSet, Collector<Edge> out) {
+  public void flatMap(Collection<Edge> edgeSet, Collector<Edge> out) {
     GraphElementInformation aggregatedSourceGei = new GraphElementInformation();
     GraphElementInformation aggregatedTargetGei = new GraphElementInformation();
     GraphElementInformation aggregatedEdgeGei = new GraphElementInformation();

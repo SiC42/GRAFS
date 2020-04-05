@@ -1,6 +1,6 @@
 package streaming.operators;
 
-import java.util.Set;
+import java.util.Collection;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import org.apache.flink.util.Collector;
@@ -24,7 +24,7 @@ public class VertexAggregationFunction implements GraphElementAggregationFunctio
   }
 
   @Override
-  public void flatMap(Set<Edge> edgeSet, Collector<Edge> out) {
+  public void flatMap(Collection<Edge> edgeSet, Collector<Edge> out) {
     GraphElementInformation aggregatedGei = new GraphElementInformation();
     Function<Edge, Vertex> getVertex =
         aggregateMode.equals(AggregateMode.SOURCE) ? Edge::getSource : Edge::getTarget;

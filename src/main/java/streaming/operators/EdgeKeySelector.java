@@ -1,12 +1,12 @@
 package streaming.operators;
 
-import java.util.Set;
+import java.util.Collection;
 import org.apache.flink.api.java.functions.KeySelector;
 import streaming.model.Edge;
 import streaming.model.GraphElementInformation;
 import streaming.model.grouping.ElementGroupingInformation;
 
-public class EdgeKeySelector implements KeySelector<Set<Edge>, String> {
+public class EdgeKeySelector implements KeySelector<Collection<Edge>, String> {
 
   private ElementGroupingInformation vertexEgi;
   private ElementGroupingInformation edgeEgi;
@@ -20,7 +20,7 @@ public class EdgeKeySelector implements KeySelector<Set<Edge>, String> {
   }
 
   @Override
-  public String getKey(Set<Edge> edgeSet) {
+  public String getKey(Collection<Edge> edgeSet) {
     Edge edge = edgeSet.iterator().next();
     switch (makeKeyFor) {
 
