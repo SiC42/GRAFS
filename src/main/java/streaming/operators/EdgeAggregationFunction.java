@@ -1,18 +1,15 @@
 package streaming.operators;
 
-import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.util.Collector;
 import streaming.model.Edge;
 import streaming.model.GraphElementInformation;
 import streaming.model.Vertex;
 import streaming.model.grouping.AggregationMapping;
 import streaming.model.grouping.ElementGroupingInformation;
-import streaming.model.grouping.PropertiesAggregationFunction;
 
-import java.util.Map;
 import java.util.Set;
 
-public class EdgeAggregationFunction implements FlatMapFunction<Set<Edge>, Edge> {
+public class EdgeAggregationFunction implements GraphElementAggregationFunctionI {
 
 
     private ElementGroupingInformation vertexEgi;
@@ -36,9 +33,9 @@ public class EdgeAggregationFunction implements FlatMapFunction<Set<Edge>, Edge>
         GraphElementInformation aggregatedEdgeGei = new GraphElementInformation();
 
         for (Edge e : edgeSet) {
-            aggregateGei(aggregatedSourceGei, e.getSource().getGei());
-            aggregateGei(aggregatedTargetGei, e.getTarget().getGei());
-            aggregateGei(aggregatedEdgeGei, e.getGei());
+            aggregateGei(vertexAggregationMapping, vertexEgi, aggregatedSourceGei, e.getSource().getGei());
+            aggregateGei(vertexAggregationMapping, vertexEgi, aggregatedTargetGei, e.getTarget().getGei());
+            aggregateGei(edgeAggregationMapping, edgeEgi, aggregatedEdgeGei, e.getGei());
         }
         Vertex aggregatedSource = new Vertex(aggregatedSourceGei);
         Vertex aggregatedTarget = new Vertex(aggregatedTargetGei);
@@ -47,19 +44,5 @@ public class EdgeAggregationFunction implements FlatMapFunction<Set<Edge>, Edge>
 
     }
 
-    private void aggregateGei(GraphElementInformation aggregatedSourceGei, GraphElementInformation edgeGei) {
-        for (Map.Entry<String, String> property : edgeGei.getProperties().entrySet()) {
-            String key = property.getKey();
-            if (vertexEgi.groupingKeys.contains(key)) {
-                aggregatedSourceGei.addProperty(key, property.getValue());
-            } else if (vertexAggregationMapping.contains(key)) {
-                PropertiesAggregationFunction aF = vertexAggregationMapping.get(key);
-                String prevValue = aggregatedSourceGei.containsProperty(key)
-                        ? aggregatedSourceGei.getProperty(key)
-                        : aF.getIdentity();
-                String newValue = aF.apply(prevValue, edgeGei.getProperty(key));
-                aggregatedSourceGei.addProperty(key, newValue);
-            }
-        }
-    }
+
 }
