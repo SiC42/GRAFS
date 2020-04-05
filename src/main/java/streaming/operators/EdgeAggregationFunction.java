@@ -17,21 +17,20 @@ public class EdgeAggregationFunction implements FlatMapFunction<Set<Edge>, Edge>
 
     private ElementGroupingInformation egi;
     private AggregationMapping aggregationMapping;
-    private boolean aggregateSource;
+    private AggregateMode aggregateMode;
 
-    public EdgeAggregationFunction(ElementGroupingInformation egi, AggregationMapping aggregationMapping, boolean aggregateSource) {
+    public EdgeAggregationFunction(ElementGroupingInformation egi, AggregationMapping aggregationMapping, AggregateMode aggregateMode) {
         this.egi = egi;
         this.aggregationMapping = aggregationMapping;
-        this.aggregateSource = aggregateSource;
+        this.aggregateMode = aggregateMode;
     }
 
 
     @Override
-    public void flatMap(Set<Edge> edgeSet, Collector<Edge> out)
-            throws Exception {
+    public void flatMap(Set<Edge> edgeSet, Collector<Edge> out) {
         GraphElementInformation aggregatedGei = new GraphElementInformation();
         for (Edge e : edgeSet) {
-            GraphElementInformation sourceGei = aggregateSource ? e.getSource().getGei() : e.getTarget().getGei();
+            GraphElementInformation sourceGei = aggregateMode.equals(AggregateMode.SOURCE) ? e.getSource().getGei() : e.getTarget().getGei();
             for (Map.Entry<String, String> property : sourceGei.getProperties().entrySet()) {
                 String key = property.getKey();
                 if (egi.groupingKeys.contains(key)) {
@@ -49,11 +48,19 @@ public class EdgeAggregationFunction implements FlatMapFunction<Set<Edge>, Edge>
         for (Edge e : edgeSet) {
             if (!e.isReverse()) {
                 Vertex aggregatedVertex = new Vertex(aggregatedGei);
-                Edge aggregatedEdge;
-                if(aggregateSource) {
-                    aggregatedEdge = new Edge(aggregatedVertex, e.getTarget(), e.getGei());
-                } else {
-                    aggregatedEdge = new Edge(e.getSource(), aggregatedVertex, e.getGei());
+                Edge aggregatedEdge = null;
+                switch (aggregateMode) {
+                    case SOURCE: {
+                        aggregatedEdge = new Edge(aggregatedVertex, e.getTarget(), e.getGei());
+                        break;
+                    }
+                    case TARGET: {
+                        aggregatedEdge = new Edge(e.getSource(), aggregatedVertex, e.getGei());
+                        break;
+                    }
+                    case EDGE: {
+                        break;
+                    }
                 }
                 out.collect(aggregatedEdge);
             } else {

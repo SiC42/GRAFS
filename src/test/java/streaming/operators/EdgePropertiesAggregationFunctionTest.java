@@ -23,7 +23,7 @@ class EdgePropertiesAggregationFunctionTest {
         AggregationMapping am = new AggregationMapping();
         am.addAggregation("a", new PropertiesAggregationFunction("0", (String pV1, String pV2) -> String.valueOf(Double.parseDouble(pV1) + Double.parseDouble(pV2))));
 
-        EdgeAggregationFunction incrementer = new EdgeAggregationFunction(egi, am, true);
+        EdgeAggregationFunction incrementer = new EdgeAggregationFunction(egi, am, AggregateMode.SOURCE);
 
         Collector<Edge> collector = mock(Collector.class);
 

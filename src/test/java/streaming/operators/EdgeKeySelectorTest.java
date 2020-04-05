@@ -29,7 +29,7 @@ class EdgeKeySelectorTest {
                 "(a18)-[]->(c20)," +
                 "(a20)-[]->(b19),"
         ));
-        EdgeKeySelector eks = new EdgeKeySelector(egi,null, true);
+        EdgeKeySelector eks = new EdgeKeySelector(egi,null, AggregateMode.SOURCE);
         for(Edge e : edgeSet){
             Set<Edge> es = new HashSet<>();
             es.add(e);

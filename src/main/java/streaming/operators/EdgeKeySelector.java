@@ -11,22 +11,27 @@ public class EdgeKeySelector implements KeySelector<Set<Edge>, String> {
 
     private ElementGroupingInformation vertexEgi;
     private ElementGroupingInformation edgeEgi;
-    private boolean makeKeyForSource;
+    private AggregateMode makeKeyFor;
 
-    public EdgeKeySelector(ElementGroupingInformation vertexEgi, ElementGroupingInformation edgeEgi, boolean aggregateSource) {
+    public EdgeKeySelector(ElementGroupingInformation vertexEgi, ElementGroupingInformation edgeEgi, AggregateMode makeKeyFor) {
         this.vertexEgi = vertexEgi;
         this.edgeEgi = edgeEgi;
-        this.makeKeyForSource = aggregateSource;
+        this.makeKeyFor = makeKeyFor;
     }
 
     @Override
     public String getKey(Set<Edge> edgeSet) {
         Edge edge = edgeSet.iterator().next();
-        if(makeKeyForSource) {
-            return generateKey(edge.getSource().getGei(), edge.getGei(), vertexEgi, edgeEgi);
-        } else {
-            return generateKey(edge.getTarget().getGei(), edge.getGei(), vertexEgi, edgeEgi);
+        switch (makeKeyFor) {
+
+            case SOURCE:
+                return generateKey(edge.getSource().getGei(), edge.getGei(), vertexEgi, edgeEgi);
+            case TARGET:
+                return generateKey(edge.getTarget().getGei(), edge.getGei(), vertexEgi, edgeEgi);
+            case EDGE:
+                return null;
         }
+        return null;
     }
 
     private String generateKey(GraphElementInformation vertexGei, GraphElementInformation

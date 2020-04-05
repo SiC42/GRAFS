@@ -11,6 +11,7 @@ import org.apache.flink.streaming.api.windowing.time.Time;
 import org.apache.flink.util.Collector;
 import streaming.model.grouping.AggregationMapping;
 import streaming.model.grouping.ElementGroupingInformation;
+import streaming.operators.AggregateMode;
 import streaming.operators.EdgeAggregationFunction;
 import streaming.operators.EdgeKeySelector;
 
@@ -74,17 +75,17 @@ public class EdgeStream {
 
         DataStream<Edge> aggregatedSourceStream = expandedEdgeStream
                 .map(edgeToSingleSetFunction)
-                .keyBy(new EdgeKeySelector(vertexEgi, edgeEgi, true))
+                .keyBy(new EdgeKeySelector(vertexEgi, edgeEgi, AggregateMode.SOURCE))
                 .timeWindow(Time.milliseconds(10)) // TODO: Zeit nach außen tragen
                 .reduce(mergeSets)
-                .flatMap(new EdgeAggregationFunction(vertexEgi, vertexAggregationFunctions, true));
+                .flatMap(new EdgeAggregationFunction(vertexEgi, vertexAggregationFunctions, AggregateMode.SOURCE));
 
         DataStream<Edge> finalAggregatedStream = aggregatedSourceStream
                 .map(edgeToSingleSetFunction)
-                .keyBy(new EdgeKeySelector(vertexEgi, edgeEgi, false))
+                .keyBy(new EdgeKeySelector(vertexEgi, edgeEgi, AggregateMode.TARGET))
                 .timeWindow(Time.milliseconds(10)) // TODO: Zeit nach außen tragen
                 .reduce(mergeSets)
-                .flatMap(new EdgeAggregationFunction(vertexEgi, vertexAggregationFunctions, false))
+                .flatMap(new EdgeAggregationFunction(vertexEgi, vertexAggregationFunctions, AggregateMode.TARGET))
                 .filter(e -> !e.isReverse());
 
         return new EdgeStream(finalAggregatedStream);
