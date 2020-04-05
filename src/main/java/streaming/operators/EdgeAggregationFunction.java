@@ -1,5 +1,6 @@
 package streaming.operators;
 
+import com.google.common.base.Function;
 import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.util.Collector;
 import streaming.model.Edge;
@@ -25,22 +26,24 @@ public class EdgeAggregationFunction implements FlatMapFunction<Set<Edge>, Edge>
         this.aggregateMode = aggregateMode;
     }
 
-
     @Override
     public void flatMap(Set<Edge> edgeSet, Collector<Edge> out) {
+        switch (aggregateMode){
+            case SOURCE:
+            case TARGET:
+                flatMapForVertexAggregation(edgeSet, out);
+        }
+
+    }
+
+
+    public void flatMapForVertexAggregation(Set<Edge> edgeSet, Collector<Edge> out) {
         GraphElementInformation aggregatedGei = new GraphElementInformation();
         GraphElementInformation vertexGei;
+        Function<Edge, Vertex> getVertex = aggregateMode.equals(AggregateMode.SOURCE) ? Edge::getSource : Edge::getTarget;
         for (Edge e : edgeSet) {
-            switch (aggregateMode){
-                case SOURCE:
-                    vertexGei = e.getSource().getGei();
+                    vertexGei = getVertex.apply(e).getGei();
                     generatedAggregatedGeiOnVertex(aggregatedGei, vertexGei);
-                    break;
-                case TARGET:
-                    vertexGei = e.getTarget().getGei();
-                    generatedAggregatedGeiOnVertex(aggregatedGei, vertexGei);
-                    break;
-            }
 
         }
         for (Edge e : edgeSet) {
