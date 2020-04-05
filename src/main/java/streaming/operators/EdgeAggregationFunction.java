@@ -29,21 +29,19 @@ public class EdgeAggregationFunction implements FlatMapFunction<Set<Edge>, Edge>
     @Override
     public void flatMap(Set<Edge> edgeSet, Collector<Edge> out) {
         GraphElementInformation aggregatedGei = new GraphElementInformation();
+        GraphElementInformation vertexGei;
         for (Edge e : edgeSet) {
-            GraphElementInformation sourceGei = aggregateMode.equals(AggregateMode.SOURCE) ? e.getSource().getGei() : e.getTarget().getGei();
-            for (Map.Entry<String, String> property : sourceGei.getProperties().entrySet()) {
-                String key = property.getKey();
-                if (egi.groupingKeys.contains(key)) {
-                    aggregatedGei.addProperty(key, property.getValue());
-                } else if(aggregationMapping.contains(key)) {
-                    PropertiesAggregationFunction aF = aggregationMapping.get(key);
-                    String prevValue = aggregatedGei.containsProperty(key)
-                            ? aggregatedGei.getProperty(key)
-                            : aF.getIdentity();
-                    String newValue = aF.apply(prevValue, sourceGei.getProperty(key));
-                    aggregatedGei.addProperty(key, newValue);
-                }
+            switch (aggregateMode){
+                case SOURCE:
+                    vertexGei = e.getSource().getGei();
+                    generatedAggregatedGeiOnVertex(aggregatedGei, vertexGei);
+                    break;
+                case TARGET:
+                    vertexGei = e.getTarget().getGei();
+                    generatedAggregatedGeiOnVertex(aggregatedGei, vertexGei);
+                    break;
             }
+
         }
         for (Edge e : edgeSet) {
             if (!e.isReverse()) {
@@ -65,6 +63,22 @@ public class EdgeAggregationFunction implements FlatMapFunction<Set<Edge>, Edge>
                 out.collect(aggregatedEdge);
             } else {
                 out.collect(e);
+            }
+        }
+    }
+
+    private void generatedAggregatedGeiOnVertex(GraphElementInformation aggregatedGei, GraphElementInformation vertexGei) {
+        for (Map.Entry<String, String> property : vertexGei.getProperties().entrySet()) {
+            String key = property.getKey();
+            if (egi.groupingKeys.contains(key)) {
+                aggregatedGei.addProperty(key, property.getValue());
+            } else if(aggregationMapping.contains(key)) {
+                PropertiesAggregationFunction aF = aggregationMapping.get(key);
+                String prevValue = aggregatedGei.containsProperty(key)
+                        ? aggregatedGei.getProperty(key)
+                        : aF.getIdentity();
+                String newValue = aF.apply(prevValue, vertexGei.getProperty(key));
+                aggregatedGei.addProperty(key, newValue);
             }
         }
     }
