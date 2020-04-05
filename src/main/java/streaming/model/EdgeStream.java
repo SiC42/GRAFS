@@ -26,6 +26,15 @@ public class EdgeStream {
 
     private DataStream<Edge> edgeStream;
 
+    private final MapFunction<Edge, Set<Edge>> edgeToSingleSetFunction = new MapFunction<Edge, Set<Edge>>() {
+        @Override
+        public Set<Edge> map(Edge edge) {
+            Set<Edge> singleSet = new HashSet<>();
+            singleSet.add(edge);
+            return singleSet;
+        }
+    };
+
     public EdgeStream(DataStream<Edge> edgeStream) {
         this.edgeStream = edgeStream.assignTimestampsAndWatermarks(
                 new AscendingTimestampExtractor<Edge>() {
@@ -58,14 +67,7 @@ public class EdgeStream {
                 out.collect(value.createReverseEdge());
                 out.collect(value);
             }
-        }).map(new MapFunction<Edge, Set<Edge>>() {
-            @Override
-            public Set<Edge> map(Edge edge) throws Exception {
-                Set<Edge> singleSet = new HashSet<>();
-                singleSet.add(edge);
-                return singleSet;
-            }
-        });
+        }).map(edgeToSingleSetFunction);
 
         WindowedStream<Set<Edge>, String, TimeWindow> keyedOnSourceVertexStream = expandedEdgeStream.keyBy(
                 new EdgeKeySelector(vertexEgi, edgeEgi, true))
@@ -78,13 +80,7 @@ public class EdgeStream {
                 }
         ).flatMap(new EdgeAggregationFunction(vertexEgi, vertexAggregationFunctions, true));
 
-        DataStream<Edge> finalAggregatedStream = sourceAggregatedStream.map(new MapFunction<Edge, Set<Edge>>() {
-            @Override
-            public Set<Edge> map(Edge edge) throws Exception {
-                Set<Edge> singleSet = new HashSet<>();
-                singleSet.add(edge);
-                return singleSet;
-            }})
+        DataStream<Edge> finalAggregatedStream = sourceAggregatedStream.map(edgeToSingleSetFunction)
                 .keyBy(
                 new EdgeKeySelector(vertexEgi, edgeEgi, false))
                 .timeWindow(Time.milliseconds(10)).reduce(
