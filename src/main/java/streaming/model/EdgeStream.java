@@ -64,6 +64,7 @@ public class EdgeStream {
 
     public EdgeStream groupBy(ElementGroupingInformation vertexEgi, AggregationMapping vertexAggregationFunctions,
                               ElementGroupingInformation edgeEgi, AggregationMapping edgeAggregationFunctions) {
+        // TODO: Make sure that keys in egi has no intersection with keys in mapping
         DataStream<Edge> expandedEdgeStream = edgeStream.flatMap(new FlatMapFunction<Edge, Edge>() {
             @Override
             public void flatMap(Edge value, Collector<Edge> out){
