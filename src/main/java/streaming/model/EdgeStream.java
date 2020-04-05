@@ -3,12 +3,11 @@ package streaming.model;
 import org.apache.flink.api.common.functions.FilterFunction;
 import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.api.common.functions.MapFunction;
+import org.apache.flink.api.common.functions.ReduceFunction;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.DataStreamUtils;
-import org.apache.flink.streaming.api.datastream.WindowedStream;
 import org.apache.flink.streaming.api.functions.timestamps.AscendingTimestampExtractor;
 import org.apache.flink.streaming.api.windowing.time.Time;
-import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
 import org.apache.flink.util.Collector;
 import streaming.model.grouping.AggregationMapping;
 import streaming.model.grouping.ElementGroupingInformation;
@@ -32,6 +31,11 @@ public class EdgeStream {
             singleSet.add(edge);
             return singleSet;
         }
+    };
+
+    private final ReduceFunction<Set<Edge>> mergeSets = (Set<Edge> eS1, Set<Edge> eS2) -> {
+        eS1.addAll(eS2);
+        return eS1;
     };
 
     public EdgeStream(DataStream<Edge> edgeStream) {
@@ -59,34 +63,27 @@ public class EdgeStream {
 
     public EdgeStream groupBy(ElementGroupingInformation vertexEgi, AggregationMapping vertexAggregationFunctions,
                               ElementGroupingInformation edgeEgi, AggregationMapping edgeAggregationFunctions) {
-        DataStream<Set<Edge>> expandedEdgeStream = edgeStream.flatMap(new FlatMapFunction<Edge, Edge>() {
+        DataStream<Edge> expandedEdgeStream = edgeStream.flatMap(new FlatMapFunction<Edge, Edge>() {
             @Override
             public void flatMap(Edge value, Collector<Edge> out)
                     throws Exception {
                 out.collect(value.createReverseEdge());
                 out.collect(value);
             }
-        }).map(edgeToSingleSetFunction);
+        });
 
-        WindowedStream<Set<Edge>, String, TimeWindow> keyedOnSourceVertexStream = expandedEdgeStream.keyBy(
-                new EdgeKeySelector(vertexEgi, edgeEgi, true))
-                .timeWindow(Time.milliseconds(10)); // TODO: Zeit nach außen tragen
+        DataStream<Edge> keyedOnSourceVertexStream = expandedEdgeStream
+                .map(edgeToSingleSetFunction)
+                .keyBy(new EdgeKeySelector(vertexEgi, edgeEgi, true))
+                .timeWindow(Time.milliseconds(10)) // TODO: Zeit nach außen tragen
+                .reduce(mergeSets)
+                .flatMap(new EdgeAggregationFunction(vertexEgi, vertexAggregationFunctions, true));
 
-        DataStream<Edge> sourceAggregatedStream = keyedOnSourceVertexStream.reduce(
-                (Set<Edge> eS1, Set<Edge> eS2) -> {
-                    eS1.addAll(eS2);
-                    return eS1;
-                }
-        ).flatMap(new EdgeAggregationFunction(vertexEgi, vertexAggregationFunctions, true));
-
-        DataStream<Edge> finalAggregatedStream = sourceAggregatedStream.map(edgeToSingleSetFunction)
-                .keyBy(
-                new EdgeKeySelector(vertexEgi, edgeEgi, false))
-                .timeWindow(Time.milliseconds(10)).reduce(
-                (Set<Edge> eS1, Set<Edge> eS2) -> {
-                    eS1.addAll(eS2);
-                    return eS1;
-                })
+        DataStream<Edge> finalAggregatedStream = keyedOnSourceVertexStream
+                .map(edgeToSingleSetFunction)
+                .keyBy(new EdgeKeySelector(vertexEgi, edgeEgi, false))
+                .timeWindow(Time.milliseconds(10)) // TODO: Zeit nach außen tragen
+                .reduce(mergeSets)
                 .flatMap(new EdgeAggregationFunction(vertexEgi, vertexAggregationFunctions, false))
                 .filter(e -> !e.isReverse());
 
