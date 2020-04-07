@@ -64,6 +64,11 @@ public class EdgeStream {
     return subgraph(edgePredicate);
   }
 
+  public EdgeStream subgraph(FilterFunction<Edge> vertexPredicate) {
+    DataStream<Edge> filteredStream = edgeStream.filter(vertexPredicate);
+    return new EdgeStream(filteredStream);
+  }
+
   public EdgeStream groupBy(ElementGroupingInformation vertexEgi,
       AggregationMapping vertexAggregationFunctions,
       ElementGroupingInformation edgeEgi, AggregationMapping edgeAggregationFunctions) {
@@ -110,11 +115,6 @@ public class EdgeStream {
         .filter(e -> !e.isReverse());
 
     return new EdgeStream(finalAggregatedStream);
-  }
-
-  public EdgeStream subgraph(FilterFunction<Edge> vertexPredicate) {
-    DataStream<Edge> filteredStream = edgeStream.filter(vertexPredicate);
-    return new EdgeStream(filteredStream);
   }
 
   public EdgeStream transform(MapFunction<Edge, Edge> mapper) {
