@@ -14,7 +14,7 @@ class EdgeStreamTest {
 
   final StreamExecutionEnvironment env =
       StreamExecutionEnvironment.getExecutionEnvironment();
-  EdgeStream es;
+  EdgeStream edgeStream;
 
 
   public EdgeStreamTest() {
@@ -35,7 +35,7 @@ class EdgeStreamTest {
     );
     DataStream<Edge> m = env.fromCollection(edges);
 
-    es = new EdgeStream(m);
+    edgeStream = new EdgeStream(m);
   }
 
   @Test
@@ -45,7 +45,7 @@ class EdgeStreamTest {
     AggregationMapping am = new AggregationMapping();
     am.addAggregation("a", new PropertiesAggregationFunction("0", (String pV1, String pV2) -> String
         .valueOf(Double.parseDouble(pV1) + Double.parseDouble(pV2))));
-    es.groupBy(vertexEgi, am, null, null).print();
+    edgeStream.groupBy(vertexEgi, am, null, null).print();
     env.execute();
   }
 }
