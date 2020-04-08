@@ -33,17 +33,14 @@ public class EdgeStream {
       return singleSet;
     }
   };
-  private final ReduceFunction<Collection<Edge>> mergeCollection = (eColl1, eColl2) -> {
-    eColl1.addAll(eColl2);
-    return eColl1;
-  };
+  
   private DataStream<Edge> edgeStream;
 
   public EdgeStream(DataStream<Edge> edgeStream) {
     this.edgeStream = edgeStream.assignTimestampsAndWatermarks(
         new AscendingTimestampExtractor<Edge>() {
           @Override
-          public long extractAscendingTimestamp(Edge edge) {
+          public long extractAscendingTimestamp(Edge edge) { // TODO: timestamp define
             return 0;
           }
         }
@@ -74,6 +71,10 @@ public class EdgeStream {
       ElementGroupingInformation edgeEgi, AggregationMapping edgeAggregationFunctions) {
     // TODO: Make sure that keys in egi has no intersection with keys in mapping
 
+    ReduceFunction<Collection<Edge>> mergeCollection = (eColl1, eColl2) -> {
+      eColl1.addAll(eColl2);
+      return eColl1;
+    };
     TriFunction<DataStream<Edge>, AggregateMode, GraphElementAggregationFunctionI, DataStream<Edge>> applyAggregation =
         (DataStream<Edge> stream,
             AggregateMode aggregateMode,
