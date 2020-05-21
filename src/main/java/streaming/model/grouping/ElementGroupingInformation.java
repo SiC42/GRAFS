@@ -5,20 +5,20 @@ import java.util.HashSet;
 
 public class ElementGroupingInformation implements Serializable {
 
-  public boolean shouldGroupByLabel;
-  public boolean shouldGroupByMembership;
+  public boolean useLabel;
+  public boolean useMembership;
   public HashSet<String> groupingKeys;
 
   public ElementGroupingInformation() {
-    shouldGroupByLabel = false;
-    shouldGroupByMembership = false;
+    useLabel = false;
+    useMembership = false;
     groupingKeys = new HashSet<>();
   }
 
-  public ElementGroupingInformation(boolean shouldGroupByLabel, boolean shouldGroupByMembership,
+  public ElementGroupingInformation(boolean useLabel, boolean useMembership,
       HashSet<String> groupingKeys) {
-    this.shouldGroupByLabel = shouldGroupByLabel;
-    this.shouldGroupByMembership = shouldGroupByMembership;
+    this.useLabel = useLabel;
+    this.useMembership = useMembership;
     this.groupingKeys = groupingKeys;
   }
 
