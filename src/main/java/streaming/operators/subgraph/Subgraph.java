@@ -59,7 +59,7 @@ public class Subgraph implements OperatorI {
   }
 
 
-  public DataStream<Edge> vertexInducedSubgraph(DataStream<Edge> es) {
+  private DataStream<Edge> vertexInducedSubgraph(DataStream<Edge> es) {
     FilterFunction<Edge> edgeFilter = edge ->
         vertexGeiPredicate.filter(edge.getSource().getGei()) && vertexGeiPredicate
             .filter(edge.getTarget().getGei());
@@ -67,12 +67,12 @@ public class Subgraph implements OperatorI {
     return applyFilterToStream(es, edgeFilter);
   }
 
-  public DataStream<Edge> edgeInducedSubgraph(DataStream<Edge> es) {
+  private DataStream<Edge> edgeInducedSubgraph(DataStream<Edge> es) {
     FilterFunction<Edge> edgeFilter = edge -> edgeGeiPredicate.filter(edge.getGei());
     return applyFilterToStream(es, edgeFilter);
   }
 
-  public DataStream<Edge> subgraph(DataStream<Edge> es) {
+  private DataStream<Edge> subgraph(DataStream<Edge> es) {
     FilterFunction<Edge> edgeFilter = edge ->
         edgeGeiPredicate.filter(edge.getGei()) &&
         vertexGeiPredicate.filter(edge.getSource().getGei()) &&
@@ -80,7 +80,7 @@ public class Subgraph implements OperatorI {
     return applyFilterToStream(es, edgeFilter);
   }
 
-  public DataStream<Edge> applyFilterToStream(DataStream<Edge> es,
+  private DataStream<Edge> applyFilterToStream(DataStream<Edge> es,
       FilterFunction<Edge> edgeFilter) {
     DataStream<Edge> filteredStream = es.filter(edgeFilter);
     return filteredStream;
