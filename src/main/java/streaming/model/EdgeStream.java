@@ -24,6 +24,8 @@ import streaming.operators.OperatorI;
 import streaming.operators.VertexAggregationFunction;
 import streaming.operators.subgraph.Subgraph;
 import streaming.operators.subgraph.Subgraph.Strategy;
+import streaming.operators.transform.EdgeTransformation;
+import streaming.operators.transform.VertexTransformation;
 
 public class EdgeStream {
 
@@ -120,19 +122,12 @@ public class EdgeStream {
     return new EdgeStream(finalAggregatedStream);
   }
 
-  public EdgeStream transform(MapFunction<Edge, Edge> mapper) {
-    DataStream<Edge> filteredStream = edgeStream.map(mapper);
-    return new EdgeStream(filteredStream);
+  public EdgeStream transformEdge(MapFunction<Edge, Edge> mapper) {
+    return callForGraph(new EdgeTransformation(mapper));
   }
 
   public EdgeStream transformVertices(MapFunction<Vertex, Vertex> mapper) {
-    MapFunction<Edge, Edge> transformVerticesFunction =
-        edge -> {
-          Vertex from = mapper.map(edge.getSource());
-          Vertex to = mapper.map(edge.getTarget());
-          return new Edge(from, to, edge.getGei());
-        };
-    return transform(transformVerticesFunction);
+    return callForGraph(new VertexTransformation(mapper));
   }
 
   public void print() {
