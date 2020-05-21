@@ -47,7 +47,7 @@ public class Subgraph implements OperatorI {
       throw new IllegalArgumentException("No vertex filter functions was given.");
     }
 
-    if ((strategy == Strategy.EDGE_INDUCED || strategy == Strategy.EDGE_INDUCED_PROJECT_FIRST) &&
+    if ((strategy == Strategy.EDGE_INDUCED) &&
         edgeGeiPredicate == null) {
       throw new IllegalArgumentException("No vertex edge functions was given.");
     }
