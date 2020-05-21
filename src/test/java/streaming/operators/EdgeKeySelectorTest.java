@@ -8,13 +8,13 @@ import java.util.Set;
 import org.junit.jupiter.api.Test;
 import streaming.helper.AsciiGraphLoader;
 import streaming.model.Edge;
-import streaming.model.grouping.ElementGroupingInformation;
+import streaming.model.grouping.GroupingInformation;
 
 class EdgeKeySelectorTest {
 
   @Test
   void getKey() {
-    ElementGroupingInformation egi = new ElementGroupingInformation();
+    GroupingInformation egi = new GroupingInformation();
     egi.groupingKeys.add("n");
     Set<Edge> edgeSet = new HashSet<>();
     edgeSet.addAll(AsciiGraphLoader.loadFromString(

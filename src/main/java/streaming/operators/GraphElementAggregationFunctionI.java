@@ -6,14 +6,14 @@ import org.apache.flink.api.common.functions.FlatMapFunction;
 import streaming.model.Edge;
 import streaming.model.GraphElementInformation;
 import streaming.model.grouping.AggregationMapping;
-import streaming.model.grouping.ElementGroupingInformation;
+import streaming.model.grouping.GroupingInformation;
 import streaming.model.grouping.PropertiesAggregationFunction;
 
 public interface GraphElementAggregationFunctionI extends FlatMapFunction<Collection<Edge>, Edge> {
 
 
   default void aggregateGei(AggregationMapping aggregationMapping,
-      ElementGroupingInformation elemGroupInfo, GraphElementInformation aggregatedGei,
+      GroupingInformation elemGroupInfo, GraphElementInformation aggregatedGei,
       GraphElementInformation graphElementInfo) {
     for (Map.Entry<String, String> property : graphElementInfo.getProperties().entrySet()) {
       String key = property.getKey();

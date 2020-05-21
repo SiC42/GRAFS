@@ -8,15 +8,15 @@ import streaming.model.Edge;
 import streaming.model.GraphElementInformation;
 import streaming.model.Vertex;
 import streaming.model.grouping.AggregationMapping;
-import streaming.model.grouping.ElementGroupingInformation;
+import streaming.model.grouping.GroupingInformation;
 
 public class VertexAggregationFunction implements GraphElementAggregationFunctionI {
 
-  private ElementGroupingInformation vertexEgi;
+  private GroupingInformation vertexEgi;
   private AggregationMapping aggregationMapping;
   private AggregateMode aggregateMode;
 
-  public VertexAggregationFunction(ElementGroupingInformation vertexEgi,
+  public VertexAggregationFunction(GroupingInformation vertexEgi,
       AggregationMapping aggregationMapping, AggregateMode aggregateMode) {
     this.vertexEgi = vertexEgi;
     this.aggregationMapping = aggregationMapping;

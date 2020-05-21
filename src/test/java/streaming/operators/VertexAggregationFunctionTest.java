@@ -10,14 +10,14 @@ import org.junit.jupiter.api.Test;
 import streaming.helper.AsciiGraphLoader;
 import streaming.model.Edge;
 import streaming.model.grouping.AggregationMapping;
-import streaming.model.grouping.ElementGroupingInformation;
+import streaming.model.grouping.GroupingInformation;
 import streaming.model.grouping.PropertiesAggregationFunction;
 
 class VertexAggregationFunctionTest {
 
   @Test
   void flatMap() {
-    ElementGroupingInformation egi = new ElementGroupingInformation();
+    GroupingInformation egi = new GroupingInformation();
     egi.groupingKeys.add("n");
     AggregationMapping am = new AggregationMapping();
     am.addAggregation("a", new PropertiesAggregationFunction("0", (String pV1, String pV2) -> String

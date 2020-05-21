@@ -6,18 +6,18 @@ import streaming.model.Edge;
 import streaming.model.GraphElementInformation;
 import streaming.model.Vertex;
 import streaming.model.grouping.AggregationMapping;
-import streaming.model.grouping.ElementGroupingInformation;
+import streaming.model.grouping.GroupingInformation;
 
 public class EdgeAggregationFunction implements GraphElementAggregationFunctionI {
 
 
-  private ElementGroupingInformation vertexEgi;
+  private GroupingInformation vertexEgi;
   private AggregationMapping vertexAggregationMapping;
-  private ElementGroupingInformation edgeEgi;
+  private GroupingInformation edgeEgi;
   private AggregationMapping edgeAggregationMapping;
 
-  public EdgeAggregationFunction(ElementGroupingInformation vertexEgi,
-      AggregationMapping vertexAggregationMapping, ElementGroupingInformation edgeEgi,
+  public EdgeAggregationFunction(GroupingInformation vertexEgi,
+      AggregationMapping vertexAggregationMapping, GroupingInformation edgeEgi,
       AggregationMapping edgeAggregationMapping) {
     this.vertexEgi = vertexEgi;
     this.vertexAggregationMapping = vertexAggregationMapping;
