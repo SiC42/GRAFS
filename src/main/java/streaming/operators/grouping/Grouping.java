@@ -11,14 +11,14 @@ import org.apache.flink.util.Collector;
 import org.apache.flink.util.function.TriFunction;
 import streaming.model.Edge;
 import streaming.model.EdgeStream;
-import streaming.model.grouping.AggregationMapping;
-import streaming.model.grouping.GroupingInformation;
-import streaming.operators.AggregateMode;
-import streaming.operators.EdgeAggregationFunction;
-import streaming.operators.EdgeKeySelector;
-import streaming.operators.GraphElementAggregationFunctionI;
+import streaming.operators.grouping.model.AggregationMapping;
+import streaming.operators.grouping.model.GroupingInformation;
+import streaming.operators.grouping.functions.AggregateMode;
+import streaming.operators.grouping.functions.EdgeAggregationFunction;
+import streaming.operators.grouping.functions.EdgeKeySelector;
+import streaming.operators.grouping.functions.GraphElementAggregationFunctionI;
 import streaming.operators.OperatorI;
-import streaming.operators.VertexAggregationFunction;
+import streaming.operators.grouping.functions.VertexAggregationFunction;
 
 public class Grouping implements OperatorI {
 

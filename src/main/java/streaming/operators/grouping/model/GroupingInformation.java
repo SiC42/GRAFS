@@ -1,4 +1,4 @@
-package streaming.model.grouping;
+package streaming.operators.grouping.model;
 
 import java.io.Serializable;
 import java.util.HashSet;

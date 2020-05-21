@@ -1,10 +1,10 @@
-package streaming.operators;
+package streaming.operators.grouping.functions;
 
 import java.util.Collection;
 import org.apache.flink.api.java.functions.KeySelector;
 import streaming.model.Edge;
 import streaming.model.GraphElementInformation;
-import streaming.model.grouping.GroupingInformation;
+import streaming.operators.grouping.model.GroupingInformation;
 
 public class EdgeKeySelector implements KeySelector<Collection<Edge>, String> {
 

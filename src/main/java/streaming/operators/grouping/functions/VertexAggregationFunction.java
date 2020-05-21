@@ -1,4 +1,4 @@
-package streaming.operators;
+package streaming.operators.grouping.functions;
 
 import java.util.Collection;
 import java.util.function.BiFunction;
@@ -7,8 +7,8 @@ import org.apache.flink.util.Collector;
 import streaming.model.Edge;
 import streaming.model.GraphElementInformation;
 import streaming.model.Vertex;
-import streaming.model.grouping.AggregationMapping;
-import streaming.model.grouping.GroupingInformation;
+import streaming.operators.grouping.model.AggregationMapping;
+import streaming.operators.grouping.model.GroupingInformation;
 
 public class VertexAggregationFunction implements GraphElementAggregationFunctionI {
 

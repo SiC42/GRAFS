@@ -8,7 +8,9 @@ import java.util.Set;
 import org.junit.jupiter.api.Test;
 import streaming.helper.AsciiGraphLoader;
 import streaming.model.Edge;
-import streaming.model.grouping.GroupingInformation;
+import streaming.operators.grouping.model.GroupingInformation;
+import streaming.operators.grouping.functions.AggregateMode;
+import streaming.operators.grouping.functions.EdgeKeySelector;
 
 class EdgeKeySelectorTest {
 

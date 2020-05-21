@@ -1,13 +1,13 @@
-package streaming.operators;
+package streaming.operators.grouping.functions;
 
 import java.util.Collection;
 import java.util.Map;
 import org.apache.flink.api.common.functions.FlatMapFunction;
 import streaming.model.Edge;
 import streaming.model.GraphElementInformation;
-import streaming.model.grouping.AggregationMapping;
-import streaming.model.grouping.GroupingInformation;
-import streaming.model.grouping.PropertiesAggregationFunction;
+import streaming.operators.grouping.model.AggregationMapping;
+import streaming.operators.grouping.model.GroupingInformation;
+import streaming.operators.grouping.model.PropertiesAggregationFunction;
 
 public interface GraphElementAggregationFunctionI extends FlatMapFunction<Collection<Edge>, Edge> {
 
