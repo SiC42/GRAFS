@@ -20,7 +20,10 @@ import streaming.operators.AggregateMode;
 import streaming.operators.EdgeAggregationFunction;
 import streaming.operators.EdgeKeySelector;
 import streaming.operators.GraphElementAggregationFunctionI;
+import streaming.operators.OperatorI;
 import streaming.operators.VertexAggregationFunction;
+import streaming.operators.subgraph.Subgraph;
+import streaming.operators.subgraph.Subgraph.Strategy;
 
 public class EdgeStream {
 
@@ -33,7 +36,7 @@ public class EdgeStream {
       return singleSet;
     }
   };
-  
+
   private DataStream<Edge> edgeStream;
 
   public EdgeStream(DataStream<Edge> edgeStream) {
@@ -47,23 +50,22 @@ public class EdgeStream {
     );
   }
 
+  public EdgeStream callForGraph(OperatorI operator) {
+    return operator.execute(edgeStream);
+  }
+
   public EdgeStream vertexInducedSubgraph(
       FilterFunction<GraphElementInformation> vertexGeiPredicate) {
-    FilterFunction<Edge> edgePredicate = edge ->
-        vertexGeiPredicate.filter(edge.getSource().getGei()) && vertexGeiPredicate
-            .filter(edge.getTarget().getGei());
-
-    return subgraph(edgePredicate);
+    return callForGraph(new Subgraph(vertexGeiPredicate, null, Strategy.VERTEX_INDUCED));
   }
 
   public EdgeStream edgeInducedSubgraph(FilterFunction<GraphElementInformation> edgeGeiPredicate) {
-    FilterFunction<Edge> edgePredicate = edge -> edgeGeiPredicate.filter(edge.getGei());
-    return subgraph(edgePredicate);
+    return callForGraph(new Subgraph(null, edgeGeiPredicate, Strategy.EDGE_INDUCED));
   }
 
-  public EdgeStream subgraph(FilterFunction<Edge> vertexPredicate) {
-    DataStream<Edge> filteredStream = edgeStream.filter(vertexPredicate);
-    return new EdgeStream(filteredStream);
+  public EdgeStream subgraph(FilterFunction<GraphElementInformation> vertexGeiPredicate,
+      FilterFunction<GraphElementInformation> edgeGeiPredicate) {
+    return callForGraph(new Subgraph(vertexGeiPredicate, edgeGeiPredicate, Strategy.BOTH));
   }
 
   public EdgeStream groupBy(ElementGroupingInformation vertexEgi,
