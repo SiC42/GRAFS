@@ -6,6 +6,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import streaming.operators.grouping.functions.PropertiesAggregationFunction;
 
 public class AggregationMapping implements Serializable {
 

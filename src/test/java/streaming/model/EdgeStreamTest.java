@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 import streaming.helper.AsciiGraphLoader;
 import streaming.operators.grouping.model.AggregationMapping;
 import streaming.operators.grouping.model.GroupingInformation;
-import streaming.operators.grouping.model.PropertiesAggregationFunction;
+import streaming.operators.grouping.functions.PropertiesAggregationFunction;
 
 class EdgeStreamTest {
 

@@ -11,7 +11,7 @@ import streaming.helper.AsciiGraphLoader;
 import streaming.model.Edge;
 import streaming.operators.grouping.model.AggregationMapping;
 import streaming.operators.grouping.model.GroupingInformation;
-import streaming.operators.grouping.model.PropertiesAggregationFunction;
+import streaming.operators.grouping.functions.PropertiesAggregationFunction;
 import streaming.operators.grouping.functions.AggregateMode;
 import streaming.operators.grouping.functions.VertexAggregationFunction;
 
