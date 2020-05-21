@@ -4,15 +4,15 @@ import java.util.Collection;
 import org.apache.flink.api.java.functions.KeySelector;
 import streaming.model.Edge;
 import streaming.model.GraphElementInformation;
-import streaming.model.grouping.ElementGroupingInformation;
+import streaming.model.grouping.GroupingInformation;
 
 public class EdgeKeySelector implements KeySelector<Collection<Edge>, String> {
 
-  private ElementGroupingInformation vertexEgi;
-  private ElementGroupingInformation edgeEgi;
+  private GroupingInformation vertexEgi;
+  private GroupingInformation edgeEgi;
   private AggregateMode makeKeyFor;
 
-  public EdgeKeySelector(ElementGroupingInformation vertexEgi, ElementGroupingInformation edgeEgi,
+  public EdgeKeySelector(GroupingInformation vertexEgi, GroupingInformation edgeEgi,
       AggregateMode makeKeyFor) {
     this.vertexEgi = vertexEgi;
     this.edgeEgi = edgeEgi;
@@ -36,7 +36,7 @@ public class EdgeKeySelector implements KeySelector<Collection<Edge>, String> {
 
 
   private String generateKeyForSingleVertex(GraphElementInformation vertexGei,
-      ElementGroupingInformation vertexEgi) {
+      GroupingInformation vertexEgi) {
     StringBuilder sb = new StringBuilder();
 
     // Build Key based on Vertex Information
@@ -45,8 +45,8 @@ public class EdgeKeySelector implements KeySelector<Collection<Edge>, String> {
     return sb.toString();
   }
 
-  private String generateKeyForEdge(Edge edge, ElementGroupingInformation vertexEgi,
-      ElementGroupingInformation edgeEgi) {
+  private String generateKeyForEdge(Edge edge, GroupingInformation vertexEgi,
+      GroupingInformation edgeEgi) {
     StringBuilder sb = new StringBuilder();
 
     // Build Key based on Source Vertex Information
@@ -64,12 +64,12 @@ public class EdgeKeySelector implements KeySelector<Collection<Edge>, String> {
   }
 
   private StringBuilder keyStringBuilder(StringBuilder sb, GraphElementInformation
-      gei, ElementGroupingInformation egi, String elementStr) {
+      gei, GroupingInformation egi, String elementStr) {
     sb.append(elementStr).append("-Grouping-Information:(");
-    if (egi.shouldGroupByLabel) {
+    if (egi.useLabel) {
       sb.append(String.format("label:%s ", gei.getLabel()));
     }
-    if (egi.shouldGroupByMembership) {
+    if (egi.useMembership) {
       sb.append(String.format("membership:%d ", gei.getMembership()));
     }
     if (!egi.groupingKeys.isEmpty()) {
