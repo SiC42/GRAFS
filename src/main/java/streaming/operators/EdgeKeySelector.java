@@ -70,7 +70,7 @@ public class EdgeKeySelector implements KeySelector<Collection<Edge>, String> {
       sb.append(String.format("label:%s ", gei.getLabel()));
     }
     if (egi.shouldGroupByMembership) {
-      sb.append(String.format("membership:%s ", gei.getMemberships().toString()));
+      sb.append(String.format("membership:%d ", gei.getMembership()));
     }
     if (!egi.groupingKeys.isEmpty()) {
       sb.append("properties:{");

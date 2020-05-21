@@ -38,7 +38,7 @@ public class Edge {
     this.source = new Vertex(toStr);
     this.gei = new GraphElementInformation();
     gei.addProperty("id", contentStr);
-    gei.addMembership(0L);
+    gei.setMembership(0L);
   }
 
   public Edge(org.s1ck.gdl.model.Edge gdlEdge, org.s1ck.gdl.model.Vertex gdlSourceV,
@@ -49,9 +49,10 @@ public class Edge {
     for (Map.Entry<String, Object> prop : gdlEdge.getProperties().entrySet()) {
       properties.put(prop.getKey(), prop.getValue().toString());
     }
-    Set<Long> memberships = gdlEdge.getGraphs();
     String label = gdlEdge.getLabel();
-    this.gei = new GraphElementInformation(label, properties, memberships);
+
+    // TODO: Setting membership to zero is a workaround for now
+    this.gei = new GraphElementInformation(label, properties, 0);
   }
 
 

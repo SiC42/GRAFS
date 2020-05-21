@@ -10,26 +10,25 @@ public class GraphElementInformation {
 
   private String label;
   private Map<String, String> properties;
-  private Set<Long> memberships;
+  private long membership;
 
   public GraphElementInformation() {
     label = "";
     this.properties = new HashMap<>();
-    this.memberships = new HashSet<>();
+    this.membership = -1;
   }
 
 
   public GraphElementInformation(String label, Map<String, String> properties,
-      Set<Long> memberships) {
+      long membership) {
     this.label = label;
     this.properties = properties;
-    this.memberships = memberships;
+    this.membership = membership;
   }
 
   public GraphElementInformation(String fromStr, String toStr, String contentStr) {
     this();
     properties.put("id", contentStr);
-    memberships.add(0L);
   }
 
   public String getLabel() {
@@ -57,23 +56,19 @@ public class GraphElementInformation {
     return properties;
   }
 
-  public Set<Long> getMemberships() {
-    return memberships;
+  public long getMembership() {
+    return membership;
   }
 
-  public void addMembership(Long membership) {
-    this.memberships.add(membership);
-  }
-
-  public void removeMembership(String membership) {
-    this.memberships.remove(membership);
+  public void setMembership(long membership) {
+    this.membership = membership;
   }
 
 
   @Override
   public String toString() {
-    return String.format("%s properties=%s memberships=%s",
-        label, properties, memberships);
+    return String.format("%s properties=%s membership=%d",
+        label, properties, membership);
   }
 
   @Override
@@ -86,12 +81,12 @@ public class GraphElementInformation {
     }
     GraphElementInformation edge = (GraphElementInformation) o;
     return Objects.equals(properties, edge.properties) &&
-        Objects.equals(memberships, edge.memberships) &&
+        Objects.equals(membership, edge.membership) &&
         Objects.equals(label, edge.label);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(properties, memberships, label);
+    return Objects.hash(properties, membership, label);
   }
 }
