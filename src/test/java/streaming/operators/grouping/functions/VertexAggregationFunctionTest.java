@@ -1,4 +1,4 @@
-package streaming.operators;
+package streaming.operators.grouping.functions;
 
 import static org.mockito.Mockito.mock;
 
