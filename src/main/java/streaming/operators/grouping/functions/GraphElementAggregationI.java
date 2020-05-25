@@ -8,7 +8,7 @@ import streaming.model.GraphElementInformation;
 import streaming.operators.grouping.model.AggregationMapping;
 import streaming.operators.grouping.model.GroupingInformation;
 
-public interface GraphElementAggregationFunctionI extends FlatMapFunction<Collection<Edge>, Edge> {
+public interface GraphElementAggregationI extends FlatMapFunction<Collection<Edge>, Edge> {
 
 
   default void aggregateGei(AggregationMapping aggregationMapping,

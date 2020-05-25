@@ -10,13 +10,13 @@ import streaming.model.Vertex;
 import streaming.operators.grouping.model.AggregationMapping;
 import streaming.operators.grouping.model.GroupingInformation;
 
-public class VertexAggregationFunction implements GraphElementAggregationFunctionI {
+public class VertexAggregation implements GraphElementAggregationI {
 
   private final GroupingInformation vertexEgi;
   private final AggregationMapping aggregationMapping;
   private final AggregateMode aggregateMode;
 
-  public VertexAggregationFunction(GroupingInformation vertexEgi,
+  public VertexAggregation(GroupingInformation vertexEgi,
       AggregationMapping aggregationMapping, AggregateMode aggregateMode) {
     this.vertexEgi = vertexEgi;
     this.aggregationMapping = aggregationMapping;

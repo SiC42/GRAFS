@@ -14,11 +14,11 @@ import streaming.model.EdgeStream;
 import streaming.operators.grouping.model.AggregationMapping;
 import streaming.operators.grouping.model.GroupingInformation;
 import streaming.operators.grouping.functions.AggregateMode;
-import streaming.operators.grouping.functions.EdgeAggregationFunction;
+import streaming.operators.grouping.functions.EdgeAggregation;
 import streaming.operators.grouping.functions.EdgeKeySelector;
-import streaming.operators.grouping.functions.GraphElementAggregationFunctionI;
+import streaming.operators.grouping.functions.GraphElementAggregationI;
 import streaming.operators.OperatorI;
-import streaming.operators.grouping.functions.VertexAggregationFunction;
+import streaming.operators.grouping.functions.VertexAggregation;
 
 public class Grouping implements OperatorI {
 
@@ -58,10 +58,10 @@ public class Grouping implements OperatorI {
       eColl1.addAll(eColl2);
       return eColl1;
     };
-    TriFunction<DataStream<Edge>, AggregateMode, GraphElementAggregationFunctionI, DataStream<Edge>> applyAggregation =
+    TriFunction<DataStream<Edge>, AggregateMode, GraphElementAggregationI, DataStream<Edge>> applyAggregation =
         (DataStream<Edge> stream,
             AggregateMode aggregateMode,
-            GraphElementAggregationFunctionI aggregationFunction) ->
+            GraphElementAggregationI aggregationFunction) ->
             stream
                 .map(edgeToSingleSetFunction)
                 .keyBy(new EdgeKeySelector(vertexEgi, edgeEgi, aggregateMode))
@@ -72,7 +72,7 @@ public class Grouping implements OperatorI {
     DataStream<Edge> aggregatedOnEdgeStream = applyAggregation.apply(
         es,
         AggregateMode.EDGE,
-        new EdgeAggregationFunction(vertexEgi, vertexAggregationFunctions, edgeEgi,
+        new EdgeAggregation(vertexEgi, vertexAggregationFunctions, edgeEgi,
             edgeAggregationFunctions));
 
     // Enrich stream with reverse edges
@@ -89,13 +89,13 @@ public class Grouping implements OperatorI {
     DataStream<Edge> aggregatedOnSourceStream = applyAggregation.apply(
         expandedEdgeStream,
         vertexAggregateMode,
-        new VertexAggregationFunction(vertexEgi, vertexAggregationFunctions, vertexAggregateMode));
+        new VertexAggregation(vertexEgi, vertexAggregationFunctions, vertexAggregateMode));
 
     vertexAggregateMode = AggregateMode.TARGET;
     DataStream<Edge> finalAggregatedStream = applyAggregation.apply(
         aggregatedOnSourceStream,
         vertexAggregateMode,
-        new VertexAggregationFunction(vertexEgi, vertexAggregationFunctions, vertexAggregateMode))
+        new VertexAggregation(vertexEgi, vertexAggregationFunctions, vertexAggregateMode))
         .filter(e -> !e.isReverse());
 
     return new EdgeStream(finalAggregatedStream);

@@ -11,11 +11,8 @@ import streaming.helper.AsciiGraphLoader;
 import streaming.model.Edge;
 import streaming.operators.grouping.model.AggregationMapping;
 import streaming.operators.grouping.model.GroupingInformation;
-import streaming.operators.grouping.functions.PropertiesAggregationFunction;
-import streaming.operators.grouping.functions.AggregateMode;
-import streaming.operators.grouping.functions.VertexAggregationFunction;
 
-class VertexAggregationFunctionTest {
+class VertexAggregationTest {
 
   @Test
   void flatMap() {
@@ -25,7 +22,7 @@ class VertexAggregationFunctionTest {
     am.addAggregation("a", new PropertiesAggregationFunction("0", (String pV1, String pV2) -> String
         .valueOf(Double.parseDouble(pV1) + Double.parseDouble(pV2))));
 
-    VertexAggregationFunction incrementer = new VertexAggregationFunction(egi, am,
+    VertexAggregation incrementer = new VertexAggregation(egi, am,
         AggregateMode.SOURCE);
 
     Collector<Edge> collector = mock(Collector.class);
