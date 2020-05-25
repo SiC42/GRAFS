@@ -8,9 +8,9 @@ import streaming.operators.grouping.model.GroupingInformation;
 
 public class EdgeKeySelector implements KeySelector<Collection<Edge>, String> {
 
-  private GroupingInformation vertexEgi;
-  private GroupingInformation edgeEgi;
-  private AggregateMode makeKeyFor;
+  private final GroupingInformation vertexEgi;
+  private final GroupingInformation edgeEgi;
+  private final AggregateMode makeKeyFor;
 
   public EdgeKeySelector(GroupingInformation vertexEgi, GroupingInformation edgeEgi,
       AggregateMode makeKeyFor) {
