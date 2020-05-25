@@ -11,10 +11,10 @@ import streaming.operators.grouping.model.GroupingInformation;
 public class EdgeAggregationFunction implements GraphElementAggregationFunctionI {
 
 
-  private GroupingInformation vertexEgi;
-  private AggregationMapping vertexAggregationMapping;
-  private GroupingInformation edgeEgi;
-  private AggregationMapping edgeAggregationMapping;
+  private final GroupingInformation vertexEgi;
+  private final AggregationMapping vertexAggregationMapping;
+  private final GroupingInformation edgeEgi;
+  private final AggregationMapping edgeAggregationMapping;
 
   public EdgeAggregationFunction(GroupingInformation vertexEgi,
       AggregationMapping vertexAggregationMapping, GroupingInformation edgeEgi,

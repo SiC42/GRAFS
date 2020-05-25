@@ -12,9 +12,9 @@ import streaming.operators.grouping.model.GroupingInformation;
 
 public class VertexAggregationFunction implements GraphElementAggregationFunctionI {
 
-  private GroupingInformation vertexEgi;
-  private AggregationMapping aggregationMapping;
-  private AggregateMode aggregateMode;
+  private final GroupingInformation vertexEgi;
+  private final AggregationMapping aggregationMapping;
+  private final AggregateMode aggregateMode;
 
   public VertexAggregationFunction(GroupingInformation vertexEgi,
       AggregationMapping aggregationMapping, AggregateMode aggregateMode) {
