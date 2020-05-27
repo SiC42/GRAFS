@@ -3,14 +3,15 @@ package streaming.operators.subgraph;
 import org.apache.flink.api.common.functions.FilterFunction;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import streaming.model.Edge;
-import streaming.model.EdgeStream;
-import streaming.model.GraphElementInformation;
+import streaming.model.EdgeContainer;
+import streaming.model.Element;
+import streaming.model.Vertex;
 import streaming.operators.OperatorI;
 
 public class Subgraph implements OperatorI {
 
-  private final FilterFunction<GraphElementInformation> vertexGeiPredicate;
-  private final FilterFunction<GraphElementInformation> edgeGeiPredicate;
+  private final FilterFunction<Vertex> vertexGeiPredicate;
+  private final FilterFunction<Edge> edgeGeiPredicate;
   private final Strategy strategy;
 
 
@@ -35,8 +36,8 @@ public class Subgraph implements OperatorI {
   }
 
   public Subgraph(
-      final FilterFunction<GraphElementInformation> vertexGeiPredicate,
-      final FilterFunction<GraphElementInformation> edgeGeiPredicate,
+      final FilterFunction<Vertex> vertexGeiPredicate,
+      final FilterFunction<Edge> edgeGeiPredicate,
       final Strategy strategy) {
     if (strategy == Strategy.BOTH &&
         (vertexGeiPredicate == null || edgeGeiPredicate == null)) {
@@ -59,36 +60,29 @@ public class Subgraph implements OperatorI {
   }
 
 
-  private DataStream<Edge> vertexInducedSubgraph(DataStream<Edge> es) {
-    FilterFunction<Edge> edgeFilter = edge ->
-        vertexGeiPredicate.filter(edge.getSource().getGei()) && vertexGeiPredicate
-            .filter(edge.getTarget().getGei());
-
-    return applyFilterToStream(es, edgeFilter);
+  private DataStream<EdgeContainer> vertexInducedSubgraph(DataStream<EdgeContainer> es) {
+    FilterFunction<EdgeContainer> edgeFilter = ec ->
+        vertexGeiPredicate.filter(ec.getSourceVertex()) && vertexGeiPredicate
+            .filter(ec.getTargetVertex());
+    return es.filter(edgeFilter);
   }
 
-  private DataStream<Edge> edgeInducedSubgraph(DataStream<Edge> es) {
-    FilterFunction<Edge> edgeFilter = edge -> edgeGeiPredicate.filter(edge.getGei());
-    return applyFilterToStream(es, edgeFilter);
+  private DataStream<EdgeContainer> edgeInducedSubgraph(DataStream<EdgeContainer> es) {
+    FilterFunction<EdgeContainer> edgeFilter = edge -> edgeGeiPredicate.filter(edge.getEdge());
+    return es.filter(edgeFilter);
   }
 
-  private DataStream<Edge> subgraph(DataStream<Edge> es) {
-    FilterFunction<Edge> edgeFilter = edge ->
-        edgeGeiPredicate.filter(edge.getGei()) &&
-        vertexGeiPredicate.filter(edge.getSource().getGei()) &&
-        vertexGeiPredicate.filter(edge.getTarget().getGei());
-    return applyFilterToStream(es, edgeFilter);
-  }
-
-  private DataStream<Edge> applyFilterToStream(DataStream<Edge> es,
-      FilterFunction<Edge> edgeFilter) {
-    DataStream<Edge> filteredStream = es.filter(edgeFilter);
-    return filteredStream;
+  private DataStream<EdgeContainer> subgraph(DataStream<EdgeContainer> es) {
+    FilterFunction<EdgeContainer> filter = ec ->
+        edgeGeiPredicate.filter(ec.getEdge()) &&
+        vertexGeiPredicate.filter(ec.getSourceVertex()) &&
+        vertexGeiPredicate.filter(ec.getTargetVertex());
+    return es.filter(filter);
   }
 
   @Override
-  public DataStream<Edge> execute(DataStream<Edge> stream) {
-    DataStream<Edge> filteredStream;
+  public DataStream<EdgeContainer> execute(DataStream<EdgeContainer> stream) {
+    DataStream<EdgeContainer> filteredStream;
     switch (strategy) {
       case BOTH:
         filteredStream = subgraph(stream);
