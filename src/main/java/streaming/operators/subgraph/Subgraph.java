@@ -35,9 +35,9 @@ public class Subgraph implements OperatorI {
   }
 
   public Subgraph(
-      FilterFunction<GraphElementInformation> vertexGeiPredicate,
-      FilterFunction<GraphElementInformation> edgeGeiPredicate,
-      Strategy strategy) {
+      final FilterFunction<GraphElementInformation> vertexGeiPredicate,
+      final FilterFunction<GraphElementInformation> edgeGeiPredicate,
+      final Strategy strategy) {
     if (strategy == Strategy.BOTH &&
         (vertexGeiPredicate == null || edgeGeiPredicate == null)) {
       throw new IllegalArgumentException("No vertex or no edge filter function was given.");

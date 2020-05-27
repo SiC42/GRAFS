@@ -11,8 +11,7 @@ public class VertexTransformation implements OperatorI {
 
   private final MapFunction<Vertex, Vertex> mapper;
 
-  public VertexTransformation(
-      MapFunction<Vertex, Vertex> mapper) {
+  public VertexTransformation(final MapFunction<Vertex, Vertex> mapper) {
     this.mapper = mapper;
   }
 

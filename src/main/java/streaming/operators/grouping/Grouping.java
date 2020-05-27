@@ -36,10 +36,10 @@ public class Grouping implements OperatorI {
   private final GroupingInformation edgeEgi;
   private final AggregationMapping edgeAggregationFunctions;
 
-  public Grouping(GroupingInformation vertexEgi,
-      AggregationMapping vertexAggregationFunctions,
-      GroupingInformation edgeEgi,
-      AggregationMapping edgeAggregationFunctions) {
+  public Grouping(final GroupingInformation vertexEgi,
+      final AggregationMapping vertexAggregationFunctions,
+      final GroupingInformation edgeEgi,
+      final AggregationMapping edgeAggregationFunctions) {
     this.vertexEgi = vertexEgi;
     this.vertexAggregationFunctions = vertexAggregationFunctions;
     this.edgeEgi = edgeEgi;

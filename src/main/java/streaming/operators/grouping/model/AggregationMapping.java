@@ -16,7 +16,7 @@ public class AggregationMapping implements Serializable {
     aggregationMap = new HashMap<>();
   }
 
-  public void addAggregation(String key, PropertiesAggregationFunction accumulator) {
+  public void addAggregation(String key, final PropertiesAggregationFunction accumulator) {
     PropertiesAggregationFunction aF = accumulator;
     aggregationMap.put(key, aF);
   }
