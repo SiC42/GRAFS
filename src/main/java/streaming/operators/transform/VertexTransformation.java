@@ -18,11 +18,11 @@ public class VertexTransformation implements OperatorI {
 
 
   @Override
-  public EdgeStream execute(DataStream<Edge> stream) {
+  public DataStream<Edge> execute(DataStream<Edge> stream) {
     return transform(stream);
   }
 
-  public EdgeStream transform(DataStream<Edge> stream) {
+  public DataStream<Edge> transform(DataStream<Edge> stream) {
     MapFunction<Edge, Edge> transformVerticesFunction =
         edge -> {
           Vertex from = mapper.map(edge.getSource());

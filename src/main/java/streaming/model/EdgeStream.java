@@ -32,7 +32,8 @@ public class EdgeStream {
   }
 
   public EdgeStream callForGraph(OperatorI operator) {
-    return operator.execute(edgeStream);
+    DataStream<Edge> result = operator.execute(edgeStream);
+    return new EdgeStream(result);
   }
 
   public EdgeStream vertexInducedSubgraph(

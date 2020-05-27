@@ -47,11 +47,11 @@ public class Grouping implements OperatorI {
   }
 
   @Override
-  public EdgeStream execute(DataStream<Edge> stream) {
+  public DataStream<Edge> execute(DataStream<Edge> stream) {
     return groupBy(stream);
   }
 
-  public EdgeStream groupBy(DataStream<Edge> es) {
+  public DataStream<Edge> groupBy(DataStream<Edge> es) {
     // TODO: Make sure that keys in egi has no intersection with keys in mapping
 
     ReduceFunction<Collection<Edge>> mergeCollection = (eColl1, eColl2) -> {
@@ -98,6 +98,6 @@ public class Grouping implements OperatorI {
         new VertexAggregation(vertexEgi, vertexAggregationFunctions, vertexAggregateMode))
         .filter(e -> !e.isReverse());
 
-    return new EdgeStream(finalAggregatedStream);
+    return finalAggregatedStream;
   }
 }

@@ -87,7 +87,7 @@ public class Subgraph implements OperatorI {
   }
 
   @Override
-  public EdgeStream execute(DataStream<Edge> stream) {
+  public DataStream<Edge> execute(DataStream<Edge> stream) {
     DataStream<Edge> filteredStream;
     switch (strategy) {
       case BOTH:
@@ -102,7 +102,7 @@ public class Subgraph implements OperatorI {
       default:
         throw new IllegalArgumentException("Strategy " + strategy + " is not supported");
     }
-    return new EdgeStream(filteredStream);
+    return filteredStream;
   }
 
 }

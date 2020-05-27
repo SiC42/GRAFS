@@ -17,12 +17,12 @@ public class EdgeTransformation implements OperatorI {
 
 
   @Override
-  public EdgeStream execute(DataStream<Edge> stream) {
+  public DataStream<Edge> execute(DataStream<Edge> stream) {
     return transform(stream);
   }
 
-  private EdgeStream transform(DataStream<Edge> stream) {
+  private DataStream<Edge> transform(DataStream<Edge> stream) {
     DataStream<Edge> filteredStream = stream.map(mapper);
-    return new EdgeStream(filteredStream);
+    return filteredStream;
   }
 }
