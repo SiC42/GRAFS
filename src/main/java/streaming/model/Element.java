@@ -1,35 +1,36 @@
 package streaming.model;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import org.gradoop.common.model.impl.id.GradoopId;
+import org.gradoop.common.model.impl.id.GradoopIdSet;
 
-public class GraphElementInformation {
+public class Element implements Serializable {
 
+  private final GradoopId id;
   private String label;
   private Map<String, String> properties;
-  private Set<Long> memberships;
 
-  public GraphElementInformation() {
-    label = "";
-    this.properties = new HashMap<>();
-    this.memberships = new HashSet<>();
+  public Element() {
+    this(GradoopId.get(), "", new HashMap<>());
   }
 
 
-  public GraphElementInformation(String label, Map<String, String> properties,
-      Set<Long> memberships) {
+  public Element(GradoopId id, String label, Map<String, String> properties) {
+    this.id = id;
     this.label = label;
-    this.properties = properties;
-    this.memberships = memberships;
+    this.properties.putAll(properties);
   }
 
-  public GraphElementInformation(String fromStr, String toStr, String contentStr) {
-    this();
-    properties.put("id", contentStr);
-    memberships.add(0L);
+
+  public Element(Element otherElement) {
+    this.id = otherElement.getId();
+    this.label = otherElement.getLabel();
+    this.properties = otherElement.getProperties();
   }
 
   public String getLabel() {
@@ -57,23 +58,11 @@ public class GraphElementInformation {
     return properties;
   }
 
-  public Set<Long> getMemberships() {
-    return memberships;
-  }
-
-  public void addMembership(Long membership) {
-    this.memberships.add(membership);
-  }
-
-  public void removeMembership(String membership) {
-    this.memberships.remove(membership);
-  }
-
 
   @Override
   public String toString() {
     return String.format("%s properties=%s memberships=%s",
-        label, properties, memberships);
+        label, properties);
   }
 
   @Override
@@ -84,14 +73,17 @@ public class GraphElementInformation {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    GraphElementInformation edge = (GraphElementInformation) o;
+    Element edge = (Element) o;
     return Objects.equals(properties, edge.properties) &&
-        Objects.equals(memberships, edge.memberships) &&
         Objects.equals(label, edge.label);
+  }
+
+  public GradoopId getId(){
+    return id;
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(properties, memberships, label);
+    return Objects.hash(properties, label);
   }
 }

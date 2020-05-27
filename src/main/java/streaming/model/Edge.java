@@ -4,79 +4,62 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import org.gradoop.common.model.impl.id.GradoopId;
+import org.gradoop.common.model.impl.id.GradoopIdSet;
 
-public class Edge {
+public class Edge extends GraphElement {
 
-  private Vertex source;
-  private Vertex target;
-
-  private GraphElementInformation gei;
-
+  private GradoopId sourceId;
+  private GradoopId targetId;
   private boolean reverse;
 
   public Edge() {
-    this.source = new Vertex();
-    this.target = new Vertex();
-    this.gei = new GraphElementInformation();
+    this.sourceId = null;
+    this.targetId = null;
+    this.reverse = false;
   }
 
   public Edge(Edge otherEdge) {
-    source = otherEdge.getSource();
-    target = otherEdge.getTarget();
-    gei = otherEdge.getGei();
+    super(otherEdge);
+    sourceId = otherEdge.getSourceId();
+    targetId = otherEdge.getTargetId();
   }
 
 
-  public Edge(Vertex source, Vertex target, GraphElementInformation gei) {
-    this.source = source;
-    this.target = target;
-    this.gei = gei;
-  }
-
-  public Edge(String fromStr, String toStr, String contentStr) {
-    this.source = new Vertex(fromStr);
-    this.source = new Vertex(toStr);
-    this.gei = new GraphElementInformation();
-    gei.addProperty("id", contentStr);
-    gei.addMembership(0L);
+  public Edge(GradoopId sourceId, GradoopId targetId) {
+    this.sourceId = sourceId;
+    this.targetId = targetId;
   }
 
   public Edge(org.s1ck.gdl.model.Edge gdlEdge, org.s1ck.gdl.model.Vertex gdlSourceV,
       org.s1ck.gdl.model.Vertex gdlTargetV) {
-    this.source = new Vertex(gdlSourceV);
-    this.target = new Vertex(gdlTargetV);
     HashMap<String, String> properties = new HashMap<>();
     for (Map.Entry<String, Object> prop : gdlEdge.getProperties().entrySet()) {
       properties.put(prop.getKey(), prop.getValue().toString());
     }
     Set<Long> memberships = gdlEdge.getGraphs();
     String label = gdlEdge.getLabel();
-    this.gei = new GraphElementInformation(label, properties, memberships);
   }
 
 
-  public Vertex getSource() {
-    return source;
+  public GradoopId getSourceId() {
+    return sourceId;
   }
 
-  public void setSource(Vertex newSource) {
-    source = newSource;
+  public void setSourceId(GradoopId newSource) {
+    sourceId = newSource;
   }
 
-  public Vertex getTarget() {
-    return target;
+  public GradoopId getTargetId() {
+    return targetId;
   }
 
-  public void setTarget(Vertex newTarget) {
-    target = newTarget;
+  public void setTargetId(GradoopId newTarget) {
+    targetId = newTarget;
   }
 
-  public GraphElementInformation getGei() {
-    return gei;
-  }
-
-  public void setGei(GraphElementInformation gei) {
-    this.gei = gei;
+  private void setReverse(boolean isReverse){
+    reverse = isReverse;
   }
 
   public boolean isReverse() {
@@ -84,15 +67,9 @@ public class Edge {
   }
 
   public Edge createReverseEdge() {
-    Edge reverseEdge = new Edge(this.getTarget(), this.getSource(), this.getGei());
-    reverseEdge.reverse = true;
+    Edge reverseEdge = new Edge(this.getTargetId(), this.getSourceId());
+    reverseEdge.setReverse(true);
     return reverseEdge;
-  }
-
-  @Override
-  public String toString() {
-    return String.format("%s--[%s reverse=%b]-->%s",
-        source, gei, reverse, target);
   }
 
   @Override
@@ -104,13 +81,19 @@ public class Edge {
       return false;
     }
     Edge edge = (Edge) o;
-    return Objects.equals(source, edge.source) &&
-        Objects.equals(target, edge.target) &&
-        Objects.equals(gei, edge.gei);
+    return Objects.equals(sourceId, edge.sourceId) &&
+        Objects.equals(targetId, edge.targetId);
+  }
+
+  @Override
+  public String toString() {
+    return String.format("[%s, reverse=%b]",
+        super.toString(),
+        reverse);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(source, target, gei);
+    return Objects.hash(getId());
   }
 }

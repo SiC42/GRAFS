@@ -18,13 +18,13 @@ import streaming.operators.transform.VertexTransformation;
 
 public class EdgeStream {
 
-  private DataStream<Edge> edgeStream;
+  private DataStream<EdgeContainer> edgeStream;
 
-  public EdgeStream(DataStream<Edge> edgeStream) {
+  public EdgeStream(DataStream<EdgeContainer> edgeStream) {
     this.edgeStream = edgeStream.assignTimestampsAndWatermarks(
-        new AscendingTimestampExtractor<Edge>() {
+        new AscendingTimestampExtractor<EdgeContainer>() {
           @Override
-          public long extractAscendingTimestamp(Edge edge) { // TODO: timestamp define
+          public long extractAscendingTimestamp(EdgeContainer edge) {
             return 0;
           }
         }
@@ -32,21 +32,25 @@ public class EdgeStream {
   }
 
   public EdgeStream callForGraph(OperatorI operator) {
-    DataStream<Edge> result = operator.execute(edgeStream);
+    DataStream<EdgeContainer> result = operator.execute(edgeStream);
     return new EdgeStream(result);
   }
 
+  public WindowedGraphStream groupToWindowedGraphStream(){
+
+  }
+
   public EdgeStream vertexInducedSubgraph(
-      FilterFunction<GraphElementInformation> vertexGeiPredicate) {
+      FilterFunction<Element> vertexGeiPredicate) {
     return callForGraph(new Subgraph(vertexGeiPredicate, null, Strategy.VERTEX_INDUCED));
   }
 
-  public EdgeStream edgeInducedSubgraph(FilterFunction<GraphElementInformation> edgeGeiPredicate) {
+  public EdgeStream edgeInducedSubgraph(FilterFunction<Element> edgeGeiPredicate) {
     return callForGraph(new Subgraph(null, edgeGeiPredicate, Strategy.EDGE_INDUCED));
   }
 
-  public EdgeStream subgraph(FilterFunction<GraphElementInformation> vertexGeiPredicate,
-      FilterFunction<GraphElementInformation> edgeGeiPredicate) {
+  public EdgeStream subgraph(FilterFunction<Element> vertexGeiPredicate,
+      FilterFunction<Element> edgeGeiPredicate) {
     return callForGraph(new Subgraph(vertexGeiPredicate, edgeGeiPredicate, Strategy.BOTH));
   }
 
@@ -69,7 +73,7 @@ public class EdgeStream {
     edgeStream.print();
   }
 
-  public Iterator<Edge> collect() throws IOException {
+  public Iterator<EdgeContainer> collect() throws IOException {
     return DataStreamUtils.collect(edgeStream);
   }
 }
