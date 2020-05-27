@@ -27,10 +27,9 @@ public class Vertex {
     for (Map.Entry<String, Object> prop : gdlVertex.getProperties().entrySet()) {
       properties.put(prop.getKey(), prop.getValue().toString());
     }
+    Set<Long> memberships = gdlVertex.getGraphs();
     String label = gdlVertex.getLabel();
-
-    // TODO: Setting membership to zero is a workaround for now
-    this.gei = new GraphElementInformation(label, properties, 0);
+    this.gei = new GraphElementInformation(label, properties, memberships);
   }
 
   public GraphElementInformation getGei() {
