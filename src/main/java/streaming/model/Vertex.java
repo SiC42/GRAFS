@@ -33,15 +33,6 @@ public class Vertex extends GraphElement {
     super(id, label, properties, graphs);
   }
 
-  public Vertex(org.s1ck.gdl.model.Vertex gdlVertex) {
-    HashMap<String, String> properties = new HashMap<>();
-    for (Map.Entry<String, Object> prop : gdlVertex.getProperties().entrySet()) {
-      properties.put(prop.getKey(), prop.getValue().toString());
-    }
-    Set<Long> memberships = gdlVertex.getGraphs();
-    String label = gdlVertex.getLabel();
-  }
-
 
   @Override
   public String toString() {

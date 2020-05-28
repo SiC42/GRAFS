@@ -46,16 +46,6 @@ public class Edge extends GraphElement {
     this.targetId = targetId;
   }
 
-  public Edge(org.s1ck.gdl.model.Edge gdlEdge, org.s1ck.gdl.model.Vertex gdlSourceV,
-      org.s1ck.gdl.model.Vertex gdlTargetV) {
-    HashMap<String, String> properties = new HashMap<>();
-    for (Map.Entry<String, Object> prop : gdlEdge.getProperties().entrySet()) {
-      properties.put(prop.getKey(), prop.getValue().toString());
-    }
-    Set<Long> memberships = gdlEdge.getGraphs();
-    String label = gdlEdge.getLabel();
-  }
-
 
   public GradoopId getSourceId() {
     return sourceId;
@@ -73,7 +63,7 @@ public class Edge extends GraphElement {
     targetId = newTarget;
   }
 
-  private void setReverse(boolean isReverse){
+  private void setReverse(boolean isReverse) {
     reverse = isReverse;
   }
 
