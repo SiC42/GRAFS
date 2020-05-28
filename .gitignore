@@ -95,3 +95,4 @@ fabric.properties
 .idea/caches/build_file_checksums.ser
 target/classes/log4j.properties
 target/classes/META-INF/wiki-edits.kotlin_module
+.idea/saveactions_settings.xml
