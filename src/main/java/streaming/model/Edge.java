@@ -14,9 +14,7 @@ public class Edge extends GraphElement {
   private boolean reverse;
 
   public Edge() {
-    this.sourceId = null;
-    this.targetId = null;
-    this.reverse = false;
+    this(null, null);
   }
 
   public Edge(Edge otherEdge) {
@@ -25,8 +23,25 @@ public class Edge extends GraphElement {
     targetId = otherEdge.getTargetId();
   }
 
+  public Edge(Element element, GradoopId sourceId, GradoopId targetId) {
+    super(element);
+    this.sourceId = sourceId;
+    this.targetId = targetId;
+    this.reverse = false;
+  }
+
 
   public Edge(GradoopId sourceId, GradoopId targetId) {
+    super();
+    this.sourceId = sourceId;
+    this.targetId = targetId;
+    this.reverse = false;
+  }
+
+  public Edge(GradoopId id, String label, GradoopId sourceId, GradoopId targetId,
+      Map<String, String> properties,
+      GradoopIdSet graphIds) {
+    super(id, label, properties, graphIds);
     this.sourceId = sourceId;
     this.targetId = targetId;
   }
