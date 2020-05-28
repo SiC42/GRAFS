@@ -9,9 +9,9 @@ import streaming.operators.OperatorI;
 
 public class EdgeTransformation implements OperatorI {
 
-  private final MapFunction<GraphElement, GraphElement> mapper;
+  private final MapFunction<Edge, Edge> mapper;
 
-  public EdgeTransformation(final MapFunction<GraphElement, GraphElement> mapper) {
+  public EdgeTransformation(final MapFunction<Edge, Edge> mapper) {
     this.mapper = mapper;
   }
 
