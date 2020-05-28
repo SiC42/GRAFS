@@ -23,6 +23,7 @@ public class Element implements Serializable {
   public Element(GradoopId id, String label, Map<String, String> properties) {
     this.id = id;
     this.label = label;
+    this.properties = new HashMap<>();
     this.properties.putAll(properties);
   }
 
