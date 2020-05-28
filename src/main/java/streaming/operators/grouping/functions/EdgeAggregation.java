@@ -2,9 +2,8 @@ package streaming.operators.grouping.functions;
 
 import java.util.Collection;
 import org.apache.flink.util.Collector;
-import streaming.model.Edge;
-import streaming.model.GraphElementInformation;
-import streaming.model.Vertex;
+import streaming.model.EdgeContainer;
+import streaming.model.Element;
 import streaming.operators.grouping.model.AggregationMapping;
 import streaming.operators.grouping.model.GroupingInformation;
 
@@ -27,22 +26,21 @@ public class EdgeAggregation implements GraphElementAggregationI {
 
 
   @Override
-  public void flatMap(Collection<Edge> edgeSet, Collector<Edge> out) {
-    GraphElementInformation aggregatedSourceGei = new GraphElementInformation();
-    GraphElementInformation aggregatedTargetGei = new GraphElementInformation();
-    GraphElementInformation aggregatedEdgeGei = new GraphElementInformation();
+  public void flatMap(Collection<EdgeContainer> edgeSet, Collector<EdgeContainer> out) {
+    Element aggregatedSource = new Element();
+    Element aggregatedTarget = new Element();
+    Element aggregatedEdge = new Element();
 
-    for (Edge e : edgeSet) {
-      aggregateGei(vertexAggregationMapping, vertexEgi, aggregatedSourceGei,
-          e.getSource().getGei());
-      aggregateGei(vertexAggregationMapping, vertexEgi, aggregatedTargetGei,
-          e.getTarget().getGei());
-      aggregateGei(edgeAggregationMapping, edgeEgi, aggregatedEdgeGei, e.getGei());
+    for (EdgeContainer e : edgeSet) {
+      aggregateGei(vertexAggregationMapping, vertexEgi, aggregatedSource,
+          e.getSourceVertex());
+      aggregateGei(vertexAggregationMapping, vertexEgi, aggregatedTarget,
+          e.getTargetVertex());
+      aggregateGei(edgeAggregationMapping, edgeEgi, aggregatedEdge, e.getEdge());
     }
-    Vertex aggregatedSource = new Vertex(aggregatedSourceGei);
-    Vertex aggregatedTarget = new Vertex(aggregatedTargetGei);
-    Edge aggregatedEdge = new Edge(aggregatedSource, aggregatedTarget, aggregatedEdgeGei);
-    out.collect(aggregatedEdge);
+    EdgeContainer aggregatedEContainer = new EdgeContainer(aggregatedEdge, aggregatedSource,
+        aggregatedTarget);
+    out.collect(aggregatedEContainer);
 
   }
 

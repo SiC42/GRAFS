@@ -5,7 +5,8 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import org.apache.flink.util.Collector;
 import streaming.model.Edge;
-import streaming.model.GraphElementInformation;
+import streaming.model.EdgeContainer;
+import streaming.model.Element;
 import streaming.model.Vertex;
 import streaming.operators.grouping.model.AggregationMapping;
 import streaming.operators.grouping.model.GroupingInformation;
@@ -24,24 +25,25 @@ public class VertexAggregation implements GraphElementAggregationI {
   }
 
   @Override
-  public void flatMap(Collection<Edge> edgeSet, Collector<Edge> out) {
-    GraphElementInformation aggregatedGei = new GraphElementInformation();
-    Function<Edge, Vertex> getVertex =
-        aggregateMode.equals(AggregateMode.SOURCE) ? Edge::getSource : Edge::getTarget;
-    for (Edge e : edgeSet) {
-      GraphElementInformation vertexGei = getVertex.apply(e).getGei();
+  public void flatMap(Collection<EdgeContainer> edgeSet, Collector<EdgeContainer> out) {
+    Element aggregatedGei = new Element();
+    Function<EdgeContainer, Vertex> getVertexFunction =
+        aggregateMode.equals(AggregateMode.SOURCE) ? EdgeContainer::getSourceVertex
+            : EdgeContainer::getTargetVertex;
+    for (EdgeContainer ec : edgeSet) {
+      Element vertexGei = getVertexFunction.apply(ec);
       aggregateGei(aggregationMapping, vertexEgi, aggregatedGei, vertexGei);
     }
-    BiFunction<Vertex, Edge, Edge> generateNewEdge = aggregateMode.equals(AggregateMode.SOURCE)
-        ? (v, e) -> new Edge(v, e.getTarget(), e.getGei())
-        : (v, e) -> new Edge(e.getSource(), v, e.getGei());
-    for (Edge e : edgeSet) {
-      if (!e.isReverse()) {
+    BiFunction<Vertex, EdgeContainer, EdgeContainer> generateUpdatedECFunction = aggregateMode.equals(AggregateMode.SOURCE)
+        ? (v, ec) -> new EdgeContainer(ec.getEdge(), v, ec.getTargetVertex())
+        : (v, ec) -> new EdgeContainer(ec.getEdge(), ec.getSourceVertex(), v);
+    for (EdgeContainer ec : edgeSet) {
+      if (!ec.getEdge().isReverse()) {
         Vertex aggregatedVertex = new Vertex(aggregatedGei);
-        Edge aggregatedEdge = generateNewEdge.apply(aggregatedVertex, e);
+        EdgeContainer aggregatedEdge = generateUpdatedECFunction.apply(aggregatedVertex, ec);
         out.collect(aggregatedEdge);
       } else {
-        out.collect(e);
+        out.collect(ec);
       }
     }
   }
