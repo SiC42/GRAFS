@@ -5,7 +5,7 @@ import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.junit.jupiter.api.Test;
-import streaming.helper.AsciiGraphLoader;
+import streaming.util.AsciiGraphLoader;
 import streaming.operators.grouping.model.AggregationMapping;
 import streaming.operators.grouping.model.GroupingInformation;
 import streaming.operators.grouping.functions.PropertiesAggregationFunction;
@@ -20,7 +20,9 @@ class EdgeStreamTest {
   public EdgeStreamTest() {
     env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
 
-    Collection<Edge> edges = AsciiGraphLoader.loadFromString(
+    AsciiGraphLoader loader = new AsciiGraphLoader();
+
+    Collection<EdgeContainer> edges = loader.loadFromString(
         "(a18 {n : \"A\", a : \"18\"})," +
             "(a20 {n : \"A\", a : \"20\"})," +
             "(a25 {n : \"A\", a : \"25\"})," +
@@ -33,7 +35,7 @@ class EdgeStreamTest {
             "(c20)-[]->(b17)," +
             "(a20)-[]->(b19),"
     );
-    DataStream<Edge> m = env.fromCollection(edges);
+    DataStream<EdgeContainer> m = env.fromCollection(edges);
 
     edgeStream = new EdgeStream(m);
   }
