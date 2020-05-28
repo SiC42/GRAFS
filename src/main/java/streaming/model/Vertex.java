@@ -4,6 +4,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import org.gradoop.common.model.impl.id.GradoopId;
+import org.gradoop.common.model.impl.id.GradoopIdSet;
+import org.gradoop.common.model.impl.properties.Properties;
 
 public class Vertex extends GraphElement {
 
@@ -12,9 +15,22 @@ public class Vertex extends GraphElement {
     super();
   }
 
+  public Vertex(Element element){
+    super(element);
+  }
 
-  public Vertex(Element gei) {
-    super(gei);
+
+  /**
+   * Creates a vertex based on the given parameters.
+   *
+   * @param id         vertex identifier
+   * @param label      vertex label
+   * @param properties vertex properties
+   * @param graphs     graphs that vertex is contained in
+   */
+  public Vertex(final GradoopId id, final String label,
+      final Map<String, String> properties, final GradoopIdSet graphs) {
+    super(id, label, properties, graphs);
   }
 
   public Vertex(org.s1ck.gdl.model.Vertex gdlVertex) {
