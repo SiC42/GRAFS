@@ -21,7 +21,7 @@ public class GraphElement extends Element {
     super();
   }
 
-  protected GraphElement(GraphElement graphElement){
+  protected GraphElement(Element graphElement){
     super(graphElement);
   }
 
