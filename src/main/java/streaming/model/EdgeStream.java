@@ -36,21 +36,21 @@ public class EdgeStream {
     return new EdgeStream(result);
   }
 
-  public WindowedGraphStream groupToWindowedGraphStream(){
-
+  public WindowedGraphStream groupToWindowedGraphStream() {
+    return null;
   }
 
   public EdgeStream vertexInducedSubgraph(
-      FilterFunction<Element> vertexGeiPredicate) {
+      FilterFunction<Vertex> vertexGeiPredicate) {
     return callForGraph(new Subgraph(vertexGeiPredicate, null, Strategy.VERTEX_INDUCED));
   }
 
-  public EdgeStream edgeInducedSubgraph(FilterFunction<Element> edgeGeiPredicate) {
+  public EdgeStream edgeInducedSubgraph(FilterFunction<Edge> edgeGeiPredicate) {
     return callForGraph(new Subgraph(null, edgeGeiPredicate, Strategy.EDGE_INDUCED));
   }
 
-  public EdgeStream subgraph(FilterFunction<Element> vertexGeiPredicate,
-      FilterFunction<Element> edgeGeiPredicate) {
+  public EdgeStream subgraph(FilterFunction<Vertex> vertexGeiPredicate,
+      FilterFunction<Edge> edgeGeiPredicate) {
     return callForGraph(new Subgraph(vertexGeiPredicate, edgeGeiPredicate, Strategy.BOTH));
   }
 
