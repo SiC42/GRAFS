@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
-public class Vertex extends Element {
+public class Vertex extends GraphElement {
 
 
   public Vertex() {
