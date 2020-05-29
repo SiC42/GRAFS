@@ -11,13 +11,14 @@ import streaming.operators.grouping.model.GroupingInformation;
 
 public class VertexAggregation implements GraphElementAggregationI {
 
-  private final GroupingInformation vertexGroupingInformation;
+  private final GroupingInformation vertexGroupInfo;
   private final AggregationMapping aggregationMapping;
   private final AggregateMode aggregateMode;
 
-  public VertexAggregation(GroupingInformation vertexGroupingInformation,
+  public VertexAggregation(GroupingInformation vertexGroupInfo,
       AggregationMapping aggregationMapping, AggregateMode aggregateMode) {
-    this.vertexGroupingInformation = vertexGroupingInformation;
+    checkAggregationAndGroupingKeyIntersection(aggregationMapping, vertexGroupInfo);
+    this.vertexGroupInfo = vertexGroupInfo;
     this.aggregationMapping = aggregationMapping;
     this.aggregateMode = aggregateMode;
   }
@@ -33,7 +34,7 @@ public class VertexAggregation implements GraphElementAggregationI {
       } else {
         vertexElement = ec.getTargetVertex();
       }
-      aggregatedElement = aggregateElement(aggregationMapping, vertexGroupingInformation,
+      aggregatedElement = aggregateElement(aggregationMapping, vertexGroupInfo,
           aggregatedElement, vertexElement);
     }
     BiFunction<Vertex, EdgeContainer, EdgeContainer> generateUpdatedECFunction =

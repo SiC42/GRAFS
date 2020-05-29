@@ -10,17 +10,19 @@ import streaming.operators.grouping.model.GroupingInformation;
 public class EdgeAggregation implements GraphElementAggregationI {
 
 
-  private final GroupingInformation vertexEgi;
+  private final GroupingInformation vertexGroupInfo;
   private final AggregationMapping vertexAggregationMapping;
-  private final GroupingInformation edgeEgi;
+  private final GroupingInformation edgeGroupInfo;
   private final AggregationMapping edgeAggregationMapping;
 
-  public EdgeAggregation(GroupingInformation vertexEgi,
-      AggregationMapping vertexAggregationMapping, GroupingInformation edgeEgi,
+  public EdgeAggregation(GroupingInformation vertexGroupInfo,
+      AggregationMapping vertexAggregationMapping, GroupingInformation edgeGroupInfo,
       AggregationMapping edgeAggregationMapping) {
-    this.vertexEgi = vertexEgi;
+    checkAggregationAndGroupingKeyIntersection(vertexAggregationMapping, vertexGroupInfo);
+    checkAggregationAndGroupingKeyIntersection(edgeAggregationMapping, edgeGroupInfo);
+    this.vertexGroupInfo = vertexGroupInfo;
     this.vertexAggregationMapping = vertexAggregationMapping;
-    this.edgeEgi = edgeEgi;
+    this.edgeGroupInfo = edgeGroupInfo;
     this.edgeAggregationMapping = edgeAggregationMapping;
   }
 
@@ -33,11 +35,11 @@ public class EdgeAggregation implements GraphElementAggregationI {
     Element aggregatedEdge = new Element();
 
     for (EdgeContainer e : ecIterable) {
-      aggregateElement(vertexAggregationMapping, vertexEgi, aggregatedSource,
+      aggregateElement(vertexAggregationMapping, vertexGroupInfo, aggregatedSource,
           e.getSourceVertex());
-      aggregateElement(vertexAggregationMapping, vertexEgi, aggregatedTarget,
+      aggregateElement(vertexAggregationMapping, vertexGroupInfo, aggregatedTarget,
           e.getTargetVertex());
-      aggregateElement(edgeAggregationMapping, edgeEgi, aggregatedEdge, e.getEdge());
+      aggregateElement(edgeAggregationMapping, edgeGroupInfo, aggregatedEdge, e.getEdge());
     }
     EdgeContainer aggregatedEContainer = new EdgeContainer(aggregatedEdge, aggregatedSource,
         aggregatedTarget);
