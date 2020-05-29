@@ -19,8 +19,8 @@ public interface GraphElementAggregationI extends
       String key = property.getKey();
       if (elemGroupInfo.groupingKeys.contains(key)) {
         aggregatedElement.addProperty(key, property.getValue());
-      } else if (aggregationMapping.contains(key)) {
-        PropertiesAggregationFunction aF = aggregationMapping.get(key);
+      } else if (aggregationMapping.containsAggregationForProperty(key)) {
+        PropertiesAggregationFunction aF = aggregationMapping.getAggregationForProperty(key);
         String prevValue = aggregatedElement.containsProperty(key)
             ? aggregatedElement.getProperty(key)
             : aF.getIdentity();

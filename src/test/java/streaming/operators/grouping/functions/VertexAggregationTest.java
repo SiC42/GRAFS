@@ -7,11 +7,11 @@ import java.util.HashSet;
 import java.util.Set;
 import org.apache.flink.util.Collector;
 import org.junit.jupiter.api.Test;
-import streaming.model.EdgeContainer;
-import streaming.util.AsciiGraphLoader;
 import streaming.model.Edge;
+import streaming.model.EdgeContainer;
 import streaming.operators.grouping.model.AggregationMapping;
 import streaming.operators.grouping.model.GroupingInformation;
+import streaming.util.AsciiGraphLoader;
 
 class VertexAggregationTest {
 
@@ -20,8 +20,9 @@ class VertexAggregationTest {
     GroupingInformation egi = new GroupingInformation();
     egi.groupingKeys.add("n");
     AggregationMapping am = new AggregationMapping();
-    am.addAggregation("a", new PropertiesAggregationFunction("0", (String pV1, String pV2) -> String
-        .valueOf(Double.parseDouble(pV1) + Double.parseDouble(pV2))));
+    am.addAggregationForProperty("a",
+        new PropertiesAggregationFunction("0", (String pV1, String pV2) -> String
+            .valueOf(Double.parseDouble(pV1) + Double.parseDouble(pV2))));
 
     VertexAggregation incrementer = new VertexAggregation(egi, am,
         AggregateMode.SOURCE);

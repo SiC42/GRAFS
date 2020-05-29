@@ -5,10 +5,10 @@ import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.junit.jupiter.api.Test;
-import streaming.util.AsciiGraphLoader;
+import streaming.operators.grouping.functions.PropertiesAggregationFunction;
 import streaming.operators.grouping.model.AggregationMapping;
 import streaming.operators.grouping.model.GroupingInformation;
-import streaming.operators.grouping.functions.PropertiesAggregationFunction;
+import streaming.util.AsciiGraphLoader;
 
 class EdgeStreamTest {
 
@@ -45,8 +45,9 @@ class EdgeStreamTest {
     GroupingInformation vertexEgi = new GroupingInformation();
     vertexEgi.groupingKeys.add("n");
     AggregationMapping am = new AggregationMapping();
-    am.addAggregation("a", new PropertiesAggregationFunction("0", (String pV1, String pV2) -> String
-        .valueOf(Double.parseDouble(pV1) + Double.parseDouble(pV2))));
+    am.addAggregationForProperty("a",
+        new PropertiesAggregationFunction("0", (String pV1, String pV2) -> String
+            .valueOf(Double.parseDouble(pV1) + Double.parseDouble(pV2))));
     edgeStream.groupBy(vertexEgi, am, null, null).print();
     env.execute();
   }

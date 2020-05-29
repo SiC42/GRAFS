@@ -5,58 +5,73 @@ import java.io.ObjectStreamException;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
+import java.util.Optional;
+import org.gradoop.common.model.impl.id.GradoopIdSet;
 import streaming.operators.grouping.functions.PropertiesAggregationFunction;
+import streaming.operators.grouping.functions.SerializableBiFunction;
 
 public class AggregationMapping implements Serializable {
 
-  public HashMap<String, PropertiesAggregationFunction> aggregationMap;
+  private Map<String, PropertiesAggregationFunction> propertyMappingMap;
+  private MembershipAggregation membershipAggregation;
 
   public AggregationMapping() {
-    aggregationMap = new HashMap<>();
+    propertyMappingMap = new HashMap<>();
+    membershipAggregation = null;
   }
 
-  public void addAggregation(String key, final PropertiesAggregationFunction accumulator) {
+  public void addAggregationForProperty(String key,
+      final PropertiesAggregationFunction accumulator) {
     PropertiesAggregationFunction aF = accumulator;
-    aggregationMap.put(key, aF);
+    propertyMappingMap.put(key, aF);
   }
 
-  public PropertiesAggregationFunction get(String key) {
-    return aggregationMap.get(key);
+  public PropertiesAggregationFunction getAggregationForProperty(String key) {
+    return propertyMappingMap.get(key);
   }
 
-  public Set<Map.Entry<String, PropertiesAggregationFunction>> entrySet() {
-    return aggregationMap.entrySet();
+  public boolean containsAggregationForProperty(String key) {
+    return propertyMappingMap.containsKey(key);
   }
 
-  public boolean contains(String key) {
-    return aggregationMap.containsKey(key);
+  public Optional<MembershipAggregation> getAggregationForMembership() {
+    return membershipAggregation != null ? Optional.of(membershipAggregation) : Optional.empty();
   }
 
+  public void setAggregationForMembership(MembershipAggregation aggregation) {
+    membershipAggregation = aggregation;
+  }
 
   private void writeObject(java.io.ObjectOutputStream out)
       throws IOException {
-    out.writeInt(aggregationMap.size());
-    for (Map.Entry<String, PropertiesAggregationFunction> entry : aggregationMap.entrySet()) {
+    out.writeInt(propertyMappingMap.size());
+    for (Map.Entry<String, PropertiesAggregationFunction> entry : propertyMappingMap.entrySet()) {
       out.writeObject(entry.getKey());
       out.writeObject(entry.getValue());
     }
+    out.writeObject(membershipAggregation);
   }
 
   private void readObject(java.io.ObjectInputStream in)
       throws IOException, ClassNotFoundException {
-    this.aggregationMap = new HashMap<>();
+    this.propertyMappingMap = new HashMap<>();
     int size = in.readInt();
     for (int i = 0; i < size; i++) {
       String key = (String) in.readObject();
       PropertiesAggregationFunction aggFun = (PropertiesAggregationFunction) in.readObject();
-      aggregationMap.put(key, aggFun);
+      propertyMappingMap.put(key, aggFun);
     }
+    membershipAggregation = (MembershipAggregation) in.readObject();
 
   }
 
   private void readObjectNoData()
       throws ObjectStreamException {
+
+  }
+
+  private interface MembershipAggregation extends
+      SerializableBiFunction<GradoopIdSet, GradoopIdSet, GradoopIdSet> {
 
   }
 }
