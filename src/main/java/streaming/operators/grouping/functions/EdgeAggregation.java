@@ -3,7 +3,7 @@ package streaming.operators.grouping.functions;
 import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
 import org.apache.flink.util.Collector;
 import streaming.model.EdgeContainer;
-import streaming.model.Element;
+import streaming.model.GraphElement;
 import streaming.operators.grouping.model.AggregationMapping;
 import streaming.operators.grouping.model.GroupingInformation;
 
@@ -19,7 +19,9 @@ public class EdgeAggregation implements GraphElementAggregationI {
       AggregationMapping vertexAggregationMapping, GroupingInformation edgeGroupInfo,
       AggregationMapping edgeAggregationMapping) {
     checkAggregationAndGroupingKeyIntersection(vertexAggregationMapping, vertexGroupInfo);
-    checkAggregationAndGroupingKeyIntersection(edgeAggregationMapping, edgeGroupInfo);
+    if (edgeAggregationMapping != null && edgeGroupInfo != null) {
+      checkAggregationAndGroupingKeyIntersection(edgeAggregationMapping, edgeGroupInfo);
+    }
     this.vertexGroupInfo = vertexGroupInfo;
     this.vertexAggregationMapping = vertexAggregationMapping;
     this.edgeGroupInfo = edgeGroupInfo;
@@ -30,16 +32,19 @@ public class EdgeAggregation implements GraphElementAggregationI {
   @Override
   public void apply(String s, TimeWindow window, Iterable<EdgeContainer> ecIterable,
       Collector<EdgeContainer> out) {
-    Element aggregatedSource = new Element();
-    Element aggregatedTarget = new Element();
-    Element aggregatedEdge = new Element();
+    GraphElement aggregatedSource = new GraphElement();
+    GraphElement aggregatedTarget = new GraphElement();
+    GraphElement aggregatedEdge = new GraphElement();
 
     for (EdgeContainer e : ecIterable) {
-      aggregateElement(vertexAggregationMapping, vertexGroupInfo, aggregatedSource,
+      aggregatedSource = aggregateGraphElement(vertexAggregationMapping, vertexGroupInfo,
+          aggregatedSource,
           e.getSourceVertex());
-      aggregateElement(vertexAggregationMapping, vertexGroupInfo, aggregatedTarget,
+      aggregatedTarget = aggregateGraphElement(vertexAggregationMapping, vertexGroupInfo,
+          aggregatedTarget,
           e.getTargetVertex());
-      aggregateElement(edgeAggregationMapping, edgeGroupInfo, aggregatedEdge, e.getEdge());
+      aggregatedEdge = aggregateGraphElement(edgeAggregationMapping, edgeGroupInfo, aggregatedEdge,
+          e.getEdge());
     }
     EdgeContainer aggregatedEContainer = new EdgeContainer(aggregatedEdge, aggregatedSource,
         aggregatedTarget);

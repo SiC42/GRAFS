@@ -4,7 +4,7 @@ import java.util.function.BiFunction;
 import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
 import org.apache.flink.util.Collector;
 import streaming.model.EdgeContainer;
-import streaming.model.Element;
+import streaming.model.GraphElement;
 import streaming.model.Vertex;
 import streaming.operators.grouping.model.AggregationMapping;
 import streaming.operators.grouping.model.GroupingInformation;
@@ -26,15 +26,15 @@ public class VertexAggregation implements GraphElementAggregationI {
   @Override
   public void apply(String s, TimeWindow window, Iterable<EdgeContainer> ecIterable,
       Collector<EdgeContainer> out) {
-    Element aggregatedElement = new Element();
+    GraphElement aggregatedElement = new GraphElement();
     for (EdgeContainer ec : ecIterable) {
-      Element vertexElement;
+      GraphElement vertexElement;
       if (aggregateMode.equals(AggregateMode.SOURCE)) {
         vertexElement = ec.getSourceVertex();
       } else {
         vertexElement = ec.getTargetVertex();
       }
-      aggregatedElement = aggregateElement(aggregationMapping, vertexGroupInfo,
+      aggregatedElement = aggregateGraphElement(aggregationMapping, vertexGroupInfo,
           aggregatedElement, vertexElement);
     }
     BiFunction<Vertex, EdgeContainer, EdgeContainer> generateUpdatedECFunction =

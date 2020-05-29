@@ -1,14 +1,8 @@
 package streaming.model;
 
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
 import org.gradoop.common.model.impl.id.GradoopId;
 import org.gradoop.common.model.impl.id.GradoopIdSet;
-import org.gradoop.common.model.impl.properties.Properties;
 
 public class GraphElement extends Element {
 
@@ -17,11 +11,11 @@ public class GraphElement extends Element {
   /**
    * Default constructor.
    */
-  protected GraphElement() {
+  public GraphElement() {
     super();
   }
 
-  protected GraphElement(Element graphElement){
+  public GraphElement(Element graphElement) {
     super(graphElement);
   }
 
@@ -43,6 +37,9 @@ public class GraphElement extends Element {
     return graphIds;
   }
 
+  public void setGraphIds(GradoopIdSet graphIds) {
+    this.graphIds = graphIds;
+  }
 
   public void addGraphId(GradoopId graphId) {
     if (graphIds == null) {
@@ -50,12 +47,6 @@ public class GraphElement extends Element {
     }
     graphIds.add(graphId);
   }
-
-
-  public void setGraphIds(GradoopIdSet graphIds) {
-    this.graphIds = graphIds;
-  }
-
 
   public void resetGraphIds() {
     if (graphIds != null) {

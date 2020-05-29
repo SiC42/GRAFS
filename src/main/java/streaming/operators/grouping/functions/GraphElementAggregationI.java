@@ -4,7 +4,7 @@ import java.util.Map;
 import org.apache.flink.streaming.api.functions.windowing.WindowFunction;
 import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
 import streaming.model.EdgeContainer;
-import streaming.model.Element;
+import streaming.model.GraphElement;
 import streaming.operators.grouping.model.AggregationMapping;
 import streaming.operators.grouping.model.GroupingInformation;
 
@@ -27,9 +27,9 @@ public interface GraphElementAggregationI extends
     }
   }
 
-  default Element aggregateElement(AggregationMapping aggregationMapping,
-      GroupingInformation elemGroupInfo, Element aggregatedElement,
-      Element curElement) {
+  default GraphElement aggregateGraphElement(AggregationMapping aggregationMapping,
+      GroupingInformation elemGroupInfo, GraphElement aggregatedElement,
+      GraphElement curElement) {
     for (Map.Entry<String, String> property : curElement.getProperties().entrySet()) {
       String key = property.getKey();
       if (elemGroupInfo.groupingKeys.contains(key)) {
