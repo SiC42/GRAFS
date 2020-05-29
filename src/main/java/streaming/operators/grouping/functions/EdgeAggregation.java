@@ -1,6 +1,6 @@
 package streaming.operators.grouping.functions;
 
-import java.util.Collection;
+import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
 import org.apache.flink.util.Collector;
 import streaming.model.EdgeContainer;
 import streaming.model.Element;
@@ -26,17 +26,18 @@ public class EdgeAggregation implements GraphElementAggregationI {
 
 
   @Override
-  public void flatMap(Collection<EdgeContainer> edgeSet, Collector<EdgeContainer> out) {
+  public void apply(String s, TimeWindow window, Iterable<EdgeContainer> ecIterable,
+      Collector<EdgeContainer> out) {
     Element aggregatedSource = new Element();
     Element aggregatedTarget = new Element();
     Element aggregatedEdge = new Element();
 
-    for (EdgeContainer e : edgeSet) {
-      aggregateGei(vertexAggregationMapping, vertexEgi, aggregatedSource,
+    for (EdgeContainer e : ecIterable) {
+      aggregateElement(vertexAggregationMapping, vertexEgi, aggregatedSource,
           e.getSourceVertex());
-      aggregateGei(vertexAggregationMapping, vertexEgi, aggregatedTarget,
+      aggregateElement(vertexAggregationMapping, vertexEgi, aggregatedTarget,
           e.getTargetVertex());
-      aggregateGei(edgeAggregationMapping, edgeEgi, aggregatedEdge, e.getEdge());
+      aggregateElement(edgeAggregationMapping, edgeEgi, aggregatedEdge, e.getEdge());
     }
     EdgeContainer aggregatedEContainer = new EdgeContainer(aggregatedEdge, aggregatedSource,
         aggregatedTarget);
