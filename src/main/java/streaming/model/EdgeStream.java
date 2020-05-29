@@ -58,7 +58,7 @@ public class EdgeStream {
       AggregationMapping vertexAggregationFunctions,
       GroupingInformation edgeEgi, AggregationMapping edgeAggregationFunctions) {
     return callForGraph(
-        new Grouping(/*vertexEgi, vertexAggregationFunctions, edgeEgi, edgeAggregationFunctions*/));
+        new Grouping(vertexEgi, vertexAggregationFunctions, edgeEgi, edgeAggregationFunctions));
   }
 
   public EdgeStream transformEdge(MapFunction<Edge, Edge> mapper) {
