@@ -43,4 +43,9 @@ public class EdgeContainer {
     this.targetVertex = targetVertex;
   }
 
+  public EdgeContainer createReverseEdgeContainer() {
+    Edge reverseEdge = this.edge.createReverseEdge();
+    return new EdgeContainer(reverseEdge, targetVertex, sourceVertex);
+  }
+
 }
