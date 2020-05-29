@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.api.common.functions.MapFunction;
-import org.apache.flink.api.common.functions.ReduceFunction;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.windowing.time.Time;
 import org.apache.flink.util.Collector;
@@ -51,12 +50,7 @@ public class Grouping implements OperatorI {
   }
 
   public DataStream<EdgeContainer> groupBy(DataStream<EdgeContainer> es) {
-    // TODO: Make sure that keys in egi has no intersection with keys in mapping
 
-    ReduceFunction<Collection<Edge>> mergeCollection = (eColl1, eColl2) -> {
-      eColl1.addAll(eColl2);
-      return eColl1;
-    };
     TriFunction<DataStream<EdgeContainer>, AggregateMode, GraphElementAggregationI, DataStream<EdgeContainer>> applyAggregation =
         (DataStream<EdgeContainer> stream,
             AggregateMode aggregateMode,
