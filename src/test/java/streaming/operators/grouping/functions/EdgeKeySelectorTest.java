@@ -7,9 +7,8 @@ import java.util.HashSet;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
 import streaming.model.EdgeContainer;
-import streaming.util.AsciiGraphLoader;
-import streaming.model.Edge;
 import streaming.operators.grouping.model.GroupingInformation;
+import streaming.util.AsciiGraphLoader;
 
 class EdgeKeySelectorTest {
 
@@ -32,9 +31,7 @@ class EdgeKeySelectorTest {
     ));
     EdgeKeySelector eks = new EdgeKeySelector(egi, null, AggregateMode.SOURCE);
     for (EdgeContainer e : edgeSet) {
-      Set<EdgeContainer> es = new HashSet<>();
-      es.add(e);
-      assertThat(eks.getKey(es), equalTo("Vertex-Grouping-Information:(properties:{(n:A) })"));
+      assertThat(eks.getKey(e), equalTo("Vertex-Grouping-Information:(properties:{(n:A) })"));
     }
   }
 }

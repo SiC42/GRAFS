@@ -1,13 +1,11 @@
 package streaming.operators.grouping.functions;
 
-import java.util.Collection;
 import org.apache.flink.api.java.functions.KeySelector;
-import streaming.model.Edge;
 import streaming.model.EdgeContainer;
 import streaming.model.Element;
 import streaming.operators.grouping.model.GroupingInformation;
 
-public class EdgeKeySelector implements KeySelector<Collection<EdgeContainer>, String> {
+public class EdgeKeySelector implements KeySelector<EdgeContainer, String> {
 
   private final GroupingInformation vertexEgi;
   private final GroupingInformation edgeEgi;
@@ -21,16 +19,15 @@ public class EdgeKeySelector implements KeySelector<Collection<EdgeContainer>, S
   }
 
   @Override
-  public String getKey(Collection<EdgeContainer> edgeSet) {
-    EdgeContainer edgeContainer = edgeSet.iterator().next();
+  public String getKey(EdgeContainer ec) {
     switch (makeKeyFor) {
 
       case SOURCE:
-        return generateKeyForSingleVertex(edgeContainer.getSourceVertex(), vertexEgi);
+        return generateKeyForSingleVertex(ec.getSourceVertex(), vertexEgi);
       case TARGET:
-        return generateKeyForSingleVertex(edgeContainer.getTargetVertex(), vertexEgi);
+        return generateKeyForSingleVertex(ec.getTargetVertex(), vertexEgi);
       case EDGE:
-        return generateKeyForEdge(edgeContainer, vertexEgi, edgeEgi);
+        return generateKeyForEdge(ec, vertexEgi, edgeEgi);
     }
     return null;
   }
