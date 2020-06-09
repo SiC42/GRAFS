@@ -50,7 +50,6 @@ public class Grouping implements OperatorI {
   }
 
   public DataStream<EdgeContainer> groupBy(DataStream<EdgeContainer> es) {
-
     TriFunction<DataStream<EdgeContainer>, AggregateMode, GraphElementAggregationI, DataStream<EdgeContainer>> applyAggregation =
         (DataStream<EdgeContainer> stream,
             AggregateMode aggregateMode,
