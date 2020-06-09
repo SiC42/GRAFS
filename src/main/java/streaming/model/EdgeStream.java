@@ -31,7 +31,7 @@ public class EdgeStream {
     );
   }
 
-  public EdgeStream callForGraph(OperatorI operator) {
+  public EdgeStream callForStream(OperatorI operator) {
     DataStream<EdgeContainer> result = operator.execute(edgeStream);
     return new EdgeStream(result);
   }
@@ -42,31 +42,31 @@ public class EdgeStream {
 
   public EdgeStream vertexInducedSubgraph(
       FilterFunction<Vertex> vertexGeiPredicate) {
-    return callForGraph(new Subgraph(vertexGeiPredicate, null, Strategy.VERTEX_INDUCED));
+    return callForStream(new Subgraph(vertexGeiPredicate, null, Strategy.VERTEX_INDUCED));
   }
 
   public EdgeStream edgeInducedSubgraph(FilterFunction<Edge> edgeGeiPredicate) {
-    return callForGraph(new Subgraph(null, edgeGeiPredicate, Strategy.EDGE_INDUCED));
+    return callForStream(new Subgraph(null, edgeGeiPredicate, Strategy.EDGE_INDUCED));
   }
 
   public EdgeStream subgraph(FilterFunction<Vertex> vertexGeiPredicate,
       FilterFunction<Edge> edgeGeiPredicate) {
-    return callForGraph(new Subgraph(vertexGeiPredicate, edgeGeiPredicate, Strategy.BOTH));
+    return callForStream(new Subgraph(vertexGeiPredicate, edgeGeiPredicate, Strategy.BOTH));
   }
 
   public EdgeStream groupBy(GroupingInformation vertexEgi,
       AggregationMapping vertexAggregationFunctions,
       GroupingInformation edgeEgi, AggregationMapping edgeAggregationFunctions) {
-    return callForGraph(
+    return callForStream(
         new Grouping(vertexEgi, vertexAggregationFunctions, edgeEgi, edgeAggregationFunctions));
   }
 
   public EdgeStream transformEdge(MapFunction<Edge, Edge> mapper) {
-    return callForGraph(new EdgeTransformation(mapper));
+    return callForStream(new EdgeTransformation(mapper));
   }
 
   public EdgeStream transformVertices(MapFunction<Vertex, Vertex> mapper) {
-    return callForGraph(new VertexTransformation(mapper));
+    return callForStream(new VertexTransformation(mapper));
   }
 
   public void print() {
