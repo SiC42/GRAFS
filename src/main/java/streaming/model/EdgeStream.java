@@ -36,10 +36,6 @@ public class EdgeStream {
     return new EdgeStream(result);
   }
 
-  public WindowedGraphStream groupToWindowedGraphStream() {
-    return null;
-  }
-
   public EdgeStream vertexInducedSubgraph(
       FilterFunction<Vertex> vertexGeiPredicate) {
     return callForStream(new Subgraph(vertexGeiPredicate, null, Strategy.VERTEX_INDUCED));
