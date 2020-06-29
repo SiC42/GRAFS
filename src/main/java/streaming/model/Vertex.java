@@ -12,10 +12,6 @@ public class Vertex extends GraphElement {
     super();
   }
 
-  public Vertex(Element element){
-    super(element);
-  }
-
 
   /**
    * Creates a vertex based on the given parameters.
