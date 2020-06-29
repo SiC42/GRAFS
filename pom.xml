@@ -130,6 +130,12 @@ under the License.
 		<!-- Apache Flink dependencies -->
 		<!-- These dependencies are provided, because they should not be packaged into the JAR file. -->
 		<dependency>
+			<artifactId>flink-test-utils_2.11</artifactId>
+			<groupId>org.apache.flink</groupId>
+			<scope>test</scope>
+			<version>1.7.2</version>
+		</dependency>
+		<dependency>
 			<artifactId>flink-java</artifactId>
 			<groupId>org.apache.flink</groupId>
 			<version>${flink.version}</version>
