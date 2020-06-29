@@ -4,7 +4,7 @@ import org.gradoop.common.model.impl.id.GradoopId;
 import org.gradoop.common.model.impl.id.GradoopIdSet;
 import org.gradoop.common.model.impl.properties.Properties;
 
-public class GraphElement extends Element {
+public abstract class GraphElement extends Element {
 
   private GradoopIdSet graphIds;
 
@@ -13,10 +13,6 @@ public class GraphElement extends Element {
    */
   public GraphElement() {
     super();
-  }
-
-  public GraphElement(Element graphElement) {
-    super(graphElement);
   }
 
   /**

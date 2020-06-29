@@ -7,7 +7,7 @@ import org.gradoop.common.model.impl.properties.Properties;
 import org.gradoop.common.model.impl.properties.Property;
 import org.gradoop.common.model.impl.properties.PropertyValue;
 
-public class Element implements Serializable {
+public abstract class Element implements Serializable {
 
   private final GradoopId id;
   private final Properties properties;
@@ -28,12 +28,6 @@ public class Element implements Serializable {
     this.properties = properties;
   }
 
-
-  public Element(Element otherElement) {
-    this.id = otherElement.getId();
-    this.label = otherElement.getLabel();
-    this.properties = otherElement.getProperties();
-  }
 
   public String getLabel() {
     return label;
