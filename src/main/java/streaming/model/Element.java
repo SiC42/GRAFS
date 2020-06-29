@@ -10,7 +10,7 @@ import org.gradoop.common.model.impl.properties.PropertyValue;
 public abstract class Element implements Serializable {
 
   private final GradoopId id;
-  private final Properties properties;
+  private Properties properties;
   private String label;
 
   public Element() {
@@ -39,23 +39,26 @@ public abstract class Element implements Serializable {
 
 
   public PropertyValue getPropertyValue(String key) {
-    return properties.get(key);
+    return (this.properties != null) ? this.properties.get(key) : null;
   }
 
   public void setProperty(String key, PropertyValue value) {
+    initProperties();
     properties.set(key, value);
   }
 
   public void setProperty(String key, Object value) {
+    initProperties();
     properties.set(key, value);
   }
 
   public void setProperty(Property property) {
+    initProperties();
     properties.set(property);
   }
 
   public boolean hasProperty(String key) {
-    return properties.containsKey(key);
+    return this.properties != null && this.properties.containsKey(key);
   }
 
   public Properties getProperties() {
@@ -63,7 +66,7 @@ public abstract class Element implements Serializable {
   }
 
   public Iterable<String> getPropertyKeys() {
-    return properties.getKeys();
+    return (properties != null) ? properties.getKeys() : null;
   }
 
   public int getPropertyCount() {
@@ -100,5 +103,14 @@ public abstract class Element implements Serializable {
 
   public PropertyValue removeProperty(String key) {
     return this.properties != null ? properties.remove(key) : null;
+  }
+
+  /**
+   * Initializes the internal properties field if necessary.
+   */
+  private void initProperties() {
+    if (this.properties == null) {
+      this.properties = Properties.create();
+    }
   }
 }
