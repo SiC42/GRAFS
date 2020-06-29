@@ -3,6 +3,7 @@ package streaming.operators.grouping.functions;
 import java.util.function.BiFunction;
 import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
 import org.apache.flink.util.Collector;
+import streaming.factory.VertexFactory;
 import streaming.model.EdgeContainer;
 import streaming.model.GraphElement;
 import streaming.model.Vertex;
@@ -26,7 +27,7 @@ public class VertexAggregation implements GraphElementAggregationI {
   @Override
   public void apply(String s, TimeWindow window, Iterable<EdgeContainer> ecIterable,
       Collector<EdgeContainer> out) {
-    GraphElement aggregatedElement = new GraphElement();
+    Vertex aggregatedElement = new Vertex();
     for (EdgeContainer ec : ecIterable) {
       GraphElement vertexElement;
       if (aggregateMode.equals(AggregateMode.SOURCE)) {
@@ -34,7 +35,7 @@ public class VertexAggregation implements GraphElementAggregationI {
       } else {
         vertexElement = ec.getTargetVertex();
       }
-      aggregatedElement = aggregateGraphElement(aggregationMapping, vertexGroupInfo,
+      aggregatedElement = (Vertex) aggregateGraphElement(aggregationMapping, vertexGroupInfo,
           aggregatedElement, vertexElement);
     }
     BiFunction<Vertex, EdgeContainer, EdgeContainer> generateUpdatedECFunction =
@@ -43,7 +44,7 @@ public class VertexAggregation implements GraphElementAggregationI {
             : (v, ec) -> new EdgeContainer(ec.getEdge(), ec.getSourceVertex(), v);
     for (EdgeContainer ec : ecIterable) {
       if (!ec.getEdge().isReverse()) {
-        Vertex aggregatedVertex = new Vertex(aggregatedElement);
+        Vertex aggregatedVertex = new VertexFactory().createVertex(aggregatedElement);
         EdgeContainer aggregatedEdge = generateUpdatedECFunction.apply(aggregatedVertex, ec);
         out.collect(aggregatedEdge);
       } else {

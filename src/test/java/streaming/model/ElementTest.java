@@ -16,6 +16,7 @@ import static streaming.util.TestUtils.LONG_VAL_3;
 import static streaming.util.TestUtils.STRING_VAL_6;
 
 import org.gradoop.common.model.impl.id.GradoopId;
+import org.gradoop.common.model.impl.pojo.EPGMElement;
 import org.gradoop.common.model.impl.properties.Properties;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -24,10 +25,11 @@ public class ElementTest {
 
   @Test
   public void testSetId() {
+    EPGMElement elementMock = mock(EPGMElement.class, CALLS_REAL_METHODS);
     GradoopId id = GradoopId.get();
-    Element element = new Element(id);
+    elementMock.setId(id);
 
-    assertSame(id, element.getId());
+    assertSame(id, elementMock.getId());
   }
 
   @Test

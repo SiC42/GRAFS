@@ -2,8 +2,9 @@ package streaming.operators.grouping.functions;
 
 import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
 import org.apache.flink.util.Collector;
+import streaming.model.Edge;
 import streaming.model.EdgeContainer;
-import streaming.model.GraphElement;
+import streaming.model.Vertex;
 import streaming.operators.grouping.model.AggregationMapping;
 import streaming.operators.grouping.model.GroupingInformation;
 
@@ -32,18 +33,19 @@ public class EdgeAggregation implements GraphElementAggregationI {
   @Override
   public void apply(String s, TimeWindow window, Iterable<EdgeContainer> ecIterable,
       Collector<EdgeContainer> out) {
-    GraphElement aggregatedSource = new GraphElement();
-    GraphElement aggregatedTarget = new GraphElement();
-    GraphElement aggregatedEdge = new GraphElement();
+    Vertex aggregatedSource = new Vertex();
+    Vertex aggregatedTarget = new Vertex();
+    Edge aggregatedEdge = new Edge();
 
     for (EdgeContainer e : ecIterable) {
-      aggregatedSource = aggregateGraphElement(vertexAggregationMapping, vertexGroupInfo,
+      aggregatedSource = (Vertex) aggregateGraphElement(vertexAggregationMapping, vertexGroupInfo,
           aggregatedSource,
           e.getSourceVertex());
-      aggregatedTarget = aggregateGraphElement(vertexAggregationMapping, vertexGroupInfo,
+      aggregatedTarget = (Vertex) aggregateGraphElement(vertexAggregationMapping, vertexGroupInfo,
           aggregatedTarget,
           e.getTargetVertex());
-      aggregatedEdge = aggregateGraphElement(edgeAggregationMapping, edgeGroupInfo, aggregatedEdge,
+      aggregatedEdge = (Edge) aggregateGraphElement(edgeAggregationMapping, edgeGroupInfo,
+          aggregatedEdge,
           e.getEdge());
     }
     EdgeContainer aggregatedEContainer = new EdgeContainer(aggregatedEdge, aggregatedSource,
