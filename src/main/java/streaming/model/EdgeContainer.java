@@ -1,6 +1,7 @@
 package streaming.model;
 
 import streaming.factory.EdgeFactory;
+import streaming.factory.VertexFactory;
 
 public class EdgeContainer {
 
@@ -15,14 +16,22 @@ public class EdgeContainer {
     this.targetVertex = targetVertex;
   }
 
-  public EdgeContainer(Element prevEdge, Element sourceVertex, Element targetVertex) {
-    this.sourceVertex = new Vertex(sourceVertex);
-    this.targetVertex = new Vertex(targetVertex);
+  public EdgeContainer(GraphElement prevEdge, GraphElement sourceVertex,
+      GraphElement targetVertex) {
+    this.sourceVertex = new VertexFactory().createVertex(
+        sourceVertex.getLabel(),
+        sourceVertex.getProperties(),
+        sourceVertex.getGraphIds());
+    this.targetVertex = new VertexFactory().createVertex(
+        targetVertex.getLabel(),
+        targetVertex.getProperties(),
+        targetVertex.getGraphIds());
     this.edge = new EdgeFactory().createEdge(
         prevEdge.getLabel(),
         sourceVertex.getId(),
         targetVertex.getId(),
-        prevEdge.getProperties());
+        prevEdge.getProperties(),
+        prevEdge.getGraphIds());
   }
 
   public Edge getEdge() {
