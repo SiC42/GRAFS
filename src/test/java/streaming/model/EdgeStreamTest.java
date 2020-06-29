@@ -4,6 +4,7 @@ import java.util.Collection;
 import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.gradoop.common.model.impl.properties.PropertyValue;
 import org.junit.jupiter.api.Test;
 import streaming.operators.grouping.functions.PropertiesAggregationFunction;
 import streaming.operators.grouping.model.AggregationMapping;
@@ -20,9 +21,7 @@ class EdgeStreamTest {
   public EdgeStreamTest() {
     env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
 
-    AsciiGraphLoader loader = new AsciiGraphLoader();
-
-    Collection<EdgeContainer> edges = loader.loadFromString(
+    AsciiGraphLoader loader = AsciiGraphLoader.fromString(
         "(a18 {n : \"A\", a : \"18\"})," +
             "(a20 {n : \"A\", a : \"20\"})," +
             "(a25 {n : \"A\", a : \"25\"})," +
@@ -35,6 +34,8 @@ class EdgeStreamTest {
             "(c20)-[]->(b17)," +
             "(a20)-[]->(b19),"
     );
+
+    Collection<EdgeContainer> edges = loader.getEdgeContainers();
     DataStream<EdgeContainer> m = env.fromCollection(edges);
 
     edgeStream = new EdgeStream(m);
@@ -45,9 +46,14 @@ class EdgeStreamTest {
     GroupingInformation vertexEgi = new GroupingInformation();
     vertexEgi.groupingKeys.add("n");
     AggregationMapping am = new AggregationMapping();
+    var identity = new PropertyValue();
+    identity.setDouble(0);
     am.addAggregationForProperty("a",
-        new PropertiesAggregationFunction("0", (String pV1, String pV2) -> String
-            .valueOf(Double.parseDouble(pV1) + Double.parseDouble(pV2))));
+        new PropertiesAggregationFunction(identity, (PropertyValue pV1, PropertyValue pV2) -> {
+          var newVal = new PropertyValue();
+          newVal.setDouble(pV1.getDouble() + pV2.getDouble());
+          return newVal;
+        }));
     edgeStream.groupBy(vertexEgi, am, null, null).print();
     env.execute();
   }

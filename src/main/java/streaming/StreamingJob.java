@@ -26,9 +26,8 @@ import org.gradoop.flink.model.impl.epgm.LogicalGraph;
 import org.gradoop.flink.util.FlinkAsciiGraphLoader;
 import org.gradoop.flink.util.GradoopFlinkConfig;
 import streaming.model.EdgeContainer;
-import streaming.util.AsciiGraphLoader;
-import streaming.model.Edge;
 import streaming.model.EdgeStream;
+import streaming.util.AsciiGraphLoader;
 
 /**
  * Skeleton for a Flink Streaming Job.
@@ -67,9 +66,9 @@ public class StreamingJob {
         "(p6)-[:worksAt]->(c2) " +
         "(p7)-[:worksAt]->(c2) " +
         "(p8)-[:worksAt]->(c1) " + "]";
-    AsciiGraphLoader loader = new AsciiGraphLoader();
-    Collection<EdgeContainer> edgeCollection = loader.loadFromString(graphStr);
-    DataStream<EdgeContainer> m = env.fromCollection(edgeCollection);
+    AsciiGraphLoader loader = AsciiGraphLoader.fromString(graphStr);
+    Collection<EdgeContainer> ecCollection = loader.getEdgeContainers();
+    DataStream<EdgeContainer> m = env.fromCollection(ecCollection);
 
     EdgeStream messageStream = new EdgeStream(m);
 //        EdgeStream filteredStream = messageStream.filter(e -> e.getFrom().getProperty("id").equals("A"))

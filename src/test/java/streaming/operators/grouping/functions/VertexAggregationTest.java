@@ -28,24 +28,20 @@ class VertexAggregationTest {
         AggregateMode.SOURCE);
 
     Collector<Edge> collector = mock(Collector.class);
-
-    AsciiGraphLoader loader = new AsciiGraphLoader();
-
-    Collection<EdgeContainer> edges = loader.loadFromString(
-        "(a1 {n : \"A\", a : \"1\"})," +
-            "(a2 {n : \"A\", a : \"2\"})," +
-            "(b1 {n : \"A\", a : \"25\"})," +
-            "(b2 {n : \"B\", a : \"17\"})," +
+    AsciiGraphLoader loader = AsciiGraphLoader.fromString(
+        "(a18 {n : \"A\", a : \"18\"})," +
+            "(a20 {n : \"A\", a : \"20\"})," +
+            "(a25 {n : \"A\", a : \"25\"})," +
+            "(b17 {n : \"B\", a : \"17\"})," +
             "(b19 {n : \"B\", a : \"19\"})," +
             "(c20 {n : \"C\", a : \"20\"})," +
-            "(a18)-[]->(b18)," +
+            "(a18)-[]->(b17)," +
             "(a18)-[]->(c20)," +
             "(c20)-[]->(a25)," +
             "(c20)-[]->(b17)," +
             "(a20)-[]->(b19),"
     );
-    Set<EdgeContainer> edgeSet = new HashSet<>();
-    edgeSet.addAll(edges);
+    Set<EdgeContainer> edgeSet = new HashSet<>(loader.getEdgeContainers());
 
     // call the methods that you have implemented
     //incrementer.flatMap(2L, collector);
