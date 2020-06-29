@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.CALLS_REAL_METHODS;
 import static org.mockito.Mockito.mock;
@@ -18,7 +19,6 @@ import static streaming.util.TestUtils.STRING_VAL_6;
 import org.gradoop.common.model.impl.id.GradoopId;
 import org.gradoop.common.model.impl.pojo.EPGMElement;
 import org.gradoop.common.model.impl.properties.Properties;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 public class ElementTest {
@@ -46,7 +46,7 @@ public class ElementTest {
   @Test
   public void testSetPropertyNull() {
     Element elementMock = mock(Element.class, CALLS_REAL_METHODS);
-    Assertions.assertThrows(NullPointerException.class, () -> elementMock.setProperty(null));
+    assertThrows(NullPointerException.class, () -> elementMock.setProperty(null));
   }
 
   @Test
@@ -87,7 +87,7 @@ public class ElementTest {
         .useConstructor(gradoopId, "someLabel", properties)
         .defaultAnswer(CALLS_REAL_METHODS));
 
-    Assertions.assertThrows(NullPointerException.class, () -> elementMock.getPropertyValue(null));
+    assertThrows(NullPointerException.class, () -> elementMock.getPropertyValue(null));
   }
 
   @Test

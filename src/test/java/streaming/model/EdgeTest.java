@@ -3,6 +3,7 @@ package streaming.model;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.gradoop.common.model.impl.id.GradoopId;
@@ -10,7 +11,6 @@ import org.gradoop.common.model.impl.id.GradoopIdSet;
 import org.gradoop.common.model.impl.properties.Properties;
 import org.gradoop.common.util.GradoopConstants;
 import org.hamcrest.core.Is;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import streaming.factory.EdgeFactory;
 
@@ -72,7 +72,7 @@ public class EdgeTest {
   public void createWithNullIDTest() {
     GradoopId sourceId = GradoopId.get();
     GradoopId targetId = GradoopId.get();
-    Assertions.assertThrows(NullPointerException.class, () -> {
+    assertThrows(NullPointerException.class, () -> {
       new EdgeFactory().initEdge(null, sourceId, targetId);
     });
   }
@@ -81,7 +81,7 @@ public class EdgeTest {
   public void createWithNullSourceIdTest() {
     GradoopId edgeId = GradoopId.get();
     GradoopId targetId = GradoopId.get();
-    Assertions.assertThrows(NullPointerException.class, () -> {
+    assertThrows(NullPointerException.class, () -> {
       new EdgeFactory().initEdge(edgeId, null, targetId);
     });
   }
@@ -90,7 +90,7 @@ public class EdgeTest {
   public void createWithNullTargetIdTest() {
     GradoopId edgeId = GradoopId.get();
     GradoopId sourceId = GradoopId.get();
-    Assertions.assertThrows(NullPointerException.class, () -> {
+    assertThrows(NullPointerException.class, () -> {
       new EdgeFactory().initEdge(edgeId, sourceId, null);
     });
   }
@@ -100,7 +100,7 @@ public class EdgeTest {
     GradoopId edgeId = GradoopId.get();
     GradoopId sourceId = GradoopId.get();
     GradoopId targetId = GradoopId.get();
-    Assertions.assertThrows(NullPointerException.class, () -> {
+    assertThrows(NullPointerException.class, () -> {
       new EdgeFactory().initEdge(edgeId, null, sourceId, targetId);
     });
 
