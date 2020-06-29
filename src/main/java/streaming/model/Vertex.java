@@ -4,46 +4,40 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import org.gradoop.common.model.impl.id.GradoopId;
+import org.gradoop.common.model.impl.id.GradoopIdSet;
+import org.gradoop.common.model.impl.properties.Properties;
 
-public class Vertex {
+public class Vertex extends GraphElement {
 
-  private GraphElementInformation gei;
 
   public Vertex() {
-    this.gei = new GraphElementInformation();
+    super();
   }
 
-  public Vertex(String contentStr) {
-    this.gei = new GraphElementInformation();
-    gei.addProperty("id", contentStr);
+  public Vertex(Element element){
+    super(element);
   }
 
-  public Vertex(GraphElementInformation gei) {
-    this.gei = gei;
+
+  /**
+   * Creates a vertex based on the given parameters.
+   *
+   * @param id         vertex identifier
+   * @param label      vertex label
+   * @param properties vertex properties
+   * @param graphs     graphs that vertex is contained in
+   */
+  public Vertex(final GradoopId id, final String label,
+      final Map<String, String> properties, final GradoopIdSet graphs) {
+    super(id, label, properties, graphs);
   }
 
-  public Vertex(org.s1ck.gdl.model.Vertex gdlVertex) {
-    HashMap<String, String> properties = new HashMap<>();
-    for (Map.Entry<String, Object> prop : gdlVertex.getProperties().entrySet()) {
-      properties.put(prop.getKey(), prop.getValue().toString());
-    }
-    Set<Long> memberships = gdlVertex.getGraphs();
-    String label = gdlVertex.getLabel();
-    this.gei = new GraphElementInformation(label, properties, memberships);
-  }
-
-  public GraphElementInformation getGei() {
-    return gei;
-  }
-
-  public void setGei(GraphElementInformation gei) {
-    this.gei = gei;
-  }
 
   @Override
   public String toString() {
     return String.format("(%s)",
-        gei);
+        super.toString());
   }
 
   @Override
@@ -55,11 +49,11 @@ public class Vertex {
       return false;
     }
     Vertex vertex = (Vertex) o;
-    return Objects.equals(gei, vertex.gei);
+    return Objects.equals(getId(), vertex.getId());
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(gei);
+    return getId().hashCode();
   }
 }

@@ -1,12 +1,11 @@
 package streaming.operators.grouping.functions;
 
-import java.util.Collection;
 import org.apache.flink.api.java.functions.KeySelector;
-import streaming.model.Edge;
-import streaming.model.GraphElementInformation;
+import streaming.model.EdgeContainer;
+import streaming.model.Element;
 import streaming.operators.grouping.model.GroupingInformation;
 
-public class EdgeKeySelector implements KeySelector<Collection<Edge>, String> {
+public class EdgeKeySelector implements KeySelector<EdgeContainer, String> {
 
   private final GroupingInformation vertexEgi;
   private final GroupingInformation edgeEgi;
@@ -20,22 +19,21 @@ public class EdgeKeySelector implements KeySelector<Collection<Edge>, String> {
   }
 
   @Override
-  public String getKey(Collection<Edge> edgeSet) {
-    Edge edge = edgeSet.iterator().next();
+  public String getKey(EdgeContainer ec) {
     switch (makeKeyFor) {
 
       case SOURCE:
-        return generateKeyForSingleVertex(edge.getSource().getGei(), vertexEgi);
+        return generateKeyForSingleVertex(ec.getSourceVertex(), vertexEgi);
       case TARGET:
-        return generateKeyForSingleVertex(edge.getTarget().getGei(), vertexEgi);
+        return generateKeyForSingleVertex(ec.getTargetVertex(), vertexEgi);
       case EDGE:
-        return generateKeyForEdge(edge, vertexEgi, edgeEgi);
+        return generateKeyForEdge(ec, vertexEgi, edgeEgi);
     }
     return null;
   }
 
 
-  private String generateKeyForSingleVertex(GraphElementInformation vertexGei,
+  private String generateKeyForSingleVertex(Element vertexGei,
       GroupingInformation vertexEgi) {
     StringBuilder sb = new StringBuilder();
 
@@ -45,32 +43,29 @@ public class EdgeKeySelector implements KeySelector<Collection<Edge>, String> {
     return sb.toString();
   }
 
-  private String generateKeyForEdge(Edge edge, GroupingInformation vertexEgi,
+  private String generateKeyForEdge(EdgeContainer edgeContainer, GroupingInformation vertexEgi,
       GroupingInformation edgeEgi) {
     StringBuilder sb = new StringBuilder();
 
     // Build Key based on Source Vertex Information
-    sb = keyStringBuilder(sb, edge.getSource().getGei(), vertexEgi, "Source");
+    sb = keyStringBuilder(sb, edgeContainer.getSourceVertex(), vertexEgi, "Source");
 
     // Build Key based on Edge Information
     if (edgeEgi != null) {
-      sb = keyStringBuilder(sb, edge.getGei(), edgeEgi, "Edge");
+      sb = keyStringBuilder(sb, edgeContainer.getEdge(), edgeEgi, "Edge");
     }
 
     // Build Key based on Target Vertex Information
-    sb = keyStringBuilder(sb, edge.getTarget().getGei(), vertexEgi, "Target");
+    sb = keyStringBuilder(sb, edgeContainer.getTargetVertex(), vertexEgi, "Target");
 
     return sb.toString();
   }
 
-  private StringBuilder keyStringBuilder(StringBuilder sb, GraphElementInformation
+  private StringBuilder keyStringBuilder(StringBuilder sb, Element
       gei, GroupingInformation egi, String elementStr) {
     sb.append(elementStr).append("-Grouping-Information:(");
     if (egi.useLabel) {
       sb.append(String.format("label:%s ", gei.getLabel()));
-    }
-    if (egi.useMembership) {
-      sb.append(String.format("membership:%s ", gei.getMemberships().toString()));
     }
     if (!egi.groupingKeys.isEmpty()) {
       sb.append("properties:{");

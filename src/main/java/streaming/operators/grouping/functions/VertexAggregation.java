@@ -1,48 +1,55 @@
 package streaming.operators.grouping.functions;
 
-import java.util.Collection;
 import java.util.function.BiFunction;
-import java.util.function.Function;
+import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
 import org.apache.flink.util.Collector;
-import streaming.model.Edge;
-import streaming.model.GraphElementInformation;
+import streaming.model.EdgeContainer;
+import streaming.model.GraphElement;
 import streaming.model.Vertex;
 import streaming.operators.grouping.model.AggregationMapping;
 import streaming.operators.grouping.model.GroupingInformation;
 
 public class VertexAggregation implements GraphElementAggregationI {
 
-  private final GroupingInformation vertexEgi;
+  private final GroupingInformation vertexGroupInfo;
   private final AggregationMapping aggregationMapping;
   private final AggregateMode aggregateMode;
 
-  public VertexAggregation(GroupingInformation vertexEgi,
+  public VertexAggregation(GroupingInformation vertexGroupInfo,
       AggregationMapping aggregationMapping, AggregateMode aggregateMode) {
-    this.vertexEgi = vertexEgi;
+    checkAggregationAndGroupingKeyIntersection(aggregationMapping, vertexGroupInfo);
+    this.vertexGroupInfo = vertexGroupInfo;
     this.aggregationMapping = aggregationMapping;
     this.aggregateMode = aggregateMode;
   }
 
   @Override
-  public void flatMap(Collection<Edge> edgeSet, Collector<Edge> out) {
-    GraphElementInformation aggregatedGei = new GraphElementInformation();
-    Function<Edge, Vertex> getVertex =
-        aggregateMode.equals(AggregateMode.SOURCE) ? Edge::getSource : Edge::getTarget;
-    for (Edge e : edgeSet) {
-      GraphElementInformation vertexGei = getVertex.apply(e).getGei();
-      aggregateGei(aggregationMapping, vertexEgi, aggregatedGei, vertexGei);
+  public void apply(String s, TimeWindow window, Iterable<EdgeContainer> ecIterable,
+      Collector<EdgeContainer> out) {
+    GraphElement aggregatedElement = new GraphElement();
+    for (EdgeContainer ec : ecIterable) {
+      GraphElement vertexElement;
+      if (aggregateMode.equals(AggregateMode.SOURCE)) {
+        vertexElement = ec.getSourceVertex();
+      } else {
+        vertexElement = ec.getTargetVertex();
+      }
+      aggregatedElement = aggregateGraphElement(aggregationMapping, vertexGroupInfo,
+          aggregatedElement, vertexElement);
     }
-    BiFunction<Vertex, Edge, Edge> generateNewEdge = aggregateMode.equals(AggregateMode.SOURCE)
-        ? (v, e) -> new Edge(v, e.getTarget(), e.getGei())
-        : (v, e) -> new Edge(e.getSource(), v, e.getGei());
-    for (Edge e : edgeSet) {
-      if (!e.isReverse()) {
-        Vertex aggregatedVertex = new Vertex(aggregatedGei);
-        Edge aggregatedEdge = generateNewEdge.apply(aggregatedVertex, e);
+    BiFunction<Vertex, EdgeContainer, EdgeContainer> generateUpdatedECFunction =
+        aggregateMode.equals(AggregateMode.SOURCE)
+            ? (v, ec) -> new EdgeContainer(ec.getEdge(), v, ec.getTargetVertex())
+            : (v, ec) -> new EdgeContainer(ec.getEdge(), ec.getSourceVertex(), v);
+    for (EdgeContainer ec : ecIterable) {
+      if (!ec.getEdge().isReverse()) {
+        Vertex aggregatedVertex = new Vertex(aggregatedElement);
+        EdgeContainer aggregatedEdge = generateUpdatedECFunction.apply(aggregatedVertex, ec);
         out.collect(aggregatedEdge);
       } else {
-        out.collect(e);
+        out.collect(ec);
       }
     }
   }
+
 }

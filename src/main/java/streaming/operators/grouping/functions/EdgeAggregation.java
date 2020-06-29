@@ -1,48 +1,54 @@
 package streaming.operators.grouping.functions;
 
-import java.util.Collection;
+import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
 import org.apache.flink.util.Collector;
-import streaming.model.Edge;
-import streaming.model.GraphElementInformation;
-import streaming.model.Vertex;
+import streaming.model.EdgeContainer;
+import streaming.model.GraphElement;
 import streaming.operators.grouping.model.AggregationMapping;
 import streaming.operators.grouping.model.GroupingInformation;
 
 public class EdgeAggregation implements GraphElementAggregationI {
 
 
-  private final GroupingInformation vertexEgi;
+  private final GroupingInformation vertexGroupInfo;
   private final AggregationMapping vertexAggregationMapping;
-  private final GroupingInformation edgeEgi;
+  private final GroupingInformation edgeGroupInfo;
   private final AggregationMapping edgeAggregationMapping;
 
-  public EdgeAggregation(GroupingInformation vertexEgi,
-      AggregationMapping vertexAggregationMapping, GroupingInformation edgeEgi,
+  public EdgeAggregation(GroupingInformation vertexGroupInfo,
+      AggregationMapping vertexAggregationMapping, GroupingInformation edgeGroupInfo,
       AggregationMapping edgeAggregationMapping) {
-    this.vertexEgi = vertexEgi;
+    checkAggregationAndGroupingKeyIntersection(vertexAggregationMapping, vertexGroupInfo);
+    if (edgeAggregationMapping != null && edgeGroupInfo != null) {
+      checkAggregationAndGroupingKeyIntersection(edgeAggregationMapping, edgeGroupInfo);
+    }
+    this.vertexGroupInfo = vertexGroupInfo;
     this.vertexAggregationMapping = vertexAggregationMapping;
-    this.edgeEgi = edgeEgi;
+    this.edgeGroupInfo = edgeGroupInfo;
     this.edgeAggregationMapping = edgeAggregationMapping;
   }
 
 
   @Override
-  public void flatMap(Collection<Edge> edgeSet, Collector<Edge> out) {
-    GraphElementInformation aggregatedSourceGei = new GraphElementInformation();
-    GraphElementInformation aggregatedTargetGei = new GraphElementInformation();
-    GraphElementInformation aggregatedEdgeGei = new GraphElementInformation();
+  public void apply(String s, TimeWindow window, Iterable<EdgeContainer> ecIterable,
+      Collector<EdgeContainer> out) {
+    GraphElement aggregatedSource = new GraphElement();
+    GraphElement aggregatedTarget = new GraphElement();
+    GraphElement aggregatedEdge = new GraphElement();
 
-    for (Edge e : edgeSet) {
-      aggregateGei(vertexAggregationMapping, vertexEgi, aggregatedSourceGei,
-          e.getSource().getGei());
-      aggregateGei(vertexAggregationMapping, vertexEgi, aggregatedTargetGei,
-          e.getTarget().getGei());
-      aggregateGei(edgeAggregationMapping, edgeEgi, aggregatedEdgeGei, e.getGei());
+    for (EdgeContainer e : ecIterable) {
+      aggregatedSource = aggregateGraphElement(vertexAggregationMapping, vertexGroupInfo,
+          aggregatedSource,
+          e.getSourceVertex());
+      aggregatedTarget = aggregateGraphElement(vertexAggregationMapping, vertexGroupInfo,
+          aggregatedTarget,
+          e.getTargetVertex());
+      aggregatedEdge = aggregateGraphElement(edgeAggregationMapping, edgeGroupInfo, aggregatedEdge,
+          e.getEdge());
     }
-    Vertex aggregatedSource = new Vertex(aggregatedSourceGei);
-    Vertex aggregatedTarget = new Vertex(aggregatedTargetGei);
-    Edge aggregatedEdge = new Edge(aggregatedSource, aggregatedTarget, aggregatedEdgeGei);
-    out.collect(aggregatedEdge);
+    EdgeContainer aggregatedEContainer = new EdgeContainer(aggregatedEdge, aggregatedSource,
+        aggregatedTarget);
+    out.collect(aggregatedEContainer);
 
   }
 

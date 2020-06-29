@@ -18,58 +18,62 @@ import streaming.operators.transform.VertexTransformation;
 
 public class EdgeStream {
 
-  private DataStream<Edge> edgeStream;
+  private DataStream<EdgeContainer> edgeStream;
 
-  public EdgeStream(DataStream<Edge> edgeStream) {
+  public EdgeStream(DataStream<EdgeContainer> edgeStream) {
     this.edgeStream = edgeStream.assignTimestampsAndWatermarks(
-        new AscendingTimestampExtractor<Edge>() {
+        new AscendingTimestampExtractor<EdgeContainer>() {
           @Override
-          public long extractAscendingTimestamp(Edge edge) { // TODO: timestamp define
+          public long extractAscendingTimestamp(EdgeContainer edge) {
             return 0;
           }
         }
     );
   }
 
-  public EdgeStream callForGraph(OperatorI operator) {
-    DataStream<Edge> result = operator.execute(edgeStream);
+  public EdgeStream callForStream(OperatorI operator) {
+    DataStream<EdgeContainer> result = operator.execute(edgeStream);
     return new EdgeStream(result);
   }
 
+  public WindowedGraphStream groupToWindowedGraphStream() {
+    return null;
+  }
+
   public EdgeStream vertexInducedSubgraph(
-      FilterFunction<GraphElementInformation> vertexGeiPredicate) {
-    return callForGraph(new Subgraph(vertexGeiPredicate, null, Strategy.VERTEX_INDUCED));
+      FilterFunction<Vertex> vertexGeiPredicate) {
+    return callForStream(new Subgraph(vertexGeiPredicate, null, Strategy.VERTEX_INDUCED));
   }
 
-  public EdgeStream edgeInducedSubgraph(FilterFunction<GraphElementInformation> edgeGeiPredicate) {
-    return callForGraph(new Subgraph(null, edgeGeiPredicate, Strategy.EDGE_INDUCED));
+  public EdgeStream edgeInducedSubgraph(FilterFunction<Edge> edgeGeiPredicate) {
+    return callForStream(new Subgraph(null, edgeGeiPredicate, Strategy.EDGE_INDUCED));
   }
 
-  public EdgeStream subgraph(FilterFunction<GraphElementInformation> vertexGeiPredicate,
-      FilterFunction<GraphElementInformation> edgeGeiPredicate) {
-    return callForGraph(new Subgraph(vertexGeiPredicate, edgeGeiPredicate, Strategy.BOTH));
+  public EdgeStream subgraph(FilterFunction<Vertex> vertexGeiPredicate,
+      FilterFunction<Edge> edgeGeiPredicate) {
+    return callForStream(new Subgraph(vertexGeiPredicate, edgeGeiPredicate, Strategy.BOTH));
   }
 
   public EdgeStream groupBy(GroupingInformation vertexEgi,
       AggregationMapping vertexAggregationFunctions,
       GroupingInformation edgeEgi, AggregationMapping edgeAggregationFunctions) {
-    return callForGraph(
+    return callForStream(
         new Grouping(vertexEgi, vertexAggregationFunctions, edgeEgi, edgeAggregationFunctions));
   }
 
   public EdgeStream transformEdge(MapFunction<Edge, Edge> mapper) {
-    return callForGraph(new EdgeTransformation(mapper));
+    return callForStream(new EdgeTransformation(mapper));
   }
 
   public EdgeStream transformVertices(MapFunction<Vertex, Vertex> mapper) {
-    return callForGraph(new VertexTransformation(mapper));
+    return callForStream(new VertexTransformation(mapper));
   }
 
   public void print() {
     edgeStream.print();
   }
 
-  public Iterator<Edge> collect() throws IOException {
+  public Iterator<EdgeContainer> collect() throws IOException {
     return DataStreamUtils.collect(edgeStream);
   }
 }

@@ -7,10 +7,11 @@ import java.util.HashSet;
 import java.util.Set;
 import org.apache.flink.util.Collector;
 import org.junit.jupiter.api.Test;
-import streaming.helper.AsciiGraphLoader;
 import streaming.model.Edge;
+import streaming.model.EdgeContainer;
 import streaming.operators.grouping.model.AggregationMapping;
 import streaming.operators.grouping.model.GroupingInformation;
+import streaming.util.AsciiGraphLoader;
 
 class VertexAggregationTest {
 
@@ -19,15 +20,18 @@ class VertexAggregationTest {
     GroupingInformation egi = new GroupingInformation();
     egi.groupingKeys.add("n");
     AggregationMapping am = new AggregationMapping();
-    am.addAggregation("a", new PropertiesAggregationFunction("0", (String pV1, String pV2) -> String
-        .valueOf(Double.parseDouble(pV1) + Double.parseDouble(pV2))));
+    am.addAggregationForProperty("a",
+        new PropertiesAggregationFunction("0", (String pV1, String pV2) -> String
+            .valueOf(Double.parseDouble(pV1) + Double.parseDouble(pV2))));
 
     VertexAggregation incrementer = new VertexAggregation(egi, am,
         AggregateMode.SOURCE);
 
     Collector<Edge> collector = mock(Collector.class);
 
-    Collection<Edge> edges = AsciiGraphLoader.loadFromString(
+    AsciiGraphLoader loader = new AsciiGraphLoader();
+
+    Collection<EdgeContainer> edges = loader.loadFromString(
         "(a1 {n : \"A\", a : \"1\"})," +
             "(a2 {n : \"A\", a : \"2\"})," +
             "(b1 {n : \"A\", a : \"25\"})," +
@@ -40,7 +44,7 @@ class VertexAggregationTest {
             "(c20)-[]->(b17)," +
             "(a20)-[]->(b19),"
     );
-    Set<Edge> edgeSet = new HashSet<>();
+    Set<EdgeContainer> edgeSet = new HashSet<>();
     edgeSet.addAll(edges);
 
     // call the methods that you have implemented
