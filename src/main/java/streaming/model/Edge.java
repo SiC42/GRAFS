@@ -1,11 +1,10 @@
 package streaming.model;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 import org.gradoop.common.model.impl.id.GradoopId;
 import org.gradoop.common.model.impl.id.GradoopIdSet;
+import org.gradoop.common.model.impl.properties.Properties;
+import streaming.factory.EdgeFactory;
 
 public class Edge extends GraphElement {
 
@@ -14,32 +13,11 @@ public class Edge extends GraphElement {
   private boolean reverse;
 
   public Edge() {
-    this(null, null);
-  }
 
-  public Edge(Edge otherEdge) {
-    super(otherEdge);
-    sourceId = otherEdge.getSourceId();
-    targetId = otherEdge.getTargetId();
-  }
-
-  public Edge(Element element, GradoopId sourceId, GradoopId targetId) {
-    super(element);
-    this.sourceId = sourceId;
-    this.targetId = targetId;
-    this.reverse = false;
-  }
-
-
-  public Edge(GradoopId sourceId, GradoopId targetId) {
-    super();
-    this.sourceId = sourceId;
-    this.targetId = targetId;
-    this.reverse = false;
   }
 
   public Edge(GradoopId id, String label, GradoopId sourceId, GradoopId targetId,
-      Map<String, String> properties,
+      Properties properties,
       GradoopIdSet graphIds) {
     super(id, label, properties, graphIds);
     this.sourceId = sourceId;
@@ -63,8 +41,8 @@ public class Edge extends GraphElement {
     targetId = newTarget;
   }
 
-  private void setReverse(boolean isReverse) {
-    reverse = isReverse;
+  private void setReverse() {
+    reverse = true;
   }
 
   public boolean isReverse() {
@@ -72,8 +50,8 @@ public class Edge extends GraphElement {
   }
 
   public Edge createReverseEdge() {
-    Edge reverseEdge = new Edge(this.getTargetId(), this.getSourceId());
-    reverseEdge.setReverse(true);
+    Edge reverseEdge = new EdgeFactory().createEdge(this.getTargetId(), this.getSourceId());
+    reverseEdge.setReverse();
     return reverseEdge;
   }
 
