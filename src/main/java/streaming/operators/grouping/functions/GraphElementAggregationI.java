@@ -1,8 +1,9 @@
 package streaming.operators.grouping.functions;
 
-import java.util.Map;
 import org.apache.flink.streaming.api.functions.windowing.WindowFunction;
 import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
+import org.gradoop.common.model.impl.properties.Property;
+import org.gradoop.common.model.impl.properties.PropertyValue;
 import streaming.model.EdgeContainer;
 import streaming.model.GraphElement;
 import streaming.operators.grouping.model.AggregationMapping;
@@ -30,17 +31,17 @@ public interface GraphElementAggregationI extends
   default GraphElement aggregateGraphElement(AggregationMapping aggregationMapping,
       GroupingInformation elemGroupInfo, GraphElement aggregatedElement,
       GraphElement curElement) {
-    for (Map.Entry<String, String> property : curElement.getProperties().entrySet()) {
+    for (Property property : curElement.getProperties()) {
       String key = property.getKey();
       if (elemGroupInfo.groupingKeys.contains(key)) {
-        aggregatedElement.addProperty(key, property.getValue());
+        aggregatedElement.setProperty(key, property.getValue());
       } else if (aggregationMapping.containsAggregationForProperty(key)) {
         PropertiesAggregationFunction aF = aggregationMapping.getAggregationForProperty(key);
-        String prevValue = aggregatedElement.containsProperty(key)
-            ? aggregatedElement.getProperty(key)
+        PropertyValue prevValue = aggregatedElement.hasProperty(key)
+            ? aggregatedElement.getPropertyValue(key)
             : aF.getIdentity();
-        String newValue = aF.apply(prevValue, curElement.getProperty(key));
-        aggregatedElement.addProperty(key, newValue);
+        PropertyValue newValue = aF.apply(prevValue, curElement.getPropertyValue(key));
+        aggregatedElement.setProperty(key, newValue);
       }
     }
     return aggregatedElement;

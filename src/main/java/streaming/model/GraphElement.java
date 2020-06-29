@@ -1,8 +1,8 @@
 package streaming.model;
 
-import java.util.Map;
 import org.gradoop.common.model.impl.id.GradoopId;
 import org.gradoop.common.model.impl.id.GradoopIdSet;
+import org.gradoop.common.model.impl.properties.Properties;
 
 public class GraphElement extends Element {
 
@@ -21,13 +21,14 @@ public class GraphElement extends Element {
 
   /**
    * Creates an EPGM graph element using the given arguments.
-   *  @param id         element id
+   *
+   * @param id         element id
    * @param label      element label
    * @param properties element properties
-   * @param graphIds     graphIds that element is contained in
+   * @param graphIds   graphIds that element is contained in
    */
   protected GraphElement(GradoopId id, String label,
-      Map<String, String> properties, GradoopIdSet graphIds) {
+      Properties properties, GradoopIdSet graphIds) {
     super(id, label, properties);
     this.graphIds = graphIds;
   }

@@ -1,9 +1,6 @@
 package streaming.model;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 import org.gradoop.common.model.impl.id.GradoopId;
 import org.gradoop.common.model.impl.id.GradoopIdSet;
 import org.gradoop.common.model.impl.properties.Properties;
@@ -29,7 +26,7 @@ public class Vertex extends GraphElement {
    * @param graphs     graphs that vertex is contained in
    */
   public Vertex(final GradoopId id, final String label,
-      final Map<String, String> properties, final GradoopIdSet graphs) {
+      final Properties properties, final GradoopIdSet graphs) {
     super(id, label, properties, graphs);
   }
 

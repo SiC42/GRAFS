@@ -2,10 +2,10 @@ package streaming.operators.grouping.functions;
 
 import static org.mockito.Mockito.mock;
 
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import org.apache.flink.util.Collector;
+import org.gradoop.common.model.impl.properties.PropertyValue;
 import org.junit.jupiter.api.Test;
 import streaming.model.Edge;
 import streaming.model.EdgeContainer;
@@ -20,9 +20,14 @@ class VertexAggregationTest {
     GroupingInformation egi = new GroupingInformation();
     egi.groupingKeys.add("n");
     AggregationMapping am = new AggregationMapping();
+    var identity = new PropertyValue();
+    identity.setDouble(0);
     am.addAggregationForProperty("a",
-        new PropertiesAggregationFunction("0", (String pV1, String pV2) -> String
-            .valueOf(Double.parseDouble(pV1) + Double.parseDouble(pV2))));
+        new PropertiesAggregationFunction(identity, (PropertyValue pV1, PropertyValue pV2) -> {
+          var newVal = new PropertyValue();
+          newVal.setDouble(pV1.getDouble() + pV2.getDouble());
+          return newVal;
+        }));
 
     VertexAggregation incrementer = new VertexAggregation(egi, am,
         AggregateMode.SOURCE);

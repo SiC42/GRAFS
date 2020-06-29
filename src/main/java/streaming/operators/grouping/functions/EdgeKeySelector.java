@@ -70,7 +70,7 @@ public class EdgeKeySelector implements KeySelector<EdgeContainer, String> {
     if (!egi.groupingKeys.isEmpty()) {
       sb.append("properties:{");
       for (String key : egi.groupingKeys) {
-        sb.append(String.format("(%s:%s) ", key, gei.getProperty(key)));
+        sb.append(String.format("(%s:%s) ", key, gei.getPropertyValue(key)));
       }
       sb.append("}");
     }

@@ -2,24 +2,25 @@ package streaming.operators.grouping.functions;
 
 import java.io.IOException;
 import java.io.ObjectStreamException;
+import org.gradoop.common.model.impl.properties.PropertyValue;
 
 public class PropertiesAggregationFunction implements
-    SerializableBiFunction<String, String, String> {
+    SerializableBiFunction<PropertyValue, PropertyValue, PropertyValue> {
 
-  private String identity;
-  private SerializableBiFunction<String, String, String> function;
+  private PropertyValue identity;
+  private SerializableBiFunction<PropertyValue, PropertyValue, PropertyValue> function;
 
-  public PropertiesAggregationFunction(String identity,
-      SerializableBiFunction<String, String, String> function) {
+  public PropertiesAggregationFunction(PropertyValue identity,
+      SerializableBiFunction<PropertyValue, PropertyValue, PropertyValue> function) {
     this.identity = identity;
     this.function = function;
   }
 
-  public String getIdentity() {
+  public PropertyValue getIdentity() {
     return identity;
   }
 
-  public String apply(String pV1, String pV2) {
+  public PropertyValue apply(PropertyValue pV1, PropertyValue pV2) {
     return function.apply(pV1, pV2);
   }
 
@@ -31,8 +32,9 @@ public class PropertiesAggregationFunction implements
 
   private void readObject(java.io.ObjectInputStream in)
       throws IOException, ClassNotFoundException {
-    this.identity = (String) in.readObject();
-    this.function = (SerializableBiFunction<String, String, String>) in.readObject();
+    this.identity = (PropertyValue) in.readObject();
+    this.function = (SerializableBiFunction<PropertyValue, PropertyValue, PropertyValue>) in
+        .readObject();
 
   }
 
