@@ -9,9 +9,7 @@ import streaming.operators.OperatorI;
 
 public class Subgraph implements OperatorI {
 
-  private final FilterFunction<Vertex> vertexFilter;
-  private final FilterFunction<Edge> edgeFilter;
-  private final Strategy strategy;
+  private final FilterFunction<EdgeContainer> ecFilter;
 
 
   public Subgraph(
@@ -32,45 +30,47 @@ public class Subgraph implements OperatorI {
       throw new IllegalArgumentException("No vertex edge functions was given.");
     }
 
-    this.strategy = strategy;
-
-    this.vertexFilter = vertexFilter;
-    this.edgeFilter = edgeFilter;
+    switch (strategy) {
+      case BOTH:
+        ecFilter = createSubGraphFilter(vertexFilter, edgeFilter);
+        break;
+      case VERTEX_INDUCED:
+        ecFilter = createVertexInducedSubgraphFilter(vertexFilter);
+        break;
+      case EDGE_INDUCED:
+        ecFilter = createEdgeInducedSubgraphFilter(edgeFilter);
+        break;
+      default:
+        throw new IllegalArgumentException("Strategy " + strategy + " is not supported");
+    }
   }
 
-  private DataStream<EdgeContainer> vertexInducedSubgraph(DataStream<EdgeContainer> ecStream) {
+  private FilterFunction<EdgeContainer> createVertexInducedSubgraphFilter(
+      FilterFunction<Vertex> vertexFilter) {
     FilterFunction<EdgeContainer> ecFilter = ec ->
         vertexFilter.filter(ec.getSourceVertex()) && vertexFilter
             .filter(ec.getTargetVertex());
-    return ecStream.filter(ecFilter);
+    return ecFilter;
   }
 
-  private DataStream<EdgeContainer> edgeInducedSubgraph(DataStream<EdgeContainer> ecStream) {
+  private FilterFunction<EdgeContainer> createEdgeInducedSubgraphFilter(
+      FilterFunction<Edge> edgeFilter) {
     FilterFunction<EdgeContainer> ecFilter = ec -> edgeFilter.filter(ec.getEdge());
-    return ecStream.filter(ecFilter);
+    return ecFilter;
   }
 
-  private DataStream<EdgeContainer> subgraph(DataStream<EdgeContainer> ecStream) {
+  private FilterFunction<EdgeContainer> createSubGraphFilter(FilterFunction<Vertex> vertexFilter,
+      FilterFunction<Edge> edgeFilter) {
     FilterFunction<EdgeContainer> ecFilter = ec ->
         edgeFilter.filter(ec.getEdge()) &&
             vertexFilter.filter(ec.getSourceVertex()) &&
             vertexFilter.filter(ec.getTargetVertex());
-    return ecStream.filter(ecFilter);
+    return ecFilter;
   }
 
   @Override
   public DataStream<EdgeContainer> execute(DataStream<EdgeContainer> stream) {
-    DataStream<EdgeContainer> filteredStream;
-    switch (strategy) {
-      case BOTH:
-        return subgraph(stream);
-      case VERTEX_INDUCED:
-        return vertexInducedSubgraph(stream);
-      case EDGE_INDUCED:
-        return edgeInducedSubgraph(stream);
-      default:
-        throw new IllegalArgumentException("Strategy " + strategy + " is not supported");
-    }
+    return stream.filter(ecFilter);
   }
 
   /**
