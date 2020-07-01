@@ -150,6 +150,8 @@ class AsciiGraphLoaderTest {
 
     for (Edge edge : asciiGraphLoader.getEdges()) {
       assertEquals(GradoopConstants.DEFAULT_EDGE_LABEL, edge.getLabel(), "Edge has wrong label");
+      assertNotNull(edge.getSourceId(), "Source ID was null");
+      assertNotNull(edge.getTargetId(), "Target ID was null");
     }
   }
 
@@ -244,6 +246,22 @@ class AsciiGraphLoaderTest {
     assertTrue(edgesGH.contains(b), "Edge was not contained in graph");
     assertTrue(edgesGH.contains(c), "Edge was not contained in graph");
     assertTrue(edgesGH.contains(d), "Edge was not contained in graph");
+  }
+
+  @Test
+  public void testGetEdgeContainers() {
+    AsciiGraphLoader asciiGraphLoader =
+        AsciiGraphLoader.fromString("[()-->()]");
+
+    validateCollections(asciiGraphLoader, 1, 2, 1);
+    validateCaches(asciiGraphLoader, 0, 0, 0);
+
+    for (var ec : asciiGraphLoader.createEdgeContainers()) {
+      assertEquals(GradoopConstants.DEFAULT_EDGE_LABEL, ec.getEdge().getLabel(),
+          "Edge has wrong label");
+      assertNotNull(ec.getEdge().getSourceId(), "Source ID was null");
+      assertNotNull(ec.getEdge().getTargetId(), "Target ID was null");
+    }
   }
 
   @Test
