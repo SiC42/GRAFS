@@ -29,11 +29,11 @@ public interface GraphElementAggregationI extends
   }
 
   default GraphElement aggregateGraphElement(AggregationMapping aggregationMapping,
-      GroupingInformation elemGroupInfo, GraphElement aggregatedElement,
+      GroupingInformation groupInfo, GraphElement aggregatedElement,
       GraphElement curElement) {
     for (Property property : curElement.getProperties()) {
       String key = property.getKey();
-      if (elemGroupInfo.groupingKeys.contains(key)) {
+      if (groupInfo.groupingKeys.contains(key)) {
         aggregatedElement.setProperty(key, property.getValue());
       } else if (aggregationMapping.containsAggregationForProperty(key)) {
         PropertiesAggregationFunction aF = aggregationMapping.getAggregationForProperty(key);
@@ -43,6 +43,9 @@ public interface GraphElementAggregationI extends
         PropertyValue newValue = aF.apply(prevValue, curElement.getPropertyValue(key));
         aggregatedElement.setProperty(key, newValue);
       }
+    }
+    for (var graphId : curElement.getGraphIds()) {
+      aggregatedElement.addGraphId(graphId);
     }
     return aggregatedElement;
   }
