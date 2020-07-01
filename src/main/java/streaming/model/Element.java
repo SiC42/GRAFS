@@ -76,8 +76,11 @@ public abstract class Element implements Serializable {
 
   @Override
   public String toString() {
-    return String.format("%s properties=%s",
-        label, properties);
+    return String.format("%s%s%s{%s}",
+        id,
+        label == null || label.equals("") ? "" : ":",
+        label,
+        properties == null ? "" : properties);
   }
 
   @Override

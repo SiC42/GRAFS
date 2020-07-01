@@ -63,4 +63,8 @@ public class EdgeContainer {
     return new EdgeContainer(reverseEdge, targetVertex, sourceVertex);
   }
 
+  @Override
+  public String toString() {
+    return String.format("%s-%s->%s", sourceVertex, edge, targetVertex);
+  }
 }

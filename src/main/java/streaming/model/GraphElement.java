@@ -55,4 +55,9 @@ public abstract class GraphElement extends Element {
   public int getGraphCount() {
     return (graphIds != null) ? graphIds.size() : 0;
   }
+
+  @Override
+  public String toString() {
+    return String.format("%s @ %s", super.toString(), graphIds);
+  }
 }
