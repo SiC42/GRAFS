@@ -16,6 +16,7 @@ public class GraphElementTest {
   @Test
   public void testAddGraphIdNoGraphIds() {
     GraphElement graphElementMock = mock(GraphElement.class, CALLS_REAL_METHODS);
+    graphElementMock.setGraphIds(new GradoopIdSet());
 
     GradoopId id = GradoopId.get();
     graphElementMock.addGraphId(id);
