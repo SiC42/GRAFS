@@ -42,19 +42,28 @@ public class EdgeAggregation implements GraphElementAggregationI {
         .createEdge(aggregatedSource.getId(), aggregatedTarget.getId());
     int count = 0;
 
-    for (EdgeContainer e : ecIterable) {
+    EdgeContainer lastEc = null;
+    for (EdgeContainer ec : ecIterable) {
       aggregatedSource = (Vertex) aggregateGraphElement(vertexAggregationMapping, vertexGroupInfo,
           aggregatedSource,
-          e.getSourceVertex());
+          ec.getSourceVertex());
       aggregatedTarget = (Vertex) aggregateGraphElement(vertexAggregationMapping, vertexGroupInfo,
           aggregatedTarget,
-          e.getTargetVertex());
+          ec.getTargetVertex());
       aggregatedEdge = (Edge) aggregateGraphElement(edgeAggregationMapping, edgeGroupInfo,
           aggregatedEdge,
-          e.getEdge());
+          ec.getEdge());
+      count++;
+      lastEc = ec;
     }
-    EdgeContainer aggregatedEContainer = new EdgeContainer(aggregatedEdge, aggregatedSource,
-        aggregatedTarget);
+    EdgeContainer aggregatedEContainer;
+    if (count > 1) { // No need for aggregation when only one edge was "aggregated"
+      aggregatedEContainer = new EdgeContainer(aggregatedEdge, aggregatedSource,
+          aggregatedTarget);
+    } else {
+      aggregatedEContainer = lastEc;
+    }
+
     out.collect(aggregatedEContainer);
 
   }
