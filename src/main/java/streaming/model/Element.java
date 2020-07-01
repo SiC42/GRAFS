@@ -91,8 +91,10 @@ public abstract class Element implements Serializable {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
+
     Element that = (Element) o;
-    return this.getId() == that.getId();
+
+    return Objects.equals(id, that.id);
   }
 
   public GradoopId getId() {

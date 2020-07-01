@@ -1,6 +1,5 @@
 package streaming.model;
 
-import java.util.Objects;
 import org.gradoop.common.model.impl.id.GradoopId;
 import org.gradoop.common.model.impl.id.GradoopIdSet;
 import org.gradoop.common.model.impl.properties.Properties;
@@ -29,24 +28,6 @@ public class Vertex extends GraphElement {
 
   @Override
   public String toString() {
-    return String.format("(%s)",
-        super.toString());
-  }
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    Vertex vertex = (Vertex) o;
-    return Objects.equals(getId(), vertex.getId());
-  }
-
-  @Override
-  public int hashCode() {
-    return getId().hashCode();
+    return String.format("(%s)", super.toString());
   }
 }

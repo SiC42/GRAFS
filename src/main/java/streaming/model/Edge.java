@@ -1,6 +1,5 @@
 package streaming.model;
 
-import java.util.Objects;
 import org.gradoop.common.model.impl.id.GradoopId;
 import org.gradoop.common.model.impl.id.GradoopIdSet;
 import org.gradoop.common.model.impl.properties.Properties;
@@ -56,27 +55,10 @@ public class Edge extends GraphElement {
   }
 
   @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    Edge edge = (Edge) o;
-    return Objects.equals(sourceId, edge.sourceId) &&
-        Objects.equals(targetId, edge.targetId);
-  }
-
-  @Override
   public String toString() {
     return String.format("[%s, reverse=%b]",
         super.toString(),
         reverse);
   }
 
-  @Override
-  public int hashCode() {
-    return Objects.hash(getId());
-  }
 }

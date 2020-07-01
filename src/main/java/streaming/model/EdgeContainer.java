@@ -1,5 +1,6 @@
 package streaming.model;
 
+import java.util.Objects;
 import streaming.factory.EdgeFactory;
 import streaming.factory.VertexFactory;
 
@@ -66,5 +67,24 @@ public class EdgeContainer {
   @Override
   public String toString() {
     return String.format("%s-%s->%s", sourceVertex, edge, targetVertex);
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    EdgeContainer that = (EdgeContainer) o;
+    return Objects.equals(edge, that.edge) &&
+        Objects.equals(sourceVertex, that.sourceVertex) &&
+        Objects.equals(targetVertex, that.targetVertex);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(edge, sourceVertex, targetVertex);
   }
 }
