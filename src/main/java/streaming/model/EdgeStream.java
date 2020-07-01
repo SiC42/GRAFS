@@ -50,6 +50,11 @@ public class EdgeStream {
     return callForStream(new Subgraph(vertexGeiPredicate, edgeGeiPredicate, Strategy.BOTH));
   }
 
+  public EdgeStream subgraph(FilterFunction<Vertex> vertexGeiPredicate,
+      FilterFunction<Edge> edgeGeiPredicate, Strategy strategy) {
+    return callForStream(new Subgraph(vertexGeiPredicate, edgeGeiPredicate, strategy));
+  }
+
   public EdgeStream groupBy(GroupingInformation vertexEgi,
       AggregationMapping vertexAggregationFunctions,
       GroupingInformation edgeEgi, AggregationMapping edgeAggregationFunctions) {
