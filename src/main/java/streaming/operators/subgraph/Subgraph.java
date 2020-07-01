@@ -44,6 +44,15 @@ public class Subgraph implements OperatorI {
         throw new IllegalArgumentException("Strategy " + strategy + " is not supported");
     }
   }
+  
+  private FilterFunction<EdgeContainer> createSubGraphFilter(FilterFunction<Vertex> vertexFilter,
+      FilterFunction<Edge> edgeFilter) {
+    FilterFunction<EdgeContainer> ecFilter = ec ->
+        edgeFilter.filter(ec.getEdge()) &&
+            vertexFilter.filter(ec.getSourceVertex()) &&
+            vertexFilter.filter(ec.getTargetVertex());
+    return ecFilter;
+  }
 
   private FilterFunction<EdgeContainer> createVertexInducedSubgraphFilter(
       FilterFunction<Vertex> vertexFilter) {
@@ -56,15 +65,6 @@ public class Subgraph implements OperatorI {
   private FilterFunction<EdgeContainer> createEdgeInducedSubgraphFilter(
       FilterFunction<Edge> edgeFilter) {
     FilterFunction<EdgeContainer> ecFilter = ec -> edgeFilter.filter(ec.getEdge());
-    return ecFilter;
-  }
-
-  private FilterFunction<EdgeContainer> createSubGraphFilter(FilterFunction<Vertex> vertexFilter,
-      FilterFunction<Edge> edgeFilter) {
-    FilterFunction<EdgeContainer> ecFilter = ec ->
-        edgeFilter.filter(ec.getEdge()) &&
-            vertexFilter.filter(ec.getSourceVertex()) &&
-            vertexFilter.filter(ec.getTargetVertex());
     return ecFilter;
   }
 
