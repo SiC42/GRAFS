@@ -46,7 +46,7 @@ class VertexAggregationTest {
             "(c20)-[]->(b17)," +
             "(a20)-[]->(b19),"
     );
-    Set<EdgeContainer> edgeSet = new HashSet<>(loader.getEdgeContainers());
+    Set<EdgeContainer> edgeSet = new HashSet<>(loader.createEdgeContainers());
 
     // call the methods that you have implemented
     //incrementer.flatMap(2L, collector);

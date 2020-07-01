@@ -35,7 +35,7 @@ class EdgeStreamTest {
             "(a20)-[]->(b19),"
     );
 
-    Collection<EdgeContainer> edges = loader.getEdgeContainers();
+    Collection<EdgeContainer> edges = loader.createEdgeContainers();
     DataStream<EdgeContainer> m = env.fromCollection(edges);
 
     edgeStream = new EdgeStream(m);

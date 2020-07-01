@@ -7,7 +7,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
+import org.apache.flink.streaming.api.datastream.DataStream;
+import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.gradoop.common.model.impl.id.GradoopId;
 import org.gradoop.common.model.impl.id.GradoopIdSet;
 import org.gradoop.common.model.impl.properties.Properties;
@@ -19,6 +23,8 @@ import org.s1ck.gdl.model.GraphElement;
 import streaming.factory.EdgeFactory;
 import streaming.factory.VertexFactory;
 import streaming.model.Edge;
+import streaming.model.EdgeContainer;
+import streaming.model.EdgeStream;
 import streaming.model.Vertex;
 
 public class AsciiGraphLoader {
@@ -107,6 +113,50 @@ public class AsciiGraphLoader {
         .setDefaultEdgeLabel(GradoopConstants.DEFAULT_EDGE_LABEL);
   }
 
+  /**
+   * Appends the given ASCII GDL to the graph handled by that loader.
+   * <p>
+   * Variables that were previously used, can be reused in the given script and refer to the same
+   * entities.
+   *
+   * @param asciiGraph GDL string
+   */
+  public void appendFromString(String asciiGraph) {
+    this.gdlHandler.append(asciiGraph);
+    init();
+  }
+
+  // ---------------------------------------------------------------------------
+  //  EdgeCollection and EdgeStream methods
+  // ---------------------------------------------------------------------------
+
+  public EdgeStream createEdgeStream(FlinkConfig config) {
+    StreamExecutionEnvironment env = config.getExecutionEnvironment();
+    DataStream<EdgeContainer> stream = env.fromCollection(createEdgeContainers());
+    return new EdgeStream(stream);
+  }
+
+  public Collection<EdgeContainer> createEdgeContainersByGraphVariables(String... expected) {
+    Set<EdgeContainer> edgeContainers = new HashSet<>();
+    var edges = getEdgesByGraphVariables(expected);
+    return createEdgeContainers(edges);
+  }
+
+  public Collection<EdgeContainer> createEdgeContainers() {
+    return createEdgeContainers(edges.values());
+  }
+
+  private Collection<EdgeContainer> createEdgeContainers(Collection<Edge> edges) {
+    Set<EdgeContainer> edgeContainers = new HashSet<>();
+    for (var edge : edges) {
+      var source = vertices.get(edge.getSourceId());
+      var target = vertices.get(edge.getTargetId());
+      EdgeContainer ec = new EdgeContainer(edge, source, target);
+      edgeContainers.add(ec);
+    }
+    return edgeContainers;
+  }
+
   // ---------------------------------------------------------------------------
   //  Graph methods
   // ---------------------------------------------------------------------------
@@ -116,7 +166,7 @@ public class AsciiGraphLoader {
    *
    * @return graphHeads
    */
-  public Collection<GradoopId> getGraphHeads() {
+  public Collection<GradoopId> getGraphIds() {
     return new ImmutableSet.Builder<GradoopId>()
         .addAll(graphIds.values()).build();
   }
@@ -127,8 +177,8 @@ public class AsciiGraphLoader {
    * @param variable variable used in GDL script
    * @return graphHead or {@code null} if graph is not cached
    */
-  public GradoopId getGraphHeadByVariable(String variable) {
-    return getGraphHeadCache().get(variable);
+  public GradoopId getGraphIdByVariable(String variable) {
+    return getGraphIdCache().get(variable);
   }
 
   /**
@@ -137,11 +187,11 @@ public class AsciiGraphLoader {
    * @param variables variables used in GDL script
    * @return graphHeads that are assigned to the given variables
    */
-  public Collection<GradoopId> getGraphHeadsByVariables(String... variables) {
+  public Collection<GradoopId> getGraphIdsByVariables(String... variables) {
     Collection<GradoopId> result =
         Sets.newHashSetWithExpectedSize(variables.length);
     for (String variable : variables) {
-      GradoopId graphId = getGraphHeadByVariable(variable);
+      GradoopId graphId = getGraphIdByVariable(variable);
       if (graphId != null) {
         result.add(graphId);
       }
@@ -154,7 +204,7 @@ public class AsciiGraphLoader {
    *
    * @return variable to graphHead mapping
    */
-  public Map<String, GradoopId> getGraphHeadCache() {
+  public Map<String, GradoopId> getGraphIdCache() {
     return new ImmutableMap.Builder<String, GradoopId>().putAll(graphIdCache)
         .build();
   }
@@ -223,7 +273,7 @@ public class AsciiGraphLoader {
    */
   public Collection<Vertex> getVerticesByGraphVariables(String... graphVariables) {
     GradoopIdSet graphIds = new GradoopIdSet();
-    for (GradoopId graphId : getGraphHeadsByVariables(graphVariables)) {
+    for (GradoopId graphId : getGraphIdsByVariables(graphVariables)) {
       graphIds.add(graphId);
     }
     return getVerticesByGraphIds(graphIds);
@@ -302,7 +352,7 @@ public class AsciiGraphLoader {
    */
   public Collection<Edge> getEdgesByGraphVariables(String... variables) {
     GradoopIdSet graphIds = new GradoopIdSet();
-    graphIds.addAll(getGraphHeadsByVariables(variables));
+    graphIds.addAll(getGraphIdsByVariables(variables));
     return getEdgesByGraphIds(graphIds);
   }
 
@@ -468,5 +518,4 @@ public class AsciiGraphLoader {
     }
     return result;
   }
-
 }

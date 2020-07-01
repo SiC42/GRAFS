@@ -29,7 +29,7 @@ class EdgeKeySelectorTest {
             "(c20)-[]->(b17)," +
             "(a20)-[]->(b19),"
     );
-    Set<EdgeContainer> edgeSet = new HashSet<>(loader.getEdgeContainers());
+    Set<EdgeContainer> edgeSet = new HashSet<>(loader.createEdgeContainers());
     EdgeKeySelector eks = new EdgeKeySelector(egi, null, AggregateMode.SOURCE);
     for (EdgeContainer e : edgeSet) {
       assertThat(eks.getKey(e), equalTo("Vertex-Grouping-Information:(properties:{(n:A) })"));

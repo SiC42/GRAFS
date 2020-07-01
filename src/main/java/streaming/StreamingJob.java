@@ -67,7 +67,7 @@ public class StreamingJob {
         "(p7)-[:worksAt]->(c2) " +
         "(p8)-[:worksAt]->(c1) " + "]";
     AsciiGraphLoader loader = AsciiGraphLoader.fromString(graphStr);
-    Collection<EdgeContainer> ecCollection = loader.getEdgeContainers();
+    Collection<EdgeContainer> ecCollection = loader.createEdgeContainers();
     DataStream<EdgeContainer> m = env.fromCollection(ecCollection);
 
     EdgeStream messageStream = new EdgeStream(m);
