@@ -22,12 +22,12 @@ class EdgeStreamTest {
     env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
 
     AsciiGraphLoader loader = AsciiGraphLoader.fromString(
-        "(a18 {n : \"A\", a : \"18\"})," +
-            "(a20 {n : \"A\", a : \"20\"})," +
-            "(a25 {n : \"A\", a : \"25\"})," +
-            "(b17 {n : \"B\", a : \"17\"})," +
-            "(b19 {n : \"B\", a : \"19\"})," +
-            "(c20 {n : \"C\", a : \"20\"})," +
+        "(a18 {n : \"A\", a : 18})," +
+            "(a20 {n : \"A\", a : 20})," +
+            "(a25 {n : \"A\", a : 25})," +
+            "(b17 {n : \"B\", a : 17})," +
+            "(b19 {n : \"B\", a : 19})," +
+            "(c20 {n : \"C\", a : 20})," +
             "(a18)-[]->(b17)," +
             "(a18)-[]->(c20)," +
             "(c20)-[]->(a25)," +
@@ -47,11 +47,11 @@ class EdgeStreamTest {
     vertexEgi.groupingKeys.add("n");
     AggregationMapping am = new AggregationMapping();
     var identity = new PropertyValue();
-    identity.setDouble(0);
+    identity.setInt(0);
     am.addAggregationForProperty("a",
         new PropertiesAggregationFunction(identity, (PropertyValue pV1, PropertyValue pV2) -> {
           var newVal = new PropertyValue();
-          newVal.setDouble(pV1.getDouble() + pV2.getDouble());
+          newVal.setInt(pV1.getInt() + pV2.getInt());
           return newVal;
         }));
     edgeStream.groupBy(vertexEgi, am, null, null).print();
