@@ -1,13 +1,13 @@
 package streaming.util;
 
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Sets;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 import org.gradoop.common.model.impl.id.GradoopId;
 import org.gradoop.common.model.impl.id.GradoopIdSet;
 import org.gradoop.common.model.impl.properties.Properties;
@@ -16,28 +16,72 @@ import org.s1ck.gdl.GDLHandler;
 import org.s1ck.gdl.GDLHandler.Builder;
 import org.s1ck.gdl.model.Graph;
 import org.s1ck.gdl.model.GraphElement;
+import streaming.factory.EdgeFactory;
+import streaming.factory.VertexFactory;
 import streaming.model.Edge;
-import streaming.model.EdgeContainer;
 import streaming.model.Vertex;
 
 public class AsciiGraphLoader {
 
-  private final GDLHandler gdlHandler;
-  private final Map<Long, GradoopId> graphIds;
-  private final Map<Long, Vertex> vertices;
-  private final Map<Long, Edge> edges;
-  private final Set<EdgeContainer> edgeContainers;
+  private final VertexFactory vFactory;
 
-  private AsciiGraphLoader(GDLHandler gdlHandler) {
+  private final EdgeFactory edgeFactory;
+
+  /**
+   * Used to parse GDL scripts.
+   */
+  private final GDLHandler gdlHandler;
+
+  /**
+   * Mapping between GDL ids and Gradoop IDs.
+   */
+  private final Map<Long, GradoopId> graphIds;
+  /**
+   * Stores graphs that are assigned to a variable.
+   */
+  private final Map<String, GradoopId> graphIdCache;
+
+  /**
+   * Stores all vertices contained in the GDL script.
+   */
+  private final Map<GradoopId, Vertex> vertices;
+  /**
+   * Mapping between GDL ids and Gradoop IDs.
+   */
+  private final Map<Long, GradoopId> vertexIds;
+  /**
+   * Stores vertices that are assigned to a variable.
+   */
+  private final Map<String, Vertex> vertexCache;
+
+  /**
+   * Stores all edges contained in the GDL script.
+   */
+  private final Map<GradoopId, Edge> edges;
+  /**
+   * Mapping between GDL ids and Gradoop IDs.
+   */
+  private final Map<Long, GradoopId> edgeIds;
+  /**
+   * Stores edges that are assigned to a variable.
+   */
+  private final Map<String, Edge> edgeCache;
+
+  public AsciiGraphLoader(GDLHandler gdlHandler) {
+    vFactory = new VertexFactory();
+    edgeFactory = new EdgeFactory();
     this.gdlHandler = gdlHandler;
     this.graphIds = new HashMap<>();
+    this.graphIdCache = new HashMap<>();
     this.vertices = new HashMap<>();
+    this.vertexIds = new HashMap<>();
+    this.vertexCache = new HashMap<>();
     this.edges = new HashMap<>();
-    this.edgeContainers = new HashSet<>();
-    initGraphIds();
-    initVertices();
-    buildEdgeContainers();
+    this.edgeIds = new HashMap<>();
+    this.edgeCache = new HashMap<>();
+    init();
   }
+
 
   public static AsciiGraphLoader fromFile(String fileName) throws IOException {
     GDLHandler gdlHandler = createDefaultGdlHandlerBuilder()
@@ -63,60 +107,356 @@ public class AsciiGraphLoader {
         .setDefaultEdgeLabel(GradoopConstants.DEFAULT_EDGE_LABEL);
   }
 
-  public Collection<Vertex> getVertices() {
-    return Collections.unmodifiableCollection(vertices.values());
-  }
+  // ---------------------------------------------------------------------------
+  //  Graph methods
+  // ---------------------------------------------------------------------------
 
-  public Collection<Edge> getEdges() {
-    return Collections.unmodifiableCollection(edges.values());
-  }
-
-  public Collection<EdgeContainer> getEdgeContainers() {
-    return Collections.unmodifiableCollection(edgeContainers);
-  }
-
-  public Collection<GradoopId> getGraphIds() {
-    return graphIds.values();
-  }
-
-  private void buildEdgeContainers() {
-    for (org.s1ck.gdl.model.Edge gdlE : gdlHandler.getEdges()) {
-      EdgeContainer e = createEdgeContainerFromGdl(gdlE);
-      edgeContainers.add(e);
-    }
-  }
-
-  private void initGraphIds() {
-    for (Graph g : gdlHandler.getGraphs()) {
-      graphIds.put(g.getId(), GradoopId.get());
-    }
-  }
-
-  private void initVertices() {
-    for (org.s1ck.gdl.model.Vertex v : gdlHandler.getVertices()) {
-      vertices.put(v.getId(), createVertexFromGdl(v));
-    }
-  }
-
-  private EdgeContainer createEdgeContainerFromGdl(org.s1ck.gdl.model.Edge gdlE) {
-    Vertex sourceV = vertices.get(gdlE.getSourceVertexId());
-    Vertex targetV = vertices.get(gdlE.getTargetVertexId());
-    Edge edge = createEdgeFromGdl(gdlE, sourceV.getId(), targetV.getId());
-    edges.put(gdlE.getId(), edge);
-    return new EdgeContainer(edge, sourceV, targetV);
-  }
-
-  private Vertex createVertexFromGdl(org.s1ck.gdl.model.Vertex gdlVertex) {
-    Properties properties = new Properties();
-    for (Map.Entry<String, Object> prop : gdlVertex.getProperties().entrySet()) {
-      properties.set(prop.getKey(), prop.getValue());
-    }
-    return new Vertex(GradoopId.get(), gdlVertex.getLabel(), properties, createGradoopIdSet(gdlVertex));
+  /**
+   * Returns all GraphHeads contained in the ASCII graph.
+   *
+   * @return graphHeads
+   */
+  public Collection<GradoopId> getGraphHeads() {
+    return new ImmutableSet.Builder<GradoopId>()
+        .addAll(graphIds.values()).build();
   }
 
   /**
-   * Creates a {@code GradoopIDSet} from the long identifiers stored at the
-   * given graph element.
+   * Returns GraphHead by given variable.
+   *
+   * @param variable variable used in GDL script
+   * @return graphHead or {@code null} if graph is not cached
+   */
+  public GradoopId getGraphHeadByVariable(String variable) {
+    return getGraphHeadCache().get(variable);
+  }
+
+  /**
+   * Returns GraphHeads by their given variables.
+   *
+   * @param variables variables used in GDL script
+   * @return graphHeads that are assigned to the given variables
+   */
+  public Collection<GradoopId> getGraphHeadsByVariables(String... variables) {
+    Collection<GradoopId> result =
+        Sets.newHashSetWithExpectedSize(variables.length);
+    for (String variable : variables) {
+      GradoopId graphId = getGraphHeadByVariable(variable);
+      if (graphId != null) {
+        result.add(graphId);
+      }
+    }
+    return result;
+  }
+
+  /**
+   * Returns all graph heads that are bound to a variable in the GDL script.
+   *
+   * @return variable to graphHead mapping
+   */
+  public Map<String, GradoopId> getGraphHeadCache() {
+    return new ImmutableMap.Builder<String, GradoopId>().putAll(graphIdCache)
+        .build();
+  }
+
+  // ---------------------------------------------------------------------------
+  //  Vertex methods
+  // ---------------------------------------------------------------------------
+
+  /**
+   * Returns all vertices contained in the ASCII graph.
+   *
+   * @return vertices
+   */
+  public Collection<Vertex> getVertices() {
+    return new ImmutableSet.Builder<Vertex>().addAll(vertices.values()).build();
+  }
+
+  /**
+   * Returns vertex by its given variable.
+   *
+   * @param variable variable used in GDL script
+   * @return vertex or {@code null} if not present
+   */
+  public Vertex getVertexByVariable(String variable) {
+    return vertexCache.get(variable);
+  }
+
+  /**
+   * Returns vertices by their given variables.
+   *
+   * @param variables variables used in GDL script
+   * @return vertices
+   */
+  public Collection<Vertex> getVerticesByVariables(String... variables) {
+    Collection<Vertex> result = Sets.newHashSetWithExpectedSize(variables.length);
+    for (String variable : variables) {
+      Vertex vertex = getVertexByVariable(variable);
+      if (vertex != null) {
+        result.add(vertex);
+      }
+    }
+    return result;
+  }
+
+  /**
+   * Returns all vertices that belong to the given graphs.
+   *
+   * @param graphIds graph identifiers
+   * @return vertices that are contained in the graphs
+   */
+  public Collection<Vertex> getVerticesByGraphIds(GradoopIdSet graphIds) {
+    Collection<Vertex> result = Sets.newHashSetWithExpectedSize(graphIds.size());
+    for (Vertex vertex : vertices.values()) {
+      if (vertex.getGraphIds().containsAny(graphIds)) {
+        result.add(vertex);
+      }
+    }
+    return result;
+  }
+
+  /**
+   * Returns all vertices that belong to the given graph variables.
+   *
+   * @param graphVariables graph variables used in the GDL script
+   * @return vertices that are contained in the graphs
+   */
+  public Collection<Vertex> getVerticesByGraphVariables(String... graphVariables) {
+    GradoopIdSet graphIds = new GradoopIdSet();
+    for (GradoopId graphId : getGraphHeadsByVariables(graphVariables)) {
+      graphIds.add(graphId);
+    }
+    return getVerticesByGraphIds(graphIds);
+  }
+
+  /**
+   * Returns all vertices that are bound to a variable in the GDL script.
+   *
+   * @return variable to vertex mapping
+   */
+  public Map<String, Vertex> getVertexCache() {
+    return new ImmutableMap.Builder<String, Vertex>().putAll(vertexCache).build();
+  }
+
+  // ---------------------------------------------------------------------------
+  //  Edge methods
+  // ---------------------------------------------------------------------------
+
+  /**
+   * Returns all edges contained in the ASCII graph.
+   *
+   * @return edges
+   */
+  public Collection<Edge> getEdges() {
+    return new ImmutableSet.Builder<Edge>().addAll(edges.values()).build();
+  }
+
+  /**
+   * Returns edge by its given variable.
+   *
+   * @param variable variable used in GDL script
+   * @return edge or {@code null} if not present
+   */
+  public Edge getEdgeByVariable(String variable) {
+    return edgeCache.get(variable);
+  }
+
+  /**
+   * Returns edges by their given variables.
+   *
+   * @param variables variables used in GDL script
+   * @return edges
+   */
+  public Collection<Edge> getEdgesByVariables(String... variables) {
+    Collection<Edge> result = Sets.newHashSetWithExpectedSize(variables.length);
+    for (String variable : variables) {
+      Edge edge = edgeCache.get(variable);
+      if (edge != null) {
+        result.add(edge);
+      }
+    }
+    return result;
+  }
+
+  /**
+   * Returns all edges that belong to the given graphs.
+   *
+   * @param graphIds Graph identifiers
+   * @return edges
+   */
+  public Collection<Edge> getEdgesByGraphIds(GradoopIdSet graphIds) {
+    Collection<Edge> result = Sets.newHashSetWithExpectedSize(graphIds.size());
+    for (Edge edge : edges.values()) {
+      if (edge.getGraphIds().containsAny(graphIds)) {
+        result.add(edge);
+      }
+    }
+    return result;
+  }
+
+  /**
+   * Returns all edges that belong to the given graph variables.
+   *
+   * @param variables graph variables used in the GDL script
+   * @return edges
+   */
+  public Collection<Edge> getEdgesByGraphVariables(String... variables) {
+    GradoopIdSet graphIds = new GradoopIdSet();
+    graphIds.addAll(getGraphHeadsByVariables(variables));
+    return getEdgesByGraphIds(graphIds);
+  }
+
+  /**
+   * Returns all edges that are bound to a variable in the GDL script.
+   *
+   * @return variable to edge mapping
+   */
+  public Map<String, Edge> getEdgeCache() {
+    return new ImmutableMap.Builder<String, Edge>().putAll(edgeCache).build();
+  }
+
+  // ---------------------------------------------------------------------------
+  //  Private init methods
+  // ---------------------------------------------------------------------------
+
+  /**
+   * Initializes the AsciiGraphLoader
+   */
+  private void init() {
+    initGraphIds();
+    initVertices();
+    initEdges();
+  }
+
+  /**
+   * Initializes GraphHeads and their cache.
+   */
+  private void initGraphIds() {
+    for (var graph : gdlHandler.getGraphs()) {
+      if (!graphIds.containsKey(graph.getId())) {
+        initGraphHead(graph);
+      }
+    }
+    for (Map.Entry<String, org.s1ck.gdl.model.Graph> e : gdlHandler.getGraphCache().entrySet()) {
+      updateGraphCache(e.getKey(), e.getValue());
+    }
+  }
+
+  /**
+   * Creates a new Graph from the GDL Loader.
+   *
+   * @param g graph from GDL Loader
+   * @return graph head
+   */
+  private void initGraphHead(Graph g) {
+    GradoopId graphId = GradoopId.get();
+    graphIds.put(g.getId(), graphId);
+  }
+
+  /**
+   * Updates the graph cache.
+   *
+   * @param variable graph variable used in GDL script
+   * @param g        graph from GDL loader
+   */
+  private void updateGraphCache(String variable, Graph g) {
+    graphIdCache.put(variable, graphIds.get(g.getId()));
+  }
+
+  /**
+   * Initializes vertices and their cache.
+   */
+  private void initVertices() {
+    for (var v : gdlHandler.getVertices()) {
+      initVertex(v);
+    }
+
+    for (Map.Entry<String, org.s1ck.gdl.model.Vertex> e : gdlHandler.getVertexCache().entrySet()) {
+      updateVertexCache(e.getKey(), e.getValue());
+    }
+  }
+
+  /**
+   * Updates the vertex cache.
+   *
+   * @param variable vertex variable used in GDL script
+   * @param v        vertex from GDL loader
+   */
+  private void updateVertexCache(String variable, org.s1ck.gdl.model.Vertex v) {
+    vertexCache.put(variable, vertices.get(vertexIds.get(v.getId())));
+  }
+
+  /**
+   * Creates a new Vertex from the GDL Loader or updates an existing one.
+   *
+   * @param v vertex from GDL Loader
+   * @return vertex
+   */
+  private void initVertex(org.s1ck.gdl.model.Vertex v) {
+    Vertex vertex;
+    if (!vertexIds.containsKey(v.getId())) {
+      vertex = vFactory.createVertex(
+          v.getLabel(),
+          Properties.createFromMap(v.getProperties()),
+          createGradoopIdSet(v));
+      vertexIds.put(v.getId(), vertex.getId());
+      vertices.put(vertex.getId(), vertex);
+    } else {
+      vertex = vertices.get(vertexIds.get(v.getId()));
+      vertex.setGraphIds(createGradoopIdSet(v));
+    }
+  }
+
+  /**
+   * Initializes edges and their cache.
+   */
+  private void initEdges() {
+    for (org.s1ck.gdl.model.Edge e : gdlHandler.getEdges()) {
+      initEdge(e);
+    }
+
+    for (Map.Entry<String, org.s1ck.gdl.model.Edge> e : gdlHandler.getEdgeCache().entrySet()) {
+      updateEdgeCache(e.getKey(), e.getValue());
+    }
+  }
+
+
+  /**
+   * Creates a new Edge from the GDL Loader.
+   *
+   * @param e edge from GDL loader
+   * @return edge
+   */
+  private Edge initEdge(org.s1ck.gdl.model.Edge e) {
+    Edge edge;
+    if (!edgeIds.containsKey(e.getId())) {
+      edge = edgeFactory.createEdge(
+          e.getLabel(),
+          vertexIds.get(e.getSourceVertexId()),
+          vertexIds.get(e.getTargetVertexId()),
+          Properties.createFromMap(e.getProperties()),
+          createGradoopIdSet(e));
+      edgeIds.put(e.getId(), edge.getId());
+      edges.put(edge.getId(), edge);
+    } else {
+      edge = edges.get(edgeIds.get(e.getId()));
+      edge.setGraphIds(createGradoopIdSet(e));
+    }
+    return edge;
+  }
+
+  /**
+   * Updates the edge cache.
+   *
+   * @param variable edge variable used in the GDL script
+   * @param e        edge from GDL loader
+   */
+  private void updateEdgeCache(String variable, org.s1ck.gdl.model.Edge e) {
+    edgeCache.put(variable, edges.get(edgeIds.get(e.getId())));
+  }
+
+  /**
+   * Creates a {@code GradoopIDSet} from the long identifiers stored at the given graph element.
    *
    * @param e graph element
    * @return GradoopIDSet for the given element
@@ -127,14 +467,6 @@ public class AsciiGraphLoader {
       result.add(graphIds.get(graphId));
     }
     return result;
-  }
-
-  private Edge createEdgeFromGdl(org.s1ck.gdl.model.Edge gdlE, GradoopId sourceId, GradoopId targetId) {
-    Properties properties = new Properties();
-    for (Map.Entry<String, Object> prop : gdlE.getProperties().entrySet()) {
-      properties.set(prop.getKey(), prop.getValue());
-    }
-    return new Edge(GradoopId.get(), gdlE.getLabel(), sourceId, targetId, properties, createGradoopIdSet(gdlE));
   }
 
 }
