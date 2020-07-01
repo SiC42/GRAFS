@@ -2,6 +2,8 @@ package streaming.operators.grouping.functions;
 
 import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
 import org.apache.flink.util.Collector;
+import streaming.factory.EdgeFactory;
+import streaming.factory.VertexFactory;
 import streaming.model.Edge;
 import streaming.model.EdgeContainer;
 import streaming.model.Vertex;
@@ -33,9 +35,12 @@ public class EdgeAggregation implements GraphElementAggregationI {
   @Override
   public void apply(String s, TimeWindow window, Iterable<EdgeContainer> ecIterable,
       Collector<EdgeContainer> out) {
-    Vertex aggregatedSource = new Vertex();
-    Vertex aggregatedTarget = new Vertex();
-    Edge aggregatedEdge = new Edge();
+    var vF = new VertexFactory();
+    Vertex aggregatedSource = vF.createVertex();
+    Vertex aggregatedTarget = vF.createVertex();
+    Edge aggregatedEdge = new EdgeFactory()
+        .createEdge(aggregatedSource.getId(), aggregatedTarget.getId());
+    int count = 0;
 
     for (EdgeContainer e : ecIterable) {
       aggregatedSource = (Vertex) aggregateGraphElement(vertexAggregationMapping, vertexGroupInfo,

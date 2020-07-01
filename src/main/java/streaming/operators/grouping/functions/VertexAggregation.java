@@ -27,7 +27,7 @@ public class VertexAggregation implements GraphElementAggregationI {
   @Override
   public void apply(String s, TimeWindow window, Iterable<EdgeContainer> ecIterable,
       Collector<EdgeContainer> out) {
-    Vertex aggregatedElement = new Vertex();
+    Vertex aggregatedVertex = new VertexFactory().createVertex();
     for (EdgeContainer ec : ecIterable) {
       GraphElement vertexElement;
       if (aggregateMode.equals(AggregateMode.SOURCE)) {
@@ -35,8 +35,8 @@ public class VertexAggregation implements GraphElementAggregationI {
       } else {
         vertexElement = ec.getTargetVertex();
       }
-      aggregatedElement = (Vertex) aggregateGraphElement(aggregationMapping, vertexGroupInfo,
-          aggregatedElement, vertexElement);
+      aggregatedVertex = (Vertex) aggregateGraphElement(aggregationMapping, vertexGroupInfo,
+          aggregatedVertex, vertexElement);
     }
     BiFunction<Vertex, EdgeContainer, EdgeContainer> generateUpdatedECFunction =
         aggregateMode.equals(AggregateMode.SOURCE)
@@ -44,8 +44,8 @@ public class VertexAggregation implements GraphElementAggregationI {
             : (v, ec) -> new EdgeContainer(ec.getEdge(), ec.getSourceVertex(), v);
     for (EdgeContainer ec : ecIterable) {
       if (!ec.getEdge().isReverse()) {
-        Vertex aggregatedVertex = new VertexFactory().createVertex(aggregatedElement);
-        EdgeContainer aggregatedEdge = generateUpdatedECFunction.apply(aggregatedVertex, ec);
+        Vertex finalVertex = new VertexFactory().createVertex(aggregatedVertex);
+        EdgeContainer aggregatedEdge = generateUpdatedECFunction.apply(finalVertex, ec);
         out.collect(aggregatedEdge);
       } else {
         out.collect(ec);
