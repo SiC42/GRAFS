@@ -12,7 +12,6 @@ public class Edge extends GraphElement {
   private boolean reverse;
 
   public Edge() {
-
   }
 
   public Edge(GradoopId id, String label, GradoopId sourceId, GradoopId targetId,
@@ -49,7 +48,9 @@ public class Edge extends GraphElement {
   }
 
   public Edge createReverseEdge() {
-    Edge reverseEdge = new EdgeFactory().createEdge(this.getTargetId(), this.getSourceId());
+    Edge reverseEdge = new EdgeFactory()
+        .initEdge(this.getId(), this.getLabel(), this.getTargetId(), this.getSourceId(),
+            this.getProperties(), this.getGraphIds());
     reverseEdge.setReverse();
     return reverseEdge;
   }
