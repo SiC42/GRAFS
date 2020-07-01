@@ -1,5 +1,7 @@
 package streaming.model;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import org.gradoop.common.model.impl.id.GradoopId;
 import org.gradoop.common.model.impl.id.GradoopIdSet;
 import org.gradoop.common.model.impl.properties.Properties;
@@ -26,6 +28,7 @@ public abstract class GraphElement extends Element {
   protected GraphElement(GradoopId id, String label,
       Properties properties, GradoopIdSet graphIds) {
     super(id, label, properties);
+    checkNotNull(graphIds);
     this.graphIds = graphIds;
   }
 
@@ -39,16 +42,11 @@ public abstract class GraphElement extends Element {
   }
 
   public void addGraphId(GradoopId graphId) {
-    if (graphIds == null) {
-      graphIds = new GradoopIdSet();
-    }
     graphIds.add(graphId);
   }
 
   public void resetGraphIds() {
-    if (graphIds != null) {
       graphIds.clear();
-    }
   }
 
 

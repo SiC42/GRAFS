@@ -37,7 +37,7 @@ public class EdgeFactory implements Serializable {
 
   public Edge initEdge(final GradoopId id, final String label,
       final GradoopId sourceVertexId, final GradoopId targetVertexId) {
-    return initEdge(id, label, sourceVertexId, targetVertexId, null, null);
+    return initEdge(id, label, sourceVertexId, targetVertexId, null, new GradoopIdSet());
   }
 
   public Edge createEdge(String label, GradoopId sourceVertexId,
@@ -54,7 +54,7 @@ public class EdgeFactory implements Serializable {
       Properties properties) {
 
     return
-        initEdge(id, label, sourceVertexId, targetVertexId, properties, null);
+        initEdge(id, label, sourceVertexId, targetVertexId, properties, new GradoopIdSet());
   }
 
   public Edge createEdge(String label, GradoopId sourceVertexId,

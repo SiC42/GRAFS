@@ -22,7 +22,7 @@ public class VertexFactory implements Serializable {
 
 
   public Vertex initVertex(final GradoopId vertexID) {
-    return initVertex(vertexID, GradoopConstants.DEFAULT_VERTEX_LABEL, null, null);
+    return initVertex(vertexID, GradoopConstants.DEFAULT_VERTEX_LABEL, null, new GradoopIdSet());
   }
 
 
@@ -32,7 +32,7 @@ public class VertexFactory implements Serializable {
 
 
   public Vertex initVertex(final GradoopId vertexID, final String label) {
-    return initVertex(vertexID, label, null, null);
+    return initVertex(vertexID, label, null, new GradoopIdSet());
   }
 
 
