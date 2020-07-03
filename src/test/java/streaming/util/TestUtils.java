@@ -1,12 +1,10 @@
 package streaming.util;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,6 +16,7 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -26,6 +25,7 @@ import java.util.Map;
 import java.util.Set;
 import org.gradoop.common.model.impl.id.GradoopId;
 import org.gradoop.common.model.impl.properties.PropertyValue;
+import org.junit.Assert;
 import streaming.model.Element;
 import streaming.model.GraphElement;
 
@@ -67,6 +67,7 @@ public class TestUtils {
   public static final LocalDateTime DATETIME_VAL_d = LocalDateTime.now();
   public static final short SHORT_VAL_e = (short) 23;
   public static final Set<PropertyValue> SET_VAL_f = new HashSet<>();
+  public final static Comparator<Element> ID_COMPARATOR = Comparator.comparing(Element::getId);
   /**
    * Contains values of all supported property types
    */
@@ -134,7 +135,6 @@ public class TestUtils {
     SUPPORTED_PROPERTIES.put(KEY_f, SET_VAL_f);
   }
 
-
   /**
    * Creates a social network as a basis for tests.
    * <p/>
@@ -152,102 +152,141 @@ public class TestUtils {
   /**
    * Checks if the two collections contain the same identifiers.
    *
-   * @param collection1 first collection
-   * @param collection2 second collection
+   * @param expectedCollection first collection
+   * @param actualCollection   second collection
    */
   public static void validateIdEquality(
-      Collection<GradoopId> collection1,
-      Collection<GradoopId> collection2) {
+      Collection<GradoopId> expectedCollection,
+      Collection<GradoopId> actualCollection) {
 
-    List<GradoopId> list1 = Lists.newArrayList(collection1);
-    List<GradoopId> list2 = Lists.newArrayList(collection2);
+    List<GradoopId> expectedList = new ArrayList<>(expectedCollection);
+    List<GradoopId> actualList = new ArrayList<>(actualCollection);
 
-    Collections.sort(list1);
-    Collections.sort(list2);
-    Iterator<GradoopId> it1 = list1.iterator();
-    Iterator<GradoopId> it2 = list2.iterator();
+    Collections.sort(expectedList);
+    Collections.sort(actualList);
 
-    while (it1.hasNext()) {
+    assertThat(expectedList, hasSize(actualList.size()));
+    Iterator<GradoopId> it1 = expectedList.iterator();
+    Iterator<GradoopId> it2 = actualList.iterator();
+
+    while (it1.hasNext() && it2.hasNext()) {
       assertEquals(it1.next(), it2.next(), "id mismatch");
     }
-    assertFalse(it1.hasNext(), "too many elements in first collection");
-    assertFalse(it2.hasNext(), "too many elements in second collection");
   }
 
   /**
    * Checks if no identifier is contained in both lists.
    *
-   * @param collection1 first collection
-   * @param collection2 second collection
+   * @param originalCollection first collection
+   * @param newCollection      second collection
    */
-  public static void validateIdInequality(
-      Collection<GradoopId> collection1,
-      Collection<GradoopId> collection2) {
-
-    for (GradoopId id1 : collection1) {
-      for (GradoopId id2 : collection2) {
-        assertNotEquals(id1, id2, "id in both collections");
+  public static void validateIdInequality(Collection<GradoopId> originalCollection,
+      Collection<GradoopId> newCollection) {
+    for (var originalId : originalCollection) {
+      for (var newId : newCollection) {
+        Assert.assertNotEquals("id in both collections", originalId, newId);
       }
     }
   }
 
+  /**
+   * Checks if two collections contain the same EPGM elements in terms of data (i.e. label and
+   * properties).
+   *
+   * @param expectedCollection first collection
+   * @param actualCollection   second collection
+   */
+  public static void validateElementCollections(
+      Collection<? extends Element> expectedCollection,
+      Collection<? extends Element> actualCollection) {
+    assertNotNull(expectedCollection, "first collection was null");
+    assertNotNull(expectedCollection, "second collection was null");
+    assertEquals(expectedCollection.size(), actualCollection.size(), String.format(
+        "collections of different size: %d and %d", expectedCollection.size(),
+        actualCollection.size()));
+
+    List<? extends Element> list1 = new ArrayList<>(expectedCollection);
+    List<? extends Element> list2 = new ArrayList<>(actualCollection);
+
+    list1.sort(ID_COMPARATOR);
+    list2.sort(ID_COMPARATOR);
+
+    Iterator<? extends Element> it1 = list1.iterator();
+    Iterator<? extends Element> it2 = list2.iterator();
+
+    while (it1.hasNext()) {
+      validateElements(
+          it1.next(),
+          it2.next());
+    }
+  }
 
   /**
-   * Checks if two given EPGM elements are equal by considering their label and properties.
+   * Sorts the given collections by element id and checks pairwise if elements are contained in the
+   * same graphs.
    *
-   * @param element1 first element
-   * @param element2 second element
+   * @param expectedCollection first collection
+   * @param actualCollection   second collection
    */
-  public static void validateElements(
-      Element element1, Element element2) {
-    assertNotNull(element1, "first element was null");
-    assertNotNull(element2, "second element was null");
+  public static void validateGraphElementCollections(
+      Collection<? extends GraphElement> expectedCollection,
+      Collection<? extends GraphElement> actualCollection) {
+    assertNotNull(expectedCollection, "first collection was null");
+    assertNotNull(expectedCollection, "second collection was null");
+    assertEquals(expectedCollection.size(), actualCollection.size(), String.format(
+        "collections of different size: %d and %d", expectedCollection.size(),
+        actualCollection.size()));
 
-    assertEquals(element1.getId(), element2.getId(), "id mismatch");
-    assertEquals("label mismatch", element1.getLabel(), element2.getLabel());
+    List<? extends GraphElement> list1 = new ArrayList<>(expectedCollection);
+    List<? extends GraphElement> list2 = new ArrayList<>(actualCollection);
 
-    if (element1.getPropertyCount() == 0) {
-      assertEquals(element1.getPropertyCount(), element2.getPropertyCount(),
+    list1.sort(ID_COMPARATOR);
+    list2.sort(ID_COMPARATOR);
+
+    Iterator<? extends GraphElement> it1 = list1.iterator();
+    Iterator<? extends GraphElement> it2 = list2.iterator();
+
+    while (it1.hasNext()) {
+      validateElements(it1.next(), it2.next());
+    }
+  }
+
+
+  public static void validateElements(Element expectedElement,
+      Element actualElement) {
+    assertNotNull(expectedElement, "expected element was null");
+    assertNotNull(actualElement, "actual element was null");
+    assertEquals(expectedElement.getId(), actualElement.getId(), "id mismatch");
+    assertEquals(expectedElement.getLabel(), actualElement.getLabel(), "label mismatch");
+
+    if (expectedElement.getPropertyCount() == 0) {
+      assertEquals(expectedElement.getPropertyCount(), actualElement.getPropertyCount(),
           "property count mismatch");
     } else {
-      List<String> keys1 = Lists.newArrayList(element1.getPropertyKeys());
-      Collections.sort(keys1);
+      List<String> expectedKeys = new ArrayList<>();
+      expectedElement.getPropertyKeys().forEach(expectedKeys::add);
+      List<String> actualKeys = new ArrayList<>();
+      actualElement.getPropertyKeys().forEach(actualKeys::add);
 
-      List<String> keys2 = Lists.newArrayList(element2.getPropertyKeys());
-      Collections.sort(keys2);
+      assertEquals(expectedKeys.size(), actualKeys.size(), String.format(
+          "number of property keys is different size: %d and %d", expectedKeys.size(),
+          actualKeys.size()));
 
-      Iterator<String> it1 = keys1.iterator();
-      Iterator<String> it2 = keys2.iterator();
+      Collections.sort(expectedKeys);
+      Collections.sort(actualKeys);
 
-      while (it1.hasNext() && it2.hasNext()) {
-        String key1 = it1.next();
-        String key2 = it2.next();
-        assertEquals("property key mismatch", key1, key2);
-        assertEquals(element1.getPropertyValue(key1), element2.getPropertyValue(key2),
+      var expectedKeyIt = expectedKeys.iterator();
+      var actualKeyIt = actualKeys.iterator();
+
+      while (expectedKeyIt.hasNext() && actualKeyIt.hasNext()) {
+        String expectedKey = expectedKeyIt.next();
+        String actualKey = actualKeyIt.next();
+        assertEquals(expectedKey, actualKey, "property key mismatch");
+        assertEquals(expectedElement.getPropertyValue(expectedKey),
+            actualElement.getPropertyValue(actualKey),
             "property value mismatch");
       }
-      assertFalse(it1.hasNext(), "too many properties in first element");
-      assertFalse(it2.hasNext(), "too many properties in second element");
     }
-  }
-
-  /**
-   * Checks if two given EPGM graph elements are equal by considering the graphs they are contained
-   * in.
-   *
-   * @param element1 first element
-   * @param element2 second element
-   */
-  public static void validateGraphElements(
-      GraphElement element1, GraphElement element2) {
-
-    assertNotNull(element1, "first element was null");
-    assertNotNull(element2, "second element was null");
-
-    assertTrue(element1.getGraphIds().equals(element2.getGraphIds()),
-        String.format("graph containment mismatch. expected: %s actual: %s",
-            element1.getGraphIds(), element2.getGraphIds())
-    );
   }
 
   /**
