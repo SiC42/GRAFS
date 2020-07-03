@@ -130,14 +130,21 @@ public class AsciiGraphLoader {
   //  EdgeCollection and EdgeStream methods
   // ---------------------------------------------------------------------------
 
+  public EdgeStream createEdgeStreamByGraphVariables(FlinkConfig config, String... expected) {
+    return createEdgeStream(config, createEdgeContainersByGraphVariables(expected));
+  }
+
   public EdgeStream createEdgeStream(FlinkConfig config) {
+    return createEdgeStream(config, createEdgeContainers());
+  }
+
+  private EdgeStream createEdgeStream(FlinkConfig config, Collection<EdgeContainer> edgeContainer) {
     StreamExecutionEnvironment env = config.getExecutionEnvironment();
-    DataStream<EdgeContainer> stream = env.fromCollection(createEdgeContainers());
+    DataStream<EdgeContainer> stream = env.fromCollection(edgeContainer);
     return new EdgeStream(stream);
   }
 
   public Collection<EdgeContainer> createEdgeContainersByGraphVariables(String... expected) {
-    Set<EdgeContainer> edgeContainers = new HashSet<>();
     var edges = getEdgesByGraphVariables(expected);
     return createEdgeContainers(edges);
   }
@@ -273,9 +280,7 @@ public class AsciiGraphLoader {
    */
   public Collection<Vertex> getVerticesByGraphVariables(String... graphVariables) {
     GradoopIdSet graphIds = new GradoopIdSet();
-    for (GradoopId graphId : getGraphIdsByVariables(graphVariables)) {
-      graphIds.add(graphId);
-    }
+    graphIds.addAll(getGraphIdsByVariables(graphVariables));
     return getVerticesByGraphIds(graphIds);
   }
 
@@ -396,7 +401,6 @@ public class AsciiGraphLoader {
    * Creates a new Graph from the GDL Loader.
    *
    * @param g graph from GDL Loader
-   * @return graph head
    */
   private void initGraphHead(Graph g) {
     GradoopId graphId = GradoopId.get();
@@ -440,7 +444,6 @@ public class AsciiGraphLoader {
    * Creates a new Vertex from the GDL Loader or updates an existing one.
    *
    * @param v vertex from GDL Loader
-   * @return vertex
    */
   private void initVertex(org.s1ck.gdl.model.Vertex v) {
     Vertex vertex;
