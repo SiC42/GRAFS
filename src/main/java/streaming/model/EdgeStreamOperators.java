@@ -41,7 +41,7 @@ public interface EdgeStreamOperators {
         new Grouping(vertexEgi, vertexAggregationFunctions, edgeEgi, edgeAggregationFunctions));
   }
 
-  default EdgeStream transformEdge(MapFunction<Edge, Edge> mapper) {
+  default EdgeStream transformEdges(MapFunction<Edge, Edge> mapper) {
     return callForStream(new EdgeTransformation(mapper));
   }
 
