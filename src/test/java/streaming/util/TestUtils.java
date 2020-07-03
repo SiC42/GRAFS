@@ -256,7 +256,7 @@ public class TestUtils {
       Element actualElement) {
     assertNotNull(expectedElement, "expected element was null");
     assertNotNull(actualElement, "actual element was null");
-    assertEquals(expectedElement.getId(), actualElement.getId(), "id mismatch");
+
     assertEquals(expectedElement.getLabel(), actualElement.getLabel(), "label mismatch");
 
     if (expectedElement.getPropertyCount() == 0) {
