@@ -284,7 +284,8 @@ public class TestUtils {
         assertEquals(expectedKey, actualKey, "property key mismatch");
         assertEquals(expectedElement.getPropertyValue(expectedKey),
             actualElement.getPropertyValue(actualKey),
-            "property value mismatch");
+            String.format("property value mismatch on property %s in element %s",
+                actualKey, actualElement.getLabel()));
       }
     }
   }
