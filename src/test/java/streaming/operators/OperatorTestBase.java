@@ -44,13 +44,6 @@ public abstract class OperatorTestBase {
     this.env = StreamExecutionEnvironment.getExecutionEnvironment();
   }
 
-  /**
-   * Custom test cluster start routine,
-   * workaround to set TASK_MANAGER_MEMORY_SIZE.
-   *
-   * TODO: remove, when future issue is fixed
-   * {@see http://mail-archives.apache.org/mod_mbox/flink-dev/201511.mbox/%3CCAC27z=PmPMeaiNkrkoxNFzoR26BOOMaVMghkh1KLJFW4oxmUmw@mail.gmail.com%3E}
-   */
   private static MiniClusterWithClientResource getMiniCluster() {
     Configuration config = new Configuration();
     config.setLong("taskmanager.memory.size", TASKMANAGER_MEMORY_SIZE_MB);
@@ -90,7 +83,6 @@ public abstract class OperatorTestBase {
     this.config = config;
   }
 
-
   //----------------------------------------------------------------------------
   // Data generation
   //----------------------------------------------------------------------------
@@ -116,8 +108,7 @@ public abstract class OperatorTestBase {
   /**
    * Creates a social network as a basis for tests.
    * <p/>
-   * An image of the network can be found in
-   * gradoop/dev-support/social-network.pdf
+   * An image of the network can be found in gradoop/dev-support/social-network.pdf
    *
    * @return graph store containing a simple social network for tests.
    */
@@ -142,7 +133,7 @@ public abstract class OperatorTestBase {
   /**
    * Returns the encoded file path to a resource.
    *
-   * @param  relPath the relative path to the resource
+   * @param relPath the relative path to the resource
    * @return encoded file path
    */
   protected String getFilePath(String relPath) throws UnsupportedEncodingException {
