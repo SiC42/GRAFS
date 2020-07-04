@@ -6,11 +6,11 @@ import org.apache.flink.util.Collector;
 import streaming.factory.VertexFactory;
 import streaming.model.EdgeContainer;
 import streaming.model.Vertex;
+import streaming.operators.grouping.model.AggregatedVertex;
 import streaming.operators.grouping.model.AggregationMapping;
-import streaming.operators.grouping.model.AggregationVertex;
 import streaming.operators.grouping.model.GroupingInformation;
 
-public class VertexAggregation implements VertexAggregationI {
+public class VertexAggregation implements VertexAggregationProcess {
 
   private final GroupingInformation vertexGroupInfo;
   private final AggregationMapping aggregationMapping;
@@ -27,16 +27,23 @@ public class VertexAggregation implements VertexAggregationI {
   @Override
   public void apply(String s, TimeWindow window, Iterable<EdgeContainer> ecIterable,
       Collector<EdgeContainer> out) {
-    var aggregatedVertex = new AggregationVertex();
+    var aggregatedVertex = new AggregatedVertex();
+
+    boolean initialAggregation = true;
+
     for (EdgeContainer ec : ecIterable) {
-      Vertex vertexElement;
+      Vertex curVertex;
       if (aggregateMode.equals(AggregateMode.SOURCE)) {
-        vertexElement = ec.getSourceVertex();
+        curVertex = ec.getSourceVertex();
       } else {
-        vertexElement = ec.getTargetVertex();
+        curVertex = ec.getTargetVertex();
       }
-      aggregatedVertex = aggregateVertex(aggregationMapping, vertexGroupInfo,
-          aggregatedVertex, vertexElement);
+      if (initialAggregation) {
+        initialAggregation = false;
+        aggregatedVertex = (AggregatedVertex) setGroupedProperties(vertexGroupInfo,
+            aggregatedVertex, curVertex);
+      }
+      aggregatedVertex = aggregateVertex(aggregationMapping, aggregatedVertex, curVertex);
     }
     BiFunction<Vertex, EdgeContainer, EdgeContainer> generateUpdatedECFunction =
         aggregateMode.equals(AggregateMode.SOURCE)

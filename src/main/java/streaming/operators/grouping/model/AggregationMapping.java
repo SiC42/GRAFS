@@ -4,8 +4,10 @@ import java.io.IOException;
 import java.io.ObjectStreamException;
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import org.gradoop.common.model.impl.id.GradoopIdSet;
 import streaming.operators.grouping.functions.PropertiesAggregationFunction;
 import streaming.operators.grouping.functions.SerializableBiFunction;
@@ -22,8 +24,7 @@ public class AggregationMapping implements Serializable {
 
   public void addAggregationForProperty(String key,
       final PropertiesAggregationFunction accumulator) {
-    PropertiesAggregationFunction aF = accumulator;
-    propertyMappingMap.put(key, aF);
+    propertyMappingMap.put(key, accumulator);
   }
 
   public PropertiesAggregationFunction getAggregationForProperty(String key) {
@@ -40,6 +41,15 @@ public class AggregationMapping implements Serializable {
 
   public void setAggregationForMembership(MembershipAggregation aggregation) {
     membershipAggregation = aggregation;
+  }
+
+  public Set<AggregationMappingEntry> entrySet() {
+    Set<AggregationMappingEntry> aggregationMappingEntrySet = new HashSet<>();
+    for (var e : propertyMappingMap.entrySet()) {
+      var aggEntry = new AggregationMappingEntry(e.getKey(), e.getValue());
+      aggregationMappingEntrySet.add(aggEntry);
+    }
+    return aggregationMappingEntrySet;
   }
 
   private void writeObject(java.io.ObjectOutputStream out)

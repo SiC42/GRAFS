@@ -5,23 +5,28 @@ import org.gradoop.common.model.impl.id.GradoopIdSet;
 import org.gradoop.common.util.GradoopConstants;
 import streaming.model.Vertex;
 
-public class AggregationVertex extends Vertex {
+public class AggregatedVertex extends Vertex {
 
-  private GradoopIdSet vertexIds;
+  private final GradoopIdSet vertexIds;
 
-  public AggregationVertex(){
+  public AggregatedVertex() {
     super(GradoopId.get(), GradoopConstants.DEFAULT_VERTEX_LABEL, null, new GradoopIdSet());
+    vertexIds = new GradoopIdSet();
   }
 
-  public GradoopIdSet getIdsOfAggregatedVertices(){
+  public GradoopIdSet getIdsOfAggregatedVertices() {
     return vertexIds;
   }
 
-  public boolean isAlreadyAggregated(Vertex vertex){
+  public boolean initialAggregation() {
+    return vertexIds.isEmpty();
+  }
+
+  public boolean isAlreadyAggregated(Vertex vertex) {
     return vertexIds.contains(vertex.getId());
   }
 
-  public void addVertex(Vertex vertex){
+  public void addVertex(Vertex vertex) {
     vertexIds.add(vertex.getId());
   }
 

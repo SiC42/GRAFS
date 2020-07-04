@@ -10,7 +10,7 @@ import streaming.operators.OperatorI;
 import streaming.operators.grouping.functions.AggregateMode;
 import streaming.operators.grouping.functions.EdgeAggregation;
 import streaming.operators.grouping.functions.EdgeKeySelector;
-import streaming.operators.grouping.functions.GraphElementAggregationI;
+import streaming.operators.grouping.functions.GraphElementAggregationProcess;
 import streaming.operators.grouping.functions.VertexAggregation;
 import streaming.operators.grouping.model.AggregationMapping;
 import streaming.operators.grouping.model.GroupingInformation;
@@ -38,10 +38,10 @@ public class Grouping implements OperatorI {
   }
 
   public DataStream<EdgeContainer> groupBy(DataStream<EdgeContainer> es) {
-    TriFunction<DataStream<EdgeContainer>, AggregateMode, GraphElementAggregationI, DataStream<EdgeContainer>> applyAggregation =
+    TriFunction<DataStream<EdgeContainer>, AggregateMode, GraphElementAggregationProcess, DataStream<EdgeContainer>> applyAggregation =
         (DataStream<EdgeContainer> stream,
             AggregateMode aggregateMode,
-            GraphElementAggregationI aggregationFunction) ->
+            GraphElementAggregationProcess aggregationFunction) ->
             stream
                 .keyBy(new EdgeKeySelector(vertexEgi, edgeEgi, aggregateMode))
                 .timeWindow(Time.milliseconds(10)) // TODO: Zeit nach außen tragen
