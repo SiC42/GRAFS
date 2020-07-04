@@ -14,14 +14,6 @@ public class AggregatedVertex extends Vertex {
     vertexIds = new GradoopIdSet();
   }
 
-  public GradoopIdSet getIdsOfAggregatedVertices() {
-    return vertexIds;
-  }
-
-  public boolean initialAggregation() {
-    return vertexIds.isEmpty();
-  }
-
   public boolean isAlreadyAggregated(Vertex vertex) {
     return vertexIds.contains(vertex.getId());
   }
