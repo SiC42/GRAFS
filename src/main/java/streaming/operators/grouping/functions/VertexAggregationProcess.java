@@ -9,9 +9,13 @@ public interface VertexAggregationProcess extends GraphElementAggregationProcess
   default AggregatedVertex aggregateVertex(AggregationMapping aggregationMapping,
       AggregatedVertex aggregatedVertex,
       Vertex curVertex) {
-    aggregatedVertex.addVertex(curVertex);
-    return (AggregatedVertex) aggregateGraphElement(aggregationMapping, aggregatedVertex,
-        curVertex);
+    if (aggregatedVertex.isAlreadyAggregated(curVertex)) {
+      return aggregatedVertex;
+    } else {
+      aggregatedVertex.addVertex(curVertex);
+      return (AggregatedVertex) aggregateGraphElement(aggregationMapping, aggregatedVertex,
+          curVertex);
+    }
   }
 
 }
