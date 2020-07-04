@@ -3,14 +3,12 @@ package streaming.operators.grouping.functions;
 import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
 import org.apache.flink.util.Collector;
 import streaming.factory.EdgeFactory;
-import streaming.factory.VertexFactory;
-import streaming.model.Edge;
 import streaming.model.EdgeContainer;
-import streaming.model.Vertex;
 import streaming.operators.grouping.model.AggregationMapping;
+import streaming.operators.grouping.model.AggregationVertex;
 import streaming.operators.grouping.model.GroupingInformation;
 
-public class EdgeAggregation implements GraphElementAggregationI {
+public class EdgeAggregation implements EdgeAggregationI {
 
 
   private final GroupingInformation vertexGroupInfo;
@@ -35,22 +33,23 @@ public class EdgeAggregation implements GraphElementAggregationI {
   @Override
   public void apply(String s, TimeWindow window, Iterable<EdgeContainer> ecIterable,
       Collector<EdgeContainer> out) {
-    var vF = new VertexFactory();
-    Vertex aggregatedSource = vF.createVertex();
-    Vertex aggregatedTarget = vF.createVertex();
-    Edge aggregatedEdge = new EdgeFactory()
+    var aggregatedSource = new AggregationVertex();
+    var aggregatedTarget = new AggregationVertex();
+    var aggregatedEdge = new EdgeFactory()
         .createEdge(aggregatedSource.getId(), aggregatedTarget.getId());
     int count = 0;
 
     EdgeContainer lastEc = null;
-    for (EdgeContainer ec : ecIterable) {
-      aggregatedSource = (Vertex) aggregateGraphElement(vertexAggregationMapping, vertexGroupInfo,
+    for (var ec : ecIterable) {
+      aggregatedSource = aggregateVertex(vertexAggregationMapping,
+          vertexGroupInfo,
           aggregatedSource,
           ec.getSourceVertex());
-      aggregatedTarget = (Vertex) aggregateGraphElement(vertexAggregationMapping, vertexGroupInfo,
+      aggregatedTarget = aggregateVertex(vertexAggregationMapping,
+          vertexGroupInfo,
           aggregatedTarget,
           ec.getTargetVertex());
-      aggregatedEdge = (Edge) aggregateGraphElement(edgeAggregationMapping, edgeGroupInfo,
+      aggregatedEdge = aggregateEdge(edgeAggregationMapping, edgeGroupInfo,
           aggregatedEdge,
           ec.getEdge());
       count++;

@@ -5,12 +5,12 @@ import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
 import org.apache.flink.util.Collector;
 import streaming.factory.VertexFactory;
 import streaming.model.EdgeContainer;
-import streaming.model.GraphElement;
 import streaming.model.Vertex;
 import streaming.operators.grouping.model.AggregationMapping;
+import streaming.operators.grouping.model.AggregationVertex;
 import streaming.operators.grouping.model.GroupingInformation;
 
-public class VertexAggregation implements GraphElementAggregationI {
+public class VertexAggregation implements VertexAggregationI {
 
   private final GroupingInformation vertexGroupInfo;
   private final AggregationMapping aggregationMapping;
@@ -27,15 +27,15 @@ public class VertexAggregation implements GraphElementAggregationI {
   @Override
   public void apply(String s, TimeWindow window, Iterable<EdgeContainer> ecIterable,
       Collector<EdgeContainer> out) {
-    Vertex aggregatedVertex = new VertexFactory().createVertex();
+    var aggregatedVertex = new AggregationVertex();
     for (EdgeContainer ec : ecIterable) {
-      GraphElement vertexElement;
+      Vertex vertexElement;
       if (aggregateMode.equals(AggregateMode.SOURCE)) {
         vertexElement = ec.getSourceVertex();
       } else {
         vertexElement = ec.getTargetVertex();
       }
-      aggregatedVertex = (Vertex) aggregateGraphElement(aggregationMapping, vertexGroupInfo,
+      aggregatedVertex = aggregateVertex(aggregationMapping, vertexGroupInfo,
           aggregatedVertex, vertexElement);
     }
     BiFunction<Vertex, EdgeContainer, EdgeContainer> generateUpdatedECFunction =
