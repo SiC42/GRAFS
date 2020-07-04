@@ -14,12 +14,20 @@ public class AggregatedVertex extends Vertex {
     vertexIds = new GradoopIdSet();
   }
 
-  public boolean isAlreadyAggregated(Vertex vertex) {
-    return vertexIds.contains(vertex.getId());
+  public boolean isAlreadyAggregated(GradoopId id) {
+    return vertexIds.contains(id);
   }
 
-  public void addVertex(Vertex vertex) {
-    vertexIds.add(vertex.getId());
+  public boolean isAlreadyAggregated(Vertex vertex) {
+    return isAlreadyAggregated(vertex.getId());
+  }
+
+  public boolean addVertex(GradoopId id) {
+    return vertexIds.add(id);
+  }
+
+  public boolean addVertex(Vertex vertex) {
+    return addVertex(vertex.getId());
   }
 
 }
