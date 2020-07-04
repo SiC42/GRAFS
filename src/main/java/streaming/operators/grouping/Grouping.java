@@ -1,14 +1,10 @@
 package streaming.operators.grouping;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import org.apache.flink.api.common.functions.FlatMapFunction;
-import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.windowing.time.Time;
 import org.apache.flink.util.Collector;
 import org.apache.flink.util.function.TriFunction;
-import streaming.model.Edge;
 import streaming.model.EdgeContainer;
 import streaming.operators.OperatorI;
 import streaming.operators.grouping.functions.AggregateMode;
@@ -21,14 +17,6 @@ import streaming.operators.grouping.model.GroupingInformation;
 
 public class Grouping implements OperatorI {
 
-  private final MapFunction<Edge, Collection<Edge>> edgeToSingleSetFunction = new MapFunction<Edge, Collection<Edge>>() {
-    @Override
-    public Collection<Edge> map(Edge edge) {
-      Collection<Edge> singleSet = new ArrayList<>();
-      singleSet.add(edge);
-      return singleSet;
-    }
-  };
   private final GroupingInformation vertexEgi;
   private final AggregationMapping vertexAggregationFunctions;
   private final GroupingInformation edgeEgi;
@@ -82,13 +70,12 @@ public class Grouping implements OperatorI {
         new VertexAggregation(vertexEgi, vertexAggregationFunctions, vertexAggregateMode));
 
     vertexAggregateMode = AggregateMode.TARGET;
-    DataStream<EdgeContainer> finalAggregatedStream = applyAggregation.apply(
+
+    return applyAggregation.apply(
         aggregatedOnSourceStream,
         vertexAggregateMode,
         new VertexAggregation(vertexEgi, vertexAggregationFunctions, vertexAggregateMode))
         .filter(e -> !e.getEdge().isReverse());
-
-    return finalAggregatedStream;
   }
 
 }
