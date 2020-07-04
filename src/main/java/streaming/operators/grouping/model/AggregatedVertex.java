@@ -7,15 +7,15 @@ import streaming.model.Vertex;
 
 public class AggregatedVertex extends Vertex {
 
-  private final GradoopIdSet vertexIds;
+  private final GradoopIdSet aggregatedVertexIds;
 
   public AggregatedVertex() {
     super(GradoopId.get(), GradoopConstants.DEFAULT_VERTEX_LABEL, null, new GradoopIdSet());
-    vertexIds = new GradoopIdSet();
+    aggregatedVertexIds = new GradoopIdSet();
   }
 
   public boolean isAlreadyAggregated(GradoopId id) {
-    return vertexIds.contains(id);
+    return aggregatedVertexIds.contains(id);
   }
 
   public boolean isAlreadyAggregated(Vertex vertex) {
@@ -23,11 +23,20 @@ public class AggregatedVertex extends Vertex {
   }
 
   public boolean addVertex(GradoopId id) {
-    return vertexIds.add(id);
+    return aggregatedVertexIds.add(id);
   }
 
   public boolean addVertex(Vertex vertex) {
     return addVertex(vertex.getId());
   }
+
+  public void addVertices(GradoopIdSet ids) {
+    aggregatedVertexIds.addAll(ids);
+  }
+
+  public GradoopIdSet getAggregatedVertexIds() {
+    return aggregatedVertexIds;
+  }
+
 
 }
