@@ -28,7 +28,9 @@ public interface GraphElementAggregationProcess extends
 
   default streaming.model.GraphElement setGroupedProperties(GroupingInformation groupInfo,
       streaming.model.GraphElement aggregatedElem, streaming.model.GraphElement curElem) {
-    if (groupInfo.useLabel) {
+    if (groupInfo == null) {
+      return aggregatedElem;
+    } else if (groupInfo.useLabel) {
       aggregatedElem.setLabel(curElem.getLabel());
     }
     for (var key : groupInfo.groupingKeys) {
@@ -41,14 +43,16 @@ public interface GraphElementAggregationProcess extends
   default GraphElement aggregateGraphElement(AggregationMapping aggregationMapping,
       GraphElement aggregatedElem,
       GraphElement curElem) {
-    for (var aggregationEntry : aggregationMapping.entrySet()) {
-      var key = aggregationEntry.getPropertyKey();
-      PropertiesAggregationFunction aF = aggregationMapping.getAggregationForProperty(key);
-      PropertyValue prevValue = aggregatedElem.hasProperty(key)
-          ? aggregatedElem.getPropertyValue(key)
-          : aF.getIdentity();
-      PropertyValue newValue = aF.apply(prevValue, curElem.getPropertyValue(key));
-      aggregatedElem.setProperty(key, newValue);
+    if (aggregationMapping != null) {
+      for (var aggregationEntry : aggregationMapping.entrySet()) {
+        var key = aggregationEntry.getPropertyKey();
+        PropertiesAggregationFunction aF = aggregationMapping.getAggregationForProperty(key);
+        PropertyValue prevValue = aggregatedElem.hasProperty(key)
+            ? aggregatedElem.getPropertyValue(key)
+            : aF.getIdentity();
+        PropertyValue newValue = aF.apply(prevValue, curElem.getPropertyValue(key));
+        aggregatedElem.setProperty(key, newValue);
+      }
     }
     for (var graphId : curElem.getGraphIds()) {
       aggregatedElem.addGraphId(graphId);
