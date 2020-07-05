@@ -1,8 +1,9 @@
-package streaming.operators.grouping.functions;
+package streaming.operators.grouping.logic;
 
 import org.apache.flink.api.java.functions.KeySelector;
 import streaming.model.EdgeContainer;
 import streaming.model.Element;
+import streaming.operators.grouping.model.AggregateMode;
 import streaming.operators.grouping.model.GroupingInformation;
 
 public class EdgeKeySelector implements KeySelector<EdgeContainer, String> {

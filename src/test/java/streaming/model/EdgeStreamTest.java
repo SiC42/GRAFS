@@ -6,9 +6,9 @@ import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.gradoop.common.model.impl.properties.PropertyValue;
 import org.junit.jupiter.api.Test;
-import streaming.operators.grouping.functions.PropertiesAggregationFunction;
 import streaming.operators.grouping.model.AggregationMapping;
 import streaming.operators.grouping.model.GroupingInformation;
+import streaming.operators.grouping.model.PropertiesAggregationFunction;
 import streaming.util.AsciiGraphLoader;
 
 class EdgeStreamTest {

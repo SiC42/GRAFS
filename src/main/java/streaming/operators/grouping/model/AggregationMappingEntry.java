@@ -1,7 +1,5 @@
 package streaming.operators.grouping.model;
 
-import streaming.operators.grouping.functions.PropertiesAggregationFunction;
-
 public class AggregationMappingEntry {
 
   private final String propertyKey;

@@ -9,8 +9,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import org.gradoop.common.model.impl.id.GradoopIdSet;
-import streaming.operators.grouping.functions.PropertiesAggregationFunction;
-import streaming.operators.grouping.functions.SerializableBiFunction;
 
 public class AggregationMapping implements Serializable {
 

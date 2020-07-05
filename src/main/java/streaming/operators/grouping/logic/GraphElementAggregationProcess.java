@@ -1,4 +1,4 @@
-package streaming.operators.grouping.functions;
+package streaming.operators.grouping.logic;
 
 import org.apache.flink.streaming.api.functions.windowing.WindowFunction;
 import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
@@ -7,6 +7,7 @@ import streaming.model.EdgeContainer;
 import streaming.model.GraphElement;
 import streaming.operators.grouping.model.AggregationMapping;
 import streaming.operators.grouping.model.GroupingInformation;
+import streaming.operators.grouping.model.PropertiesAggregationFunction;
 
 public interface GraphElementAggregationProcess extends
     WindowFunction<EdgeContainer, EdgeContainer, String, TimeWindow> {

@@ -1,4 +1,4 @@
-package streaming.operators.grouping.functions;
+package streaming.operators.grouping.logic;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsEqual.equalTo;
@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
 import streaming.model.EdgeContainer;
+import streaming.operators.grouping.model.AggregateMode;
 import streaming.operators.grouping.model.GroupingInformation;
 import streaming.util.AsciiGraphLoader;
 

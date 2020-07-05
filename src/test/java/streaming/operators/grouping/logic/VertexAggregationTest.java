@@ -1,4 +1,4 @@
-package streaming.operators.grouping.functions;
+package streaming.operators.grouping.logic;
 
 import static org.mockito.Mockito.mock;
 
@@ -9,8 +9,10 @@ import org.gradoop.common.model.impl.properties.PropertyValue;
 import org.junit.jupiter.api.Test;
 import streaming.model.Edge;
 import streaming.model.EdgeContainer;
+import streaming.operators.grouping.model.AggregateMode;
 import streaming.operators.grouping.model.AggregationMapping;
 import streaming.operators.grouping.model.GroupingInformation;
+import streaming.operators.grouping.model.PropertiesAggregationFunction;
 import streaming.util.AsciiGraphLoader;
 
 class VertexAggregationTest {

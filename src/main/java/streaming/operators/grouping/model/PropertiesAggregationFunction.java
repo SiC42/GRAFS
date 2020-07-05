@@ -1,4 +1,4 @@
-package streaming.operators.grouping.functions;
+package streaming.operators.grouping.model;
 
 import java.io.IOException;
 import java.io.ObjectStreamException;

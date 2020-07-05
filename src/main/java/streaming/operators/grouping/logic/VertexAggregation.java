@@ -1,4 +1,4 @@
-package streaming.operators.grouping.functions;
+package streaming.operators.grouping.logic;
 
 import java.util.function.BiFunction;
 import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
@@ -6,6 +6,7 @@ import org.apache.flink.util.Collector;
 import streaming.factory.VertexFactory;
 import streaming.model.EdgeContainer;
 import streaming.model.Vertex;
+import streaming.operators.grouping.model.AggregateMode;
 import streaming.operators.grouping.model.AggregatedVertex;
 import streaming.operators.grouping.model.AggregationMapping;
 import streaming.operators.grouping.model.GroupingInformation;
