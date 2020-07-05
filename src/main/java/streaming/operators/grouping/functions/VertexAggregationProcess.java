@@ -11,7 +11,7 @@ public interface VertexAggregationProcess extends GraphElementAggregationProcess
       Vertex curVertex) {
     if (curVertex instanceof AggregatedVertex) {
       var curAggVertex = (AggregatedVertex) curVertex;
-      for (var id : curAggVertex.aggregatedVertexIds()) {
+      for (var id : curAggVertex.getAggregatedVertexIds()) {
         if (!aggregatedVertex.addVertex(id)) {
           aggregatedVertex.addVertex(curVertex);
         }
