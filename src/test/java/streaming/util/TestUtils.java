@@ -6,8 +6,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import com.google.common.collect.Maps;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -329,6 +334,23 @@ public class TestUtils {
         clazz.getDeclaredMethod(methodName, parameterTypes) : clazz.getDeclaredMethod(methodName);
     m.setAccessible(true);
     return (T1) (args != null ? m.invoke(object, args) : m.invoke(object));
+  }
+
+  public static <T extends Serializable> byte[] pickle(T obj)
+      throws IOException {
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    ObjectOutputStream oos = new ObjectOutputStream(baos);
+    oos.writeObject(obj);
+    oos.close();
+    return baos.toByteArray();
+  }
+
+  public static <T extends Serializable> T unpickle(byte[] b, Class<T> cl)
+      throws IOException, ClassNotFoundException {
+    ByteArrayInputStream bais = new ByteArrayInputStream(b);
+    ObjectInputStream ois = new ObjectInputStream(bais);
+    Object o = ois.readObject();
+    return cl.cast(o);
   }
 }
 
