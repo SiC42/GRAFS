@@ -146,7 +146,7 @@ public class TestUtils {
   public static AsciiGraphLoader getSocialNetworkLoader()
       throws IOException {
     InputStream inputStream = TestUtils.class.getResourceAsStream(SOCIAL_NETWORK_GDL_FILE);
-    return AsciiGraphLoader.fromStream(inputStream);
+    return AsciiGraphLoader.fromInputStream(inputStream);
   }
 
   /**

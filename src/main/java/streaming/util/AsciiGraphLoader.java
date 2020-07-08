@@ -95,7 +95,7 @@ public class AsciiGraphLoader {
     return new AsciiGraphLoader(gdlHandler);
   }
 
-  public static AsciiGraphLoader fromStream(InputStream graphStream) throws IOException {
+  public static AsciiGraphLoader fromInputStream(InputStream graphStream) throws IOException {
     GDLHandler gdlHandler = createDefaultGdlHandlerBuilder()
         .buildFromStream(graphStream);
     return new AsciiGraphLoader(gdlHandler);

@@ -100,7 +100,7 @@ public abstract class OperatorTestBase {
   }
 
   protected AsciiGraphLoader getLoaderFromStream(InputStream inputStream) throws IOException {
-    AsciiGraphLoader loader = AsciiGraphLoader.fromStream(inputStream);
+    AsciiGraphLoader loader = AsciiGraphLoader.fromInputStream(inputStream);
     loader.createEdgeStream(getConfig());
     return loader;
   }
