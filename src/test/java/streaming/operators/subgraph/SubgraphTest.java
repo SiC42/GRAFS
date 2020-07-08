@@ -1,14 +1,19 @@
 package streaming.operators.subgraph;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
+import org.apache.flink.api.common.functions.FilterFunction;
 import org.junit.jupiter.api.Test;
+import streaming.model.Edge;
 import streaming.model.EdgeContainer;
 import streaming.model.EdgeStream;
+import streaming.model.Vertex;
 import streaming.operators.OperatorTestBase;
+import streaming.operators.subgraph.Subgraph.Strategy;
 import streaming.util.AsciiGraphLoader;
 
 public class SubgraphTest extends OperatorTestBase {
@@ -143,6 +148,32 @@ public class SubgraphTest extends OperatorTestBase {
       actual.add(output.next());
     }
     assertEquals(expected, actual);
+  }
+
+  @Test
+  public void testConstructorThrowsException() {
+    FilterFunction<Vertex> vF = v -> true;
+    FilterFunction<Edge> eF = e -> true;
+
+    // Strategy is null
+    assertThrows(NullPointerException.class, () ->
+        new Subgraph(null, null, null));
+
+    // Strategy is BOTH
+    assertThrows(IllegalArgumentException.class, () ->
+        new Subgraph(null, null, Strategy.BOTH));
+    assertThrows(IllegalArgumentException.class, () ->
+        new Subgraph(vF, null, Strategy.BOTH));
+    assertThrows(IllegalArgumentException.class, () ->
+        new Subgraph(null, eF, Strategy.BOTH));
+
+    // Strategy is EDGE_INDUCED
+    assertThrows(IllegalArgumentException.class, () ->
+        new Subgraph(vF, null, Strategy.EDGE_INDUCED));
+    // Strategy is VERTEX_INDUCED
+    assertThrows(IllegalArgumentException.class, () ->
+        new Subgraph(null, eF, Strategy.VERTEX_INDUCED));
+
   }
 
 
