@@ -35,6 +35,19 @@ class AsciiGraphLoaderTest {
     validateCaches(asciiGraphLoader, 0, 0, 0);
   }
 
+  @Test
+  public void testGetVertices() {
+    AsciiGraphLoader asciiGraphLoader = AsciiGraphLoader.fromString("[()]");
+
+    validateCollections(asciiGraphLoader, 1, 1, 0);
+    validateCaches(asciiGraphLoader, 0, 0, 0);
+
+    for (Vertex vertex : asciiGraphLoader.getVertices()) {
+      assertEquals(GradoopConstants.DEFAULT_VERTEX_LABEL, vertex.getLabel(),
+          "Vertex has wrong label");
+    }
+  }
+
 
   @Test
   public void testGetVertexByVariable() {
