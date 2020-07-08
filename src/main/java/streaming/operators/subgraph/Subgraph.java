@@ -1,5 +1,6 @@
 package streaming.operators.subgraph;
 
+import java.util.Objects;
 import org.apache.flink.api.common.functions.FilterFunction;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import streaming.model.Edge;
@@ -16,6 +17,7 @@ public class Subgraph implements OperatorI {
       final FilterFunction<Vertex> vertexFilter,
       final FilterFunction<Edge> edgeFilter,
       final Strategy strategy) {
+    Objects.requireNonNull(strategy);
     if (strategy == Strategy.BOTH &&
         (vertexFilter == null || edgeFilter == null)) {
       throw new IllegalArgumentException("No vertex or no edge filter function was given.");
