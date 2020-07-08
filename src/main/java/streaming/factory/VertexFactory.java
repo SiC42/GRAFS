@@ -1,7 +1,7 @@
 package streaming.factory;
 
-import com.google.common.base.Preconditions;
 import java.io.Serializable;
+import java.util.Objects;
 import org.gradoop.common.model.impl.id.GradoopId;
 import org.gradoop.common.model.impl.id.GradoopIdSet;
 import org.gradoop.common.model.impl.properties.Properties;
@@ -66,8 +66,8 @@ public class VertexFactory implements Serializable {
 
   public Vertex initVertex(final GradoopId id, final String label,
       final Properties properties, final GradoopIdSet graphs) {
-    Preconditions.checkNotNull(id, "Identifier was null");
-    Preconditions.checkNotNull(label, "Label was null");
+    Objects.requireNonNull(id, "Identifier was null");
+    Objects.requireNonNull(label, "Label was null");
     return new Vertex(id, label, properties, graphs);
   }
 

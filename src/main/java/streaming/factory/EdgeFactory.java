@@ -1,8 +1,8 @@
 package streaming.factory;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.io.Serializable;
+import java.util.Objects;
 import org.gradoop.common.model.impl.id.GradoopId;
 import org.gradoop.common.model.impl.id.GradoopIdSet;
 import org.gradoop.common.model.impl.properties.Properties;
@@ -79,10 +79,10 @@ public class EdgeFactory implements Serializable {
   public Edge initEdge(final GradoopId id, final String label,
       final GradoopId sourceVertexId, final GradoopId targetVertexId,
       final Properties properties, GradoopIdSet graphIds) {
-    checkNotNull(id, "Identifier was null");
-    checkNotNull(label, "Label was null");
-    checkNotNull(sourceVertexId, "Source vertex id was null");
-    checkNotNull(targetVertexId, "Target vertex id was null");
+    Objects.requireNonNull(id, "Identifier was null");
+    Objects.requireNonNull(label, "Label was null");
+    Objects.requireNonNull(sourceVertexId, "Source vertex id was null");
+    Objects.requireNonNull(targetVertexId, "Target vertex id was null");
     return new Edge(id, label, sourceVertexId, targetVertexId,
         properties, graphIds);
   }
