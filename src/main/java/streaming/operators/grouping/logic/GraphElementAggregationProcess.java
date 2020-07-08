@@ -14,13 +14,13 @@ public interface GraphElementAggregationProcess extends
 
   default void checkAggregationAndGroupingKeyIntersection(AggregationMapping aggregationMapping,
       GroupingInformation elemGroupInfo) {
-    for (String key : elemGroupInfo.groupingKeys) {
+    for (String key : elemGroupInfo.getKeys()) {
       if (aggregationMapping.containsAggregationForProperty(key)) {
         throw new RuntimeException(
             String.format("Aggregation key '%s' is also present in grouping keys", key));
       }
     }
-    if (elemGroupInfo.useMembership && aggregationMapping.getAggregationForMembership()
+    if (elemGroupInfo.shouldUseMembership() && aggregationMapping.getAggregationForMembership()
         .isPresent()) {
       throw new RuntimeException(
           "Elements should be grouped by membership but aggregation mapping contains function for membership aggregation.");
@@ -31,10 +31,10 @@ public interface GraphElementAggregationProcess extends
       streaming.model.GraphElement aggregatedElem, streaming.model.GraphElement curElem) {
     if (groupInfo == null) {
       return aggregatedElem;
-    } else if (groupInfo.useLabel) {
+    } else if (groupInfo.shouldUseLabel()) {
       aggregatedElem.setLabel(curElem.getLabel());
     }
-    for (var key : groupInfo.groupingKeys) {
+    for (var key : groupInfo.getKeys()) {
       aggregatedElem.setProperty(key, curElem.getPropertyValue(key));
     }
     // TODO: Deal with memberships

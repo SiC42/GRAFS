@@ -2,12 +2,13 @@ package streaming.operators.grouping.model;
 
 import java.io.Serializable;
 import java.util.HashSet;
+import java.util.Set;
 
 public class GroupingInformation implements Serializable {
 
-  public boolean useLabel;
-  public boolean useMembership;
-  public HashSet<String> groupingKeys;
+  private boolean useLabel;
+  private boolean useMembership;
+  private HashSet<String> groupingKeys;
 
   public GroupingInformation() {
     useLabel = false;
@@ -25,5 +26,26 @@ public class GroupingInformation implements Serializable {
   public GroupingInformation(HashSet<String> groupingKeys) {
     this();
     this.groupingKeys = groupingKeys;
+  }
+
+  public boolean addKey(String key) {
+    return groupingKeys.add(key);
+  }
+
+  public Set<String> getKeys() {
+    return groupingKeys;
+  }
+
+  public void useLabel(boolean b) {
+    useLabel = true;
+  }
+
+  public boolean shouldUseLabel() {
+    return useLabel;
+  }
+
+  public boolean shouldUseMembership() {
+    // TODO: implement it or discuss ignoring it
+    return false;
   }
 }

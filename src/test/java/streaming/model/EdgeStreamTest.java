@@ -44,7 +44,7 @@ class EdgeStreamTest {
   @Test
   void groupBy() throws Exception {
     GroupingInformation vertexEgi = new GroupingInformation();
-    vertexEgi.groupingKeys.add("n");
+    vertexEgi.addKey("n");
     AggregationMapping am = new AggregationMapping();
     var identity = new PropertyValue();
     identity.setInt(0);

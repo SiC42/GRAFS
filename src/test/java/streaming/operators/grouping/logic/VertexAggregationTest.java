@@ -20,7 +20,7 @@ class VertexAggregationTest {
   @Test
   void flatMap() {
     GroupingInformation egi = new GroupingInformation();
-    egi.groupingKeys.add("n");
+    egi.addKey("n");
     AggregationMapping am = new AggregationMapping();
     var identity = new PropertyValue();
     identity.setDouble(0);

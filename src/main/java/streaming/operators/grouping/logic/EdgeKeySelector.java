@@ -65,13 +65,13 @@ public class EdgeKeySelector implements KeySelector<EdgeContainer, String> {
   private StringBuilder keyStringBuilder(StringBuilder sb, Element
       gei, GroupingInformation egi, String elementStr) {
     sb.append(elementStr).append("-Grouping-Information:(");
-    if (egi.useLabel) {
       sb.append(String.format("label:%s ", gei.getLabel()));
+    if (egi.shouldUseLabel()) {
     }
     if (!egi.groupingKeys.isEmpty()) {
       sb.append("properties:{");
-      for (String key : egi.groupingKeys) {
         sb.append(String.format("(%s:%s) ", key, gei.getPropertyValue(key)));
+      for (String key : egi.getKeys()) {
       }
       sb.append("}");
     }
