@@ -8,7 +8,7 @@ public class GroupingInformation implements Serializable {
 
   private boolean useLabel;
   private boolean useMembership;
-  private HashSet<String> groupingKeys;
+  private Set<String> groupingKeys;
 
   public GroupingInformation() {
     useLabel = false;
@@ -17,13 +17,13 @@ public class GroupingInformation implements Serializable {
   }
 
   public GroupingInformation(boolean useLabel, boolean useMembership,
-      HashSet<String> groupingKeys) {
+      Set<String> groupingKeys) {
     this.useLabel = useLabel;
     this.useMembership = useMembership;
     this.groupingKeys = groupingKeys;
   }
 
-  public GroupingInformation(HashSet<String> groupingKeys) {
+  public GroupingInformation(Set<String> groupingKeys) {
     this();
     this.groupingKeys = groupingKeys;
   }
@@ -37,15 +37,18 @@ public class GroupingInformation implements Serializable {
   }
 
   public void useLabel(boolean b) {
-    useLabel = true;
+    useLabel = b;
   }
 
   public boolean shouldUseLabel() {
     return useLabel;
   }
 
+  public void useMembership(boolean b) {
+    useMembership = b;
+  }
+
   public boolean shouldUseMembership() {
-    // TODO: implement it or discuss ignoring it
-    return false;
+    return useMembership;
   }
 }
