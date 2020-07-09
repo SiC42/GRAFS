@@ -1,6 +1,7 @@
 package streaming.operators.grouping.logic;
 
 import java.util.Objects;
+import java.util.TreeSet;
 import org.apache.flink.api.java.functions.KeySelector;
 import streaming.model.Edge;
 import streaming.model.EdgeContainer;
@@ -17,11 +18,7 @@ public class EdgeKeySelector implements KeySelector<EdgeContainer, String> {
 
   public EdgeKeySelector(GroupingInformation vertexGi, GroupingInformation edgeGi,
       AggregateMode makeKeyFor) {
-    Objects.requireNonNull(vertexGi, "grouping information for vertex was null");
-    if (makeKeyFor.equals(AggregateMode.EDGE)) {
-      Objects.requireNonNull(edgeGi, "grouping information for edge was null");
-    }
-    this.vertexGi = vertexGi;
+    this.vertexGi = Objects.requireNonNull(vertexGi, "grouping information for vertex was null");
     this.edgeGi = edgeGi;
     this.makeKeyFor = makeKeyFor;
   }
@@ -75,20 +72,32 @@ public class EdgeKeySelector implements KeySelector<EdgeContainer, String> {
   }
 
   private StringBuilder keyStringBuilder(StringBuilder sb, Element
-      gei, GroupingInformation egi) {
-    if (egi.shouldUseLabel()) {
-      sb.append(String.format(":%s", gei.getLabel()));
-      if (!egi.getKeys().isEmpty()) {
+      element, GroupingInformation groupInfo) {
+    if (groupInfo == null) {
+      groupInfo = createUniqueGroupInfo(element);
+    }
+    if (groupInfo.shouldUseLabel()) {
+      sb.append(String.format(":%s", element.getLabel()));
+      if (!groupInfo.getKeys().isEmpty()) {
         sb.append(" ");
       }
     }
-    if (!egi.getKeys().isEmpty()) {
+    if (!groupInfo.getKeys().isEmpty()) {
       sb.append("{");
-      for (String key : egi.getKeys()) {
-        sb.append(String.format("%s:%s,", key, gei.getPropertyValue(key)));
+      for (String key : groupInfo.getKeys()) {
+        sb.append(String.format("%s:%s,", key, element.getPropertyValue(key)));
       }
       sb.replace(sb.length() - 1, sb.length(), "}");
     }
     return sb;
+  }
+
+  private GroupingInformation createUniqueGroupInfo(Element element) {
+    var keys = element.getPropertyKeys();
+    var sortedKeySet = new TreeSet<String>();
+    for (var key : keys) {
+      sortedKeySet.add(key);
+    }
+    return new GroupingInformation(true, true, sortedKeySet);
   }
 }
