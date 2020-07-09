@@ -28,6 +28,7 @@ import org.gradoop.flink.util.GradoopFlinkConfig;
 import streaming.model.EdgeContainer;
 import streaming.model.EdgeStream;
 import streaming.util.AsciiGraphLoader;
+import streaming.util.FlinkConfig;
 
 /**
  * Skeleton for a Flink Streaming Job.
@@ -69,8 +70,9 @@ public class StreamingJob {
     AsciiGraphLoader loader = AsciiGraphLoader.fromString(graphStr);
     Collection<EdgeContainer> ecCollection = loader.createEdgeContainers();
     DataStream<EdgeContainer> m = env.fromCollection(ecCollection);
+    FlinkConfig config = FlinkConfig.buildNewConfig(env).build();
 
-    EdgeStream messageStream = new EdgeStream(m);
+    EdgeStream messageStream = loader.createEdgeStream(config);
 //        EdgeStream filteredStream = messageStream.filter(e -> e.getFrom().getProperty("id").equals("A"))
 //                .transform(e -> {
 //                    String content = e.get("id").replaceAll("Fuck", "F***");

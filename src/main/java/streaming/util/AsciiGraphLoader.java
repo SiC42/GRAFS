@@ -141,7 +141,7 @@ public class AsciiGraphLoader {
   private EdgeStream createEdgeStream(FlinkConfig config, Collection<EdgeContainer> edgeContainer) {
     StreamExecutionEnvironment env = config.getExecutionEnvironment();
     DataStream<EdgeContainer> stream = env.fromCollection(edgeContainer);
-    return new EdgeStream(stream);
+    return new EdgeStream(stream, config);
   }
 
   public Collection<EdgeContainer> createEdgeContainersByGraphVariables(String... expected) {

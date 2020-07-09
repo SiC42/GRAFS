@@ -71,7 +71,7 @@ public abstract class OperatorTestBase {
    */
   protected FlinkConfig getConfig() {
     if (config == null) {
-      setConfig(new FlinkConfig(getExecutionEnvironment()));
+      setConfig(FlinkConfig.buildNewConfig(getExecutionEnvironment()).build());
     }
     return config;
   }

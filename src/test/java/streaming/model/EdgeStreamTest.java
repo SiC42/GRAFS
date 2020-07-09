@@ -1,8 +1,5 @@
 package streaming.model;
 
-import java.util.Collection;
-import org.apache.flink.streaming.api.TimeCharacteristic;
-import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.gradoop.common.model.impl.properties.PropertyValue;
 import org.junit.jupiter.api.Test;
@@ -10,6 +7,7 @@ import streaming.operators.grouping.model.AggregationMapping;
 import streaming.operators.grouping.model.GroupingInformation;
 import streaming.operators.grouping.model.PropertiesAggregationFunction;
 import streaming.util.AsciiGraphLoader;
+import streaming.util.FlinkConfig;
 
 class EdgeStreamTest {
 
@@ -19,7 +17,6 @@ class EdgeStreamTest {
 
 
   public EdgeStreamTest() {
-    env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
 
     AsciiGraphLoader loader = AsciiGraphLoader.fromString(
         "(a18 {n : \"A\", a : 18})," +
@@ -34,11 +31,9 @@ class EdgeStreamTest {
             "(c20)-[]->(b17)," +
             "(a20)-[]->(b19),"
     );
-
-    Collection<EdgeContainer> edges = loader.createEdgeContainers();
-    DataStream<EdgeContainer> m = env.fromCollection(edges);
-
-    edgeStream = new EdgeStream(m);
+    FlinkConfig config = FlinkConfig.buildNewConfig(env)
+        .build();
+    edgeStream = loader.createEdgeStream(config);
   }
 
   @Test
