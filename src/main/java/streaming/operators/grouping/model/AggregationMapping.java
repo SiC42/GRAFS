@@ -13,7 +13,7 @@ import org.gradoop.common.model.impl.id.GradoopIdSet;
 public class AggregationMapping implements Serializable {
 
   private Map<String, PropertiesAggregationFunction> propertyMappingMap;
-  private MembershipAggregation membershipAggregation;
+  private SerializableBiFunction<GradoopIdSet, GradoopIdSet, GradoopIdSet> membershipAggregation;
 
   public AggregationMapping() {
     propertyMappingMap = new HashMap<>();
@@ -33,11 +33,12 @@ public class AggregationMapping implements Serializable {
     return propertyMappingMap.containsKey(key);
   }
 
-  public Optional<MembershipAggregation> getAggregationForMembership() {
+  public Optional<SerializableBiFunction<GradoopIdSet, GradoopIdSet, GradoopIdSet>> getAggregationForMembership() {
     return membershipAggregation != null ? Optional.of(membershipAggregation) : Optional.empty();
   }
 
-  public void setAggregationForMembership(MembershipAggregation aggregation) {
+  public void setAggregationForMembership(
+      SerializableBiFunction<GradoopIdSet, GradoopIdSet, GradoopIdSet> aggregation) {
     membershipAggregation = aggregation;
   }
 
@@ -69,17 +70,13 @@ public class AggregationMapping implements Serializable {
       PropertiesAggregationFunction aggFun = (PropertiesAggregationFunction) in.readObject();
       propertyMappingMap.put(key, aggFun);
     }
-    membershipAggregation = (MembershipAggregation) in.readObject();
+    membershipAggregation = (SerializableBiFunction<GradoopIdSet, GradoopIdSet, GradoopIdSet>) in
+        .readObject();
 
   }
 
   private void readObjectNoData()
       throws ObjectStreamException {
-
-  }
-
-  private interface MembershipAggregation extends
-      SerializableBiFunction<GradoopIdSet, GradoopIdSet, GradoopIdSet> {
 
   }
 }
