@@ -59,6 +59,7 @@ public class TestUtils {
   public static final String KEY_h = "keyh";
   public static final Object NULL_VAL_0 = null;
   public static final boolean BOOL_VAL_1 = true;
+  public static final int INT_VAL_1 = 50;
   public static final int INT_VAL_2 = 23;
   public static final long LONG_VAL_3 = 23L;
   public static final float FLOAT_VAL_4 = 2.3f;
