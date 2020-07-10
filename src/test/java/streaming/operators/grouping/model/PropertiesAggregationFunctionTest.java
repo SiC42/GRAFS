@@ -16,13 +16,15 @@ public class PropertiesAggregationFunctionTest {
   public void testSerialization() throws IOException, ClassNotFoundException {
     var pv = new PropertyValue();
     pv.setString(TestUtils.STRING_VAL_6);
-    var paf = new PropertiesAggregationFunction(pv, (v1, v2) -> PropertyValue.create(v1.getString() + v2.getString()));
-    var pvFromPaf = paf.apply(PropertyValue.create("1"), PropertyValue.create("2"));
-    byte[] serializedPaf = TestUtils.pickle(paf);
+    var concPropVal = TestUtils.STRING_CONC_FUNC
+        .apply(PropertyValue.create("1"), PropertyValue.create("2"));
+    byte[] serializedPaf = TestUtils.pickle(TestUtils.STRING_CONC_FUNC);
     var deserializedPaf = TestUtils.unpickle(serializedPaf, PropertiesAggregationFunction.class);
-    var pvFromDeserializedPaf = deserializedPaf.apply(PropertyValue.create("1"), PropertyValue.create("2"));
-    assertThat(pvFromDeserializedPaf, is(equalTo(pvFromPaf)));
-    assertThat(deserializedPaf.getIdentity(), is(equalTo(paf.getIdentity())));
+    var pvFromDeserializedPaf = deserializedPaf
+        .apply(PropertyValue.create("1"), PropertyValue.create("2"));
+    assertThat(pvFromDeserializedPaf, is(equalTo(concPropVal)));
+    assertThat(deserializedPaf.getIdentity(),
+        is(equalTo(TestUtils.STRING_CONC_FUNC.getIdentity())));
   }
 
 }

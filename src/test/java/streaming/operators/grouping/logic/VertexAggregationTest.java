@@ -5,15 +5,14 @@ import static org.mockito.Mockito.mock;
 import java.util.HashSet;
 import java.util.Set;
 import org.apache.flink.util.Collector;
-import org.gradoop.common.model.impl.properties.PropertyValue;
 import org.junit.jupiter.api.Test;
 import streaming.model.Edge;
 import streaming.model.EdgeContainer;
 import streaming.operators.grouping.model.AggregateMode;
 import streaming.operators.grouping.model.AggregationMapping;
 import streaming.operators.grouping.model.GroupingInformation;
-import streaming.operators.grouping.model.PropertiesAggregationFunction;
 import streaming.util.AsciiGraphLoader;
+import streaming.util.TestUtils;
 
 class VertexAggregationTest {
 
@@ -22,14 +21,7 @@ class VertexAggregationTest {
     GroupingInformation egi = new GroupingInformation();
     egi.addKey("n");
     AggregationMapping am = new AggregationMapping();
-    var identity = new PropertyValue();
-    identity.setDouble(0);
-    am.addAggregationForProperty("a",
-        new PropertiesAggregationFunction(identity, (PropertyValue pV1, PropertyValue pV2) -> {
-          var newVal = new PropertyValue();
-          newVal.setDouble(pV1.getDouble() + pV2.getDouble());
-          return newVal;
-        }));
+    am.addAggregationForProperty("a", TestUtils.INT_ADD_FUNC);
 
     VertexAggregation incrementer = new VertexAggregation(egi, am,
         AggregateMode.SOURCE);

@@ -7,8 +7,8 @@ import static org.hamcrest.Matchers.is;
 
 import java.util.Optional;
 import org.gradoop.common.model.impl.id.GradoopIdSet;
-import org.gradoop.common.model.impl.properties.PropertyValue;
 import org.junit.jupiter.api.Test;
+import streaming.util.TestUtils;
 
 public class AggregationMappingTest {
 
@@ -16,8 +16,7 @@ public class AggregationMappingTest {
   @Test
   public void testAddAggregationForProperty() {
     var am = new AggregationMapping();
-    var paf = new PropertiesAggregationFunction(PropertyValue.create(0),
-        (a, b) -> PropertyValue.create(a.getInt() + b.getInt()));
+    var paf = TestUtils.INT_ADD_FUNC;
     var key = "1";
     am.addAggregationForProperty(key, paf);
     assertThat(am.getAggregationForProperty(key), is(equalTo(paf)));
@@ -26,8 +25,7 @@ public class AggregationMappingTest {
   @Test
   public void testContainsAggregationForProperty() {
     var am = new AggregationMapping();
-    var paf = new PropertiesAggregationFunction(PropertyValue.create(0),
-        (a, b) -> PropertyValue.create(a.getInt() + b.getInt()));
+    var paf = TestUtils.INT_ADD_FUNC;
     var key = "1";
     am.addAggregationForProperty(key, paf);
     assertThat(am.containsAggregationForProperty(key), is(true));
@@ -54,11 +52,9 @@ public class AggregationMappingTest {
   public void testEntrySet() {
     var am = new AggregationMapping();
     var key1 = "1";
-    var paf1 = new PropertiesAggregationFunction(PropertyValue.create(0),
-        (a, b) -> PropertyValue.create(a.getInt() + b.getInt()));
+    var paf1 = TestUtils.INT_ADD_FUNC;
     var key2 = "2";
-    var paf2 = new PropertiesAggregationFunction(PropertyValue.create(1),
-        (a, b) -> PropertyValue.create(a.getInt() + b.getInt()));
+    var paf2 = TestUtils.STRING_CONC_FUNC;
     am.addAggregationForProperty(key1, paf1);
     am.addAggregationForProperty(key2, paf2);
     assertThat(am.entrySet(), hasSize(2));
