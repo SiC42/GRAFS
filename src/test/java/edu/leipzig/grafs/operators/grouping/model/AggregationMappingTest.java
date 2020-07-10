@@ -88,6 +88,9 @@ public class AggregationMappingTest {
     var deserializedPropAggFunc1 = deserializedAm.getAggregationForProperty(key1);
     var deserializedPropAggFunc2 = deserializedAm.getAggregationForProperty(key2);
 
+    assertThat(deserializedPropAggFunc1.getIdentity(), is(equalTo(propAggFunc1.getIdentity())));
+    assertThat(deserializedPropAggFunc2.getIdentity(), is(equalTo(propAggFunc2.getIdentity())));
+
     var random = new Random();
     for (int i = 0; i < 1000; i++) {
       var randomInt1 = random.nextInt(Integer.MAX_VALUE / 2);
