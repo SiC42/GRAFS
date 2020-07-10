@@ -110,7 +110,7 @@ under the License.
               <transformers>
                 <transformer
                   implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                  <mainClass>streaming.StreamingJob</mainClass>
+                  <mainClass>edu.leipzig.grafs.StreamingJob</mainClass>
                 </transformer>
               </transformers>
             </configuration>
@@ -189,7 +189,6 @@ under the License.
       <version>0.3</version>
     </dependency>
 
-	<groupId>prototype</groupId>
 
     <!-- Add test libraries -->
     <dependency>
@@ -231,6 +230,7 @@ under the License.
       <version>3.3.3</version>
     </dependency>
   </dependencies>
+  <groupId>edu.leipzig</groupId>
   <modelVersion>4.0.0</modelVersion>
 
   <name>GRAFS - GRaph Analytics on Flink's Data Streaming</name>
