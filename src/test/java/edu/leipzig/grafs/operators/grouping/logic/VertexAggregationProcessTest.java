@@ -200,8 +200,7 @@ class VertexAggregationProcessTest {
 
     var currentVertex = new AggregatedVertex();
     currentVertex.addVertex(id1);
-    var fullyAggProp = aggFunc.apply(partialAgg1n2, val3);
-    currentVertex.setProperty(aggKey, fullyAggProp);
+    currentVertex.setProperty(aggKey, val3);
 
     var expected = aggFunc.apply(partialAgg1n2, val3);
 
