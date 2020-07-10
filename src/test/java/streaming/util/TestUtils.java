@@ -33,6 +33,7 @@ import org.gradoop.common.model.impl.properties.PropertyValue;
 import org.junit.Assert;
 import streaming.model.Element;
 import streaming.model.GraphElement;
+import streaming.operators.grouping.model.PropertiesAggregationFunction;
 
 
 public class TestUtils {
@@ -72,7 +73,14 @@ public class TestUtils {
   public static final LocalDateTime DATETIME_VAL_d = LocalDateTime.now();
   public static final short SHORT_VAL_e = (short) 23;
   public static final Set<PropertyValue> SET_VAL_f = new HashSet<>();
-  public final static Comparator<Element> ID_COMPARATOR = Comparator.comparing(Element::getId);
+  public static final Comparator<Element> ID_COMPARATOR = Comparator.comparing(Element::getId);
+  public static final PropertiesAggregationFunction STRING_CONC_FUNC =
+      new PropertiesAggregationFunction(PropertyValue.create(""),
+          (v1, v2) -> PropertyValue.create(v1.getString() + v2.getString()));
+  public static final PropertiesAggregationFunction INT_ADD_FUNC =
+      new PropertiesAggregationFunction(PropertyValue.create(0),
+          (v1, v2) -> PropertyValue.create(v1.getString() + v2.getString()));
+
   /**
    * Contains values of all supported property types
    */
