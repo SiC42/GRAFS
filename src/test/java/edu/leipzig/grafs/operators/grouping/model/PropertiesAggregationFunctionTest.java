@@ -7,6 +7,7 @@ import static org.hamcrest.Matchers.is;
 
 import edu.leipzig.grafs.util.TestUtils;
 import java.io.IOException;
+import java.util.Random;
 import org.gradoop.common.model.impl.properties.PropertyValue;
 import org.junit.jupiter.api.Test;
 
@@ -14,17 +15,24 @@ public class PropertiesAggregationFunctionTest {
 
   @Test
   public void testSerialization() throws IOException, ClassNotFoundException {
-    var pv = new PropertyValue();
-    pv.setString(TestUtils.STRING_VAL_6);
-    var concPropVal = TestUtils.STRING_CONC_FUNC
-        .apply(PropertyValue.create("1"), PropertyValue.create("2"));
-    byte[] serializedPaf = TestUtils.pickle(TestUtils.STRING_CONC_FUNC);
-    var deserializedPaf = TestUtils.unpickle(serializedPaf, PropertiesAggregationFunction.class);
-    var pvFromDeserializedPaf = deserializedPaf
-        .apply(PropertyValue.create("1"), PropertyValue.create("2"));
-    assertThat(pvFromDeserializedPaf, is(equalTo(concPropVal)));
-    assertThat(deserializedPaf.getIdentity(),
-        is(equalTo(TestUtils.STRING_CONC_FUNC.getIdentity())));
+    var propAggFunc = TestUtils.INT_ADD_FUNC;
+    byte[] serializedPaf = TestUtils.pickle(propAggFunc);
+    var deserializedPropAggFunc = TestUtils
+        .unpickle(serializedPaf, PropertiesAggregationFunction.class);
+
+    assertThat(deserializedPropAggFunc.getIdentity(), is(equalTo(propAggFunc.getIdentity())));
+
+    // Test multiple values, as we can't test for equality
+    var random = new Random();
+    for (int i = 0; i < 1000; i++) {
+      var randomInt1 = random.nextInt(Integer.MAX_VALUE / 2);
+      var randomInt2 = random.nextInt(Integer.MAX_VALUE / 2);
+      var expectedResult = propAggFunc
+          .apply(PropertyValue.create(randomInt1), PropertyValue.create(randomInt2));
+      var actualResult = deserializedPropAggFunc
+          .apply(PropertyValue.create(randomInt1), PropertyValue.create(randomInt2));
+      assertThat(actualResult, is(equalTo(expectedResult)));
+    }
   }
 
 }
