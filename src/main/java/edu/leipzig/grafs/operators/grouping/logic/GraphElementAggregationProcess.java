@@ -27,18 +27,27 @@ public interface GraphElementAggregationProcess extends
     }
   }
 
+  /**
+   * Sets the properties on which are grouped on. This method only has to be called once for one
+   * group.
+   *
+   * @param groupInfo  information on which 'fields' should be set for the element
+   * @param emptyElem  'empty' element on which the 'fields' should be set
+   * @param masterElem element which holds the fields used to set the 'empty' element
+   * @return the previous 'empty' element, now with the fields set from the 'master' element
+   */
   default GraphElement setGroupedProperties(GroupingInformation groupInfo,
-      GraphElement aggregatedElem, GraphElement curElem) {
+      GraphElement emptyElem, GraphElement masterElem) {
     if (groupInfo == null) {
-      return aggregatedElem;
+      return emptyElem;
     } else if (groupInfo.shouldUseLabel()) {
-      aggregatedElem.setLabel(curElem.getLabel());
+      emptyElem.setLabel(masterElem.getLabel());
     }
     for (var key : groupInfo.getKeys()) {
-      aggregatedElem.setProperty(key, curElem.getPropertyValue(key));
+      emptyElem.setProperty(key, masterElem.getPropertyValue(key));
     }
     // TODO: Deal with memberships
-    return aggregatedElem;
+    return emptyElem;
   }
 
   default GraphElement aggregateGraphElement(AggregationMapping aggregationMapping,
