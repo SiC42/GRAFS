@@ -18,7 +18,7 @@ class EdgeKeySelectorTest {
     AsciiGraphLoader loader = AsciiGraphLoader.fromString(
         "(a18:v {n : \"A\", a : 18})," +
             "(b17:v {n : \"B\", a : 17})," +
-            "(a18)-[e1:e {t: 5}]->(b17)"
+            "(a18)-[e1:e {t: 5, x: \"value\", a: 8}]->(b17)"
     );
     Collection<EdgeContainer> edgeSet = loader.createEdgeContainers();
     ec = edgeSet.iterator().next();
@@ -74,5 +74,12 @@ class EdgeKeySelectorTest {
     egi.useLabel(true);
     EdgeKeySelector eks = new EdgeKeySelector(vgi, egi, AggregateMode.EDGE);
     assertThat(eks.getKey(ec), equalTo("()-[:e]->()"));
+  }
+
+  @Test
+  void getKey_forEdgeWithoutEdgeGroupingInformation() {
+    GroupingInformation vgi = new GroupingInformation();
+    EdgeKeySelector eks = new EdgeKeySelector(vgi, null, AggregateMode.EDGE);
+    assertThat(eks.getKey(ec), equalTo("()-[:e {a:8,t:5,x:value}]->()"));
   }
 }
