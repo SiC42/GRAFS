@@ -6,8 +6,12 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 
 import edu.leipzig.grafs.util.TestUtils;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
+import java.util.Random;
 import org.gradoop.common.model.impl.id.GradoopIdSet;
+import org.gradoop.common.model.impl.properties.PropertyValue;
 import org.junit.jupiter.api.Test;
 
 public class AggregationMappingTest {
@@ -17,7 +21,7 @@ public class AggregationMappingTest {
   public void testAddAggregationForProperty() {
     var am = new AggregationMapping();
     var paf = TestUtils.INT_ADD_FUNC;
-    var key = "1";
+    var key = TestUtils.KEY_1;
     am.addAggregationForProperty(key, paf);
     assertThat(am.getAggregationForProperty(key), is(equalTo(paf)));
   }
@@ -26,7 +30,7 @@ public class AggregationMappingTest {
   public void testContainsAggregationForProperty() {
     var am = new AggregationMapping();
     var paf = TestUtils.INT_ADD_FUNC;
-    var key = "1";
+    var key = TestUtils.KEY_1;
     am.addAggregationForProperty(key, paf);
     assertThat(am.containsAggregationForProperty(key), is(true));
   }
@@ -51,9 +55,9 @@ public class AggregationMappingTest {
   @Test
   public void testEntrySet() {
     var am = new AggregationMapping();
-    var key1 = "1";
+    var key1 = TestUtils.KEY_1;
     var paf1 = TestUtils.INT_ADD_FUNC;
-    var key2 = "2";
+    var key2 = TestUtils.KEY_2;
     var paf2 = TestUtils.STRING_CONC_FUNC;
     am.addAggregationForProperty(key1, paf1);
     am.addAggregationForProperty(key2, paf2);
@@ -65,6 +69,50 @@ public class AggregationMappingTest {
         assertThat(entry.getAggregationFunction(), is(equalTo(paf2)));
       }
     }
+  }
 
+  @Test
+  public void testSerialization() throws IOException, ClassNotFoundException {
+    var am = new AggregationMapping();
+    var key1 = TestUtils.KEY_1;
+    var propAggFunc1 = TestUtils.INT_ADD_FUNC;
+    var key2 = TestUtils.KEY_2;
+    var propAggFunc2 = TestUtils.STRING_CONC_FUNC;
+    am.addAggregationForProperty(key1, propAggFunc1);
+    am.addAggregationForProperty(key2, propAggFunc2);
+
+    byte[] serializedAm = TestUtils.pickle(am);
+    var deserializedAm = TestUtils.unpickle(serializedAm, AggregationMapping.class);
+    assertThat(deserializedAm.entrySet(), hasSize(2));
+
+    var deserializedPropAggFunc1 = deserializedAm.getAggregationForProperty(key1);
+    var deserializedPropAggFunc2 = deserializedAm.getAggregationForProperty(key2);
+
+    var random = new Random();
+    for (int i = 0; i < 1000; i++) {
+      var randomInt1 = random.nextInt(Integer.MAX_VALUE / 2);
+      var randomInt2 = random.nextInt(Integer.MAX_VALUE / 2);
+      var expectedResult = propAggFunc1
+          .apply(PropertyValue.create(randomInt1), PropertyValue.create(randomInt2));
+      var actualResult = deserializedPropAggFunc1
+          .apply(PropertyValue.create(randomInt1), PropertyValue.create(randomInt2));
+      assertThat(actualResult, is(equalTo(expectedResult)));
+    }
+    for (int i = 0; i < 1000; i++) {
+      var randomString1 = generateRandomString();
+      var randomString2 = generateRandomString();
+      var expectedResult = propAggFunc2
+          .apply(PropertyValue.create(randomString1), PropertyValue.create(randomString2));
+      var actualResult = deserializedPropAggFunc2
+          .apply(PropertyValue.create(randomString1), PropertyValue.create(randomString2));
+      assertThat(actualResult, is(equalTo(expectedResult)));
+    }
+
+  }
+
+  private String generateRandomString() {
+    byte[] array = new byte[7]; // length is bounded by 7
+    new Random().nextBytes(array);
+    return new String(array, StandardCharsets.UTF_8);
   }
 }
