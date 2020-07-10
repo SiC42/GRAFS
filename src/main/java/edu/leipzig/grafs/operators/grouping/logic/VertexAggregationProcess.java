@@ -13,7 +13,7 @@ interface VertexAggregationProcess extends GraphElementAggregationProcess {
       var curAggVertex = (AggregatedVertex) curVertex;
       for (var id : curAggVertex.getAggregatedVertexIds()) {
         if (!aggregatedVertex.addVertex(id)) {
-          aggregatedVertex.addVertex(curVertex);
+          aggregatedVertex.addVertex(curVertex); // add current vertex, because it is an aggregation
         }
       }
     }
