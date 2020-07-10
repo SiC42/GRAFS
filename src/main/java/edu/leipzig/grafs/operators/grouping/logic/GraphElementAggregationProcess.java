@@ -70,9 +70,7 @@ public interface GraphElementAggregationProcess extends
         aggregatedElem.setProperty(key, newValue);
       }
     }
-    for (var graphId : curElem.getGraphIds()) {
-      aggregatedElem.addGraphId(graphId);
-    }
+    // TODO: Deal with memberships
     return aggregatedElem;
   }
 
