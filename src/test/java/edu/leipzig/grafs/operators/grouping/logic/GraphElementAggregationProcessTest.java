@@ -77,7 +77,7 @@ class GraphElementAggregationProcessTest {
   }
 
   @Test
-  void testSetGroupedProperties_OnPropertyKeys() {
+  void testSetGroupedProperties_onPropertyKeys() {
     var aggProcess = mock(GraphElementAggregationProcess.class, CALLS_REAL_METHODS);
     var groupInfo = new GroupingInformation();
     var groupKey = TestUtils.KEY_0;
@@ -101,11 +101,11 @@ class GraphElementAggregationProcessTest {
             is(equalTo(emptyVertex.getPropertyValue(key))));
       }
     }
-
   }
 
+
   @Test
-  void testAggregateGraphElement_aggElemHasProperty() {
+  void testAggregateGraphElement_aggElementHasProperty() {
     var aggProcess = mock(GraphElementAggregationProcess.class, CALLS_REAL_METHODS);
     var aggKey = TestUtils.KEY_0;
 
@@ -131,7 +131,7 @@ class GraphElementAggregationProcessTest {
   }
 
   @Test
-  void testAggregateGraphElement_aggElemDoesntHaveProperty() {
+  void testAggregateGraphElement_aggElementDoesntHaveProperty() {
     var aggProcess = mock(GraphElementAggregationProcess.class, CALLS_REAL_METHODS);
     var aggKey = TestUtils.KEY_0;
 
@@ -153,5 +153,33 @@ class GraphElementAggregationProcessTest {
 
     assertThat(resultVertex.getProperties().size(), is(1));
     assertThat(resultVertex.getPropertyValue(aggKey), is(equalTo(expected)));
+  }
+
+  @Test
+  void testAggregateGraphElement_wontDeleteProps() {
+    var aggProcess = mock(GraphElementAggregationProcess.class, CALLS_REAL_METHODS);
+    var aggKey = TestUtils.KEY_0;
+
+    var aggMap = new AggregationMapping();
+    var func = TestUtils.INT_ADD_FUNC;
+    aggMap.addAggregationForProperty(aggKey, func);
+
+    var prop1 = PropertyValue.create(TestUtils.INT_VAL_1);
+    var prop2 = PropertyValue.create(TestUtils.INT_VAL_2);
+
+    var curVertex = new Vertex();
+    curVertex.setProperty(aggKey, prop1);
+    curVertex.setProperty(TestUtils.KEY_1, prop1);
+    var aggVertex = new Vertex();
+    aggVertex.setProperty(aggKey, prop2);
+
+    var notTouchedPropKey = TestUtils.KEY_2;
+    aggVertex.setProperty(notTouchedPropKey, prop2);
+
+    var resultVertex = aggProcess.aggregateGraphElement(aggMap, aggVertex, curVertex);
+
+    assertThat(resultVertex.getProperties().size(), is(2));
+    assertThat(resultVertex.getPropertyValue(notTouchedPropKey),
+        is(equalTo(aggVertex.getPropertyValue(notTouchedPropKey))));
   }
 }
