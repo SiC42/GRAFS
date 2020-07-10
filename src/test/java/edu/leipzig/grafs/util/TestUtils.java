@@ -79,7 +79,7 @@ public class TestUtils {
           (v1, v2) -> PropertyValue.create(v1.getString() + v2.getString()));
   public static final PropertiesAggregationFunction INT_ADD_FUNC =
       new PropertiesAggregationFunction(PropertyValue.create(0),
-          (v1, v2) -> PropertyValue.create(v1.getString() + v2.getString()));
+          (v1, v2) -> PropertyValue.create(v1.getInt() + v2.getInt()));
 
   /**
    * Contains values of all supported property types
