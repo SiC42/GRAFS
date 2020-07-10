@@ -66,7 +66,10 @@ public interface GraphElementAggregationProcess extends
         PropertyValue prevValue = aggregatedElem.hasProperty(key)
             ? aggregatedElem.getPropertyValue(key)
             : aF.getIdentity();
-        PropertyValue newValue = aF.apply(prevValue, curElem.getPropertyValue(key));
+        PropertyValue curValue = curElem.hasProperty(key)
+            ? curElem.getPropertyValue(key)
+            : aF.getIdentity();
+        PropertyValue newValue = aF.apply(prevValue, curValue);
         aggregatedElem.setProperty(key, newValue);
       }
     }
