@@ -8,10 +8,10 @@ import edu.leipzig.grafs.operators.grouping.model.AggregatedVertex;
 import edu.leipzig.grafs.operators.grouping.model.AggregationMapping;
 import edu.leipzig.grafs.operators.grouping.model.GroupingInformation;
 import java.util.function.BiFunction;
-import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
+import org.apache.flink.streaming.api.windowing.windows.Window;
 import org.apache.flink.util.Collector;
 
-public class VertexAggregation implements VertexAggregationProcess {
+public class VertexAggregation<W extends Window> extends VertexAggregationProcess<W> {
 
   private final GroupingInformation vertexGroupInfo;
   private final AggregationMapping aggregationMapping;
@@ -26,7 +26,7 @@ public class VertexAggregation implements VertexAggregationProcess {
   }
 
   @Override
-  public void apply(String s, TimeWindow window, Iterable<EdgeContainer> ecIterable,
+  public void process(String s, Context context, Iterable<EdgeContainer> ecIterable,
       Collector<EdgeContainer> out) {
     var aggregatedVertex = new AggregatedVertex();
 

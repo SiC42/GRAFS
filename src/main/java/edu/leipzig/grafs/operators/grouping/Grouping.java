@@ -4,32 +4,41 @@ import edu.leipzig.grafs.model.EdgeContainer;
 import edu.leipzig.grafs.operators.OperatorI;
 import edu.leipzig.grafs.operators.grouping.logic.EdgeAggregation;
 import edu.leipzig.grafs.operators.grouping.logic.EdgeKeySelector;
-import edu.leipzig.grafs.operators.grouping.logic.GraphElementAggregationProcess;
 import edu.leipzig.grafs.operators.grouping.logic.VertexAggregation;
 import edu.leipzig.grafs.operators.grouping.model.AggregateMode;
 import edu.leipzig.grafs.operators.grouping.model.AggregationMapping;
 import edu.leipzig.grafs.operators.grouping.model.GroupingInformation;
 import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.streaming.api.datastream.DataStream;
-import org.apache.flink.streaming.api.windowing.time.Time;
+import org.apache.flink.streaming.api.datastream.WindowedStream;
+import org.apache.flink.streaming.api.windowing.assigners.WindowAssigner;
+import org.apache.flink.streaming.api.windowing.triggers.Trigger;
+import org.apache.flink.streaming.api.windowing.windows.Window;
 import org.apache.flink.util.Collector;
-import org.apache.flink.util.function.TriFunction;
 
-public class Grouping implements OperatorI {
+public class Grouping<W extends Window> implements OperatorI {
 
-  private final GroupingInformation vertexEgi;
+  private final GroupingInformation vertexGi;
   private final AggregationMapping vertexAggregationFunctions;
-  private final GroupingInformation edgeEgi;
+  private final GroupingInformation edgeGi;
   private final AggregationMapping edgeAggregationFunctions;
 
-  public Grouping(final GroupingInformation vertexEgi,
-      final AggregationMapping vertexAggregationFunctions,
-      final GroupingInformation edgeEgi,
-      final AggregationMapping edgeAggregationFunctions) {
-    this.vertexEgi = vertexEgi;
-    this.vertexAggregationFunctions = vertexAggregationFunctions;
-    this.edgeEgi = edgeEgi;
-    this.edgeAggregationFunctions = edgeAggregationFunctions;
+  private final WindowAssigner<Object, W> window;
+  private final Trigger<EdgeContainer, W> trigger;
+
+  public Grouping(GroupingInformation vertexGi, AggregationMapping vertexAggMap,
+      GroupingInformation edgeGi, AggregationMapping edgeAggMap, WindowAssigner<Object, W> window,
+      Trigger<EdgeContainer, W> trigger) {
+    this.vertexGi = vertexGi;
+    this.vertexAggregationFunctions = vertexAggMap;
+    this.edgeGi = edgeGi;
+    this.edgeAggregationFunctions = edgeAggMap;
+    this.window = window;
+    this.trigger = trigger;
+  }
+
+  public static GroupingBuilder createGrouping() {
+    return new GroupingBuilder();
   }
 
   @Override
@@ -37,24 +46,10 @@ public class Grouping implements OperatorI {
     return groupBy(stream);
   }
 
-  public DataStream<EdgeContainer> groupBy(DataStream<EdgeContainer> es) {
-    TriFunction<DataStream<EdgeContainer>, AggregateMode, GraphElementAggregationProcess, DataStream<EdgeContainer>> applyAggregation =
-        (DataStream<EdgeContainer> stream,
-            AggregateMode aggregateMode,
-            GraphElementAggregationProcess aggregationFunction) ->
-            stream
-                .keyBy(new EdgeKeySelector(vertexEgi, edgeEgi, aggregateMode))
-                .timeWindow(Time.milliseconds(10)) // TODO: Zeit nach außen tragen
-                .apply(aggregationFunction);
-
-    DataStream<EdgeContainer> aggregatedOnEdgeStream = applyAggregation.apply(
-        es,
-        AggregateMode.EDGE,
-        new EdgeAggregation(vertexEgi, vertexAggregationFunctions, edgeEgi,
-            edgeAggregationFunctions));
+  public DataStream<EdgeContainer> groupBy(DataStream<EdgeContainer> stream) {
 
     // Enrich stream with reverse edges
-    DataStream<EdgeContainer> expandedEdgeStream = aggregatedOnEdgeStream
+    var expandedStream = stream
         .flatMap(new FlatMapFunction<EdgeContainer, EdgeContainer>() {
           @Override
           public void flatMap(EdgeContainer value, Collector<EdgeContainer> out) {
@@ -63,19 +58,66 @@ public class Grouping implements OperatorI {
           }
         });
 
-    AggregateMode vertexAggregateMode = AggregateMode.SOURCE;
-    DataStream<EdgeContainer> aggregatedOnSourceStream = applyAggregation.apply(
-        expandedEdgeStream,
-        vertexAggregateMode,
-        new VertexAggregation(vertexEgi, vertexAggregationFunctions, vertexAggregateMode));
+    var aggregatedOnSourceStream = aggregateOnVertex(expandedStream, AggregateMode.SOURCE);
+    var aggregateOnVertexStream = aggregateOnVertex(expandedStream, AggregateMode.TARGET);
 
-    vertexAggregateMode = AggregateMode.TARGET;
-
-    return applyAggregation.apply(
-        aggregatedOnSourceStream,
-        vertexAggregateMode,
-        new VertexAggregation(vertexEgi, vertexAggregationFunctions, vertexAggregateMode))
-        .filter(e -> !e.getEdge().isReverse());
+    return aggregateOnEdge(aggregateOnVertexStream);
   }
 
+  private DataStream<EdgeContainer> aggregateOnEdge(DataStream<EdgeContainer> stream) {
+    var windowedStream = createKeyedWindowedStream(stream, AggregateMode.EDGE);
+    return windowedStream.process(new EdgeAggregation<W>(edgeGi, edgeAggregationFunctions));
+  }
+
+  private DataStream<EdgeContainer> aggregateOnVertex(DataStream<EdgeContainer> stream,
+      AggregateMode mode) {
+    var windowedStream = createKeyedWindowedStream(stream, mode);
+    return windowedStream.process(
+        new VertexAggregation<W>(vertexGi, vertexAggregationFunctions, mode));
+  }
+
+  private WindowedStream<EdgeContainer, String, W> createKeyedWindowedStream(
+      DataStream<EdgeContainer> es, AggregateMode edge) {
+    var windowedStream = es
+        .keyBy(new EdgeKeySelector(vertexGi, edgeGi, AggregateMode.EDGE))
+        .window(window);
+    if (trigger != null) {
+      windowedStream = windowedStream.trigger(trigger);
+    }
+    return windowedStream;
+  }
+
+  public static class GroupingBuilder {
+
+    private GroupingInformation vertexGi = null;
+    private AggregationMapping vertexAggMap = null;
+
+    private GroupingInformation edgeGi = null;
+    private AggregationMapping edgeAggMap = null;
+
+    public GroupingBuilder withVertexGrouping(GroupingInformation vertexGi,
+        AggregationMapping vertexAggMap) {
+      this.vertexGi = vertexGi;
+      this.vertexAggMap = vertexAggMap;
+      return this;
+    }
+
+    public GroupingBuilder withEdgeGrouping(GroupingInformation edgeGi,
+        AggregationMapping edgeAggMap) {
+      this.edgeGi = edgeGi;
+      this.edgeAggMap = edgeAggMap;
+      return this;
+    }
+
+    public <W extends Window> Grouping<W> buildWithWindow(WindowAssigner<Object, W> window) {
+      return new Grouping<>(vertexGi, vertexAggMap, edgeGi, edgeAggMap, window, null);
+    }
+
+    public <W extends Window> Grouping<W> buildWithWindowAndTrigger(
+        WindowAssigner<Object, W> window,
+        Trigger<EdgeContainer, W> trigger) {
+      return new Grouping<>(vertexGi, vertexAggMap, edgeGi, edgeAggMap, window, trigger);
+    }
+
+  }
 }

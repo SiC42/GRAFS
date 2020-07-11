@@ -3,10 +3,12 @@ package edu.leipzig.grafs.operators.grouping.logic;
 import edu.leipzig.grafs.model.Vertex;
 import edu.leipzig.grafs.operators.grouping.model.AggregatedVertex;
 import edu.leipzig.grafs.operators.grouping.model.AggregationMapping;
+import org.apache.flink.streaming.api.windowing.windows.Window;
 
-interface VertexAggregationProcess extends GraphElementAggregationProcess {
+abstract class VertexAggregationProcess<W extends Window> extends
+    GraphElementAggregationProcess<W> {
 
-  default AggregatedVertex aggregateVertex(AggregationMapping aggregationMapping,
+  protected AggregatedVertex aggregateVertex(AggregationMapping aggregationMapping,
       AggregatedVertex aggregatedVertex,
       Vertex curVertex) {
     if (curVertex instanceof AggregatedVertex) {

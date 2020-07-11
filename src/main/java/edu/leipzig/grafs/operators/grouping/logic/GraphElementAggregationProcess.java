@@ -5,14 +5,14 @@ import edu.leipzig.grafs.model.GraphElement;
 import edu.leipzig.grafs.operators.grouping.model.AggregationMapping;
 import edu.leipzig.grafs.operators.grouping.model.GroupingInformation;
 import edu.leipzig.grafs.operators.grouping.model.PropertiesAggregationFunction;
-import org.apache.flink.streaming.api.functions.windowing.WindowFunction;
-import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
+import org.apache.flink.streaming.api.functions.windowing.ProcessWindowFunction;
+import org.apache.flink.streaming.api.windowing.windows.Window;
 import org.gradoop.common.model.impl.properties.PropertyValue;
 
-public interface GraphElementAggregationProcess extends
-    WindowFunction<EdgeContainer, EdgeContainer, String, TimeWindow> {
+public abstract class GraphElementAggregationProcess<W extends Window> extends
+    ProcessWindowFunction<EdgeContainer, EdgeContainer, String, W> {
 
-  default void checkAggregationAndGroupingKeyIntersection(AggregationMapping aggregationMapping,
+  protected void checkAggregationAndGroupingKeyIntersection(AggregationMapping aggregationMapping,
       GroupingInformation elemGroupInfo) {
     for (String key : elemGroupInfo.getKeys()) {
       if (aggregationMapping.containsAggregationForProperty(key)) {
@@ -36,7 +36,7 @@ public interface GraphElementAggregationProcess extends
    * @param masterElem element which holds the fields used to set the 'empty' element
    * @return the given 'empty' element, now with the fields set from the 'master' element
    */
-  default GraphElement setGroupedProperties(GroupingInformation groupInfo,
+  protected GraphElement setGroupedProperties(GroupingInformation groupInfo,
       GraphElement emptyElem, GraphElement masterElem) {
     if (groupInfo != null) {
       if (groupInfo.shouldUseLabel()) {
@@ -56,7 +56,7 @@ public interface GraphElementAggregationProcess extends
     return emptyElem;
   }
 
-  default GraphElement aggregateGraphElement(AggregationMapping aggregationMapping,
+  protected GraphElement aggregateGraphElement(AggregationMapping aggregationMapping,
       GraphElement aggregatedElem,
       GraphElement curElem) {
     if (aggregationMapping != null) {

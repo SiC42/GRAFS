@@ -1,11 +1,14 @@
 package edu.leipzig.grafs.model;
 
+import edu.leipzig.grafs.operators.grouping.Grouping;
 import edu.leipzig.grafs.operators.grouping.model.AggregationMapping;
 import edu.leipzig.grafs.operators.grouping.model.GroupingInformation;
 import edu.leipzig.grafs.operators.grouping.model.PropertiesAggregationFunction;
 import edu.leipzig.grafs.util.AsciiGraphLoader;
 import edu.leipzig.grafs.util.FlinkConfig;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.streaming.api.windowing.assigners.TumblingProcessingTimeWindows;
+import org.apache.flink.streaming.api.windowing.time.Time;
 import org.gradoop.common.model.impl.properties.PropertyValue;
 import org.junit.jupiter.api.Test;
 
@@ -49,7 +52,11 @@ class EdgeStreamTest {
           newVal.setInt(pV1.getInt() + pV2.getInt());
           return newVal;
         }));
-    edgeStream.groupBy(vertexEgi, am, null, null).print();
+    edgeStream.callForStream(
+        Grouping.createGrouping()
+            .withVertexGrouping(vertexEgi, am)
+            .buildWithWindow(TumblingProcessingTimeWindows.of(Time.milliseconds(10))))
+        .print();
     env.execute();
   }
 }
