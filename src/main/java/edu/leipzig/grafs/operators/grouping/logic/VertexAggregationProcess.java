@@ -11,14 +11,6 @@ abstract class VertexAggregationProcess<W extends Window> extends
   protected AggregatedVertex aggregateVertex(AggregationMapping aggregationMapping,
       AggregatedVertex aggregatedVertex,
       Vertex curVertex) {
-    if (curVertex instanceof AggregatedVertex) {
-      var curAggVertex = (AggregatedVertex) curVertex;
-      for (var id : curAggVertex.getAggregatedVertexIds()) {
-        if (!aggregatedVertex.addVertex(id)) {
-          aggregatedVertex.addVertex(curVertex); // add current vertex, because it is an aggregation
-        }
-      }
-    }
     if (aggregatedVertex.isAlreadyAggregated(curVertex)) {
       return aggregatedVertex;
     } else {
