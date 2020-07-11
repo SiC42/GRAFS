@@ -1,9 +1,6 @@
 package edu.leipzig.grafs.model;
 
 import edu.leipzig.grafs.operators.OperatorI;
-import edu.leipzig.grafs.operators.grouping.Grouping;
-import edu.leipzig.grafs.operators.grouping.model.AggregationMapping;
-import edu.leipzig.grafs.operators.grouping.model.GroupingInformation;
 import edu.leipzig.grafs.operators.subgraph.Subgraph;
 import edu.leipzig.grafs.operators.subgraph.Subgraph.Strategy;
 import edu.leipzig.grafs.operators.transform.EdgeTransformation;
@@ -32,13 +29,6 @@ public interface EdgeStreamOperators {
   default EdgeStream subgraph(FilterFunction<Vertex> vertexGeiPredicate,
       FilterFunction<Edge> edgeGeiPredicate, Strategy strategy) {
     return callForStream(new Subgraph(vertexGeiPredicate, edgeGeiPredicate, strategy));
-  }
-
-  default EdgeStream groupBy(GroupingInformation vertexEgi,
-      AggregationMapping vertexAggregationFunctions,
-      GroupingInformation edgeEgi, AggregationMapping edgeAggregationFunctions) {
-    return callForStream(
-        new Grouping(vertexEgi, vertexAggregationFunctions, edgeEgi, edgeAggregationFunctions));
   }
 
   default EdgeStream transformEdges(MapFunction<Edge, Edge> mapper) {
