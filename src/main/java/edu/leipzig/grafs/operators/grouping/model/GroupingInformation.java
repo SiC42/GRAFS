@@ -51,4 +51,13 @@ public class GroupingInformation implements Serializable {
   public boolean shouldUseMembership() {
     return useMembership;
   }
+
+  @Override
+  public String toString() {
+    return "GroupingInformation{" +
+        "useLabel=" + useLabel +
+        ", useMembership=" + useMembership +
+        ", groupingKeys=" + groupingKeys +
+        '}';
+  }
 }
