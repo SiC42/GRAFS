@@ -64,16 +64,16 @@ public class Grouping<W extends Window> implements OperatorI {
     return aggregateOnEdge(aggregateOnVertexStream);
   }
 
-  private DataStream<EdgeContainer> aggregateOnEdge(DataStream<EdgeContainer> stream) {
-    var windowedStream = createKeyedWindowedStream(stream, AggregateMode.EDGE);
-    return windowedStream.process(new EdgeAggregation<W>(edgeGi, edgeAggregationFunctions));
-  }
-
   private DataStream<EdgeContainer> aggregateOnVertex(DataStream<EdgeContainer> stream,
       AggregateMode mode) {
     var windowedStream = createKeyedWindowedStream(stream, mode);
     return windowedStream.process(
         new VertexAggregation<W>(vertexGi, vertexAggregationFunctions, mode));
+  }
+
+  private DataStream<EdgeContainer> aggregateOnEdge(DataStream<EdgeContainer> stream) {
+    var windowedStream = createKeyedWindowedStream(stream, AggregateMode.EDGE);
+    return windowedStream.process(new EdgeAggregation<W>(edgeGi, edgeAggregationFunctions));
   }
 
   private WindowedStream<EdgeContainer, String, W> createKeyedWindowedStream(
