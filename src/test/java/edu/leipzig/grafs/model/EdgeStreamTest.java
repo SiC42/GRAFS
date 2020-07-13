@@ -6,8 +6,12 @@ import edu.leipzig.grafs.operators.grouping.model.GroupingInformation;
 import edu.leipzig.grafs.operators.grouping.model.PropertiesAggregationFunction;
 import edu.leipzig.grafs.util.AsciiGraphLoader;
 import edu.leipzig.grafs.util.FlinkConfig;
+import edu.leipzig.grafs.util.FlinkConfigBuilder;
+import java.time.Duration;
+import org.apache.flink.api.common.eventtime.WatermarkStrategy;
+import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
-import org.apache.flink.streaming.api.windowing.assigners.TumblingProcessingTimeWindows;
+import org.apache.flink.streaming.api.windowing.assigners.TumblingEventTimeWindows;
 import org.apache.flink.streaming.api.windowing.time.Time;
 import org.gradoop.common.model.impl.properties.PropertyValue;
 import org.junit.jupiter.api.Test;
@@ -20,6 +24,7 @@ class EdgeStreamTest {
 
 
   public EdgeStreamTest() {
+    env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
 
     AsciiGraphLoader loader = AsciiGraphLoader.fromString(
         "(a18 {n : \"A\", a : 18})," +
@@ -34,7 +39,10 @@ class EdgeStreamTest {
             "(c20)-[]->(b17)," +
             "(a20)-[]->(b19),"
     );
-    FlinkConfig config = FlinkConfig.buildNewConfig(env)
+    FlinkConfig config = new FlinkConfigBuilder(env)
+        .withWaterMarkStrategy(WatermarkStrategy
+            .<EdgeContainer>forBoundedOutOfOrderness(Duration.ZERO)
+            .withTimestampAssigner((ec, timestamp) -> 0))
         .build();
     edgeStream = loader.createEdgeStream(config);
   }
@@ -55,7 +63,7 @@ class EdgeStreamTest {
     edgeStream.callForStream(
         Grouping.createGrouping()
             .withVertexGrouping(vertexEgi, am)
-            .buildWithWindow(TumblingProcessingTimeWindows.of(Time.milliseconds(10))))
+            .buildWithWindow(TumblingEventTimeWindows.of(Time.milliseconds(10))))
         .print();
     env.execute();
   }
