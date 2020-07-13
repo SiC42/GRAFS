@@ -59,9 +59,10 @@ public class Grouping<W extends Window> implements OperatorI {
         });
 
     var aggregatedOnSourceStream = aggregateOnVertex(expandedStream, AggregateMode.SOURCE);
-    var aggregateOnVertexStream = aggregateOnVertex(aggregatedOnSourceStream, AggregateMode.TARGET);
-
-    return aggregateOnEdge(aggregateOnVertexStream);
+    var aggregatedOnVertexStream = aggregateOnVertex(aggregatedOnSourceStream,
+        AggregateMode.TARGET);
+    var reducedStream = aggregatedOnVertexStream.filter(ec -> !ec.getEdge().isReverse());
+    return aggregateOnEdge(reducedStream);
   }
 
   private DataStream<EdgeContainer> aggregateOnVertex(DataStream<EdgeContainer> stream,
