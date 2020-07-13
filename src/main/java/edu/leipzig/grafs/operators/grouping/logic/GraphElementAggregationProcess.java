@@ -4,7 +4,6 @@ import edu.leipzig.grafs.model.EdgeContainer;
 import edu.leipzig.grafs.model.GraphElement;
 import edu.leipzig.grafs.operators.grouping.model.AggregationMapping;
 import edu.leipzig.grafs.operators.grouping.model.GroupingInformation;
-import edu.leipzig.grafs.operators.grouping.model.PropertiesAggregationFunction;
 import org.apache.flink.streaming.api.functions.windowing.ProcessWindowFunction;
 import org.apache.flink.streaming.api.windowing.windows.Window;
 import org.gradoop.common.model.impl.properties.PropertyValue;
@@ -14,14 +13,14 @@ public abstract class GraphElementAggregationProcess<W extends Window> extends
 
   protected void checkAggregationAndGroupingKeyIntersection(AggregationMapping aggregationMapping,
       GroupingInformation elemGroupInfo) {
-    for (String key : elemGroupInfo.getKeys()) {
+    for (var key : elemGroupInfo.getKeys()) {
       if (aggregationMapping.containsAggregationForProperty(key)) {
         throw new RuntimeException(
             String.format("Aggregation key '%s' is also present in grouping keys", key));
       }
     }
-    if (elemGroupInfo.shouldUseMembership() && aggregationMapping.getAggregationForMembership()
-        .isPresent()) {
+    if (elemGroupInfo.shouldUseMembership() &&
+        aggregationMapping.getAggregationForMembership().isPresent()) {
       throw new RuntimeException(
           "Elements should be grouped by membership but aggregation mapping contains function for membership aggregation.");
     }
@@ -62,14 +61,14 @@ public abstract class GraphElementAggregationProcess<W extends Window> extends
     if (aggregationMapping != null) {
       for (var aggregationEntry : aggregationMapping.entrySet()) {
         var key = aggregationEntry.getPropertyKey();
-        PropertiesAggregationFunction aF = aggregationMapping.getAggregationForProperty(key);
+        var aggFunc = aggregationMapping.getAggregationForProperty(key);
         PropertyValue prevValue = aggregatedElem.hasProperty(key)
             ? aggregatedElem.getPropertyValue(key)
-            : aF.getIdentity();
+            : aggFunc.getIdentity();
         PropertyValue curValue = curElem.hasProperty(key)
             ? curElem.getPropertyValue(key)
-            : aF.getIdentity();
-        PropertyValue newValue = aF.apply(prevValue, curValue);
+            : aggFunc.getIdentity();
+        PropertyValue newValue = aggFunc.apply(prevValue, curValue);
         aggregatedElem.setProperty(key, newValue);
       }
     }
