@@ -59,7 +59,7 @@ public class Grouping<W extends Window> implements OperatorI {
         });
 
     var aggregatedOnSourceStream = aggregateOnVertex(expandedStream, AggregateMode.SOURCE);
-    var aggregateOnVertexStream = aggregateOnVertex(expandedStream, AggregateMode.TARGET);
+    var aggregateOnVertexStream = aggregateOnVertex(aggregatedOnSourceStream, AggregateMode.TARGET);
 
     return aggregateOnEdge(aggregateOnVertexStream);
   }
@@ -77,9 +77,9 @@ public class Grouping<W extends Window> implements OperatorI {
   }
 
   private WindowedStream<EdgeContainer, String, W> createKeyedWindowedStream(
-      DataStream<EdgeContainer> es, AggregateMode edge) {
+      DataStream<EdgeContainer> es, AggregateMode mode) {
     var windowedStream = es
-        .keyBy(new EdgeKeySelector(vertexGi, edgeGi, AggregateMode.EDGE))
+        .keyBy(new EdgeKeySelector(vertexGi, edgeGi, mode))
         .window(window);
     if (trigger != null) {
       windowedStream = windowedStream.trigger(trigger);
