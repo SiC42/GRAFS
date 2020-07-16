@@ -49,4 +49,6 @@ public interface EdgeStreamOperators {
     return callForStream(new VertexTransformation(mapper));
   }
 
+  EdgeStream union(EdgeStream otherStream);
+
 }

@@ -16,12 +16,17 @@ public class EdgeStream implements EdgeStreamOperators {
   public EdgeStream(DataStream<EdgeContainer> edgeStream, FlinkConfig config) {
     this.edgeStream = edgeStream;
     this.config = config;
-
   }
 
   public EdgeStream callForStream(OperatorI operator) {
     DataStream<EdgeContainer> result = operator.execute(edgeStream);
     return new EdgeStream(result, config);
+  }
+
+  @Override
+  public EdgeStream union(EdgeStream otherStream) {
+    var mergedStream = this.edgeStream.union(otherStream.edgeStream);
+    return new EdgeStream(mergedStream, config);
   }
 
   public void print() {
