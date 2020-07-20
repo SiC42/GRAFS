@@ -14,7 +14,7 @@ public class EdgeStream implements EdgeStreamOperators {
 
 
   public EdgeStream(DataStream<EdgeContainer> edgeStream, FlinkConfig config) {
-    this.edgeStream = edgeStream;
+    this.edgeStream = edgeStream.assignTimestampsAndWatermarks(config.getWatermarkStrategy());
     this.config = config;
   }
 

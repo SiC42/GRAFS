@@ -7,11 +7,10 @@ import edu.leipzig.grafs.operators.grouping.model.AggregateMode;
 import edu.leipzig.grafs.operators.grouping.model.AggregatedVertex;
 import edu.leipzig.grafs.operators.grouping.model.AggregationMapping;
 import edu.leipzig.grafs.operators.grouping.model.GroupingInformation;
-import java.util.function.BiFunction;
-import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
+import org.apache.flink.streaming.api.windowing.windows.Window;
 import org.apache.flink.util.Collector;
 
-public class VertexAggregation implements VertexAggregationProcess {
+public class VertexAggregation<W extends Window> extends VertexAggregationProcess<W> {
 
   private final GroupingInformation vertexGroupInfo;
   private final AggregationMapping aggregationMapping;
@@ -26,11 +25,11 @@ public class VertexAggregation implements VertexAggregationProcess {
   }
 
   @Override
-  public void apply(String s, TimeWindow window, Iterable<EdgeContainer> ecIterable,
+  public void process(String s, Context context, Iterable<EdgeContainer> ecIterable,
       Collector<EdgeContainer> out) {
     var aggregatedVertex = new AggregatedVertex();
 
-    boolean initialAggregation = true;
+    var isInitialAggregation = true;
 
     for (EdgeContainer ec : ecIterable) {
       Vertex curVertex;
@@ -39,24 +38,25 @@ public class VertexAggregation implements VertexAggregationProcess {
       } else {
         curVertex = ec.getTargetVertex();
       }
-      if (initialAggregation) {
-        initialAggregation = false;
+      if (isInitialAggregation) {
+        isInitialAggregation = false;
         aggregatedVertex = (AggregatedVertex) setGroupedProperties(vertexGroupInfo,
             aggregatedVertex, curVertex);
       }
       aggregatedVertex = aggregateVertex(aggregationMapping, aggregatedVertex, curVertex);
     }
-    BiFunction<Vertex, EdgeContainer, EdgeContainer> generateUpdatedECFunction =
-        aggregateMode.equals(AggregateMode.SOURCE)
-            ? (v, ec) -> new EdgeContainer(ec.getEdge(), v, ec.getTargetVertex())
-            : (v, ec) -> new EdgeContainer(ec.getEdge(), ec.getSourceVertex(), v);
     for (EdgeContainer ec : ecIterable) {
-      if (!ec.getEdge().isReverse()) {
-        Vertex finalVertex = new VertexFactory().createVertex(aggregatedVertex);
-        EdgeContainer aggregatedEdge = generateUpdatedECFunction.apply(finalVertex, ec);
-        out.collect(aggregatedEdge);
+      if (ec.getEdge().isReverse()) {
+        out.collect(ec); // No need to aggregate for reverse edges
       } else {
-        out.collect(ec);
+        Vertex finalVertex = new VertexFactory().createVertex(aggregatedVertex);
+        EdgeContainer aggregatedEdge;
+        if (aggregateMode.equals(AggregateMode.SOURCE)) {
+          aggregatedEdge = new EdgeContainer(ec.getEdge(), finalVertex, ec.getTargetVertex());
+        } else { // TARGET-mode
+          aggregatedEdge = new EdgeContainer(ec.getEdge(), ec.getSourceVertex(), finalVertex);
+        }
+        out.collect(aggregatedEdge);
       }
     }
   }

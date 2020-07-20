@@ -1,52 +1,36 @@
 package edu.leipzig.grafs.operators.grouping.logic;
 
-import edu.leipzig.grafs.factory.EdgeFactory;
 import edu.leipzig.grafs.model.Edge;
 import edu.leipzig.grafs.model.EdgeContainer;
-import edu.leipzig.grafs.operators.grouping.model.AggregatedVertex;
 import edu.leipzig.grafs.operators.grouping.model.AggregationMapping;
 import edu.leipzig.grafs.operators.grouping.model.GroupingInformation;
-import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
+import org.apache.flink.streaming.api.windowing.windows.Window;
 import org.apache.flink.util.Collector;
 
-public class EdgeAggregation implements GraphElementAggregationProcess, VertexAggregationProcess {
+public class EdgeAggregation<W extends Window> extends GraphElementAggregationProcess<W> {
 
 
-  private final GroupingInformation vertexGroupInfo;
-  private final AggregationMapping vertexAggregationMapping;
   private final GroupingInformation edgeGroupInfo;
   private final AggregationMapping edgeAggregationMapping;
 
-  public EdgeAggregation(GroupingInformation vertexGroupInfo,
-      AggregationMapping vertexAggregationMapping, GroupingInformation edgeGroupInfo,
+  public EdgeAggregation(GroupingInformation edgeGroupInfo,
       AggregationMapping edgeAggregationMapping) {
-    checkAggregationAndGroupingKeyIntersection(vertexAggregationMapping, vertexGroupInfo);
     if (edgeAggregationMapping != null && edgeGroupInfo != null) {
       checkAggregationAndGroupingKeyIntersection(edgeAggregationMapping, edgeGroupInfo);
     }
-    this.vertexGroupInfo = vertexGroupInfo;
-    this.vertexAggregationMapping = vertexAggregationMapping;
     this.edgeGroupInfo = edgeGroupInfo;
     this.edgeAggregationMapping = edgeAggregationMapping;
   }
 
-
   @Override
-  public void apply(String s, TimeWindow window, Iterable<EdgeContainer> ecIterable,
+  public void process(String s, Context context, Iterable<EdgeContainer> ecIterable,
       Collector<EdgeContainer> out) {
-    var aggregatedSource = new AggregatedVertex();
-    var aggregatedTarget = new AggregatedVertex();
-    var aggregatedEdge = new EdgeFactory()
-        .createEdge(aggregatedSource.getId(), aggregatedTarget.getId());
+    var aggregatedEdge = new Edge();
 
     int count = 0;
     EdgeContainer lastEc = null;
 
     for (var ec : ecIterable) {
-      aggregatedSource = aggregateVertex(vertexAggregationMapping, aggregatedSource,
-          ec.getSourceVertex());
-      aggregatedTarget = aggregateVertex(vertexAggregationMapping, aggregatedTarget,
-          ec.getTargetVertex());
       aggregatedEdge = (Edge) aggregateGraphElement(edgeAggregationMapping, aggregatedEdge,
           ec.getEdge());
       count++;
@@ -57,17 +41,15 @@ public class EdgeAggregation implements GraphElementAggregationProcess, VertexAg
     // No need for aggregation when only one edge was "aggregated"
     if (count > 1) {
       // we have not set the grouped properties yet
-      aggregatedSource = (AggregatedVertex) setGroupedProperties(vertexGroupInfo,
-          aggregatedSource,
-          lastEc.getSourceVertex());
-      aggregatedTarget = (AggregatedVertex) setGroupedProperties(vertexGroupInfo,
-          aggregatedTarget,
-          lastEc.getTargetVertex());
+      var source = lastEc.getSourceVertex();
+      var target = lastEc.getTargetVertex();
       aggregatedEdge = (Edge) setGroupedProperties(edgeGroupInfo,
           aggregatedEdge,
           lastEc.getEdge());
-      aggregatedEContainer = new EdgeContainer(aggregatedEdge, aggregatedSource,
-          aggregatedTarget);
+      aggregatedEdge.setSourceId(source.getId());
+      aggregatedEdge.setTargetId(target.getId());
+      aggregatedEContainer = new EdgeContainer(aggregatedEdge, source,
+          target);
     } else {
       aggregatedEContainer = lastEc;
     }
@@ -75,6 +57,5 @@ public class EdgeAggregation implements GraphElementAggregationProcess, VertexAg
     out.collect(aggregatedEContainer);
 
   }
-
 
 }

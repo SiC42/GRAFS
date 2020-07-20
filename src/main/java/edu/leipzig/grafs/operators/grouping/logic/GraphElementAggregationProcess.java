@@ -4,24 +4,23 @@ import edu.leipzig.grafs.model.EdgeContainer;
 import edu.leipzig.grafs.model.GraphElement;
 import edu.leipzig.grafs.operators.grouping.model.AggregationMapping;
 import edu.leipzig.grafs.operators.grouping.model.GroupingInformation;
-import edu.leipzig.grafs.operators.grouping.model.PropertiesAggregationFunction;
-import org.apache.flink.streaming.api.functions.windowing.WindowFunction;
-import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
+import org.apache.flink.streaming.api.functions.windowing.ProcessWindowFunction;
+import org.apache.flink.streaming.api.windowing.windows.Window;
 import org.gradoop.common.model.impl.properties.PropertyValue;
 
-public interface GraphElementAggregationProcess extends
-    WindowFunction<EdgeContainer, EdgeContainer, String, TimeWindow> {
+public abstract class GraphElementAggregationProcess<W extends Window> extends
+    ProcessWindowFunction<EdgeContainer, EdgeContainer, String, W> {
 
-  default void checkAggregationAndGroupingKeyIntersection(AggregationMapping aggregationMapping,
+  protected void checkAggregationAndGroupingKeyIntersection(AggregationMapping aggregationMapping,
       GroupingInformation elemGroupInfo) {
-    for (String key : elemGroupInfo.getKeys()) {
+    for (var key : elemGroupInfo.getKeys()) {
       if (aggregationMapping.containsAggregationForProperty(key)) {
         throw new RuntimeException(
             String.format("Aggregation key '%s' is also present in grouping keys", key));
       }
     }
-    if (elemGroupInfo.shouldUseMembership() && aggregationMapping.getAggregationForMembership()
-        .isPresent()) {
+    if (elemGroupInfo.shouldUseMembership() &&
+        aggregationMapping.getAggregationForMembership().isPresent()) {
       throw new RuntimeException(
           "Elements should be grouped by membership but aggregation mapping contains function for membership aggregation.");
     }
@@ -36,7 +35,7 @@ public interface GraphElementAggregationProcess extends
    * @param masterElem element which holds the fields used to set the 'empty' element
    * @return the given 'empty' element, now with the fields set from the 'master' element
    */
-  default GraphElement setGroupedProperties(GroupingInformation groupInfo,
+  protected GraphElement setGroupedProperties(GroupingInformation groupInfo,
       GraphElement emptyElem, GraphElement masterElem) {
     if (groupInfo != null) {
       if (groupInfo.shouldUseLabel()) {
@@ -56,20 +55,20 @@ public interface GraphElementAggregationProcess extends
     return emptyElem;
   }
 
-  default GraphElement aggregateGraphElement(AggregationMapping aggregationMapping,
+  protected GraphElement aggregateGraphElement(AggregationMapping aggregationMapping,
       GraphElement aggregatedElem,
       GraphElement curElem) {
     if (aggregationMapping != null) {
       for (var aggregationEntry : aggregationMapping.entrySet()) {
         var key = aggregationEntry.getPropertyKey();
-        PropertiesAggregationFunction aF = aggregationMapping.getAggregationForProperty(key);
+        var aggFunc = aggregationMapping.getAggregationForProperty(key);
         PropertyValue prevValue = aggregatedElem.hasProperty(key)
             ? aggregatedElem.getPropertyValue(key)
-            : aF.getIdentity();
+            : aggFunc.getIdentity();
         PropertyValue curValue = curElem.hasProperty(key)
             ? curElem.getPropertyValue(key)
-            : aF.getIdentity();
-        PropertyValue newValue = aF.apply(prevValue, curValue);
+            : aggFunc.getIdentity();
+        PropertyValue newValue = aggFunc.apply(prevValue, curValue);
         aggregatedElem.setProperty(key, newValue);
       }
     }
