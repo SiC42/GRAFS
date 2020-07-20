@@ -16,6 +16,7 @@ import org.apache.flink.configuration.Configuration;
 import org.apache.flink.runtime.testutils.MiniClusterResourceConfiguration;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.test.util.MiniClusterWithClientResource;
+import org.junit.ClassRule;
 
 /**
  * Base class for Flink-based unit tests with the same cluster.
@@ -26,6 +27,7 @@ public abstract class OperatorTestBase {
 
   private static final long TASKMANAGER_MEMORY_SIZE_MB = 512;
 
+  @ClassRule
   public static MiniClusterWithClientResource miniClusterResource = getMiniCluster();
   /**
    * Flink Execution Environment
