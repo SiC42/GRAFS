@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import com.google.common.collect.Maps;
+import edu.leipzig.grafs.model.EdgeContainer;
 import edu.leipzig.grafs.model.Element;
 import edu.leipzig.grafs.model.GraphElement;
 import edu.leipzig.grafs.operators.grouping.model.PropertiesAggregationFunction;
@@ -82,7 +83,25 @@ public class TestUtils {
   public static final PropertiesAggregationFunction INT_ADD_FUNC =
       new PropertiesAggregationFunction(PropertyValue.create(0),
           (v1, v2) -> PropertyValue.create(v1.getInt() + v2.getInt()));
+  private static final Comparator<EdgeContainer> edgeContainerComparator = (ec1, ec2) -> {
+    int difference = 0;
 
+    // compare edges
+    difference = compareGraphElementsViaProperties(ec1.getEdge(), ec2.getEdge());
+    if (difference != 0) {
+      return difference;
+    }
+
+    // compare source vertex
+    difference = compareGraphElementsViaProperties(ec1.getSourceVertex(), ec2.getSourceVertex());
+    if (difference != 0) {
+      return difference;
+    }
+
+    // compare target vertex
+    difference = compareGraphElementsViaProperties(ec1.getTargetVertex(), ec2.getTargetVertex());
+    return difference;
+  };
   /**
    * Contains values of all supported property types
    */
@@ -230,7 +249,7 @@ public class TestUtils {
     Iterator<? extends Element> it2 = list2.iterator();
 
     while (it1.hasNext()) {
-      validateElements(
+      validateElementWith(
           it1.next(),
           it2.next());
     }
@@ -262,12 +281,77 @@ public class TestUtils {
     Iterator<? extends GraphElement> it2 = list2.iterator();
 
     while (it1.hasNext()) {
-      validateElements(it1.next(), it2.next());
+      validateElementWith(it1.next(), it2.next());
     }
   }
 
+  /**
+   * Sorts the given collections by edge id and checks pairwise if the edge containers are contained
+   * in the same graphs.
+   *
+   * @param expectedCollection first collection
+   * @param actualCollection   second collection
+   */
+  public static void validateEdgeContainerCollections(
+      Collection<EdgeContainer> expectedCollection,
+      Collection<EdgeContainer> actualCollection) {
+    assertNotNull(expectedCollection, "first collection was null");
+    assertNotNull(expectedCollection, "second collection was null");
+    assertEquals(expectedCollection.size(), actualCollection.size(), String.format(
+        "collections of different size: %d and %d", expectedCollection.size(),
+        actualCollection.size()));
 
-  public static void validateElements(Element expectedElement,
+    var list1 = new ArrayList<>(expectedCollection);
+    var list2 = new ArrayList<>(actualCollection);
+
+    list1.sort(edgeContainerComparator);
+    list2.sort(edgeContainerComparator);
+
+    var it1 = list1.iterator();
+    var it2 = list2.iterator();
+
+    while (it1.hasNext()) {
+      var ec1 = it1.next();
+      var ec2 = it2.next();
+
+      validateElementWith(ec1.getEdge(), ec2.getEdge());
+      validateElementWith(ec1.getSourceVertex(), ec2.getSourceVertex());
+      validateElementWith(ec1.getTargetVertex(), ec2.getTargetVertex());
+    }
+  }
+
+  public static int compareGraphElementsViaProperties(GraphElement elem1, GraphElement elem2) {
+    Comparator<GraphElement> elementComparator;
+    int difference = 0;
+
+    elementComparator = Comparator.comparing(Element::getLabel);
+    if ((difference = elementComparator.compare(elem1, elem2)) != 0) {
+      return difference;
+    }
+
+    elementComparator = Comparator
+        .comparing(e -> e.getGraphIds().toString()); // TODO: better comparison for graphIds
+    if ((difference = elementComparator.compare(elem1, elem2)) != 0) {
+      return difference;
+    }
+
+    for (var key : elem1.getPropertyKeys()) {
+      elementComparator = Comparator.comparing(e -> e.getPropertyValue(key));
+      if ((difference = elementComparator.compare(elem1, elem2)) != 0) {
+        return difference;
+      }
+    }
+    for (var key : elem2.getPropertyKeys()) {
+      elementComparator = Comparator.comparing(e -> e.getPropertyValue(key));
+      if ((difference = elementComparator.compare(elem1, elem2)) != 0) {
+        return difference;
+      }
+    }
+    return 0;
+  }
+
+
+  public static void validateElementWith(Element expectedElement,
       Element actualElement) {
     assertNotNull(expectedElement, "expected element was null");
     assertNotNull(actualElement, "actual element was null");
@@ -276,7 +360,7 @@ public class TestUtils {
 
     if (expectedElement.getPropertyCount() == 0) {
       assertEquals(expectedElement.getPropertyCount(), actualElement.getPropertyCount(),
-          "property count mismatch");
+          String.format("property count mismatch for %s & %s", expectedElement, actualElement));
     } else {
       List<String> expectedKeys = new ArrayList<>();
       expectedElement.getPropertyKeys().forEach(expectedKeys::add);
