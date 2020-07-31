@@ -5,7 +5,9 @@ import edu.leipzig.grafs.util.MultiMap;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.gradoop.common.model.impl.id.GradoopId;
@@ -23,8 +25,8 @@ public class Graph {
   }
 
   public Graph(Collection<Vertex> vertices, Collection<Edge> edges) {
-    this.vertices = new HashSet<>(vertices);
-    this.edges = new HashSet<>(edges);
+    this.vertices = new HashSet<>();
+    this.edges = new HashSet<>();
     vertexMap = new HashMap<>();
     sourceToEdgeMap = new MultiMap<>();
     targetToEdgeMap = new MultiMap<>();
@@ -52,7 +54,9 @@ public class Graph {
   public boolean addVertices(Collection<Vertex> vertices) {
     boolean addedNewVertex = false;
     for (var vertex : vertices) {
-      addedNewVertex = addedNewVertex || addVertex(vertex);
+      if (addVertex(vertex)) {
+        addedNewVertex = true;
+      }
     }
 
     return addedNewVertex;
@@ -64,10 +68,12 @@ public class Graph {
   }
 
   public boolean addEdge(Edge edge) {
-    if (vertexMap.containsKey(edge.getSourceId())) {
-      throw new RuntimeException(String.format("No source vertex found for edge %s", edge));
+    if (!vertexMap.containsKey(edge.getSourceId())) {
+      System.out.println(vertices);
+      throw new RuntimeException(
+          String.format("No source vertex with id %s found for edge %s", edge.getSourceId(), edge));
     }
-    if (vertexMap.containsKey(edge.getTargetId())) {
+    if (!vertexMap.containsKey(edge.getTargetId())) {
       throw new RuntimeException(String.format("No target vertex found for edge %s", edge));
     }
     boolean isNewEdge = edges.add(edge);
@@ -81,7 +87,9 @@ public class Graph {
   public boolean addEdges(Collection<Edge> edges) {
     var addedNewEdge = false;
     for (var edge : edges) {
-      addedNewEdge = addedNewEdge || addEdge(edge);
+      if (addEdge(edge)) {
+        addedNewEdge = true;
+      }
     }
     return addedNewEdge;
   }
@@ -99,7 +107,10 @@ public class Graph {
   }
 
   public Set<Edge> getEdgesForSource(Vertex vertex) {
-    return sourceToEdgeMap.get(vertex.getId());
+    if (sourceToEdgeMap.containsKey(vertex.getId())) {
+      return sourceToEdgeMap.get(vertex.getId());
+    }
+    return new HashSet<>();
   }
 
   public Set<Edge> getEdgesForTarget(Vertex vertex) {
@@ -108,10 +119,34 @@ public class Graph {
 
   public Set<Vertex> getAdjacentFor(Vertex vertex) {
     var edgesOfSource = sourceToEdgeMap.get(vertex.getId());
+    if (edgesOfSource == null) {
+      return new HashSet<>();
+    }
     return edgesOfSource.stream()
         .map(Edge::getTargetId)
         .map(vertexMap::get)
         .collect(Collectors.toSet());
+  }
+
+  // TODO: Find a cheaper way for this
+  public Edge getEdgeForVertices(Vertex sourceVertex, Vertex targetVertex) {
+    Set<Edge> edgeIntersection = new HashSet<>(sourceToEdgeMap.get(sourceVertex.getId()));
+    edgeIntersection.retainAll(targetToEdgeMap.get(targetVertex.getId()));
+    Iterator<Edge> iterator = edgeIntersection.iterator();
+    return iterator.hasNext() ? iterator.next() : null;
+  }
+
+  public Graph getVertexInducedSubGraph(Collection<Vertex> vertices) {
+    Graph vInducedSubGraph = new Graph(vertices, new HashSet<>());
+    for (var vertex : vertices) {
+      for (var edge : getEdgesForSource(vertex)) {
+        var target = getTargetForEdge(edge);
+        if (vertices.contains(target)) {
+          vInducedSubGraph.addEdge(edge);
+        }
+      }
+    }
+    return vInducedSubGraph;
   }
 
   private void createMaps(Collection<Vertex> vertices, Collection<Edge> edges) {
@@ -119,4 +154,32 @@ public class Graph {
     addEdges(edges);
   }
 
+  @Override
+  public String toString() {
+    return "Graph{" +
+        "vertices=" + vertices +
+        ", edges=" + edges +
+        '}';
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    Graph graph = (Graph) o;
+    return Objects.equals(vertices, graph.vertices) &&
+        Objects.equals(vertexMap, graph.vertexMap) &&
+        Objects.equals(edges, graph.edges) &&
+        Objects.equals(sourceToEdgeMap, graph.sourceToEdgeMap) &&
+        Objects.equals(targetToEdgeMap, graph.targetToEdgeMap);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(vertices, vertexMap, edges, sourceToEdgeMap, targetToEdgeMap);
+  }
 }
