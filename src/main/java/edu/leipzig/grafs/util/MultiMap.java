@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 public class MultiMap<K, V> {
@@ -120,9 +121,44 @@ public class MultiMap<K, V> {
     return hasChanged;
   }
 
+  public void removeAll(K key) {
+    var valueSet = map.get(key);
+    if (valueSet != null) {
+      size -= valueSet.size();
+      valueSet.clear();
+    }
+    map.put(key, valueSet);
+  }
+
   public int size() {
     return size;
   }
 
+  @Override
+  public String toString() {
+    return map.toString();
+  }
 
+  public boolean retainAll(K key, Collection<V> retainCollection) {
+    var valueSet = map.get(key);
+    return valueSet.retainAll(retainCollection);
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    MultiMap<?, ?> multiMap = (MultiMap<?, ?>) o;
+    return size == multiMap.size &&
+        Objects.equals(map, multiMap.map);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(map, size);
+  }
 }
