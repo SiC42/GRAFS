@@ -19,12 +19,18 @@ public class Graph {
   protected final Set<Edge> edges;
   protected final MultiMap<GradoopId, Edge> sourceToEdgeMap;
   protected final MultiMap<GradoopId, Edge> targetToEdgeMap;
+  private final GradoopId id;
 
   public Graph() {
     this(new HashSet<>(), new HashSet<>());
   }
 
   public Graph(Collection<Vertex> vertices, Collection<Edge> edges) {
+    this(GradoopId.get(), vertices, edges);
+  }
+
+  public Graph(GradoopId graphId, Collection<Vertex> vertices, Collection<Edge> edges) {
+    this.id = graphId;
     this.vertices = new HashSet<>();
     this.edges = new HashSet<>();
     vertexMap = new HashMap<>();
@@ -41,6 +47,10 @@ public class Graph {
       graph.addEdge(ec.getEdge());
     }
     return graph;
+  }
+
+  public GradoopId getId() {
+    return id;
   }
 
   public boolean addVertex(Vertex vertex) {
