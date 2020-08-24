@@ -1,5 +1,6 @@
 package edu.leipzig.grafs.util;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -160,5 +161,13 @@ public class MultiMap<K, V> {
   @Override
   public int hashCode() {
     return Objects.hash(map, size);
+  }
+
+  public Collection<V> values() {
+    var values = new ArrayList<V>(size);
+    for (var valuesPerKey : map.values()) {
+      values.addAll(valuesPerKey);
+    }
+    return values;
   }
 }
