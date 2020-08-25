@@ -3,6 +3,7 @@ package edu.leipzig.grafs.model;
 
 import edu.leipzig.grafs.util.MultiMap;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -130,7 +131,7 @@ public class Graph {
     return Collections.emptySet();
   }
 
-  public Set<Vertex> getAdjacentFor(Vertex vertex) {
+  public Set<Vertex> getTargetForSourceVertex(Vertex vertex) {
     var edgesOfSource = sourceToEdgeMap.get(vertex.getId());
     if (edgesOfSource == null) {
       return new HashSet<>();

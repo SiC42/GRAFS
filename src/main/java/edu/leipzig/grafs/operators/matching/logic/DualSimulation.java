@@ -79,11 +79,11 @@ public class DualSimulation<W extends Window> extends
     while (hasChanged) {
       hasChanged = false;
       for (var querySource : queryGraph.getVertices()) {
-        for (var queryTarget : queryGraph.getAdjacentFor(querySource)) {
+        for (var queryTarget : queryGraph.getTargetForSourceVertex(querySource)) {
           var verticesThatHaveParentInCandidates = new HashSet<Vertex>();
           Set<Vertex> deleteCandidates = new HashSet<>();
           for (var sourceCandidate : candidatesMap.getCandidatesFor(querySource)) {
-            var targetsOfCandidate = graph.getAdjacentFor(sourceCandidate);
+            var targetsOfCandidate = graph.getTargetForSourceVertex(sourceCandidate);
             var candidatesForTargetQuery = candidatesMap.getCandidatesFor(queryTarget);
             var candidatesForTarget = intersection(targetsOfCandidate, candidatesForTargetQuery);
             if (candidatesForTarget.isEmpty()) {
