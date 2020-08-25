@@ -55,7 +55,7 @@ public class MultiMap<K, V> {
   }
 
   public boolean isEmpty() {
-    return map.isEmpty();
+    return size == 0;
   }
 
   public Set<K> keySet() {
