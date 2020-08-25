@@ -100,6 +100,13 @@ class MultiMapTest {
   }
 
   @Test
+  void testGet_emptyValueSet() {
+    var multiMap = new MultiMap<Integer, Integer>();
+
+    assertThat(multiMap.get(1), is(equalTo(Collections.EMPTY_SET)));
+  }
+
+  @Test
   void testIsEmpty() {
     var multiMap = new MultiMap<Integer, Integer>();
     assertThat(multiMap.isEmpty(), is(true));

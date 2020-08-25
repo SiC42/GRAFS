@@ -2,6 +2,7 @@ package edu.leipzig.grafs.util;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -52,7 +53,8 @@ public class MultiMap<K, V> {
   }
 
   public Set<V> get(K key) {
-    return map.get(key);
+    var valueSet = map.get(key);
+    return valueSet != null ? valueSet : Collections.emptySet();
   }
 
   public boolean isEmpty() {
