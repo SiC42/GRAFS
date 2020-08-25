@@ -24,6 +24,7 @@ public class MultiMap<K, V> {
 
   public void clear() {
     map.clear();
+    size = 0;
   }
 
   public boolean containsEntry(K key, V value) {
