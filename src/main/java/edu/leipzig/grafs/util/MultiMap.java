@@ -99,7 +99,7 @@ public class MultiMap<K, V> {
     }
     boolean hasChanged = valueSet.remove(value);
     if (hasChanged) {
-      size++;
+      size--;
       map.put(key, valueSet);
     }
     return hasChanged;
