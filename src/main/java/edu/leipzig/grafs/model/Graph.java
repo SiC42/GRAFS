@@ -120,11 +120,14 @@ public class Graph {
     if (sourceToEdgeMap.containsKey(vertex.getId())) {
       return sourceToEdgeMap.get(vertex.getId());
     }
-    return new HashSet<>();
+    return Collections.emptySet();
   }
 
   public Set<Edge> getEdgesForTarget(Vertex vertex) {
-    return targetToEdgeMap.get(vertex.getId());
+    if (targetToEdgeMap.containsKey(vertex.getId())) {
+      return targetToEdgeMap.get(vertex.getId());
+    }
+    return Collections.emptySet();
   }
 
   public Set<Vertex> getAdjacentFor(Vertex vertex) {
