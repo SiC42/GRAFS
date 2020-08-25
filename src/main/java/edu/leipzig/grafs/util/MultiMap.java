@@ -96,7 +96,7 @@ public class MultiMap<K, V> {
   public boolean remove(K key, V value) {
     var valueSet = map.get(key);
     if (valueSet == null) {
-      valueSet = new HashSet<>();
+      return false;
     }
     boolean hasChanged = valueSet.remove(value);
     if (hasChanged) {
@@ -109,7 +109,7 @@ public class MultiMap<K, V> {
   public boolean removeAll(K key, Collection<V> values) {
     var valueSet = map.get(key);
     if (valueSet == null) {
-      valueSet = new HashSet<>();
+      return false;
     }
     var hasChanged = false;
     for (var value : values) {
