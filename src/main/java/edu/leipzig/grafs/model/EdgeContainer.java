@@ -6,9 +6,9 @@ import java.util.Objects;
 
 public class EdgeContainer {
 
-  private Edge edge;
-  private Vertex sourceVertex;
-  private Vertex targetVertex;
+  private final Edge edge;
+  private final Vertex sourceVertex;
+  private final Vertex targetVertex;
 
 
   public EdgeContainer(Edge edge, Vertex sourceVertex, Vertex targetVertex) {
@@ -47,24 +47,12 @@ public class EdgeContainer {
     return edge;
   }
 
-  public void setEdge(Edge edge) {
-    this.edge = edge;
-  }
-
   public Vertex getSourceVertex() {
     return sourceVertex;
   }
 
-  public void setSourceVertex(Vertex sourceVertex) {
-    this.sourceVertex = sourceVertex;
-  }
-
   public Vertex getTargetVertex() {
     return targetVertex;
-  }
-
-  public void setTargetVertex(Vertex targetVertex) {
-    this.targetVertex = targetVertex;
   }
 
   public EdgeContainer createReverseEdgeContainer() {
