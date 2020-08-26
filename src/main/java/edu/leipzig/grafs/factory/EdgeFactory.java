@@ -2,6 +2,7 @@ package edu.leipzig.grafs.factory;
 
 
 import edu.leipzig.grafs.model.Edge;
+import edu.leipzig.grafs.model.Vertex;
 import java.io.Serializable;
 import java.util.Objects;
 import org.gradoop.common.model.impl.id.GradoopId;
@@ -22,6 +23,11 @@ public class EdgeFactory implements Serializable {
   public Edge createEdge(GradoopId sourceVertexId,
       GradoopId targetVertexId) {
     return initEdge(GradoopId.get(), sourceVertexId, targetVertexId);
+  }
+
+  public Edge createEdge(Vertex sourceVertex,
+      Vertex targetVertex) {
+    return initEdge(GradoopId.get(), sourceVertex.getId(), targetVertex.getId());
   }
 
   public Edge initEdge(final GradoopId id, final GradoopId sourceVertexId,
