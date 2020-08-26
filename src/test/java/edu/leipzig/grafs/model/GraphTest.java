@@ -13,7 +13,7 @@ import java.util.Collections;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
 
-class GraphTest {
+public class GraphTest {
 
   @Test
   void testFromEdgeContainers() throws IOException {
