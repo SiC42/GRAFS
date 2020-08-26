@@ -12,6 +12,14 @@ public class EdgeContainer {
 
 
   public EdgeContainer(Edge edge, Vertex sourceVertex, Vertex targetVertex) {
+    if (!sourceVertex.getId().equals(edge.getSourceId())) {
+      throw new RuntimeException(
+          "ID of provided source vertex does not match with source id in provided edge.");
+    }
+    if (!targetVertex.getId().equals(edge.getTargetId())) {
+      throw new RuntimeException(
+          "ID of provided target vertex does not match with target id in provided edge.");
+    }
     this.edge = edge;
     this.sourceVertex = sourceVertex;
     this.targetVertex = targetVertex;
