@@ -89,6 +89,15 @@ public abstract class AbstractMatchingBase<W extends Window> extends
     return true;
   }
 
+  /**
+   * Builds all possible permutations of the candidate set as vertex sets. E.g. if the candidate set
+   * is ({1,2}, {1, 3, 4}), the resulting permutation sets are: {{1},{1,3},{1,4},{2,1},{2,3},{2,4}}
+   * <p>
+   * With this the graphs can easily be build
+   *
+   * @param listOfCandidateSets
+   * @return
+   */
   Set<Set<Vertex>> buildPermutations(ArrayList<Set<Vertex>> listOfCandidateSets) {
     return buildPermutations(listOfCandidateSets, 0);
   }
