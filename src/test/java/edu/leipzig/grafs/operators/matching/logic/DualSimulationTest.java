@@ -164,8 +164,8 @@ class DualSimulationTest {
     var queryGraph = QueryGraph.fromGraph(queryLoader.createGraph());
 
     var ds = new DualSimulation<>(queryGraph);
-    var candidateMap = ds.buildCandidates(graph);
-    var candidates = ds.createDualSimulationCandidates(graph, queryGraph, candidateMap);
+    var candidateMap = ds.feasibleVertexMatches(graph);
+    var candidates = DualSimulation.runAlgorithm(graph, queryGraph, candidateMap);
 
     var graphVertices = graphLoader.getVertices();
     var expectedCandidates = filterBySelfAssignedId(graphVertices, 1, 6, 8, 12, 16, 19, 20, 24, 27,

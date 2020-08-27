@@ -1,15 +1,16 @@
 package edu.leipzig.grafs.operators.matching.model;
 
 import edu.leipzig.grafs.util.MultiMap;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.Set;
 
-public class Candidates<E> {
+public class CandidateMap<E> {
 
   private final MultiMap<E, E> candidateMap;
 
-  public Candidates() {
+  public CandidateMap() {
     candidateMap = new MultiMap<>();
   }
 
@@ -45,9 +46,9 @@ public class Candidates<E> {
     candidateMap.putAll(keyElem, newCandidates);
   }
 
-  public void addCandidates(Candidates<E> candidates) {
-    for (var keyElem : candidates.candidateMap.keySet()) {
-      addCandidates(keyElem, candidates.getCandidatesFor(keyElem));
+  public void addCandidates(CandidateMap<E> candidateMap) {
+    for (var keyElem : candidateMap.candidateMap.keySet()) {
+      addCandidates(keyElem, candidateMap.getCandidatesFor(keyElem));
     }
   }
 
@@ -61,6 +62,10 @@ public class Candidates<E> {
 
   public int size() {
     return candidateMap.size();
+  }
+
+  public ArrayList<Set<E>> asListOfCandidateSets() {
+    return new ArrayList<Set<E>>(candidateMap.asMap().values());
   }
 
   @Override
@@ -93,7 +98,7 @@ public class Candidates<E> {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    Candidates<?> that = (Candidates<?>) o;
+    CandidateMap<?> that = (CandidateMap<?>) o;
     return Objects.equals(candidateMap, that.candidateMap);
   }
 

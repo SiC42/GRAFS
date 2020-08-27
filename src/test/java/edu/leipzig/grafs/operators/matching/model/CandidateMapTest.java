@@ -8,12 +8,12 @@ import java.util.Collections;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
 
-class CandidatesTest {
+class CandidateMapTest {
 
 
   @Test
   void testHasCandidateFor() {
-    var candidates = new Candidates<Integer>();
+    var candidates = new CandidateMap<Integer>();
     candidates.addCandidate(1, 2);
     assertThat(candidates.hasCandidateFor(1), is(true));
     assertThat(candidates.hasCandidateFor(2), is(false));
@@ -21,7 +21,7 @@ class CandidatesTest {
 
   @Test
   void testGetCandidatesFor() {
-    var candidates = new Candidates<Integer>();
+    var candidates = new CandidateMap<Integer>();
     candidates.addCandidate(1, 2);
     candidates.addCandidate(1, 3);
     candidates.addCandidate(4, 2);
@@ -33,7 +33,7 @@ class CandidatesTest {
 
   @Test
   void testHasCandidate() {
-    var candidates = new Candidates<Integer>();
+    var candidates = new CandidateMap<Integer>();
     candidates.addCandidate(1, 2);
     candidates.addCandidate(1, 3);
     candidates.addCandidate(4, 2);
@@ -46,7 +46,7 @@ class CandidatesTest {
 
   @Test
   void testDeleteCandidates() {
-    var candidates = new Candidates<Integer>();
+    var candidates = new CandidateMap<Integer>();
     candidates.addCandidates(1, Set.of(1, 2, 3));
     assertThat(candidates.getCandidatesFor(1), is(equalTo(Set.of(1, 2, 3))));
     assertThat(candidates.size(), is(3));
@@ -57,7 +57,7 @@ class CandidatesTest {
 
   @Test
   void testDeleteCandidate() {
-    var candidates = new Candidates<Integer>();
+    var candidates = new CandidateMap<Integer>();
     candidates.addCandidates(1, Set.of(1, 2));
     assertThat(candidates.getCandidatesFor(1), is(equalTo(Set.of(1, 2))));
     assertThat(candidates.size(), is(2));
@@ -68,7 +68,7 @@ class CandidatesTest {
 
   @Test
   void testAddCandidates_withCandidateSet() {
-    var candidates = new Candidates<Integer>();
+    var candidates = new CandidateMap<Integer>();
     candidates.addCandidates(1, Set.of(1, 2));
     assertThat(candidates.getCandidatesFor(1), is(equalTo(Set.of(1, 2))));
     assertThat(candidates.size(), is(2));
@@ -79,10 +79,10 @@ class CandidatesTest {
 
   @Test
   void testAddCandidates_withCandidatesObject() {
-    var candidates = new Candidates<Integer>();
+    var candidates = new CandidateMap<Integer>();
     candidates.addCandidates(1, Set.of(1, 2));
 
-    var candidates2 = new Candidates<Integer>();
+    var candidates2 = new CandidateMap<Integer>();
     candidates2.addCandidates(1, Set.of(1, 3));
     candidates.addCandidates(candidates2);
     assertThat(candidates.getCandidatesFor(1), is(equalTo(Set.of(1, 2, 3))));
@@ -91,7 +91,7 @@ class CandidatesTest {
 
   @Test
   void testAddCandidates_withKeyOnly() {
-    var candidates = new Candidates<Integer>();
+    var candidates = new CandidateMap<Integer>();
     candidates.addCandidates(1, Set.of(1, 2, 3));
     candidates.addCandidates(4, Set.of(5, 6, 7));
     assertThat(candidates.size(), is(6));
@@ -104,7 +104,7 @@ class CandidatesTest {
 
   @Test
   void testRetainCandidates() {
-    var candidates = new Candidates<Integer>();
+    var candidates = new CandidateMap<Integer>();
     candidates.addCandidates(1, Set.of(1, 2, 3));
     candidates.retainCandidates(1, Set.of(2, 4));
     assertThat(candidates.getCandidatesFor(1), is(equalTo(Set.of(2))));
@@ -112,7 +112,7 @@ class CandidatesTest {
 
   @Test
   void testIsCandidate() {
-    var candidates = new Candidates<Integer>();
+    var candidates = new CandidateMap<Integer>();
     candidates.addCandidates(4, Set.of(1, 2, 3));
     candidates.addCandidates(5, Set.of(6, 7, 3));
     for (var i : Set.of(1, 2, 3, 6, 7)) {

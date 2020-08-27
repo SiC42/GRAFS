@@ -6,8 +6,9 @@ import edu.leipzig.grafs.model.Edge;
 import edu.leipzig.grafs.model.EdgeContainer;
 import edu.leipzig.grafs.model.Graph;
 import edu.leipzig.grafs.model.Vertex;
-import edu.leipzig.grafs.operators.matching.model.Candidates;
+import edu.leipzig.grafs.operators.matching.model.CandidateMap;
 import edu.leipzig.grafs.operators.matching.model.QueryGraph;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -45,8 +46,8 @@ public abstract class AbstractMatchingBase<W extends Window> extends
   abstract void processQuery(Graph graph, Collector<EdgeContainer> collector);
 
 
-  Candidates<Vertex> feasibleVertexMatches(Graph graph) {
-    Candidates<Vertex> sim = new Candidates<>();
+  CandidateMap<Vertex> feasibleVertexMatches(Graph graph) {
+    CandidateMap<Vertex> sim = new CandidateMap<>();
     for (var queryVertex : queryGraph.getVertices()) {
       for (var vertex : graph.getVertices()) {
         if (matchesQueryElem(queryVertex, vertex)) {
@@ -77,7 +78,7 @@ public abstract class AbstractMatchingBase<W extends Window> extends
     }
   }
 
-  boolean notAlreadyCandidate(Vertex candidate, Candidates<Vertex> candidateMap,
+  boolean notAlreadyCandidate(Vertex candidate, CandidateMap<Vertex> candidateMap,
       Vertex[] qVertexArray, int depth) {
     for (int i = 0; i < depth; i++) {
       var candidates = candidateMap.getCandidatesFor(qVertexArray[i]);
@@ -88,20 +89,20 @@ public abstract class AbstractMatchingBase<W extends Window> extends
     return true;
   }
 
-  Set<Set<Vertex>> buildPermutations(Vertex[] qVertexArray, Candidates<Vertex> candidateMap) {
-    return buildPermutations(qVertexArray, candidateMap, 0);
+  Set<Set<Vertex>> buildPermutations(ArrayList<Set<Vertex>> listOfCandidateSets) {
+    return buildPermutations(listOfCandidateSets, 0);
   }
 
-  private Set<Set<Vertex>> buildPermutations(Vertex[] qVertexArray, Candidates<Vertex> candidateMap,
+  private Set<Set<Vertex>> buildPermutations(ArrayList<Set<Vertex>> listOfCandidateSets,
       int depth) {
     Set<Set<Vertex>> permutations = new HashSet<>();
-    if (depth == qVertexArray.length - 1) {
-      for (var candidate : candidateMap.getCandidatesFor(qVertexArray[depth])) {
+    if (depth == listOfCandidateSets.size() - 1) {
+      for (var candidate : listOfCandidateSets.get(depth)) {
         permutations.add(Set.of(candidate));
       }
     } else {
-      for (var candidate : candidateMap.getCandidatesFor(qVertexArray[depth])) {
-        var deeperPermutations = buildPermutations(qVertexArray, candidateMap, depth + 1);
+      for (var candidate : listOfCandidateSets.get(depth)) {
+        var deeperPermutations = buildPermutations(listOfCandidateSets, depth + 1);
         for (var permutation : deeperPermutations) {
           var updatedPermutation = new HashSet<>(permutation);
           updatedPermutation.add(candidate);
