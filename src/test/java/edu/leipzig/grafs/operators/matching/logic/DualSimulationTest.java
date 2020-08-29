@@ -2,9 +2,11 @@ package edu.leipzig.grafs.operators.matching.logic;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.core.Is.is;
 
-import edu.leipzig.grafs.model.Graph;
 import edu.leipzig.grafs.model.Vertex;
+import edu.leipzig.grafs.operators.DummyCollector;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -14,7 +16,7 @@ class DualSimulationTest extends MatchingTestBase {
 
 
   @Test
-  public void testCreateDualSimulationCandidates() {
+  public void testRunAlgorithm() {
 
     var ds = new DualSimulation<>(queryGraph);
     var candidateMap = ds.feasibleVertexMatches(graph);
@@ -45,18 +47,57 @@ class DualSimulationTest extends MatchingTestBase {
   }
 
   @Test
-  public void testdualSimulationProcess() {
+  public void testProcessQuery() {
+    var appendDsGraph = "ds {}["
+        // ds-edges
+        // from blue
+        + "(v1)-[e1]->(v2)"
+        + "(v2)-[e2]->(v1)"
+        + "(v2)-[e3]->(v3)"
+        + "(v2)-[e4]->(v4)"
+        + "(v2)-[e5]->(v5)"
+        + "(v2)-[e6]->(v6)"
+        // from green
+        + "(v6)-[e7]->(v7)"
+        + "(v7)-[e9]->(v8)"
+        + "(v7)-[e10]->(v5)"
+        + "(v7)-[e11]->(v9)"
+        + "(v8)-[e13]->(v2)"
+        // from pink
+        + "(v12)-[e15]->(v13)"
+        + "(v13)-[e16]->(v12)"
+        + "(v13)-[e17]->(v14)"
+        // from yellow
+        + "(v15)-[e18]->(v14)"
+        + "(v15)-[e19]->(v16)"
+        + "(v16)-[e20]->(v17)"
+        + "(v17)-[e21]->(v18)"
+        + "(v17)-[e22]->(v19)"
+        + "(v19)-[e25]->(v21)"
+        + "(v20)-[e26]->(v15)"
+        + "(v21)-[e27]->(v20)"
+        + "(v21)-[e28]->(v22)"
+        // from grey
+        + "(v23)-[e29]->(v22)"
+        + "(v23)-[e30]->(v24)"
+        + "(v24)-[e31]->(v26)"
+        + "(v24)-[e31]->(v27)"
+        + "(v26)-[e32]->(v25)"
+        + "(v26)-[e33]->(v27)"
+        + "(v27)-[e34]->(v29)"
+        + "(v29)-[e35]->(v28)"
+        + "(v29)-[e36]->(v30)"
+        + "(v30)-[e37]->(v23)]";
+    graphLoader.appendFromString(appendDsGraph);
     var ds = new DualSimulation<>(queryGraph);
-    var actualGraphs = ds.dualSimulationProcess(graph);
+    var collector = new DummyCollector();
+    ds.processQuery(graph, collector);
+    var actualEcs = collector.getCollected();
+    var expectedEcs = graphLoader.createEdgeContainersByGraphVariables("ds");
 
-    var vars = new String[]{"g1", "g2", "g3"};
-    Set<Graph> expectedGraphs = new HashSet<>();
-    for (var i : vars) {
-      var expectedGraph = graphLoader.createGraphByGraphVariables(i);
-      expectedGraphs.add(expectedGraph);
-    }
-
-    //assertThat(actualGraphs, containsInAnyOrder(expectedGraphs.toArray()));
+    assertThat(actualEcs, hasSize(expectedEcs.size()));
+    // Note: Hamcrest's containsInAnyOrder() does not work for some reason
+    assertThat(actualEcs.containsAll(expectedEcs), is(true));
   }
 
   private Set<Vertex> filterBySelfAssignedId(Collection<Vertex> vertices, int... ids) {
