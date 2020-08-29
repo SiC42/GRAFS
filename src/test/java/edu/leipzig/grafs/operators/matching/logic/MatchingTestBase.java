@@ -118,7 +118,8 @@ public abstract class MatchingTestBase {
   AsciiGraphLoader queryLoader;
   QueryGraph queryGraph;
 
-  public MatchingTestBase(){
+  @BeforeEach
+  public void initLoadersAndGraphs() {
     graphLoader = AsciiGraphLoader.fromString(graphGdlStr);
     graph = graphLoader.createGraph();
     queryLoader = AsciiGraphLoader.fromString(queryGraphGdlStr);
