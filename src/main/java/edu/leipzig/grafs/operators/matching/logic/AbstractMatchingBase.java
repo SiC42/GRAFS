@@ -63,12 +63,21 @@ public abstract class AbstractMatchingBase<W extends Window> extends
     for (var vertexSet : vertexSets) {
       var inducedGraph = graph.getVertexInducedSubGraph(vertexSet);
       for (var edge : inducedGraph.getEdges()) {
-        var source = graph.getSourceForEdge(edge);
-        var target = graph.getTargetForEdge(edge);
-        updatableEcSet.add(edge, source, target, inducedGraph.getId());
+        if (matchesAnyQueryEdge(edge, graph)) {
+          var source = graph.getSourceForEdge(edge);
+          var target = graph.getTargetForEdge(edge);
+          updatableEcSet.add(edge, source, target, inducedGraph.getId());
+        }
       }
     }
     return updatableEcSet.getEdgeContainers();
+  }
+
+  private boolean matchesAnyQueryEdge(Edge edge, Graph graph) {
+    EdgeQueryFilter edgeFilter = new EdgeQueryFilter(queryGraph);
+    var source = graph.getSourceForEdge(edge);
+    var target = graph.getTargetForEdge(edge);
+    return edgeFilter.filter(edge, source, target);
   }
 
   void emitEdgeContainer(Collector<EdgeContainer> collector,
