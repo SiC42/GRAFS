@@ -70,12 +70,12 @@ public class DualSimulation<W extends Window> extends
   }
 
   // TODO: Add ability to handle queries with edge properties
-  CandidateMap<Vertex> dualSimulationProcess(Graph graph) {
+  private CandidateMap<Vertex> dualSimulationProcess(Graph graph) {
     var candidatesMap = feasibleVertexMatches(graph);
     return runAlgorithm(graph, queryGraph, candidatesMap);
   }
 
-  Set<Set<Vertex>> makeAllPermutations(CandidateMap<Vertex> candidateMap) {
+  private Set<Set<Vertex>> makeAllPermutations(CandidateMap<Vertex> candidateMap) {
     return buildPermutations(candidateMap.asListOfCandidateSets());
   }
 
