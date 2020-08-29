@@ -3,6 +3,7 @@ package edu.leipzig.grafs.operators.matching.logic;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasSize;
 
 import edu.leipzig.grafs.model.EdgeContainer;
@@ -13,6 +14,7 @@ import edu.leipzig.grafs.operators.matching.model.CandidateMap;
 import edu.leipzig.grafs.operators.matching.model.QueryGraph;
 import edu.leipzig.grafs.util.TestUtils;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
@@ -26,43 +28,30 @@ class AbstractMatchingBaseTest extends MatchingTestBase {
 
 
   @Test
-  void testFeasibleVertexMatches() {
+  public void testFeasibleVertexMatches() {
     AbstractMatchingBase<Window> matching = new MockedMatching(queryGraph);
-    var matches = matching.feasibleVertexMatches(graph);
+    var candidateMap = matching.feasibleVertexMatches(graph);
 
-    var actualMatches = new CandidateMap<Vertex>();
-    // A's
-    var queryVertex = queryLoader.getVertexByVariable("qa1");
-    var matchingVertexVariables = Set
-        .of("v1", "v6", "v8", "v12", "v16", "v19", "v20", "v24", "v27", "v30");
-    for (var vertexVar : matchingVertexVariables) {
-      var matchingVertex = graphLoader.getVertexByVariable(vertexVar);
-      actualMatches.addCandidate(queryVertex, matchingVertex);
-    }
+    var graphVertices = graphLoader.getVertices();
+    var expectedCandidates = filterByLabel(graphVertices, "A");
+    var currentQueryVertex = queryLoader.getVertexByVariable("qa1");
+    var currentCandidates = candidateMap.getCandidatesFor(currentQueryVertex);
+    assertThat(currentCandidates, containsInAnyOrder(expectedCandidates.toArray()));
 
-    // B's
-    queryVertex = queryLoader.getVertexByVariable("qb2");
-    matchingVertexVariables = Set
-        .of("v2", "v7", "v13", "v15", "v17", "v21", "v23", "v26", "v29");
-    for (var vertexVar : matchingVertexVariables) {
-      var matchingVertex = graphLoader.getVertexByVariable(vertexVar);
-      actualMatches.addCandidate(queryVertex, matchingVertex);
-    }
-    // C1's
-    queryVertex = queryLoader.getVertexByVariable("qc3");
-    matchingVertexVariables = Set
-        .of("v3", "v4", "v5", "v9", "v11", "v14", "v18", "v22", "v25", "v28");
-    for (var vertexVar : matchingVertexVariables) {
-      var matchingVertex = graphLoader.getVertexByVariable(vertexVar);
-      actualMatches.addCandidate(queryVertex, matchingVertex);
-    }
-    // C2's
-    queryVertex = queryLoader.getVertexByVariable("qc4");
-    for (var vertexVar : matchingVertexVariables) {
-      var matchingVertex = graphLoader.getVertexByVariable(vertexVar);
-      actualMatches.addCandidate(queryVertex, matchingVertex);
-    }
-    assertThat(actualMatches, equalTo(matches));
+    expectedCandidates = filterByLabel(graphVertices, "B");
+    currentQueryVertex = queryLoader.getVertexByVariable("qb2");
+    currentCandidates = candidateMap.getCandidatesFor(currentQueryVertex);
+    assertThat(currentCandidates, containsInAnyOrder(expectedCandidates.toArray()));
+
+    expectedCandidates = filterByLabel(graphVertices, "C");
+    currentQueryVertex = queryLoader.getVertexByVariable("qc3");
+    currentCandidates = candidateMap.getCandidatesFor(currentQueryVertex);
+    assertThat(currentCandidates, containsInAnyOrder(expectedCandidates.toArray()));
+
+    expectedCandidates = filterByLabel(graphVertices, "C");
+    currentQueryVertex = queryLoader.getVertexByVariable("qc4");
+    currentCandidates = candidateMap.getCandidatesFor(currentQueryVertex);
+    assertThat(currentCandidates, containsInAnyOrder(expectedCandidates.toArray()));
 
   }
 
@@ -218,6 +207,19 @@ class AbstractMatchingBaseTest extends MatchingTestBase {
     assertThat(actualTarget.getGraphIds().contains(gId2), is(true));
 
     assertThat(ecList.get(0).getTargetVertex(), is(equalTo(ecList.get(1).getSourceVertex())));
+  }
+
+  private Set<Vertex> filterByLabel(Collection<Vertex> vertices, String... labels) {
+    Set<Vertex> filteredVertex = new HashSet<>();
+    for (var vertex : vertices) {
+      for (String label : labels) {
+        if (vertex.getLabel().equals(label)) {
+          filteredVertex.add(vertex);
+          break;
+        }
+      }
+    }
+    return filteredVertex;
   }
 
 

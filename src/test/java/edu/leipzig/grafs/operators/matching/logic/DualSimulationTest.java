@@ -12,35 +12,6 @@ import org.junit.jupiter.api.Test;
 
 class DualSimulationTest extends MatchingTestBase {
 
-  @Test
-  public void testBuildCandidates() {
-
-    var ds = new DualSimulation<>(queryGraph);
-    var candidateMap = ds.feasibleVertexMatches(graph);
-
-    var graphVertices = graphLoader.getVertices();
-    var expectedCandidates = filterByLabel(graphVertices, "A");
-    var currentQueryVertex = queryLoader.getVertexByVariable("qa1");
-    var currentCandidates = candidateMap.getCandidatesFor(currentQueryVertex);
-    assertThat(currentCandidates, containsInAnyOrder(expectedCandidates.toArray()));
-
-    expectedCandidates = filterByLabel(graphVertices, "B");
-    currentQueryVertex = queryLoader.getVertexByVariable("qb2");
-    currentCandidates = candidateMap.getCandidatesFor(currentQueryVertex);
-    assertThat(currentCandidates, containsInAnyOrder(expectedCandidates.toArray()));
-
-    expectedCandidates = filterByLabel(graphVertices, "C");
-    currentQueryVertex = queryLoader.getVertexByVariable("qc3");
-    currentCandidates = candidateMap.getCandidatesFor(currentQueryVertex);
-    assertThat(currentCandidates, containsInAnyOrder(expectedCandidates.toArray()));
-
-    expectedCandidates = filterByLabel(graphVertices, "C");
-    currentQueryVertex = queryLoader.getVertexByVariable("qc4");
-    currentCandidates = candidateMap.getCandidatesFor(currentQueryVertex);
-    assertThat(currentCandidates, containsInAnyOrder(expectedCandidates.toArray()));
-
-  }
-
 
   @Test
   public void testCreateDualSimulationCandidates() {
@@ -86,19 +57,6 @@ class DualSimulationTest extends MatchingTestBase {
     }
 
     //assertThat(actualGraphs, containsInAnyOrder(expectedGraphs.toArray()));
-  }
-
-  private Set<Vertex> filterByLabel(Collection<Vertex> vertices, String... labels) {
-    Set<Vertex> filteredVertex = new HashSet<>();
-    for (var vertex : vertices) {
-      for (String label : labels) {
-        if (vertex.getLabel().equals(label)) {
-          filteredVertex.add(vertex);
-          break;
-        }
-      }
-    }
-    return filteredVertex;
   }
 
   private Set<Vertex> filterBySelfAssignedId(Collection<Vertex> vertices, int... ids) {
