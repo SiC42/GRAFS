@@ -2,8 +2,6 @@ package edu.leipzig.grafs.operators.matching.logic;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.core.Is.is;
 
 import edu.leipzig.grafs.model.Vertex;
 import edu.leipzig.grafs.operators.DummyCollector;
@@ -94,10 +92,7 @@ class DualSimulationTest extends MatchingTestBase {
     ds.processQuery(graph, collector);
     var actualEcs = collector.getCollected();
     var expectedEcs = graphLoader.createEdgeContainersByGraphVariables("ds");
-
-    assertThat(actualEcs, hasSize(expectedEcs.size()));
-    // Note: Hamcrest's containsInAnyOrder() does not work for some reason
-    assertThat(actualEcs.containsAll(expectedEcs), is(true));
+    assertThat(actualEcs, containsInAnyOrder(expectedEcs.toArray()));
   }
 
   private Set<Vertex> filterBySelfAssignedId(Collection<Vertex> vertices, int... ids) {
