@@ -137,7 +137,7 @@ class AbstractMatchingBaseTest extends MatchingTestBase {
   }
 
   @Test
-  void testUpdatableEdgeContainerSet_testContains() {
+  void testEdgeContainerFactory_testContains() {
     var uecSet = new EdgeContainerFactory();
     var v1 = graphLoader.getVertexByVariable("v1");
     var v2 = graphLoader.getVertexByVariable("v2");
@@ -149,7 +149,7 @@ class AbstractMatchingBaseTest extends MatchingTestBase {
   }
 
   @Test
-  void testUpdatableEdgeContainerSet_sameEdgeUpdate() {
+  void testEdgeContainerFactory_sameEdgeUpdate() {
     var uecSet = new EdgeContainerFactory();
     var v1 = graphLoader.getVertexByVariable("v1");
     var v2 = graphLoader.getVertexByVariable("v2");
@@ -178,7 +178,7 @@ class AbstractMatchingBaseTest extends MatchingTestBase {
   }
 
   @Test
-  void testUpdatableEdgeContainerSet_differentEdgeUpdate() {
+  void testEdgeContainerFactory_differentEdgeUpdate() {
     var uecSet = new EdgeContainerFactory();
     var v1 = graphLoader.getVertexByVariable("v1");
     var v2 = graphLoader.getVertexByVariable("v2");
