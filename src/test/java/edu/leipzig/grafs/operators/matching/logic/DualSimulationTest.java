@@ -4,12 +4,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.core.Is.is;
 
-import edu.leipzig.grafs.model.Vertex;
 import edu.leipzig.grafs.operators.DummyCollector;
 import edu.leipzig.grafs.operators.matching.model.CandidateMap;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
 import org.junit.jupiter.api.Test;
 
 class DualSimulationTest extends MatchingTestBase {
@@ -104,17 +100,5 @@ class DualSimulationTest extends MatchingTestBase {
     assertThat(actualEcs, containsInAnyOrder(expectedEcs.toArray()));
   }
 
-  private Set<Vertex> filterBySelfAssignedId(Collection<Vertex> vertices, int... ids) {
-    Set<Vertex> filteredVertex = new HashSet<>();
-    for (var vertex : vertices) {
-      for (var id : ids) {
-        if (vertex.getPropertyValue("id").toString().equals(Integer.toString(id))) {
-          filteredVertex.add(vertex);
-          break;
-        }
-      }
-    }
-    return filteredVertex;
-  }
 
 }
