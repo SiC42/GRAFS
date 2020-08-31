@@ -27,7 +27,7 @@ public class ElementMatcher {
   private static boolean labelMatches(String queryLabel, String label) {
     return queryLabel.equals(label)
         || queryLabel.equals(GradoopConstants.DEFAULT_VERTEX_LABEL)
-        || label.equals(GradoopConstants.DEFAULT_VERTEX_LABEL);
+        || queryLabel.equals(GradoopConstants.DEFAULT_EDGE_LABEL);
   }
 
 }
