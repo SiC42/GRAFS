@@ -2,6 +2,7 @@ package edu.leipzig.grafs.model;
 
 import java.io.Serializable;
 import java.util.Objects;
+import javax.annotation.Nullable;
 import org.gradoop.common.model.impl.id.GradoopId;
 import org.gradoop.common.model.impl.properties.Properties;
 import org.gradoop.common.model.impl.properties.Property;
@@ -61,10 +62,12 @@ public abstract class Element implements Serializable {
     return this.properties != null && this.properties.containsKey(key);
   }
 
+  @Nullable
   public Properties getProperties() {
     return properties;
   }
 
+  @Nullable
   public Iterable<String> getPropertyKeys() {
     return (properties != null) ? properties.getKeys() : null;
   }
