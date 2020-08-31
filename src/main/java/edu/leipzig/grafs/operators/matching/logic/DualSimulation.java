@@ -12,7 +12,7 @@ import org.apache.flink.streaming.api.windowing.windows.Window;
 import org.apache.flink.util.Collector;
 
 public class DualSimulation<W extends Window> extends
-    AbstractMatchingBase<W> {
+    AbstractMatching<W> {
 
   public DualSimulation(QueryGraph queryGraph) {
     super(queryGraph);
