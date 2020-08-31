@@ -33,60 +33,104 @@ class ElementMatcherTest {
   }
 
   @Test
-  void testMatchesQueryElem_testDifferentLabels() {
+  void testMatchesQueryElem_differentLabels() {
     var graphId = GradoopId.get();
-    GraphElement v1 = new Vertex(GradoopId.get(), "testlabel", Properties.create(),
+    GraphElement q = new Vertex(GradoopId.get(), "testlabel", Properties.create(),
         new GradoopIdSet());
-    GraphElement v2 = new Vertex(GradoopId.get(), "otherLabel", Properties.create(),
+    GraphElement v = new Vertex(GradoopId.get(), "otherLabel", Properties.create(),
         new GradoopIdSet());
 
-    assertThat(ElementMatcher.matchesQueryElem(v1, v2), is(false));
+    assertThat(ElementMatcher.matchesQueryElem(q, v), is(false));
   }
 
   @Test
-  void testMatchesQueryElem_testDefaultLabel() {
+  void testMatchesQueryElem_defaultLabel() {
     var label = "testlabel";
     var graphId = GradoopId.get();
-    GraphElement v1 = new Vertex(GradoopId.get(), GradoopConstants.DEFAULT_VERTEX_LABEL,
+    GraphElement q = new Vertex(GradoopId.get(), GradoopConstants.DEFAULT_VERTEX_LABEL,
         Properties.create(), new GradoopIdSet());
-    GraphElement v2 = new Vertex(GradoopId.get(), label, Properties.create(), new GradoopIdSet());
+    GraphElement v = new Vertex(GradoopId.get(), label, Properties.create(), new GradoopIdSet());
 
-    assertThat(ElementMatcher.matchesQueryElem(v1, v2), is(true));
+    assertThat(ElementMatcher.matchesQueryElem(q, v), is(true));
   }
 
   @Test
-  void testMatchesQueryElem_testGraphIdInsertion() {
+  void testMatchesQueryElem_graphIdInsertion() {
     var label = "testlabel";
     var graphId = GradoopId.get();
-    GraphElement v1 = new Vertex(GradoopId.get(), label, Properties.create(), new GradoopIdSet());
-    GraphElement v2 = new Vertex(GradoopId.get(), label, Properties.create(), new GradoopIdSet());
+    GraphElement q = new Vertex(GradoopId.get(), label, Properties.create(), new GradoopIdSet());
+    GraphElement v = new Vertex(GradoopId.get(), label, Properties.create(), new GradoopIdSet());
 
-    v1.addGraphId(graphId);
-    assertThat(ElementMatcher.matchesQueryElem(v1, v2), is(true));
+    q.addGraphId(graphId);
+    assertThat(ElementMatcher.matchesQueryElem(q, v), is(true));
   }
 
   @Test
-  void testMatchesQueryElem_testPropertyManipulation() {
+  void testMatchesQueryElem_PropertyManipulation() {
     var label = "testlabel";
     var graphId = GradoopId.get();
-    GraphElement v1 = new Vertex(GradoopId.get(), label, Properties.create(), new GradoopIdSet());
-    GraphElement v2 = new Vertex(GradoopId.get(), label, Properties.create(), new GradoopIdSet());
+    GraphElement q = new Vertex(GradoopId.get(), label, Properties.create(), new GradoopIdSet());
+    GraphElement v = new Vertex(GradoopId.get(), label, Properties.create(), new GradoopIdSet());
 
-    v1.setProperty("1", 2);
-    assertThat(ElementMatcher.matchesQueryElem(v1, v2), is(false));
-    v2.setProperty("1", 2);
-    assertThat(ElementMatcher.matchesQueryElem(v1, v2), is(true));
+    q.setProperty("1", 2);
+    assertThat(ElementMatcher.matchesQueryElem(q, v), is(false));
+    v.setProperty("1", 2);
+    assertThat(ElementMatcher.matchesQueryElem(q, v), is(true));
   }
 
   @Test
-  void testMatchesQueryElem_testSameKeyDifferentValue() {
+  void testMatchesQueryElem_SameKeyDifferentValue() {
     var label = "testlabel";
     var graphId = GradoopId.get();
-    GraphElement v1 = new Vertex(GradoopId.get(), label, Properties.create(), new GradoopIdSet());
-    GraphElement v2 = new Vertex(GradoopId.get(), label, Properties.create(), new GradoopIdSet());
+    GraphElement q = new Vertex(GradoopId.get(), label, Properties.create(), new GradoopIdSet());
+    GraphElement v = new Vertex(GradoopId.get(), label, Properties.create(), new GradoopIdSet());
 
-    v1.setProperty("1", 2);
-    v2.setProperty("1", 3);
-    assertThat(ElementMatcher.matchesQueryElem(v1, v2), is(false));
+    q.setProperty("1", 2);
+    v.setProperty("1", 3);
+    assertThat(ElementMatcher.matchesQueryElem(q, v), is(false));
+  }
+
+  @Test
+  void testMatchesQueryElem_qElementIsMissingProp() {
+    var label = "testlabel";
+    var graphId = GradoopId.get();
+    GraphElement q = new Vertex(GradoopId.get(), label, Properties.create(), new GradoopIdSet());
+    GraphElement v = new Vertex(GradoopId.get(), label, Properties.create(), new GradoopIdSet());
+
+    v.setProperty("1", 3);
+    assertThat(ElementMatcher.matchesQueryElem(q, v), is(true));
+  }
+
+  @Test
+  void testMatchesQueryElem_elementIsMissingProp() {
+    var label = "testlabel";
+    var graphId = GradoopId.get();
+    GraphElement q = new Vertex(GradoopId.get(), label, Properties.create(), new GradoopIdSet());
+    GraphElement v = new Vertex(GradoopId.get(), label, Properties.create(), new GradoopIdSet());
+
+    q.setProperty("1", 3);
+    assertThat(ElementMatcher.matchesQueryElem(q, v), is(false));
+  }
+
+  @Test
+  void testMatchesQueryElem_qElementIsMissingLabel() {
+    var label = "testlabel";
+    var graphId = GradoopId.get();
+    GraphElement q = new Vertex(GradoopId.get(), GradoopConstants.DEFAULT_VERTEX_LABEL,
+        Properties.create(), new GradoopIdSet());
+    GraphElement v = new Vertex(GradoopId.get(), label, Properties.create(), new GradoopIdSet());
+
+    assertThat(ElementMatcher.matchesQueryElem(q, v), is(true));
+  }
+
+  @Test
+  void testMatchesQueryElem_elementIsMissingLabel() {
+    var label = "testlabel";
+    var graphId = GradoopId.get();
+    GraphElement q = new Vertex(GradoopId.get(), label, Properties.create(), new GradoopIdSet());
+    GraphElement v = new Vertex(GradoopId.get(), GradoopConstants.DEFAULT_VERTEX_LABEL,
+        Properties.create(), new GradoopIdSet());
+
+    assertThat(ElementMatcher.matchesQueryElem(q, v), is(false));
   }
 }
