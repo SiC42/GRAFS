@@ -2,9 +2,11 @@ package edu.leipzig.grafs.operators.matching.logic;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.core.Is.is;
 
 import edu.leipzig.grafs.model.Vertex;
 import edu.leipzig.grafs.operators.DummyCollector;
+import edu.leipzig.grafs.operators.matching.model.CandidateMap;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -41,6 +43,13 @@ class DualSimulationTest extends MatchingTestBase {
     currentQueryVertex = queryLoader.getVertexByVariable("qc4");
     currentCandidates = candidateMap.getCandidatesFor(currentQueryVertex);
     assertThat(currentCandidates, containsInAnyOrder(expectedCandidates.toArray()));
+
+  }
+
+  @Test
+  public void testRunAlgorithm_withEmptyCandidates() {
+    var candidates = DualSimulation.runAlgorithm(graph, queryGraph, new CandidateMap<>());
+    assertThat(candidates.size(), is(0));
 
   }
 
