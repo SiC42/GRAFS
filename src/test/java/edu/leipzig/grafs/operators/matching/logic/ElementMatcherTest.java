@@ -14,13 +14,22 @@ import org.junit.jupiter.api.Test;
 class ElementMatcherTest {
 
   @Test
-  void testMatchesQueryElem_testGivenLabel() {
+  void testMatchesQueryElem_nullProperties() {
+    var label = GradoopConstants.DEFAULT_VERTEX_LABEL;
+    GraphElement q = new Vertex();
+    GraphElement v = new Vertex();
+
+    assertThat(ElementMatcher.matchesQueryElem(q, v), is(true));
+  }
+
+  @Test
+  void testMatchesQueryElem_givenLabel() {
     var label = "testlabel";
     var graphId = GradoopId.get();
-    GraphElement v1 = new Vertex(GradoopId.get(), label, Properties.create(), new GradoopIdSet());
-    GraphElement v2 = new Vertex(GradoopId.get(), label, Properties.create(), new GradoopIdSet());
+    GraphElement q = new Vertex(GradoopId.get(), label, Properties.create(), new GradoopIdSet());
+    GraphElement v = new Vertex(GradoopId.get(), label, Properties.create(), new GradoopIdSet());
 
-    assertThat(ElementMatcher.matchesQueryElem(v1, v2), is(true));
+    assertThat(ElementMatcher.matchesQueryElem(q, v), is(true));
   }
 
   @Test
