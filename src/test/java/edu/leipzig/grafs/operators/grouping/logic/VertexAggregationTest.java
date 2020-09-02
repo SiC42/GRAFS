@@ -3,6 +3,7 @@ package edu.leipzig.grafs.operators.grouping.logic;
 import static edu.leipzig.grafs.util.TestUtils.validateEdgeContainerCollections;
 
 import edu.leipzig.grafs.model.EdgeContainer;
+import edu.leipzig.grafs.operators.DummyCollector;
 import edu.leipzig.grafs.operators.grouping.model.AggregateMode;
 import edu.leipzig.grafs.operators.grouping.model.AggregationMapping;
 import edu.leipzig.grafs.operators.grouping.model.GroupingInformation;
@@ -11,7 +12,7 @@ import edu.leipzig.grafs.util.TestUtils;
 import java.util.ArrayList;
 import org.junit.jupiter.api.Test;
 
-class VertexAggregationTest extends AggregationBaseTest {
+class VertexAggregationTest {
 
   @Test
   void flatMap_testSimpleAggregationForSource() {
@@ -23,7 +24,7 @@ class VertexAggregationTest extends AggregationBaseTest {
     var vertexAggregation = new VertexAggregation<>(groupInfo, aggMap,
         AggregateMode.SOURCE);
 
-    CollectorDummy collector = new CollectorDummy();
+    DummyCollector collector = new DummyCollector();
     AsciiGraphLoader loader = AsciiGraphLoader.fromString(
         "(a18 {n : \"A\", a : 18})," +
             "(a20 {n : \"A\", a : 20})," +
@@ -67,7 +68,7 @@ class VertexAggregationTest extends AggregationBaseTest {
     var vertexAggregation = new VertexAggregation<>(groupInfo, aggMap,
         AggregateMode.TARGET);
 
-    CollectorDummy collector = new CollectorDummy();
+    DummyCollector collector = new DummyCollector();
     AsciiGraphLoader loader = AsciiGraphLoader.fromString(
         "(a18 {n : \"A\", a : 18})," +
             "(a20 {n : \"A\", a : 20})," +
@@ -110,7 +111,7 @@ class VertexAggregationTest extends AggregationBaseTest {
     var vertexAggregation = new VertexAggregation<>(groupInfo, aggMap,
         AggregateMode.SOURCE);
 
-    CollectorDummy collector = new CollectorDummy();
+    DummyCollector collector = new DummyCollector();
     AsciiGraphLoader loader = AsciiGraphLoader.fromString(
         "(a18 {n : \"A\", a : 18})," +
             "(a20 {n : \"A\", a : 20})," +

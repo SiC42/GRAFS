@@ -168,6 +168,26 @@ public class AsciiGraphLoader {
   //  Graph methods
   // ---------------------------------------------------------------------------
 
+
+  public edu.leipzig.grafs.model.Graph createGraphByGraphVariables(String... expected) {
+    var vertices = getVerticesByGraphVariables(expected);
+    var edges = getEdgesByGraphVariables(expected);
+    return createGraph(vertices, edges);
+  }
+
+  public edu.leipzig.grafs.model.Graph createGraph() {
+    return createGraph(vertices.values(), edges.values());
+  }
+
+  private edu.leipzig.grafs.model.Graph createGraph(Collection<Vertex> vertices,
+      Collection<Edge> edges) {
+    return new edu.leipzig.grafs.model.Graph(vertices, edges);
+  }
+
+  // ---------------------------------------------------------------------------
+  //  Graph methods
+  // ---------------------------------------------------------------------------
+
   /**
    * Returns all GraphHeads contained in the ASCII graph.
    *

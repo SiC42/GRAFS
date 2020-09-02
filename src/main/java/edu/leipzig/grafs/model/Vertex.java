@@ -18,11 +18,11 @@ public class Vertex extends GraphElement {
    * @param id         vertex identifier
    * @param label      vertex label
    * @param properties vertex properties
-   * @param graphs     graphs that vertex is contained in
+   * @param graphIds   graphs that vertex is contained in
    */
   public Vertex(final GradoopId id, final String label,
-      final Properties properties, final GradoopIdSet graphs) {
-    super(id, label, properties, graphs);
+      final Properties properties, final GradoopIdSet graphIds) {
+    super(id, label, properties, graphIds);
   }
 
 
