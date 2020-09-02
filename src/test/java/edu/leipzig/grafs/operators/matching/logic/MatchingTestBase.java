@@ -15,7 +15,7 @@ public abstract class MatchingTestBase {
   // Miller, John A., et al.
   // "Research directions for big data graph analytics."
   // 2015 IEEE International Congress on Big Data. IEEE, 2015.
-  String graphGdlStr = "all["
+  protected final String graphGdlStr = "all["
       // vertices
       // blue
       + "(v1:A {id: 1})"
@@ -104,8 +104,11 @@ public abstract class MatchingTestBase {
       + "(v1)-[e1]->(v2) (v2)-[e2]->(v1) (v2)-[e3]->(v3) (v2)-[e5]->(v5)]"
       + "g3[(v1) (v2) (v4) (v5)"
       + "(v1)-[e1]->(v2) (v2)-[e2]->(v1) (v2)-[e4]->(v4) (v2)-[e5]->(v5)]";
-
-  String queryGraphGdlStr = ""
+  protected AsciiGraphLoader graphLoader;
+  protected Graph graph;
+  protected AsciiGraphLoader queryLoader;
+  protected QueryGraph queryGraph;
+  protected String queryGraphGdlStr = ""
       // vertices
       + "(qa1:A)"
       + "(qb2:B)"
@@ -116,11 +119,6 @@ public abstract class MatchingTestBase {
       + "(qb2)-[]->(qa1)"
       + "(qb2)-[]->(qc3)"
       + "(qb2)-[]->(qc4)";
-
-  AsciiGraphLoader graphLoader;
-  Graph graph;
-  AsciiGraphLoader queryLoader;
-  QueryGraph queryGraph;
 
   @BeforeEach
   public void initLoadersAndGraphs() {
