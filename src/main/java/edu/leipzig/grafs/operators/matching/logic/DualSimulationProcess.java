@@ -13,10 +13,10 @@ import java.util.stream.Collectors;
 import org.apache.flink.streaming.api.windowing.windows.Window;
 import org.apache.flink.util.Collector;
 
-public class DualSimulation<W extends Window> extends
-    AbstractMatching<W> {
+public class DualSimulationProcess<W extends Window> extends
+    AbstractMatchingProcess<W> {
 
-  public DualSimulation(QueryGraph queryGraph) {
+  public DualSimulationProcess(QueryGraph queryGraph) {
     super(queryGraph);
   }
 

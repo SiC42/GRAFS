@@ -8,15 +8,15 @@ import edu.leipzig.grafs.operators.DummyCollector;
 import edu.leipzig.grafs.operators.matching.model.CandidateMap;
 import org.junit.jupiter.api.Test;
 
-class DualSimulationTest extends MatchingTestBase {
+class DualSimulationProcessTest extends MatchingTestBase {
 
 
   @Test
   public void testRunAlgorithm() {
 
-    var ds = new DualSimulation<>(queryGraph);
+    var ds = new DualSimulationProcess<>(queryGraph);
     var candidateMap = ds.feasibleVertexMatches(graph);
-    var candidates = DualSimulation.runAlgorithm(graph, queryGraph, candidateMap);
+    var candidates = DualSimulationProcess.runAlgorithm(graph, queryGraph, candidateMap);
 
     var graphVertices = graphLoader.getVertices();
     var expectedCandidates = filterBySelfAssignedId(graphVertices, 1, 6, 8, 12, 16, 19, 20, 24, 27,
@@ -44,7 +44,7 @@ class DualSimulationTest extends MatchingTestBase {
 
   @Test
   public void testRunAlgorithm_withEmptyCandidates() {
-    var candidates = DualSimulation.runAlgorithm(graph, queryGraph, new CandidateMap<>());
+    var candidates = DualSimulationProcess.runAlgorithm(graph, queryGraph, new CandidateMap<>());
     assertThat(candidates.size(), is(0));
 
   }
@@ -92,7 +92,7 @@ class DualSimulationTest extends MatchingTestBase {
         + "(v29)-[e36]->(v30)"
         + "(v30)-[e37]->(v23)]";
     graphLoader.appendFromString(appendDsGraph);
-    var ds = new DualSimulation<>(queryGraph);
+    var ds = new DualSimulationProcess<>(queryGraph);
     var collector = new DummyCollector();
     ds.processQuery(graph, collector);
     var actualEcs = collector.getCollected();

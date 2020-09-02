@@ -21,12 +21,12 @@ import org.apache.flink.streaming.api.windowing.windows.Window;
 import org.apache.flink.util.Collector;
 import org.gradoop.common.model.impl.id.GradoopId;
 
-public abstract class AbstractMatching<W extends Window> extends
+public abstract class AbstractMatchingProcess<W extends Window> extends
     ProcessAllWindowFunction<EdgeContainer, EdgeContainer, W> {
 
   final QueryGraph queryGraph;
 
-  AbstractMatching(QueryGraph queryGraph) {
+  AbstractMatchingProcess(QueryGraph queryGraph) {
     this.queryGraph = queryGraph;
   }
 

@@ -9,7 +9,7 @@ import static org.hamcrest.Matchers.hasSize;
 import edu.leipzig.grafs.model.EdgeContainer;
 import edu.leipzig.grafs.model.Graph;
 import edu.leipzig.grafs.model.Vertex;
-import edu.leipzig.grafs.operators.matching.logic.AbstractMatching.EdgeContainerFactory;
+import edu.leipzig.grafs.operators.matching.logic.AbstractMatchingProcess.EdgeContainerFactory;
 import edu.leipzig.grafs.operators.matching.model.CandidateMap;
 import edu.leipzig.grafs.operators.matching.model.QueryGraph;
 import edu.leipzig.grafs.util.TestUtils;
@@ -24,12 +24,12 @@ import org.apache.flink.util.Collector;
 import org.gradoop.common.model.impl.id.GradoopId;
 import org.junit.jupiter.api.Test;
 
-class AbstractMatchingTest extends MatchingTestBase {
+class AbstractMatchingProcessTest extends MatchingTestBase {
 
 
   @Test
   public void testFeasibleVertexMatches() {
-    AbstractMatching<Window> matching = new MockedMatching(queryGraph);
+    AbstractMatchingProcess<Window> matching = new MockedMatchingProcess(queryGraph);
     var candidateMap = matching.feasibleVertexMatches(graph);
 
     var graphVertices = graphLoader.getVertices();
@@ -57,7 +57,7 @@ class AbstractMatchingTest extends MatchingTestBase {
 
   @Test
   void testBuildEdgeContainerSet() {
-    AbstractMatching<Window> matching = new MockedMatching(queryGraph);
+    AbstractMatchingProcess<Window> matching = new MockedMatchingProcess(queryGraph);
 
     Set<Vertex> g1Set = new HashSet<>(graphLoader.getVerticesByVariables("v1", "v2", "v3", "v4"));
     Set<Vertex> g2Set = new HashSet<>(graphLoader.getVerticesByVariables("v1", "v2", "v3", "v5"));
@@ -72,7 +72,7 @@ class AbstractMatchingTest extends MatchingTestBase {
 
   @Test
   void testNotAlreadyCandidate() {
-    AbstractMatching<Window> matching = new MockedMatching(queryGraph);
+    AbstractMatchingProcess<Window> matching = new MockedMatchingProcess(queryGraph);
     var qV0 = new Vertex();
     var qV1 = new Vertex();
     var v1 = new Vertex();
@@ -106,7 +106,7 @@ class AbstractMatchingTest extends MatchingTestBase {
 
   @Test
   void testBuildPermutations() {
-    AbstractMatching<Window> matching = new MockedMatching(queryGraph);
+    AbstractMatchingProcess<Window> matching = new MockedMatchingProcess(queryGraph);
     var v1 = new Vertex();
     var v2 = new Vertex();
     var v3 = new Vertex();
@@ -223,9 +223,9 @@ class AbstractMatchingTest extends MatchingTestBase {
   }
 
 
-  static class MockedMatching extends AbstractMatching<Window> {
+  static class MockedMatchingProcess extends AbstractMatchingProcess<Window> {
 
-    public MockedMatching(QueryGraph query) {
+    public MockedMatchingProcess(QueryGraph query) {
       super(query);
     }
 
