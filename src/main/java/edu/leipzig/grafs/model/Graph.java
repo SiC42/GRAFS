@@ -2,6 +2,8 @@ package edu.leipzig.grafs.model;
 
 
 import edu.leipzig.grafs.util.MultiMap;
+import java.io.IOException;
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -13,14 +15,14 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import org.gradoop.common.model.impl.id.GradoopId;
 
-public class Graph {
+public class Graph implements Serializable {
 
-  protected final Set<Vertex> vertices;
-  protected final Map<GradoopId, Vertex> vertexMap;
-  protected final Set<Edge> edges;
-  protected final MultiMap<GradoopId, Edge> sourceToEdgeMap;
-  protected final MultiMap<GradoopId, Edge> targetToEdgeMap;
-  private final GradoopId id;
+  protected Set<Vertex> vertices;
+  protected Map<GradoopId, Vertex> vertexMap;
+  protected Set<Edge> edges;
+  protected MultiMap<GradoopId, Edge> sourceToEdgeMap;
+  protected MultiMap<GradoopId, Edge> targetToEdgeMap;
+  private GradoopId id;
 
   public Graph() {
     this(new HashSet<>(), new HashSet<>());
@@ -31,13 +33,7 @@ public class Graph {
   }
 
   public Graph(GradoopId graphId, Collection<Vertex> vertices, Collection<Edge> edges) {
-    this.id = graphId;
-    this.vertices = new HashSet<>();
-    this.edges = new HashSet<>();
-    vertexMap = new HashMap<>();
-    sourceToEdgeMap = new MultiMap<>();
-    targetToEdgeMap = new MultiMap<>();
-    createMaps(vertices, edges);
+    initObject(graphId, vertices, edges);
   }
 
   public static Graph fromEdgeContainers(Iterable<EdgeContainer> ecIterable) {
@@ -142,7 +138,6 @@ public class Graph {
         .collect(Collectors.toSet());
   }
 
-  // TODO: Find a cheaper way for this
   public Edge getEdgeForVertices(Vertex sourceVertex, Vertex targetVertex) {
     Set<Edge> edgeIntersection = new HashSet<>(sourceToEdgeMap.get(sourceVertex.getId()));
     edgeIntersection.retainAll(targetToEdgeMap.get(targetVertex.getId()));
@@ -163,7 +158,13 @@ public class Graph {
     return vInducedSubGraph;
   }
 
-  private void createMaps(Collection<Vertex> vertices, Collection<Edge> edges) {
+  private void initObject(GradoopId graphId, Collection<Vertex> vertices, Collection<Edge> edges) {
+    this.id = graphId;
+    this.vertices = new HashSet<>();
+    this.edges = new HashSet<>();
+    this.vertexMap = new HashMap<>();
+    this.sourceToEdgeMap = new MultiMap<>();
+    this.targetToEdgeMap = new MultiMap<>();
     addVertices(vertices);
     addEdges(edges);
   }
@@ -195,5 +196,39 @@ public class Graph {
   @Override
   public int hashCode() {
     return Objects.hash(vertices, vertexMap, edges, sourceToEdgeMap, targetToEdgeMap);
+  }
+
+  private void writeObject(java.io.ObjectOutputStream out)
+      throws IOException {
+    out.writeObject(id);
+    out.writeInt(vertices.size());
+    for (var vertex : vertices) {
+      out.writeObject(vertex);
+    }
+    out.writeInt(edges.size());
+    for (var edge : edges) {
+      out.writeObject(edge);
+    }
+  }
+
+  private void readObject(java.io.ObjectInputStream in)
+      throws IOException, ClassNotFoundException {
+    var id = (GradoopId) in.readObject();
+    int size = in.readInt();
+    var vertices = new HashSet<Vertex>();
+    for (int i = 0; i < size; i++) {
+      var vertex = (Vertex) in.readObject();
+      vertices.add(vertex);
+    }
+    size = in.readInt();
+    var edges = new HashSet<Edge>();
+    for (int i = 0; i < size; i++) {
+      var edge = (Edge) in.readObject();
+      edges.add(edge);
+    }
+    this.id = id;
+    this.vertices = vertices;
+    this.edges = edges;
+    initObject(id, vertices, edges);
   }
 }
