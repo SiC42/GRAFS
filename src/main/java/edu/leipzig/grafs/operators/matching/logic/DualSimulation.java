@@ -8,6 +8,8 @@ import edu.leipzig.grafs.operators.matching.model.QueryGraph;
 import edu.leipzig.grafs.util.Sets;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import org.apache.flink.streaming.api.windowing.windows.Window;
 import org.apache.flink.util.Collector;
 
@@ -20,6 +22,8 @@ public class DualSimulation<W extends Window> extends
 
   static CandidateMap<Vertex> runAlgorithm(Graph graph, QueryGraph queryGraph,
       CandidateMap<Vertex> candidatesMap) {
+    EdgeQueryFilter edgeFilter = new EdgeQueryFilter(queryGraph);
+
     for (var queryVertex : queryGraph.getVertices()) {
       if (!candidatesMap.hasCandidateFor(queryVertex)) {
         return new CandidateMap<>();
@@ -37,6 +41,13 @@ public class DualSimulation<W extends Window> extends
             var candidatesForTargetQuery = candidatesMap.getCandidatesFor(queryTarget);
             var candidatesForTarget = Sets
                 .intersection(targetsOfCandidate, candidatesForTargetQuery);
+            Predicate<Vertex> hasMatchingEdgeInQuery = (target) -> {
+              var edge = graph.getEdgeForVertices(sourceCandidate, target);
+              return edgeFilter.filter(edge);
+            };
+            candidatesForTarget = candidatesForTarget.stream()
+                .filter(hasMatchingEdgeInQuery)
+                .collect(Collectors.toSet());
             if (candidatesForTarget.isEmpty()) {
               deleteCandidates.add(sourceCandidate);
               hasChanged = true;
