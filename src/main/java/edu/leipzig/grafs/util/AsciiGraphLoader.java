@@ -468,7 +468,7 @@ public class AsciiGraphLoader {
   private void initVertex(org.s1ck.gdl.model.Vertex v) {
     Vertex vertex;
     if (!vertexIds.containsKey(v.getId())) {
-      vertex = vFactory.createVertex(
+      vertex = VertexFactory.createVertex(
           v.getLabel(),
           Properties.createFromMap(v.getProperties()),
           createGradoopIdSet(v));
@@ -503,7 +503,7 @@ public class AsciiGraphLoader {
   private Edge initEdge(org.s1ck.gdl.model.Edge e) {
     Edge edge;
     if (!edgeIds.containsKey(e.getId())) {
-      edge = edgeFactory.createEdge(
+      edge = EdgeFactory.createEdge(
           e.getLabel(),
           vertexIds.get(e.getSourceVertexId()),
           vertexIds.get(e.getTargetVertexId()),

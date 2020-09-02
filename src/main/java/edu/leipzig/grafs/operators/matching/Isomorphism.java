@@ -25,7 +25,7 @@ public class Isomorphism<W extends Window> implements GraphToGraphCollectionOper
 
   @Override
   public DataStream<EdgeContainer> execute(DataStream<EdgeContainer> stream) {
-    var filteredStream =  queryGraph.isVertexOnly() ?
+    var filteredStream = queryGraph.isVertexOnly() ?
         stream.filter(new VertexQueryFilter(queryGraph)) :
         stream.filter(new EdgeQueryFilter(queryGraph));
     return filteredStream.windowAll(window).process(new IsomorphismMatchingProcess<>(queryGraph));

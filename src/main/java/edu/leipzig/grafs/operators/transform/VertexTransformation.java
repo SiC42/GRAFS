@@ -16,7 +16,6 @@ public class VertexTransformation implements GraphToGraphOperatorI {
       Vertex source = mapper.map(ec.getSourceVertex());
       return new EdgeContainer(ec.getEdge(), target, source);
     };
-    ;
   }
 
   @Override

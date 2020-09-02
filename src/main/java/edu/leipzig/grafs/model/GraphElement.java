@@ -46,7 +46,7 @@ public abstract class GraphElement extends Element {
   }
 
   public void resetGraphIds() {
-      graphIds.clear();
+    graphIds.clear();
   }
 
 

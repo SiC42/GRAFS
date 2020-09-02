@@ -1,5 +1,5 @@
 package edu.leipzig.grafs.operators.interfaces;
 
-public interface GraphToGraphCollectionOperatorI extends OperatorI{
+public interface GraphToGraphCollectionOperatorI extends OperatorI {
 
 }

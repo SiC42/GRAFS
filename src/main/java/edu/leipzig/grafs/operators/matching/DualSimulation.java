@@ -25,7 +25,7 @@ public class DualSimulation<W extends Window> implements GraphToGraphCollectionO
 
   @Override
   public DataStream<EdgeContainer> execute(DataStream<EdgeContainer> stream) {
-    var filteredStream =  queryGraph.isVertexOnly() ?
+    var filteredStream = queryGraph.isVertexOnly() ?
         stream.filter(new VertexQueryFilter(queryGraph)) :
         stream.filter(new EdgeQueryFilter(queryGraph));
     return filteredStream.windowAll(window).process(new DualSimulationProcess<>(queryGraph));

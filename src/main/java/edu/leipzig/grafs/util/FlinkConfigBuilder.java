@@ -22,17 +22,18 @@ public class FlinkConfigBuilder {
     watermarkStrategy = WatermarkStrategy.noWatermarks();
   }
 
-  public FlinkConfigBuilder withWaterMarkStrategy(WatermarkStrategy<EdgeContainer> watermarkStrategy) {
+  public FlinkConfigBuilder withWaterMarkStrategy(
+      WatermarkStrategy<EdgeContainer> watermarkStrategy) {
     this.watermarkStrategy = watermarkStrategy;
     return this;
   }
 
-  public FlinkConfigBuilder withTimeCharacteristic(TimeCharacteristic timeCharacteristic){
+  public FlinkConfigBuilder withTimeCharacteristic(TimeCharacteristic timeCharacteristic) {
     executionEnvironment.setStreamTimeCharacteristic(timeCharacteristic);
     return this;
   }
 
-  public FlinkConfig build(){
+  public FlinkConfig build() {
     return new FlinkConfig(executionEnvironment, watermarkStrategy);
   }
 }

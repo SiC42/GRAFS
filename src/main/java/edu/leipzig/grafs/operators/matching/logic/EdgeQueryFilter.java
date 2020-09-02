@@ -27,7 +27,7 @@ public class EdgeQueryFilter implements FilterFunction<EdgeContainer> {
 
   public boolean filter(Edge edge, Vertex source, Vertex target) {
     for (var queryEdge : queryGraph.getEdges()) {
-      if(matchesQueryElem(queryEdge, edge)){
+      if (matchesQueryElem(queryEdge, edge)) {
         var querySource = queryGraph.getSourceForEdge(queryEdge);
         var queryTarget = queryGraph.getTargetForEdge(queryEdge);
         if (!matchesQueryElem(querySource, source)) {

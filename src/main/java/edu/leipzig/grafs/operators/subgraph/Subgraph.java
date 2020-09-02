@@ -46,7 +46,7 @@ public class Subgraph implements GraphToGraphOperatorI {
         throw new IllegalArgumentException("Strategy " + strategy + " is not supported");
     }
   }
-  
+
   private FilterFunction<EdgeContainer> createSubGraphFilter(FilterFunction<Vertex> vertexFilter,
       FilterFunction<Edge> edgeFilter) {
     FilterFunction<EdgeContainer> ecFilter = ec ->
