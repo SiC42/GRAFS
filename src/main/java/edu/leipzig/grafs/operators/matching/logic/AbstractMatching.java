@@ -87,7 +87,7 @@ public abstract class AbstractMatching<W extends Window> extends
     }
   }
 
-  boolean notAlreadyCandidate(Vertex candidate, CandidateMap<Vertex> candidateMap,
+  boolean previouslyNotCandidate(Vertex candidate, CandidateMap<Vertex> candidateMap,
       Vertex[] qVertexArray, int depth) {
     for (int i = 0; i < depth; i++) {
       var candidates = candidateMap.getCandidatesFor(qVertexArray[i]);

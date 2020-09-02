@@ -86,21 +86,21 @@ class AbstractMatchingTest extends MatchingTestBase {
     Vertex[] qVertexArray = {qV0, qV1};
 
     int depth = 0;
-    assertThat(matching.notAlreadyCandidate(v1, candidates, qVertexArray, depth), is(true));
-    assertThat(matching.notAlreadyCandidate(v2, candidates, qVertexArray, depth), is(true));
-    assertThat(matching.notAlreadyCandidate(vNotCandidate, candidates, qVertexArray, depth),
+    assertThat(matching.previouslyNotCandidate(v1, candidates, qVertexArray, depth), is(true));
+    assertThat(matching.previouslyNotCandidate(v2, candidates, qVertexArray, depth), is(true));
+    assertThat(matching.previouslyNotCandidate(vNotCandidate, candidates, qVertexArray, depth),
         is(true));
 
     depth++;
-    assertThat(matching.notAlreadyCandidate(v1, candidates, qVertexArray, depth), is(false));
-    assertThat(matching.notAlreadyCandidate(v2, candidates, qVertexArray, depth), is(true));
-    assertThat(matching.notAlreadyCandidate(vNotCandidate, candidates, qVertexArray, depth),
+    assertThat(matching.previouslyNotCandidate(v1, candidates, qVertexArray, depth), is(false));
+    assertThat(matching.previouslyNotCandidate(v2, candidates, qVertexArray, depth), is(true));
+    assertThat(matching.previouslyNotCandidate(vNotCandidate, candidates, qVertexArray, depth),
         is(true));
 
     depth++;
-    assertThat(matching.notAlreadyCandidate(v1, candidates, qVertexArray, depth), is(false));
-    assertThat(matching.notAlreadyCandidate(v2, candidates, qVertexArray, depth), is(false));
-    assertThat(matching.notAlreadyCandidate(vNotCandidate, candidates, qVertexArray, depth),
+    assertThat(matching.previouslyNotCandidate(v1, candidates, qVertexArray, depth), is(false));
+    assertThat(matching.previouslyNotCandidate(v2, candidates, qVertexArray, depth), is(false));
+    assertThat(matching.previouslyNotCandidate(vNotCandidate, candidates, qVertexArray, depth),
         is(true));
   }
 
