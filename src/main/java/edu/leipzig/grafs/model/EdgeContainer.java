@@ -27,15 +27,15 @@ public class EdgeContainer {
 
   public EdgeContainer(GraphElement prevEdge, GraphElement sourceVertex,
       GraphElement targetVertex) {
-    this.sourceVertex = new VertexFactory().createVertex(
+    this.sourceVertex = VertexFactory.createVertex(
         sourceVertex.getLabel(),
         sourceVertex.getProperties(),
         sourceVertex.getGraphIds());
-    this.targetVertex = new VertexFactory().createVertex(
+    this.targetVertex = VertexFactory.createVertex(
         targetVertex.getLabel(),
         targetVertex.getProperties(),
         targetVertex.getGraphIds());
-    this.edge = new EdgeFactory().createEdge(
+    this.edge = EdgeFactory.createEdge(
         prevEdge.getLabel(),
         sourceVertex.getId(),
         targetVertex.getId(),
