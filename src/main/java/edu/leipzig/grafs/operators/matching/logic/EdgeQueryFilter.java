@@ -30,12 +30,21 @@ public class EdgeQueryFilter implements FilterFunction<EdgeContainer> {
       if(matchesQueryElem(queryEdge, edge)){
         var querySource = queryGraph.getSourceForEdge(queryEdge);
         var queryTarget = queryGraph.getTargetForEdge(queryEdge);
-        if(!matchesQueryElem(querySource, source)){
+        if (!matchesQueryElem(querySource, source)) {
           continue;
         }
-        if(matchesQueryElem(queryTarget, target)){
+        if (matchesQueryElem(queryTarget, target)) {
           return true;
         }
+      }
+    }
+    return false;
+  }
+
+  public boolean filter(Edge edge) {
+    for (var queryEdge : queryGraph.getEdges()) {
+      if (matchesQueryElem(queryEdge, edge)) {
+        return true;
       }
     }
     return false;
