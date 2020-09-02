@@ -4,6 +4,7 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.core.Is.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import edu.leipzig.grafs.factory.EdgeFactory;
@@ -21,7 +22,7 @@ public class GraphTest {
     var ec = loader.createEdgeContainers();
     var actualGraph = Graph.fromEdgeContainers(ec);
     var expectedGraph = loader.createGraph();
-    assertThat(actualGraph, equalTo(expectedGraph));
+    assertThat(actualGraph, is(equalTo(expectedGraph)));
   }
 
 
@@ -118,7 +119,7 @@ public class GraphTest {
     graph.addVertex(source);
     graph.addVertex(target);
     graph.addEdge(edge);
-    assertThat(graph.getSourceForEdge(edge), equalTo(source));
+    assertThat(graph.getSourceForEdge(edge), is(equalTo(source)));
   }
 
   @Test
@@ -131,7 +132,7 @@ public class GraphTest {
     graph.addVertex(source);
     graph.addVertex(target);
     graph.addEdge(edge);
-    assertThat(graph.getTargetForEdge(edge), equalTo(target));
+    assertThat(graph.getTargetForEdge(edge), is(equalTo(target)));
   }
 
   @Test
@@ -160,7 +161,7 @@ public class GraphTest {
     var target1 = new Vertex();
     graph.addVertex(source);
     graph.addVertex(target1);
-    assertThat(graph.getEdgesForSource(source), equalTo(Collections.EMPTY_SET));
+    assertThat(graph.getEdgesForSource(source), is(equalTo(Collections.EMPTY_SET)));
   }
 
   @Test
@@ -169,9 +170,8 @@ public class GraphTest {
     var source1 = new Vertex();
     var source2 = new Vertex();
     var target = new Vertex();
-    var ef = new EdgeFactory();
-    var edge1 = ef.createEdge(source1.getId(), target.getId());
-    var edge2 = ef.createEdge(source2.getId(), target.getId());
+    var edge1 = EdgeFactory.createEdge(source1.getId(), target.getId());
+    var edge2 = EdgeFactory.createEdge(source2.getId(), target.getId());
     graph.addVertex(source1);
     graph.addVertex(source2);
     graph.addVertex(target);
@@ -189,7 +189,7 @@ public class GraphTest {
     var target = new Vertex();
     graph.addVertex(source);
     graph.addVertex(target);
-    assertThat(graph.getEdgesForTarget(target), equalTo(Collections.EMPTY_SET));
+    assertThat(graph.getEdgesForTarget(target), is(equalTo(Collections.EMPTY_SET)));
   }
 
   @Test
@@ -218,7 +218,7 @@ public class GraphTest {
     var target1 = new Vertex();
     graph.addVertex(source);
     graph.addVertex(target1);
-    assertThat(graph.getTargetForSourceVertex(source), equalTo(Collections.EMPTY_SET));
+    assertThat(graph.getTargetForSourceVertex(source), is(equalTo(Collections.EMPTY_SET)));
   }
 
   @Test
@@ -227,16 +227,15 @@ public class GraphTest {
     var source = new Vertex();
     var target1 = new Vertex();
     var target2 = new Vertex();
-    var ef = new EdgeFactory();
-    var edge1 = ef.createEdge(source.getId(), target1.getId());
-    var edge2 = ef.createEdge(source.getId(), target2.getId());
+    var edge1 = EdgeFactory.createEdge(source.getId(), target1.getId());
+    var edge2 = EdgeFactory.createEdge(source.getId(), target2.getId());
     graph.addVertex(source);
     graph.addVertex(target1);
     graph.addVertex(target2);
     graph.addEdge(edge1);
     graph.addEdge(edge2);
-    assertThat(graph.getEdgeForVertices(source, target1), equalTo(edge1));
-    assertThat(graph.getEdgeForVertices(source, target2), equalTo(edge2));
+    assertThat(graph.getEdgeForVertices(source, target1), is(equalTo(edge1)));
+    assertThat(graph.getEdgeForVertices(source, target2), is(equalTo(edge2)));
   }
 
   @Test
@@ -248,6 +247,15 @@ public class GraphTest {
     var vertexSet = loader.getVerticesByGraphVariables("g0");
     var actualSubGraph = graph.getVertexInducedSubGraph(vertexSet);
 
-    assertThat(actualSubGraph, equalTo(expectedSubGraph));
+    assertThat(actualSubGraph, is(equalTo(expectedSubGraph)));
+  }
+
+  @Test
+  void testSerialization() throws IOException, ClassNotFoundException {
+    var loader = TestUtils.getSocialNetworkLoader();
+    var graph = loader.createGraph();
+    byte[] serializedGraph = TestUtils.pickle(graph);
+    var deserializedGraph = TestUtils.unpickle(serializedGraph, Graph.class);
+    assertThat(deserializedGraph, is(equalTo(graph)));
   }
 }
