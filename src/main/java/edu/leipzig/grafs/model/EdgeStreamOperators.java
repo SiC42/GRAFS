@@ -1,6 +1,6 @@
 package edu.leipzig.grafs.model;
 
-import edu.leipzig.grafs.operators.OperatorI;
+import edu.leipzig.grafs.operators.interfaces.OperatorI;
 import edu.leipzig.grafs.operators.subgraph.Subgraph;
 import edu.leipzig.grafs.operators.subgraph.Subgraph.Strategy;
 import edu.leipzig.grafs.operators.transform.EdgeTransformation;

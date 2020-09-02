@@ -1,6 +1,6 @@
 package edu.leipzig.grafs.model;
 
-import edu.leipzig.grafs.operators.OperatorI;
+import edu.leipzig.grafs.operators.interfaces.OperatorI;
 import edu.leipzig.grafs.util.FlinkConfig;
 import java.io.IOException;
 import java.util.Iterator;

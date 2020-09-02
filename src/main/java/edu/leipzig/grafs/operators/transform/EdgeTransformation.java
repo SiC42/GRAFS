@@ -2,11 +2,11 @@ package edu.leipzig.grafs.operators.transform;
 
 import edu.leipzig.grafs.model.Edge;
 import edu.leipzig.grafs.model.EdgeContainer;
-import edu.leipzig.grafs.operators.OperatorI;
+import edu.leipzig.grafs.operators.interfaces.GraphToGraphOperatorI;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.streaming.api.datastream.DataStream;
 
-public class EdgeTransformation implements OperatorI {
+public class EdgeTransformation implements GraphToGraphOperatorI {
 
   private final MapFunction<EdgeContainer, EdgeContainer> ecMapper;
 

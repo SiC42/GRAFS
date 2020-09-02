@@ -1,7 +1,7 @@
 package edu.leipzig.grafs.operators.matching;
 
 import edu.leipzig.grafs.model.EdgeContainer;
-import edu.leipzig.grafs.operators.OperatorI;
+import edu.leipzig.grafs.operators.interfaces.GraphToGraphCollectionOperatorI;
 import edu.leipzig.grafs.operators.matching.logic.DualSimulationProcess;
 import edu.leipzig.grafs.operators.matching.logic.EdgeQueryFilter;
 import edu.leipzig.grafs.operators.matching.logic.VertexQueryFilter;
@@ -11,12 +11,12 @@ import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.windowing.assigners.WindowAssigner;
 import org.apache.flink.streaming.api.windowing.windows.Window;
 
-public class DualSimulation<W extends Window> implements OperatorI {
+public class DualSimulation<W extends Window> implements GraphToGraphCollectionOperatorI {
 
   private final WindowAssigner<Object, W> window;
   private final QueryGraph queryGraph;
 
-  public DualSimulation(String query, WindowAssigner<Object, W> window){
+  public DualSimulation(String query, WindowAssigner<Object, W> window) {
     var graph = AsciiGraphLoader.fromString(query).createGraph();
     this.queryGraph = QueryGraph.fromGraph(graph);
     this.window = window;

@@ -3,12 +3,12 @@ package edu.leipzig.grafs.operators.subgraph;
 import edu.leipzig.grafs.model.Edge;
 import edu.leipzig.grafs.model.EdgeContainer;
 import edu.leipzig.grafs.model.Vertex;
-import edu.leipzig.grafs.operators.OperatorI;
+import edu.leipzig.grafs.operators.interfaces.GraphToGraphOperatorI;
 import java.util.Objects;
 import org.apache.flink.api.common.functions.FilterFunction;
 import org.apache.flink.streaming.api.datastream.DataStream;
 
-public class Subgraph implements OperatorI {
+public class Subgraph implements GraphToGraphOperatorI {
 
   private final FilterFunction<EdgeContainer> ecFilter;
 
