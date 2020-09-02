@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.Iterator;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.DataStreamUtils;
+import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer;
 
 public class EdgeStream implements EdgeStreamOperators {
 
@@ -16,6 +17,12 @@ public class EdgeStream implements EdgeStreamOperators {
   public EdgeStream(DataStream<EdgeContainer> edgeStream, FlinkConfig config) {
     this.edgeStream = edgeStream.assignTimestampsAndWatermarks(config.getWatermarkStrategy());
     this.config = config;
+  }
+
+  public static EdgeStream fromSource(FlinkConfig config,
+      FlinkKafkaConsumer<EdgeContainer> fkConsumer) {
+    var stream = config.getExecutionEnvironment().addSource(fkConsumer);
+    return new EdgeStream(stream, config);
   }
 
   public EdgeStream callForStream(OperatorI operator) {
