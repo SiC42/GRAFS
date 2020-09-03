@@ -31,8 +31,6 @@ public class AsciiGraphLoader {
 
   private final VertexFactory vFactory;
 
-  private final EdgeFactory edgeFactory;
-
   /**
    * Used to parse GDL scripts.
    */
@@ -75,7 +73,6 @@ public class AsciiGraphLoader {
 
   public AsciiGraphLoader(GDLHandler gdlHandler) {
     vFactory = new VertexFactory();
-    edgeFactory = new EdgeFactory();
     this.gdlHandler = gdlHandler;
     this.graphIds = new HashMap<>();
     this.graphIdCache = new HashMap<>();

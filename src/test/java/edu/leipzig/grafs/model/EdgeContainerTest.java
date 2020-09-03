@@ -16,8 +16,7 @@ class EdgeContainerTest {
     var v1 = new Vertex();
     var v2 = new Vertex();
 
-    var ef = new EdgeFactory();
-    var e = ef.createEdge(v1, v2);
+    var e = EdgeFactory.createEdge(v1, v2);
 
     assertDoesNotThrow(() -> new EdgeContainer(e, v1, v2));
   }
@@ -28,8 +27,7 @@ class EdgeContainerTest {
     var v2 = new Vertex();
     var v3 = new Vertex();
 
-    var ef = new EdgeFactory();
-    var e = ef.createEdge(v1, v2);
+    var e = EdgeFactory.createEdge(v1, v2);
 
     assertThrows(RuntimeException.class, () -> new EdgeContainer(e, v1, v3));
   }
@@ -40,8 +38,7 @@ class EdgeContainerTest {
     var v2 = new Vertex();
     var v3 = new Vertex();
 
-    var ef = new EdgeFactory();
-    var e = ef.createEdge(v1, v2);
+    var e = EdgeFactory.createEdge(v1, v2);
 
     assertThrows(RuntimeException.class, () -> new EdgeContainer(e, v3, v2));
   }
@@ -52,8 +49,7 @@ class EdgeContainerTest {
     var v1 = new Vertex();
     var v2 = new Vertex();
 
-    var ef = new EdgeFactory();
-    var e = ef.createEdge(v1, v2);
+    var e = EdgeFactory.createEdge(v1, v2);
     var ec = new EdgeContainer(e, v1, v2);
     assertThat(ec.getEdge(), is(equalTo(e)));
   }
@@ -63,8 +59,7 @@ class EdgeContainerTest {
     var v1 = new Vertex();
     var v2 = new Vertex();
 
-    var ef = new EdgeFactory();
-    var e = ef.createEdge(v1, v2);
+    var e = EdgeFactory.createEdge(v1, v2);
     var ec = new EdgeContainer(e, v1, v2);
     assertThat(ec.getSourceVertex(), is(equalTo(v1)));
   }
@@ -75,8 +70,7 @@ class EdgeContainerTest {
     var v1 = new Vertex();
     var v2 = new Vertex();
 
-    var ef = new EdgeFactory();
-    var e = ef.createEdge(v1, v2);
+    var e = EdgeFactory.createEdge(v1, v2);
     var ec = new EdgeContainer(e, v1, v2);
     assertThat(ec.getTargetVertex(), is(equalTo(v2)));
   }
@@ -87,8 +81,7 @@ class EdgeContainerTest {
     var v1 = new Vertex();
     var v2 = new Vertex();
 
-    var ef = new EdgeFactory();
-    var e = ef.createEdge(v1, v2);
+    var e = EdgeFactory.createEdge(v1, v2);
     var reverseE = e.createReverseEdge();
     var ec = new EdgeContainer(e, v1, v2);
     ec = ec.createReverseEdgeContainer();

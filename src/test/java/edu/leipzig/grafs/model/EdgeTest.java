@@ -21,7 +21,7 @@ public class EdgeTest {
     GradoopId edgeId = GradoopId.get();
     GradoopId sourceId = GradoopId.get();
     GradoopId targetId = GradoopId.get();
-    Edge e = new EdgeFactory().initEdge(edgeId, sourceId, targetId);
+    Edge e = EdgeFactory.initEdge(edgeId, sourceId, targetId);
     assertThat(e.getId(), is(edgeId));
     assertThat(e.getSourceId(), is(sourceId));
     assertThat(e.getTargetId(), is(targetId));
@@ -42,7 +42,7 @@ public class EdgeTest {
     props.set("k1", "v1");
     props.set("k2", "v2");
 
-    Edge edge = new EdgeFactory().initEdge(edgeId, label, sourceId, targetId, props, graphIds);
+    Edge edge = EdgeFactory.initEdge(edgeId, label, sourceId, targetId, props, graphIds);
 
     assertThat(edge.getId(), is(edgeId));
     assertEquals(label, edge.getLabel());
@@ -64,7 +64,7 @@ public class EdgeTest {
     GradoopId sourceId = GradoopId.get();
     GradoopId targetId = GradoopId.get();
     Edge e =
-        new EdgeFactory().initEdge(edgeId, sourceId, targetId);
+        EdgeFactory.initEdge(edgeId, sourceId, targetId);
     assertThat(e.getLabel(), is(GradoopConstants.DEFAULT_EDGE_LABEL));
   }
 
@@ -73,7 +73,7 @@ public class EdgeTest {
     GradoopId sourceId = GradoopId.get();
     GradoopId targetId = GradoopId.get();
     assertThrows(NullPointerException.class, () -> {
-      new EdgeFactory().initEdge(null, sourceId, targetId);
+      EdgeFactory.initEdge(null, sourceId, targetId);
     });
   }
 
@@ -82,7 +82,7 @@ public class EdgeTest {
     GradoopId edgeId = GradoopId.get();
     GradoopId targetId = GradoopId.get();
     assertThrows(NullPointerException.class, () -> {
-      new EdgeFactory().initEdge(edgeId, null, targetId);
+      EdgeFactory.initEdge(edgeId, null, targetId);
     });
   }
 
@@ -91,7 +91,7 @@ public class EdgeTest {
     GradoopId edgeId = GradoopId.get();
     GradoopId sourceId = GradoopId.get();
     assertThrows(NullPointerException.class, () -> {
-      new EdgeFactory().initEdge(edgeId, sourceId, null);
+      EdgeFactory.initEdge(edgeId, sourceId, null);
     });
   }
 
@@ -101,7 +101,7 @@ public class EdgeTest {
     GradoopId sourceId = GradoopId.get();
     GradoopId targetId = GradoopId.get();
     assertThrows(NullPointerException.class, () -> {
-      new EdgeFactory().initEdge(edgeId, null, sourceId, targetId);
+      EdgeFactory.initEdge(edgeId, null, sourceId, targetId);
     });
   }
 
@@ -110,7 +110,7 @@ public class EdgeTest {
     GradoopId edgeId = GradoopId.get();
     GradoopId sourceId = GradoopId.get();
     GradoopId targetId = GradoopId.get();
-    Edge e = new EdgeFactory().initEdge(edgeId, sourceId, targetId);
+    Edge e = EdgeFactory.initEdge(edgeId, sourceId, targetId);
     Edge invertedE = e.createReverseEdge();
     assertEquals(invertedE.getSourceId(), invertedE.getSourceId());
     assertEquals(invertedE.getTargetId(), invertedE.getTargetId());

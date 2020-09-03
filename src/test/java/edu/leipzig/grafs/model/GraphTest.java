@@ -60,8 +60,7 @@ public class GraphTest {
     var graph = new Graph();
     var source = new Vertex();
     var target = new Vertex();
-    var ef = new EdgeFactory();
-    var edge = ef.createEdge(source.getId(), target.getId());
+    var edge = EdgeFactory.createEdge(source.getId(), target.getId());
     graph.addVertex(source);
     graph.addVertex(target);
     graph.addEdge(edge);
@@ -74,12 +73,9 @@ public class GraphTest {
     var graph = new Graph();
     var source = new Vertex();
     var target = new Vertex();
-    var ef = new EdgeFactory();
-    var edge = ef.createEdge(source.getId(), target.getId());
+    var edge = EdgeFactory.createEdge(source.getId(), target.getId());
     graph.addVertex(target);
-    assertThrows(RuntimeException.class, () -> {
-      graph.addEdge(edge);
-    });
+    assertThrows(RuntimeException.class, () -> graph.addEdge(edge));
   }
 
   @Test
@@ -87,12 +83,9 @@ public class GraphTest {
     var graph = new Graph();
     var source = new Vertex();
     var target = new Vertex();
-    var ef = new EdgeFactory();
-    var edge = ef.createEdge(source.getId(), target.getId());
+    var edge = EdgeFactory.createEdge(source.getId(), target.getId());
     graph.addVertex(source);
-    assertThrows(RuntimeException.class, () -> {
-      graph.addEdge(edge);
-    });
+    assertThrows(RuntimeException.class, () -> graph.addEdge(edge));
   }
 
   @Test
@@ -100,8 +93,7 @@ public class GraphTest {
     var graph = new Graph();
     var source = new Vertex();
     var target = new Vertex();
-    var ef = new EdgeFactory();
-    var edge = ef.createEdge(source.getId(), target.getId());
+    var edge = EdgeFactory.createEdge(source.getId(), target.getId());
     graph.addVertex(source);
     graph.addVertex(target);
     graph.addEdges(Set.of(edge));
@@ -114,8 +106,7 @@ public class GraphTest {
     var graph = new Graph();
     var source = new Vertex();
     var target = new Vertex();
-    var ef = new EdgeFactory();
-    var edge = ef.createEdge(source.getId(), target.getId());
+    var edge = EdgeFactory.createEdge(source.getId(), target.getId());
     graph.addVertex(source);
     graph.addVertex(target);
     graph.addEdge(edge);
@@ -127,8 +118,7 @@ public class GraphTest {
     var graph = new Graph();
     var source = new Vertex();
     var target = new Vertex();
-    var ef = new EdgeFactory();
-    var edge = ef.createEdge(source.getId(), target.getId());
+    var edge = EdgeFactory.createEdge(source.getId(), target.getId());
     graph.addVertex(source);
     graph.addVertex(target);
     graph.addEdge(edge);
@@ -141,9 +131,8 @@ public class GraphTest {
     var source = new Vertex();
     var target1 = new Vertex();
     var target2 = new Vertex();
-    var ef = new EdgeFactory();
-    var edge1 = ef.createEdge(source.getId(), target1.getId());
-    var edge2 = ef.createEdge(source.getId(), target2.getId());
+    var edge1 = EdgeFactory.createEdge(source.getId(), target1.getId());
+    var edge2 = EdgeFactory.createEdge(source.getId(), target2.getId());
     graph.addVertex(source);
     graph.addVertex(target1);
     graph.addVertex(target2);
@@ -198,9 +187,8 @@ public class GraphTest {
     var source = new Vertex();
     var target1 = new Vertex();
     var target2 = new Vertex();
-    var ef = new EdgeFactory();
-    var edge1 = ef.createEdge(source.getId(), target1.getId());
-    var edge2 = ef.createEdge(source.getId(), target2.getId());
+    var edge1 = EdgeFactory.createEdge(source.getId(), target1.getId());
+    var edge2 = EdgeFactory.createEdge(source.getId(), target2.getId());
     graph.addVertex(source);
     graph.addVertex(target1);
     graph.addVertex(target2);

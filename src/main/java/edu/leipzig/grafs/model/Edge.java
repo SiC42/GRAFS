@@ -48,7 +48,7 @@ public class Edge extends GraphElement {
   }
 
   public Edge createReverseEdge() {
-    Edge reverseEdge = new EdgeFactory()
+    Edge reverseEdge = EdgeFactory
         .initEdge(this.getId(), this.getLabel(), this.getTargetId(), this.getSourceId(),
             this.getProperties(), this.getGraphIds());
     reverseEdge.setReverse();

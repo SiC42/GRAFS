@@ -30,7 +30,7 @@ class QueryGraphTest extends GraphTest {
     qGraph.addVertex(v);
     assertThat(qGraph.isVertexOnly(), is(true));
     var ef = new EdgeFactory();
-    var e = ef.createEdge(v,v);
+    var e = EdgeFactory.createEdge(v, v);
     qGraph.addEdge(e);
     assertThat(qGraph.isVertexOnly(), is(false));
   }
