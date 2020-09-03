@@ -18,6 +18,14 @@ public interface EdgeStreamOperators {
 
   default EdgeStream vertexInducedSubgraph(
       FilterFunction<Vertex> vertexGeiPredicate) {
+  default EdgeStream dualSimulation(String gdlQueryStr, WindowAssigner<Object, Window> window) {
+    return callForStream(new DualSimulation<>(gdlQueryStr, window));
+  }
+
+  default EdgeStream isomorphismMatching(String gdlQueryStr,
+      WindowAssigner<Object, Window> window) {
+    return callForStream(new Isomorphism<>(gdlQueryStr, window));
+  }
     return callForStream(new Subgraph(vertexGeiPredicate, null, Strategy.VERTEX_INDUCED));
   }
 
