@@ -10,6 +10,7 @@ import edu.leipzig.grafs.operators.grouping.model.GroupingInformation;
 import edu.leipzig.grafs.operators.interfaces.GraphToGraphOperatorI;
 import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.streaming.api.datastream.DataStream;
+import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.datastream.WindowedStream;
 import org.apache.flink.streaming.api.windowing.assigners.WindowAssigner;
 import org.apache.flink.streaming.api.windowing.triggers.Trigger;
@@ -49,7 +50,18 @@ public class Grouping<W extends Window> implements GraphToGraphOperatorI {
   public DataStream<EdgeContainer> groupBy(DataStream<EdgeContainer> stream) {
 
     // Enrich stream with reverse edges
-    var expandedStream = stream
+    var expandedStream = createStreamWithReverseEdges(stream);
+
+    var aggregatedOnSourceStream = aggregateOnVertex(expandedStream, AggregateMode.SOURCE);
+    var aggregatedOnVertexStream = aggregateOnVertex(aggregatedOnSourceStream,
+        AggregateMode.TARGET);
+    var reducedStream = aggregatedOnVertexStream.filter(ec -> !ec.getEdge().isReverse());
+    return aggregateOnEdge(reducedStream);
+  }
+
+  private SingleOutputStreamOperator<EdgeContainer> createStreamWithReverseEdges(
+      DataStream<EdgeContainer> stream) {
+    return stream
         .flatMap(new FlatMapFunction<EdgeContainer, EdgeContainer>() {
           @Override
           public void flatMap(EdgeContainer value, Collector<EdgeContainer> out) {
@@ -57,12 +69,6 @@ public class Grouping<W extends Window> implements GraphToGraphOperatorI {
             out.collect(value);
           }
         });
-
-    var aggregatedOnSourceStream = aggregateOnVertex(expandedStream, AggregateMode.SOURCE);
-    var aggregatedOnVertexStream = aggregateOnVertex(aggregatedOnSourceStream,
-        AggregateMode.TARGET);
-    var reducedStream = aggregatedOnVertexStream.filter(ec -> !ec.getEdge().isReverse());
-    return aggregateOnEdge(reducedStream);
   }
 
   private DataStream<EdgeContainer> aggregateOnVertex(DataStream<EdgeContainer> stream,
