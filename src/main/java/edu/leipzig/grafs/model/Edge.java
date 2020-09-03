@@ -12,6 +12,7 @@ public class Edge extends GraphElement {
   private boolean reverse;
 
   public Edge() {
+    super();
   }
 
   public Edge(GradoopId id, String label, GradoopId sourceId, GradoopId targetId,
