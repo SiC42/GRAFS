@@ -30,10 +30,8 @@ public class EdgeStream implements EdgeStreamOperators {
     return new EdgeStream(result, config);
   }
 
-  @Override
-  public EdgeStream union(EdgeStream otherStream) {
-    var mergedStream = this.edgeStream.union(otherStream.edgeStream);
-    return new EdgeStream(mergedStream, config);
+  public DataStream<EdgeContainer> getDataStream() {
+    return edgeStream;
   }
 
   public void print() {
