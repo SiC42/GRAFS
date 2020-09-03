@@ -18,6 +18,19 @@ public interface EdgeStreamOperators {
 
   default EdgeStream vertexInducedSubgraph(
       FilterFunction<Vertex> vertexGeiPredicate) {
+  default EdgeStream grouping(GroupingInformation vertexGi, AggregationMapping vertexAggMap,
+      GroupingInformation edgeGi, AggregationMapping edgeAggMap,
+      WindowAssigner<Object, Window> window) {
+    return grouping(vertexGi, vertexAggMap, edgeGi, edgeAggMap, window, null);
+  }
+
+  default EdgeStream grouping(GroupingInformation vertexGi, AggregationMapping vertexAggMap,
+      GroupingInformation edgeGi, AggregationMapping edgeAggMap,
+      WindowAssigner<Object, Window> window,
+      Trigger<EdgeContainer, Window> trigger) {
+    return callForStream(
+        new Grouping<>(vertexGi, vertexAggMap, edgeGi, edgeAggMap, window, trigger));
+  }
   default EdgeStream dualSimulation(String gdlQueryStr, WindowAssigner<Object, Window> window) {
     return callForStream(new DualSimulation<>(gdlQueryStr, window));
   }
