@@ -52,13 +52,13 @@ public class VertexTransformationTest extends TransformationBaseTest {
         .transformVertices(VertexTransformationTest::transformVertex)
         .collect();
     List<GradoopId> resultVertexIds = new ArrayList<>();
-    while (ecResultIterator.hasNext()) {
-      var ec = ecResultIterator.next();
+    ecResultIterator.forEachRemaining(ec -> {
       resultVertexIds.add(ec.getSourceVertex().getId());
       resultVertexIds.add(ec.getTargetVertex().getId());
-    }
+    });
 
     validateIdEquality(referenceVertexIds, resultVertexIds);
+
   }
 
   @Test
@@ -73,11 +73,9 @@ public class VertexTransformationTest extends TransformationBaseTest {
         .collect();
 
     List<Edge> resultEdgeIds = new ArrayList<>();
-
-    while (ecResultIterator.hasNext()) {
-      var ec = ecResultIterator.next();
+    ecResultIterator.forEachRemaining(ec -> {
       resultEdgeIds.add(ec.getEdge());
-    }
+    });
 
     validateDataInequality(referenceEdges, resultEdgeIds);
   }

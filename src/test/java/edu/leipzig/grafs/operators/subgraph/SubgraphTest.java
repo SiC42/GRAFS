@@ -42,9 +42,7 @@ public class SubgraphTest extends OperatorTestBase {
             e -> e.getLabel().equals("knows"))
         .collect();
     Collection<EdgeContainer> actual = new HashSet<>();
-    while (output.hasNext()) {
-      actual.add(output.next());
-    }
+    output.forEachRemaining(actual::add);
     assertEquals(expected, actual);
   }
 
