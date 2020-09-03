@@ -33,18 +33,6 @@ class GraphElementAggregationProcessTest {
   }
 
   @Test
-  void testCheckAggregationAndGroupingKeyIntersection_withMemberShipConflict() {
-    var aggMap = new AggregationMapping();
-    aggMap.setAggregationForMembership((a, b) -> b);
-    var groupInfo = new GroupingInformation();
-    var aggProcess = mock(GraphElementAggregationProcess.class, CALLS_REAL_METHODS);
-    aggProcess.checkAggregationAndGroupingKeyIntersection(aggMap, groupInfo);
-
-    assertThrows(RuntimeException.class, () ->
-        aggProcess.checkAggregationAndGroupingKeyIntersection(aggMap, groupInfo));
-  }
-
-  @Test
   void testSetGroupedProperties_noGroupInfo() {
     var aggProcess = mock(GraphElementAggregationProcess.class, CALLS_REAL_METHODS);
     var emptyVertex = new Vertex();
