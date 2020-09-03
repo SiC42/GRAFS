@@ -41,11 +41,11 @@ public class EdgeAggregation<W extends Window> extends GraphElementAggregationPr
     // No need for aggregation when only one edge was "aggregated"
     if (count > 1) {
       // we have not set the grouped properties yet
-      var source = lastEc.getSourceVertex();
-      var target = lastEc.getTargetVertex();
       aggregatedEdge = (Edge) setGroupedProperties(edgeGroupInfo,
           aggregatedEdge,
           lastEc.getEdge());
+      var source = lastEc.getSourceVertex();
+      var target = lastEc.getTargetVertex();
       aggregatedEdge.setSourceId(source.getId());
       aggregatedEdge.setTargetId(target.getId());
       aggregatedEContainer = new EdgeContainer(aggregatedEdge, source,
