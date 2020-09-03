@@ -5,8 +5,12 @@ import edu.leipzig.grafs.operators.subgraph.Subgraph;
 import edu.leipzig.grafs.operators.subgraph.Subgraph.Strategy;
 import edu.leipzig.grafs.operators.transform.EdgeTransformation;
 import edu.leipzig.grafs.operators.transform.VertexTransformation;
+import edu.leipzig.grafs.operators.union.DisjunctUnion;
+import edu.leipzig.grafs.operators.union.UnionWithDuplicateInWindow;
 import org.apache.flink.api.common.functions.FilterFunction;
 import org.apache.flink.api.common.functions.MapFunction;
+import org.apache.flink.streaming.api.windowing.assigners.WindowAssigner;
+import org.apache.flink.streaming.api.windowing.windows.Window;
 
 public interface EdgeStreamOperators {
 
@@ -39,6 +43,23 @@ public interface EdgeStreamOperators {
     return callForStream(new VertexTransformation(mapper));
   }
 
-  EdgeStream union(EdgeStream otherStream);
+  /**
+   * Union of two or more edge streams creating a new stream containing all the elements from all
+   * the streams.
+   * <p>
+   * Note: This operator assumes that the streams are disjunct, no element in both streams is
+   * present in the other stream.
+   *
+   * @param streams The edge streams to union output with.
+   * @return the unioned edge stream
+   */
+  default EdgeStream disjunctUnion(EdgeStream... streams) {
+    return callForStream(new DisjunctUnion(streams));
+  }
+
+  default EdgeStream unionWithDuplicateInWindow(WindowAssigner<Object, Window> window,
+      EdgeStream... streams) {
+    return callForStream(new UnionWithDuplicateInWindow<>(window, streams));
+  }
 
 }
