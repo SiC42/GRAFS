@@ -15,14 +15,6 @@ public class UnionWithDuplicateInWindow<W extends Window> implements
 
   private final EdgeStream[] streams;
   private final WindowAssigner<Object, W> window;
-  private final ProcessWindowFunction<EdgeContainer, EdgeContainer, String, W> FILTER_UNIQUE_IN_WINDOW_FUNCTION =
-      new ProcessWindowFunction<EdgeContainer, EdgeContainer, String, W>() {
-    @Override
-    public void process(String s, Context context, Iterable<EdgeContainer> iterable,
-        Collector<EdgeContainer> collector) throws Exception {
-      collector.collect(iterable.iterator().next());
-    }
-  };
 
   public UnionWithDuplicateInWindow(WindowAssigner<Object, W> window, EdgeStream... streams) {
 
@@ -33,6 +25,14 @@ public class UnionWithDuplicateInWindow<W extends Window> implements
   @Override
   public DataStream<EdgeContainer> execute(DataStream<EdgeContainer> stream) {
     var unionedStream = new DisjunctUnion(streams).execute(stream);
+    var FILTER_UNIQUE_IN_WINDOW_FUNCTION =
+        new ProcessWindowFunction<EdgeContainer, EdgeContainer, String, W>() {
+          @Override
+          public void process(String s, Context context, Iterable<EdgeContainer> iterable,
+              Collector<EdgeContainer> collector) throws Exception {
+            collector.collect(iterable.iterator().next());
+          }
+        };
     return unionedStream
         .keyBy(EdgeContainer::toString)
         .window(window)
