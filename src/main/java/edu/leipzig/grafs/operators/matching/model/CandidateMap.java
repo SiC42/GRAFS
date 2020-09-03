@@ -65,7 +65,7 @@ public class CandidateMap<E> {
   }
 
   public ArrayList<Set<E>> asListOfCandidateSets() {
-    return new ArrayList<Set<E>>(candidateMap.asMap().values());
+    return new ArrayList<>(candidateMap.asMap().values());
   }
 
   @Override
