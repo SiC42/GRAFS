@@ -12,9 +12,9 @@ public class VertexTransformation implements GraphToGraphOperatorI {
 
   public VertexTransformation(final MapFunction<Vertex, Vertex> mapper) {
     this.ecMapper = ec -> {
-      Vertex target = mapper.map(ec.getTargetVertex());
       Vertex source = mapper.map(ec.getSourceVertex());
-      return new EdgeContainer(ec.getEdge(), target, source);
+      Vertex target = mapper.map(ec.getTargetVertex());
+      return new EdgeContainer(ec.getEdge(), source, target);
     };
   }
 
