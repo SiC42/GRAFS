@@ -49,7 +49,7 @@ public class VertexAggregation<W extends Window> extends VertexAggregationProces
       if (ec.getEdge().isReverse()) {
         out.collect(ec); // No need to aggregate for reverse edges
       } else {
-        Vertex finalVertex = new VertexFactory().createVertex(aggregatedVertex);
+        Vertex finalVertex = VertexFactory.createVertex(aggregatedVertex);
         EdgeContainer aggregatedEdge;
         if (aggregateMode.equals(AggregateMode.SOURCE)) {
           aggregatedEdge = new EdgeContainer(ec.getEdge(), finalVertex, ec.getTargetVertex());

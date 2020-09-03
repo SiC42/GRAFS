@@ -29,8 +29,6 @@ import org.s1ck.gdl.model.GraphElement;
 
 public class AsciiGraphLoader {
 
-  private final VertexFactory vFactory;
-
   /**
    * Used to parse GDL scripts.
    */
@@ -72,7 +70,6 @@ public class AsciiGraphLoader {
   private final Map<String, Edge> edgeCache;
 
   public AsciiGraphLoader(GDLHandler gdlHandler) {
-    vFactory = new VertexFactory();
     this.gdlHandler = gdlHandler;
     this.graphIds = new HashMap<>();
     this.graphIdCache = new HashMap<>();

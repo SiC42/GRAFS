@@ -14,7 +14,7 @@ class AggregatedVertexTest {
 
   @Test
   public void testIsAggregated_withVertex(){
-    var v = new VertexFactory().createVertex();
+    var v = VertexFactory.createVertex();
     var av = new AggregatedVertex();
     av.addVertex(v);
     assertTrue(av.isAlreadyAggregated(v));

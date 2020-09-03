@@ -31,7 +31,7 @@ public class VertexTest {
   @Test
   public void createWithIDTest() {
     GradoopId vertexID = GradoopId.get();
-    Vertex v = new VertexFactory().initVertex(vertexID);
+    Vertex v = VertexFactory.initVertex(vertexID);
     assertEquals(v.getId(), vertexID);
     assertEquals(v.getPropertyCount(), 0);
     assertEquals(v.getGraphCount(), 0);
@@ -52,7 +52,7 @@ public class VertexTest {
     graphIds.add(graphId1);
     graphIds.add(graphId2);
 
-    Vertex vertex = new VertexFactory()
+    Vertex vertex = VertexFactory
         .initVertex(vertexID, label, props, graphIds);
 
     assertEquals(vertex.getId(), vertexID);
@@ -68,18 +68,18 @@ public class VertexTest {
   @Test
   public void createWithMissingLabelTest() {
     GradoopId vertexID = GradoopId.get();
-    Vertex v = new VertexFactory().initVertex(vertexID);
+    Vertex v = VertexFactory.initVertex(vertexID);
     assertEquals(v.getLabel(), GradoopConstants.DEFAULT_VERTEX_LABEL);
   }
 
   @Test
   public void createWithNullIDTest() {
-    assertThrows(NullPointerException.class, () -> new VertexFactory().initVertex(null));
+    assertThrows(NullPointerException.class, () -> VertexFactory.initVertex(null));
   }
 
   @Test
   public void createWithNullLabelTest() {
     GradoopId vertexID = GradoopId.get();
-    assertThrows(NullPointerException.class, () -> new VertexFactory().initVertex(vertexID, null));
+    assertThrows(NullPointerException.class, () -> VertexFactory.initVertex(vertexID, null));
   }
 }
