@@ -1,5 +1,6 @@
 package edu.leipzig.grafs.operators.grouping.logic;
 
+import edu.leipzig.grafs.factory.EdgeFactory;
 import edu.leipzig.grafs.factory.VertexFactory;
 import edu.leipzig.grafs.model.EdgeContainer;
 import edu.leipzig.grafs.model.Vertex;
@@ -51,10 +52,19 @@ public class VertexAggregation<W extends Window> extends VertexAggregationProces
       } else {
         Vertex finalVertex = VertexFactory.createVertex(aggregatedVertex);
         EdgeContainer aggregatedEdge;
+        var edge = ec.getEdge();
         if (aggregateMode.equals(AggregateMode.SOURCE)) {
-          aggregatedEdge = new EdgeContainer(ec.getEdge(), finalVertex, ec.getTargetVertex());
+          var newEdge = EdgeFactory.createEdge(edge.getLabel(),
+              finalVertex.getId(),
+              ec.getTargetVertex().getId(),
+              edge.getProperties());
+          aggregatedEdge = new EdgeContainer(newEdge, finalVertex, ec.getTargetVertex());
         } else { // TARGET-mode
-          aggregatedEdge = new EdgeContainer(ec.getEdge(), ec.getSourceVertex(), finalVertex);
+          var newEdge = EdgeFactory.createEdge(edge.getLabel(),
+              ec.getSourceVertex().getId(),
+              finalVertex.getId(),
+              edge.getProperties());
+          aggregatedEdge = new EdgeContainer(newEdge, ec.getSourceVertex(), finalVertex);
         }
         out.collect(aggregatedEdge);
       }
