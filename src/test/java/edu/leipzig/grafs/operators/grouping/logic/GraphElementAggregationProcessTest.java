@@ -39,7 +39,6 @@ class GraphElementAggregationProcessTest {
     var groupInfo = new GroupingInformation();
     var aggProcess = mock(GraphElementAggregationProcess.class, CALLS_REAL_METHODS);
     aggProcess.checkAggregationAndGroupingKeyIntersection(aggMap, groupInfo);
-    groupInfo.useMembership(true);
 
     assertThrows(RuntimeException.class, () ->
         aggProcess.checkAggregationAndGroupingKeyIntersection(aggMap, groupInfo));

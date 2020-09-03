@@ -17,7 +17,6 @@ public class GroupingInformationTest {
   public void testGroupingInformation_emptyConstructor(){
     var gi = new GroupingInformation();
     assertFalse(gi.shouldUseLabel());
-    assertFalse(gi.shouldUseMembership());
     assertThat(gi.getKeys(), empty());
   }
 
@@ -26,7 +25,6 @@ public class GroupingInformationTest {
     var groupingKeys = Set.of(TestUtils.KEY_1, TestUtils.KEY_2);
     var gi = new GroupingInformation(groupingKeys);
     assertFalse(gi.shouldUseLabel());
-    assertFalse(gi.shouldUseMembership());
     assertThat(gi.getKeys(), is(equalTo(groupingKeys)));
   }
 
@@ -35,9 +33,8 @@ public class GroupingInformationTest {
     var useLabel = true;
     var useMemberShip = true;
     var groupingKeys = Set.of(TestUtils.KEY_1, TestUtils.KEY_2);
-    var gi = new GroupingInformation(useLabel, useMemberShip, groupingKeys);
+    var gi = new GroupingInformation(useLabel, groupingKeys);
     assertThat(gi.shouldUseLabel(), is(equalTo(useLabel)));
-    assertThat(gi.shouldUseMembership(), is(equalTo(useMemberShip)));
     assertThat(gi.getKeys(), is(equalTo(groupingKeys)));
   }
 
@@ -63,15 +60,6 @@ public class GroupingInformationTest {
     assertTrue(gi.shouldUseLabel());
     gi.useLabel(false);
     assertFalse(gi.shouldUseLabel());
-  }
-
-  @Test
-  public void testShouldUseMembership(){
-    var gi = new GroupingInformation();
-    gi.useMembership(true);
-    assertTrue(gi.shouldUseMembership());
-    gi.useMembership(false);
-    assertFalse(gi.shouldUseMembership());
   }
 
 }

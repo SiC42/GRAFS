@@ -19,11 +19,6 @@ public abstract class GraphElementAggregationProcess<W extends Window> extends
             String.format("Aggregation key '%s' is also present in grouping keys", key));
       }
     }
-    if (elemGroupInfo.shouldUseMembership() &&
-        aggregationMapping.getAggregationForMembership().isPresent()) {
-      throw new RuntimeException(
-          "Elements should be grouped by membership but aggregation mapping contains function for membership aggregation.");
-    }
   }
 
   /**
@@ -44,13 +39,11 @@ public abstract class GraphElementAggregationProcess<W extends Window> extends
       for (var key : groupInfo.getKeys()) {
         emptyElem.setProperty(key, masterElem.getPropertyValue(key));
       }
-      // TODO: Deal with memberships
     } else { // null means we group over everything, so copy all information out of master
       emptyElem.setLabel(masterElem.getLabel());
       for (var prop : masterElem.getProperties()) {
         emptyElem.setProperty(prop);
       }
-      // TODO: Deal with memberships
     }
     return emptyElem;
   }

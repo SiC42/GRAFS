@@ -98,6 +98,6 @@ public class EdgeKeySelector implements KeySelector<EdgeContainer, String> {
     for (var key : keys) {
       sortedKeySet.add(key);
     }
-    return new GroupingInformation(true, true, sortedKeySet);
+    return new GroupingInformation(true, sortedKeySet);
   }
 }
