@@ -29,6 +29,9 @@ public class Edge extends GraphElement {
   }
 
   public void setSourceId(GradoopId newSource) {
+    if (sourceId != null) {
+      throw new RuntimeException("Source vertex id is already set. Make a new edge instead.");
+    }
     sourceId = newSource;
   }
 
@@ -37,6 +40,9 @@ public class Edge extends GraphElement {
   }
 
   public void setTargetId(GradoopId newTarget) {
+    if (targetId != null) {
+      throw new RuntimeException("Target vertex id is already set. Make a new edge instead.");
+    }
     targetId = newTarget;
   }
 
