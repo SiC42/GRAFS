@@ -12,8 +12,8 @@ public class EdgeTransformation implements GraphToGraphOperatorI {
 
   public EdgeTransformation(final MapFunction<Edge, Edge> mapper) {
     this.ecMapper = ec -> {
-      mapper.map(ec.getEdge());
-      return ec;
+      var transformedEdge = mapper.map(ec.getEdge());
+      return new EdgeContainer(transformedEdge, ec.getSourceVertex(), ec.getTargetVertex());
     };
   }
 
