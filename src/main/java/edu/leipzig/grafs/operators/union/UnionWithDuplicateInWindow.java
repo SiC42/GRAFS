@@ -25,7 +25,7 @@ public class UnionWithDuplicateInWindow<W extends Window> implements
   @Override
   public DataStream<EdgeContainer> execute(DataStream<EdgeContainer> stream) {
     var unionedStream = new DisjunctUnion(streams).execute(stream);
-    var FILTER_UNIQUE_IN_WINDOW_FUNCTION =
+    var filterDuplicateInWindowFunction =
         new ProcessWindowFunction<EdgeContainer, EdgeContainer, String, W>() {
           @Override
           public void process(String s, Context context, Iterable<EdgeContainer> iterable,
@@ -36,7 +36,7 @@ public class UnionWithDuplicateInWindow<W extends Window> implements
     return unionedStream
         .keyBy(EdgeContainer::toString)
         .window(window)
-        .process(FILTER_UNIQUE_IN_WINDOW_FUNCTION);
+        .process(filterDuplicateInWindowFunction);
 
   }
 }
