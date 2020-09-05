@@ -8,7 +8,7 @@ import org.apache.flink.streaming.api.datastream.DataStream;
 
 public class VertexTransformation implements GraphToGraphOperatorI {
 
-  private final MapFunction<EdgeContainer, EdgeContainer> ecMapper;
+  protected MapFunction<EdgeContainer, EdgeContainer> ecMapper;
 
   public VertexTransformation(final MapFunction<Vertex, Vertex> mapper) {
     this.ecMapper = ec -> {
