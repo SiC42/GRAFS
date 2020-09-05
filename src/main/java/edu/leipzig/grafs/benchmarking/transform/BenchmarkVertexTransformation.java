@@ -1,6 +1,6 @@
 package edu.leipzig.grafs.benchmarking.transform;
 
-import edu.leipzig.grafs.benchmarking.generic.FlatMapFunctionWithMeter;
+import edu.leipzig.grafs.benchmarking.generic.MapFunctionWithMeter;
 import edu.leipzig.grafs.model.EdgeContainer;
 import edu.leipzig.grafs.model.Vertex;
 import edu.leipzig.grafs.operators.transform.VertexTransformation;
@@ -14,7 +14,7 @@ public class BenchmarkVertexTransformation extends VertexTransformation {
 
   public BenchmarkVertexTransformation(MapFunction<Vertex, Vertex> mapper, String meterName) {
     super(mapper);
-    this.ecMapper = new FlatMapFunctionWithMeter<>(meterName) {
+    this.ecMapper = new MapFunctionWithMeter<>(meterName) {
       @Override
       public EdgeContainer map(EdgeContainer ec) throws Exception {
         return ecMapper.map(ec);
