@@ -1,4 +1,4 @@
-package edu.leipzig.grafs.benchmarking.generic;
+package edu.leipzig.grafs.benchmarking.functions;
 
 import org.apache.flink.api.common.functions.MapFunction;
 

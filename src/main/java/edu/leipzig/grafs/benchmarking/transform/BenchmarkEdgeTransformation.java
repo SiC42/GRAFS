@@ -1,6 +1,6 @@
 package edu.leipzig.grafs.benchmarking.transform;
 
-import edu.leipzig.grafs.benchmarking.generic.MapFunctionWithMeter;
+import edu.leipzig.grafs.benchmarking.functions.MapFunctionWithMeter;
 import edu.leipzig.grafs.model.Edge;
 import edu.leipzig.grafs.model.EdgeContainer;
 import edu.leipzig.grafs.operators.transform.EdgeTransformation;
