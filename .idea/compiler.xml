@@ -6,11 +6,11 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="wiki-edits" />
+        <module name="grafs" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="wiki-edits" target="1.11" />
+      <module name="grafs" target="1.11" />
     </bytecodeTargetLevel>
   </component>
 </project>
