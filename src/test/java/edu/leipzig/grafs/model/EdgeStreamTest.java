@@ -62,7 +62,14 @@ class EdgeStreamTest {
         }));
     edgeStream.callForStream(
         Grouping.createGrouping()
-            .withVertexGrouping(vertexEgi, am)
+            .addVertexGroupingKey("n")
+            .addVertexAggregateFunction("a",
+                new PropertiesAggregationFunction(identity,
+                    (PropertyValue pV1, PropertyValue pV2) -> {
+                      var newVal = new PropertyValue();
+                      newVal.setInt(pV1.getInt() + pV2.getInt());
+                      return newVal;
+                    }))
             .buildWithWindow(TumblingEventTimeWindows.of(Time.milliseconds(10))))
         .print();
     env.execute();
