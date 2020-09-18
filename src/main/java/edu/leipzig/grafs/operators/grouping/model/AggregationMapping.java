@@ -79,4 +79,8 @@ public class AggregationMapping implements Serializable {
       throws ObjectStreamException {
 
   }
+
+  public void addAggregationMappingEntry(AggregationMappingEntry mappingEntry) {
+    addAggregationForProperty(mappingEntry.getPropertyKey(), mappingEntry.getAggregationFunction());
+  }
 }
