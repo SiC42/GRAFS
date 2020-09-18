@@ -4,9 +4,11 @@ import edu.leipzig.grafs.benchmarking.functions.MapFunctionWithMeter;
 import edu.leipzig.grafs.model.EdgeContainer;
 import edu.leipzig.grafs.model.Vertex;
 import edu.leipzig.grafs.operators.transform.VertexTransformation;
+import java.io.IOException;
+import java.io.Serializable;
 import org.apache.flink.api.common.functions.MapFunction;
 
-public class BenchmarkVertexTransformation extends VertexTransformation {
+public class BenchmarkVertexTransformation extends VertexTransformation implements Serializable {
 
   public BenchmarkVertexTransformation(MapFunction<Vertex, Vertex> mapper) {
     this(mapper, "vertexTransformationMeter");
@@ -20,6 +22,17 @@ public class BenchmarkVertexTransformation extends VertexTransformation {
         return ecMapper.map(ec);
       }
     };
+  }
+
+  private void writeObject(java.io.ObjectOutputStream out)
+      throws IOException {
+    out.writeObject(ecMapper);
+  }
+
+  @SuppressWarnings("unchecked")
+  private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
+    this.ecMapper = (MapFunction<EdgeContainer, EdgeContainer>) in.readObject();
+
   }
 
 }
