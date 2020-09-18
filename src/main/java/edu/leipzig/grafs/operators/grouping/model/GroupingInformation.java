@@ -1,11 +1,13 @@
 package edu.leipzig.grafs.operators.grouping.model;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
 public class GroupingInformation implements Serializable {
 
+  private static final String LABEL_SYMBOL = ":label";
   private boolean useLabel;
   private Set<String> groupingKeys;
 
@@ -22,11 +24,28 @@ public class GroupingInformation implements Serializable {
 
   public GroupingInformation(Set<String> groupingKeys) {
     this();
-    this.groupingKeys = groupingKeys;
+    for (var key : groupingKeys) {
+      addKey(key);
+    }
   }
 
   public boolean addKey(String key) {
-    return groupingKeys.add(key);
+    if (key.equals(LABEL_SYMBOL)) {
+      useLabel(true);
+      return true;
+    } else {
+      return groupingKeys.add(key);
+    }
+  }
+
+  public boolean addKeys(Collection<String> keys) {
+    boolean modified = false;
+    for (var key : keys) {
+      if (addKey(key)) {
+        modified = true;
+      }
+    }
+    return modified;
   }
 
   public Set<String> getKeys() {
