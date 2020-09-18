@@ -1,4 +1,4 @@
-package edu.leipzig.grafs.kafka.serialization;
+package edu.leipzig.grafs.serialization;
 
 
 import edu.leipzig.grafs.model.EdgeContainer;
