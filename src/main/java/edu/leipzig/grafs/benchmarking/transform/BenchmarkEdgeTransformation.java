@@ -19,7 +19,7 @@ public class BenchmarkEdgeTransformation extends EdgeTransformation {
     super(mapper);
     this.ecMapper = new MapFunctionWithMeter<>(meterName) {
       @Override
-      public EdgeContainer map(EdgeContainer ec) throws Exception {
+      public EdgeContainer plainMap(EdgeContainer ec) throws Exception {
         return ecMapper.map(ec);
       }
     };

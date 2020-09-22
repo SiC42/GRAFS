@@ -10,6 +10,9 @@ public class VertexTransformation implements GraphToGraphOperatorI {
 
   protected MapFunction<EdgeContainer, EdgeContainer> ecMapper;
 
+  protected VertexTransformation() {
+  }
+
   public VertexTransformation(final MapFunction<Vertex, Vertex> mapper) {
     this.ecMapper = ec -> {
       Vertex source = mapper.map(ec.getSourceVertex());

@@ -24,7 +24,7 @@ public class BenchmarkVertexTransformation extends VertexTransformation implemen
     var oldMapper = ecMapper;
     this.ecMapper = new MapFunctionWithMeter<>(meterName) {
       @Override
-      public EdgeContainer map(EdgeContainer ec) throws Exception {
+      protected EdgeContainer plainMap(EdgeContainer ec) throws Exception {
         return oldMapper.map(ec);
       }
     };

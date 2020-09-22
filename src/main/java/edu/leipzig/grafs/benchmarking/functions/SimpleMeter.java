@@ -7,7 +7,7 @@ public class SimpleMeter<T> extends MapFunctionWithMeter<T, T> {
   }
 
   @Override
-  public T map(T in) throws Exception {
+  public T plainMap(T in) throws Exception {
     return in;
   }
 }

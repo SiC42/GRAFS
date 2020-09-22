@@ -24,7 +24,7 @@ public class BenchmarkSubgraph extends Subgraph {
     super(vertexFilter, edgeFilter, strategy);
     this.ecFilter = new FilterFunctionWithMeter<EdgeContainer>(meterName) {
       @Override
-      public boolean filter(EdgeContainer edgeContainer) throws Exception {
+      public boolean plainFilter(EdgeContainer edgeContainer) throws Exception {
         return ecFilter.filter(edgeContainer);
       }
     };
