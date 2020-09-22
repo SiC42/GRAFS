@@ -129,19 +129,9 @@ under the License.
     <!-- Apache Flink dependencies -->
     <!-- These dependencies are provided, because they should not be packaged into the JAR file. -->
     <dependency>
-      <artifactId>flink-java</artifactId>
-      <groupId>org.apache.flink</groupId>
-      <version>${flink.version}</version>
-    </dependency>
-    <dependency>
       <artifactId>flink-streaming-java_${scala.binary.version}</artifactId>
       <groupId>org.apache.flink</groupId>
-      <version>${flink.version}</version>
-    </dependency>
-
-    <dependency>
-      <artifactId>flink-clients_${scala.binary.version}</artifactId>
-      <groupId>org.apache.flink</groupId>
+      <scope>provided</scope>
       <version>${flink.version}</version>
     </dependency>
 
@@ -151,15 +141,6 @@ under the License.
       <groupId>org.apache.flink</groupId>
       <version>${flink.version}</version>
     </dependency>
-
-    <!-- Example:
-
-    <dependency>
-      <groupId>org.apache.flink</groupId>
-      <artifactId>flink-connector-kafka-0.10_${scala.binary.version}</artifactId>
-      <version>${flink.version}</version>
-    </dependency>
-    -->
 
     <!-- Add logging framework, to produce console output when running in the IDE. -->
     <!-- These dependencies are excluded from the application JAR by default. -->
