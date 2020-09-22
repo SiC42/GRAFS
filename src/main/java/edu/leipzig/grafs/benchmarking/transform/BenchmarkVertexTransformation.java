@@ -10,16 +10,22 @@ import org.apache.flink.api.common.functions.MapFunction;
 
 public class BenchmarkVertexTransformation extends VertexTransformation implements Serializable {
 
+
+  protected BenchmarkVertexTransformation() {
+    super(null);
+  }
+
   public BenchmarkVertexTransformation(MapFunction<Vertex, Vertex> mapper) {
     this(mapper, "vertexTransformationMeter");
   }
 
   public BenchmarkVertexTransformation(MapFunction<Vertex, Vertex> mapper, String meterName) {
     super(mapper);
+    var oldMapper = ecMapper;
     this.ecMapper = new MapFunctionWithMeter<>(meterName) {
       @Override
       public EdgeContainer map(EdgeContainer ec) throws Exception {
-        return ecMapper.map(ec);
+        return oldMapper.map(ec);
       }
     };
   }
