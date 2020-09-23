@@ -31,6 +31,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.PriorityQueue;
 import java.util.Set;
 import org.gradoop.common.model.impl.id.GradoopId;
 import org.gradoop.common.model.impl.properties.PropertyValue;
@@ -328,24 +329,40 @@ public class TestUtils {
     if ((difference = elementComparator.compare(elem1, elem2)) != 0) {
       return difference;
     }
-
+    var unsortedPropKeys = elem1.getPropertyKeys();
+    var sortedPropKeys = new PriorityQueue<String>();
+    for (var keys : unsortedPropKeys) {
+      sortedPropKeys.add(keys);
+    }
+    for (var key : sortedPropKeys) {
+      if (elem2.hasProperty(key)) {
+        var prop2 = elem2.getPropertyValue(key);
+        if ((difference = elem1.getPropertyValue(key).compareTo(prop2)) != 0) {
+          return difference;
+        }
+      } else {
+        return -1;
+      }
+    }
+    unsortedPropKeys = elem2.getPropertyKeys();
+    sortedPropKeys = new PriorityQueue<String>();
+    for (var keys : unsortedPropKeys) {
+      sortedPropKeys.add(keys);
+    }
+    for (var key : sortedPropKeys) {
+      if (elem1.hasProperty(key)) {
+        var prop2 = elem1.getPropertyValue(key);
+        if ((difference = elem1.getPropertyValue(key).compareTo(prop2)) != 0) {
+          return difference;
+        }
+      } else {
+        return -1;
+      }
+    }
     elementComparator = Comparator
         .comparing(e -> e.getGraphIds().toString()); // TODO: better comparison for graphIds
     if ((difference = elementComparator.compare(elem1, elem2)) != 0) {
       return difference;
-    }
-
-    for (var key : elem1.getPropertyKeys()) {
-      elementComparator = Comparator.comparing(e -> e.getPropertyValue(key));
-      if ((difference = elementComparator.compare(elem1, elem2)) != 0) {
-        return difference;
-      }
-    }
-    for (var key : elem2.getPropertyKeys()) {
-      elementComparator = Comparator.comparing(e -> e.getPropertyValue(key));
-      if ((difference = elementComparator.compare(elem1, elem2)) != 0) {
-        return difference;
-      }
     }
     return 0;
   }
@@ -368,7 +385,8 @@ public class TestUtils {
       actualElement.getPropertyKeys().forEach(actualKeys::add);
 
       assertEquals(expectedKeys.size(), actualKeys.size(), String.format(
-          "number of property keys is different size: %d and %d", expectedKeys.size(),
+          "Expected element %s mismatched actual element %s. Number of property keys is different size: %d and %d",
+          expectedElement, actualElement, expectedKeys.size(),
           actualKeys.size()));
 
       Collections.sort(expectedKeys);
@@ -383,8 +401,9 @@ public class TestUtils {
         assertEquals(expectedKey, actualKey, "property key mismatch");
         assertEquals(expectedElement.getPropertyValue(expectedKey),
             actualElement.getPropertyValue(actualKey),
-            String.format("property value mismatch on property %s in element %s",
-                actualKey, actualElement.getLabel()));
+            String.format("Expected element %s mismatched actual element %s."
+                    + "Property value mismatch on property key '%s'.",
+                expectedElement, actualElement, actualKey));
       }
     }
   }
