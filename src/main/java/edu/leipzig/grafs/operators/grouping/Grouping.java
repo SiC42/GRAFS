@@ -79,7 +79,7 @@ public class Grouping<W extends Window> implements GraphToGraphOperatorI {
       AggregateMode mode) {
     var windowedStream = createKeyedWindowedStream(stream, mode);
     return windowedStream.process(
-        new VertexAggregation<W>(vertexGi, vertexAggregationFunctions, mode));
+        new VertexAggregation<>(vertexGi, vertexAggregationFunctions, mode));
   }
 
   private DataStream<EdgeContainer> aggregateOnEdge(DataStream<EdgeContainer> stream) {
@@ -103,8 +103,8 @@ public class Grouping<W extends Window> implements GraphToGraphOperatorI {
     private final GroupingInformation vertexGi;
     private final AggregationMapping vertexAggMap;
 
-    private GroupingInformation edgeGi;
-    private AggregationMapping edgeAggMap;
+    private final GroupingInformation edgeGi;
+    private final AggregationMapping edgeAggMap;
 
     public GroupingBuilder() {
       vertexGi = new GroupingInformation();
