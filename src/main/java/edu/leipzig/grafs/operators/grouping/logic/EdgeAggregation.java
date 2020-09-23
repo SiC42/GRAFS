@@ -27,32 +27,26 @@ public class EdgeAggregation<W extends Window> extends GraphElementAggregationPr
       Collector<EdgeContainer> out) {
     var aggregatedEdge = new Edge();
 
-    int count = 0;
     EdgeContainer lastEc = null;
 
     for (var ec : ecIterable) {
       aggregatedEdge = (Edge) aggregateGraphElement(edgeAggregationMapping, aggregatedEdge,
           ec.getEdge());
-      count++;
       lastEc = ec;
     }
     EdgeContainer aggregatedEContainer;
 
-    // No need for aggregation when only one edge was "aggregated"
-    if (count > 1) {
-      // we have not set the grouped properties yet
-      aggregatedEdge = (Edge) setGroupedProperties(edgeGroupInfo,
-          aggregatedEdge,
-          lastEc.getEdge());
-      var source = lastEc.getSourceVertex();
-      var target = lastEc.getTargetVertex();
-      aggregatedEdge.setSourceId(source.getId());
-      aggregatedEdge.setTargetId(target.getId());
-      aggregatedEContainer = new EdgeContainer(aggregatedEdge, source,
-          target);
-    } else {
-      aggregatedEContainer = lastEc;
-    }
+    // we have not set the grouped properties yet
+    assert lastEc != null;
+    aggregatedEdge = (Edge) setGroupedProperties(edgeGroupInfo,
+        aggregatedEdge,
+        lastEc.getEdge());
+    var source = lastEc.getSourceVertex();
+    var target = lastEc.getTargetVertex();
+    aggregatedEdge.setSourceId(source.getId());
+    aggregatedEdge.setTargetId(target.getId());
+    aggregatedEContainer = new EdgeContainer(aggregatedEdge, source,
+        target);
 
     out.collect(aggregatedEContainer);
 
