@@ -2,6 +2,7 @@ package edu.leipzig.grafs.operators.grouping;
 
 import static edu.leipzig.grafs.util.TestUtils.getSocialNetworkLoader;
 import static edu.leipzig.grafs.util.TestUtils.validateEdgeContainerCollections;
+import static org.gradoop.common.util.GradoopConstants.NULL_STRING;
 
 import edu.leipzig.grafs.model.EdgeContainer;
 import edu.leipzig.grafs.operators.grouping.functions.Count;
@@ -67,6 +68,731 @@ public class GroupingTest {
     while (ecIt.hasNext()) {
       actualEcCol.add(ecIt.next());
     }
+    loader.appendFromString("expected[" +
+        "(pL:Person {city : \"Leipzig\", count : 2L})" +
+        "(pD:Person {city : \"Dresden\", count : 3L})" +
+        "(pB:Person {city : \"Berlin\", count : 1L})" +
+        "(pD)-[:knows {since : 2014, count : 2L}]->(pD)" +
+        "(pD)-[:knows {since : 2013, count : 2L}]->(pL)" +
+        "(pD)-[:knows {since : 2015, count : 1L}]->(pL)" +
+        "(pL)-[:knows {since : 2014, count : 2L}]->(pL)" +
+        "(pL)-[:knows {since : 2013, count : 1L}]->(pD)" +
+        "(pB)-[:knows {since : 2015, count : 2L}]->(pD)" +
+        "]");
+    var expectedEcCol = loader.createEdgeContainersByGraphVariables("expected");
+
+    validateEdgeContainerCollections(expectedEcCol, actualEcCol);
+  }
+
+  @Test
+  public void testVertexPropertySymmetricGraph() throws Exception {
+    AsciiGraphLoader loader = getSocialNetworkLoader();
+
+    var edgeStream = loader.createEdgeStreamByGraphVariables(config, "g2");
+
+    var finalStream = edgeStream
+        .callForStream(
+            Grouping.createGrouping()
+                .addVertexGroupingKey("city")
+                .addVertexAggregateFunction(new Count("count"))
+                .addEdgeAggregateFunction(new Count("count"))
+                .buildWithWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        );
+
+    var ecIt = finalStream.collect();
+    var actualEcCol = new ArrayList<EdgeContainer>();
+    while (ecIt.hasNext()) {
+      actualEcCol.add(ecIt.next());
+    }
+
+    loader.appendFromString("expected[" +
+        "(leipzig {city : \"Leipzig\", count : 2L})" +
+        "(dresden {city : \"Dresden\", count : 2L})" +
+        "(leipzig)-[{count : 2L}]->(leipzig)" +
+        "(leipzig)-[{count : 1L}]->(dresden)" +
+        "(dresden)-[{count : 2L}]->(dresden)" +
+        "(dresden)-[{count : 1L}]->(leipzig)" +
+        "]");
+
+    var expectedEcCol = loader.createEdgeContainersByGraphVariables("expected");
+
+    validateEdgeContainerCollections(expectedEcCol, actualEcCol);
+  }
+
+  @Test
+  public void testSingleVertexProperty() throws Exception {
+    AsciiGraphLoader loader = getSocialNetworkLoader();
+
+    var edgeStream = loader
+        .createEdgeStreamByGraphVariables(config, "g0", "g1", "g2");
+
+    loader.appendFromString("expected[" +
+        "(leipzig {city : \"Leipzig\", count : 2L})" +
+        "(dresden {city : \"Dresden\", count : 3L})" +
+        "(berlin  {city : \"Berlin\",  count : 1L})" +
+        "(dresden)-[{count : 2L}]->(dresden)" +
+        "(dresden)-[{count : 3L}]->(leipzig)" +
+        "(leipzig)-[{count : 2L}]->(leipzig)" +
+        "(leipzig)-[{count : 1L}]->(dresden)" +
+        "(berlin)-[{count : 2L}]->(dresden)" +
+        "]");
+
+    var finalStream = edgeStream
+        .callForStream(
+            Grouping.createGrouping()
+                .addVertexGroupingKey("city")
+                .addVertexAggregateFunction(new Count("count"))
+                .addEdgeAggregateFunction(new Count("count"))
+                .buildWithWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        );
+
+    var ecIt = finalStream.collect();
+    var actualEcCol = new ArrayList<EdgeContainer>();
+    while (ecIt.hasNext()) {
+      actualEcCol.add(ecIt.next());
+    }
+
+    var expectedEcCol = loader.createEdgeContainersByGraphVariables("expected");
+
+    validateEdgeContainerCollections(expectedEcCol, actualEcCol);
+  }
+
+  @Test
+  public void testMultipleVertexProperties() throws Exception {
+    AsciiGraphLoader loader = getSocialNetworkLoader();
+
+    var edgeStream = loader
+        .createEdgeStreamByGraphVariables(config, "g0", "g1", "g2");
+
+    loader.appendFromString("expected[" +
+        "(leipzigF {city : \"Leipzig\", gender : \"f\", count : 1L})" +
+        "(leipzigM {city : \"Leipzig\", gender : \"m\", count : 1L})" +
+        "(dresdenF {city : \"Dresden\", gender : \"f\", count : 2L})" +
+        "(dresdenM {city : \"Dresden\", gender : \"m\", count : 1L})" +
+        "(berlinM  {city : \"Berlin\", gender : \"m\",  count : 1L})" +
+        "(leipzigF)-[{count : 1L}]->(leipzigM)" +
+        "(leipzigM)-[{count : 1L}]->(leipzigF)" +
+        "(leipzigM)-[{count : 1L}]->(dresdenF)" +
+        "(dresdenF)-[{count : 1L}]->(leipzigF)" +
+        "(dresdenF)-[{count : 2L}]->(leipzigM)" +
+        "(dresdenF)-[{count : 1L}]->(dresdenM)" +
+        "(dresdenM)-[{count : 1L}]->(dresdenF)" +
+        "(berlinM)-[{count : 1L}]->(dresdenF)" +
+        "(berlinM)-[{count : 1L}]->(dresdenM)" +
+        "]");
+
+    var finalStream = edgeStream
+        .callForStream(
+            Grouping.createGrouping()
+                .addVertexGroupingKey("city")
+                .addVertexGroupingKey("gender")
+                .addVertexAggregateFunction(new Count("count"))
+                .addEdgeAggregateFunction(new Count("count"))
+                .buildWithWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        );
+
+    var ecIt = finalStream.collect();
+    var actualEcCol = new ArrayList<EdgeContainer>();
+    while (ecIt.hasNext()) {
+      actualEcCol.add(ecIt.next());
+    }
+
+    var expectedEcCol = loader.createEdgeContainersByGraphVariables("expected");
+
+    validateEdgeContainerCollections(expectedEcCol, actualEcCol);
+  }
+
+  @Test
+  public void testSingleVertexPropertyWithAbsentValue() throws Exception {
+    AsciiGraphLoader loader = getSocialNetworkLoader();
+
+    var edgeStream = loader.createEdgeStreamByGraphVariables(config, "g3");
+
+    loader.appendFromString("expected[" +
+        "(dresden {city : \"Dresden\", count : 2L})" +
+        "(others  {city : " + NULL_STRING + ", count : 1L})" +
+        "(others)-[{count : 3L}]->(dresden)" +
+        "(dresden)-[{count : 1L}]->(dresden)" +
+        "]");
+
+    var finalStream = edgeStream
+        .callForStream(
+            Grouping.createGrouping()
+                .addVertexGroupingKey("city")
+                .addVertexAggregateFunction(new Count("count"))
+                .addEdgeAggregateFunction(new Count("count"))
+                .buildWithWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        );
+
+    var ecIt = finalStream.collect();
+    var actualEcCol = new ArrayList<EdgeContainer>();
+    while (ecIt.hasNext()) {
+      actualEcCol.add(ecIt.next());
+    }
+
+    var expectedEcCol = loader.createEdgeContainersByGraphVariables("expected");
+
+    validateEdgeContainerCollections(expectedEcCol, actualEcCol);
+  }
+
+  @Test
+  public void testMultipleVertexPropertiesWithAbsentValue() throws Exception {
+    AsciiGraphLoader loader = getSocialNetworkLoader();
+
+    var edgeStream = loader.createEdgeStreamByGraphVariables(config, "g3");
+
+    loader.appendFromString("expected[" +
+        "(dresdenF {city : \"Dresden\", gender : \"f\", count : 1L})" +
+        "(dresdenM {city : \"Dresden\", gender : \"m\", count : 1L})" +
+        "(others  {city : " + NULL_STRING + ", gender : " + NULL_STRING + ", count : 1L})" +
+        "(others)-[{count : 2L}]->(dresdenM)" +
+        "(others)-[{count : 1L}]->(dresdenF)" +
+        "(dresdenF)-[{count : 1L}]->(dresdenM)" +
+        "]");
+
+    var finalStream = edgeStream
+        .callForStream(
+            Grouping.createGrouping()
+                .addVertexGroupingKey("city")
+                .addVertexGroupingKey("gender")
+                .addVertexAggregateFunction(new Count("count"))
+                .addEdgeAggregateFunction(new Count("count"))
+                .buildWithWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        );
+
+    var ecIt = finalStream.collect();
+    var actualEcCol = new ArrayList<EdgeContainer>();
+    while (ecIt.hasNext()) {
+      actualEcCol.add(ecIt.next());
+    }
+
+    var expectedEcCol = loader.createEdgeContainersByGraphVariables("expected");
+
+    validateEdgeContainerCollections(expectedEcCol, actualEcCol);
+  }
+
+  @Test
+  public void testSingleVertexAndSingleEdgeProperty() throws Exception {
+    AsciiGraphLoader loader = getSocialNetworkLoader();
+
+    var edgeStream = loader
+        .createEdgeStreamByGraphVariables(config, "g0", "g1", "g2");
+
+    loader.appendFromString("expected[" +
+        "(leipzig {city : \"Leipzig\", count : 2L})" +
+        "(dresden {city : \"Dresden\", count : 3L})" +
+        "(berlin  {city : \"Berlin\",  count : 1L})" +
+        "(dresden)-[{since : 2014, count : 2L}]->(dresden)" +
+        "(dresden)-[{since : 2013, count : 2L}]->(leipzig)" +
+        "(dresden)-[{since : 2015, count : 1L}]->(leipzig)" +
+        "(leipzig)-[{since : 2014, count : 2L}]->(leipzig)" +
+        "(leipzig)-[{since : 2013, count : 1L}]->(dresden)" +
+        "(berlin)-[{since : 2015, count : 2L}]->(dresden)" +
+        "]");
+
+    var finalStream = edgeStream
+        .callForStream(
+            Grouping.createGrouping()
+                .addVertexGroupingKey("city")
+                .addEdgeGroupingKey("since")
+                .addVertexAggregateFunction(new Count("count"))
+                .addEdgeAggregateFunction(new Count("count"))
+                .buildWithWindow(TumblingEventTimeWindows.of(Time.milliseconds(10))));
+
+    var ecIt = finalStream.collect();
+    var actualEcCol = new ArrayList<EdgeContainer>();
+    while (ecIt.hasNext()) {
+      actualEcCol.add(ecIt.next());
+    }
+
+    var expectedEcCol = loader.createEdgeContainersByGraphVariables("expected");
+
+    validateEdgeContainerCollections(expectedEcCol, actualEcCol);
+  }
+
+  @Test
+  public void testSingleVertexPropertyAndMultipleEdgeProperties() throws Exception {
+    AsciiGraphLoader loader = AsciiGraphLoader.fromString("" +
+        "input[" +
+        "(v0 {a : 0,b : 0})" +
+        "(v1 {a : 0,b : 1})" +
+        "(v2 {a : 0,b : 1})" +
+        "(v3 {a : 1,b : 0})" +
+        "(v4 {a : 1,b : 1})" +
+        "(v5 {a : 1,b : 0})" +
+        "(v0)-[{a : 0,b : 1}]->(v1)" +
+        "(v0)-[{a : 0,b : 2}]->(v2)" +
+        "(v1)-[{a : 0,b : 3}]->(v2)" +
+        "(v2)-[{a : 0,b : 2}]->(v3)" +
+        "(v2)-[{a : 0,b : 1}]->(v3)" +
+        "(v4)-[{a : 1,b : 2}]->(v2)" +
+        "(v5)-[{a : 1,b : 3}]->(v2)" +
+        "(v3)-[{a : 2,b : 3}]->(v4)" +
+        "(v4)-[{a : 2,b : 1}]->(v5)" +
+        "(v5)-[{a : 2,b : 0}]->(v3)" +
+        "]"
+    );
+
+    loader.appendFromString("expected[" +
+        "(v00 {a : 0,count : 3L})" +
+        "(v01 {a : 1,count : 3L})" +
+        "(v00)-[{a : 0,b : 1,count : 1L}]->(v00)" +
+        "(v00)-[{a : 0,b : 2,count : 1L}]->(v00)" +
+        "(v00)-[{a : 0,b : 3,count : 1L}]->(v00)" +
+        "(v01)-[{a : 2,b : 0,count : 1L}]->(v01)" +
+        "(v01)-[{a : 2,b : 1,count : 1L}]->(v01)" +
+        "(v01)-[{a : 2,b : 3,count : 1L}]->(v01)" +
+        "(v00)-[{a : 0,b : 1,count : 1L}]->(v01)" +
+        "(v00)-[{a : 0,b : 2,count : 1L}]->(v01)" +
+        "(v01)-[{a : 1,b : 2,count : 1L}]->(v00)" +
+        "(v01)-[{a : 1,b : 3,count : 1L}]->(v00)" +
+        "]");
+
+    var edgeStream = loader.createEdgeStreamByGraphVariables(config, "input");
+
+    var finalStream = edgeStream
+        .callForStream(
+            Grouping.createGrouping()
+                .addVertexGroupingKey("a")
+                .addEdgeGroupingKey("a")
+                .addEdgeGroupingKey("b")
+                .addVertexAggregateFunction(new Count("count"))
+                .addEdgeAggregateFunction(new Count("count"))
+                .buildWithWindow(TumblingEventTimeWindows.of(Time.milliseconds(10))));
+
+    var ecIt = finalStream.collect();
+    var actualEcCol = new ArrayList<EdgeContainer>();
+    while (ecIt.hasNext()) {
+      actualEcCol.add(ecIt.next());
+    }
+
+    var expectedEcCol = loader.createEdgeContainersByGraphVariables("expected");
+
+    validateEdgeContainerCollections(expectedEcCol, actualEcCol);
+  }
+
+  @Test
+  public void testMultipleVertexAndMultipleEdgeProperties() throws Exception {
+    AsciiGraphLoader loader = AsciiGraphLoader.fromString("" +
+        "input[" +
+        "(v0 {a : 0,b : 0})" +
+        "(v1 {a : 0,b : 1})" +
+        "(v2 {a : 0,b : 1})" +
+        "(v3 {a : 1,b : 0})" +
+        "(v4 {a : 1,b : 1})" +
+        "(v5 {a : 1,b : 0})" +
+        "(v0)-[{a : 0,b : 1}]->(v1)" +
+        "(v0)-[{a : 0,b : 2}]->(v2)" +
+        "(v1)-[{a : 0,b : 3}]->(v2)" +
+        "(v2)-[{a : 0,b : 2}]->(v3)" +
+        "(v2)-[{a : 0,b : 1}]->(v3)" +
+        "(v4)-[{a : 1,b : 2}]->(v2)" +
+        "(v5)-[{a : 1,b : 3}]->(v2)" +
+        "(v3)-[{a : 2,b : 3}]->(v4)" +
+        "(v4)-[{a : 2,b : 1}]->(v5)" +
+        "(v5)-[{a : 2,b : 0}]->(v3)" +
+        "]"
+    );
+
+    loader.appendFromString("expected[" +
+        "(v00 {a : 0,b : 0,count : 1L})" +
+        "(v01 {a : 0,b : 1,count : 2L})" +
+        "(v10 {a : 1,b : 0,count : 2L})" +
+        "(v11 {a : 1,b : 1,count : 1L})" +
+        "(v00)-[{a : 0,b : 1,count : 1L}]->(v01)" +
+        "(v00)-[{a : 0,b : 2,count : 1L}]->(v01)" +
+        "(v01)-[{a : 0,b : 3,count : 1L}]->(v01)" +
+        "(v01)-[{a : 0,b : 1,count : 1L}]->(v10)" +
+        "(v01)-[{a : 0,b : 2,count : 1L}]->(v10)" +
+        "(v11)-[{a : 2,b : 1,count : 1L}]->(v10)" +
+        "(v10)-[{a : 2,b : 3,count : 1L}]->(v11)" +
+        "(v10)-[{a : 2,b : 0,count : 1L}]->(v10)" +
+        "(v10)-[{a : 1,b : 3,count : 1L}]->(v01)" +
+        "(v11)-[{a : 1,b : 2,count : 1L}]->(v01)" +
+        "]");
+
+    var edgeStream = loader.createEdgeStreamByGraphVariables(config, "input");
+    var finalStream = edgeStream
+        .callForStream(
+            Grouping.createGrouping()
+                .addVertexGroupingKey("a")
+                .addVertexGroupingKey("b")
+                .addEdgeGroupingKey("a")
+                .addEdgeGroupingKey("b")
+                .addVertexAggregateFunction(new Count("count"))
+                .addEdgeAggregateFunction(new Count("count"))
+                .buildWithWindow(TumblingEventTimeWindows.of(Time.milliseconds(10))));
+
+    var ecIt = finalStream.collect();
+    var actualEcCol = new ArrayList<EdgeContainer>();
+    while (ecIt.hasNext()) {
+      actualEcCol.add(ecIt.next());
+    }
+
+    var expectedEcCol = loader.createEdgeContainersByGraphVariables("expected");
+
+    validateEdgeContainerCollections(expectedEcCol, actualEcCol);
+  }
+
+  @Test
+  public void testVertexAndEdgePropertyWithAbsentValues() throws Exception {
+    AsciiGraphLoader loader = getSocialNetworkLoader();
+
+    var edgeStream = loader.createEdgeStreamByGraphVariables(config, "g3");
+
+    loader.appendFromString("expected[" +
+        "(dresden {city : \"Dresden\", count : 2L})" +
+        "(others  {city : " + NULL_STRING + ", count : 1L})" +
+        "(others)-[{since : 2013, count : 1L}]->(dresden)" +
+        "(others)-[{since : " + NULL_STRING + ", count : 2L}]->(dresden)" +
+        "(dresden)-[{since : 2014, count : 1L}]->(dresden)" +
+        "]");
+
+    var finalStream =
+        edgeStream
+            .callForStream(
+                Grouping.createGrouping()
+                    .addVertexGroupingKey("city")
+                    .addEdgeGroupingKey("since")
+                    .addVertexAggregateFunction(new Count("count"))
+                    .addEdgeAggregateFunction(new Count("count"))
+                    .buildWithWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+            );
+
+    var ecIt = finalStream.collect();
+    var actualEcCol = new ArrayList<EdgeContainer>();
+    while (ecIt.hasNext()) {
+      actualEcCol.add(ecIt.next());
+    }
+
+    var expectedEcCol = loader.createEdgeContainersByGraphVariables("expected");
+
+    validateEdgeContainerCollections(expectedEcCol, actualEcCol);
+  }
+
+  @Test
+  public void testVertexLabel() throws Exception {
+    AsciiGraphLoader loader = getSocialNetworkLoader();
+
+    var edgeStream = loader.createEdgeStream(config);
+
+    loader.appendFromString("expected[" +
+        "(p:Person  {count : 6L})" +
+        "(t:Tag     {count : 3L})" +
+        "(f:Forum   {count : 2L})" +
+        "(p)-[{count : 10L}]->(p)" +
+        "(f)-[{count :  6L}]->(p)" +
+        "(p)-[{count :  4L}]->(t)" +
+        "(f)-[{count :  4L}]->(t)" +
+        "]");
+
+    var finalStream = edgeStream
+        .callForStream(
+            Grouping.createGrouping()
+                .useVertexLabel(true)
+                .addVertexAggregateFunction(new Count("count"))
+                .addEdgeAggregateFunction(new Count("count"))
+                .buildWithWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        );
+
+    var ecIt = finalStream.collect();
+    var actualEcCol = new ArrayList<EdgeContainer>();
+    while (ecIt.hasNext()) {
+      actualEcCol.add(ecIt.next());
+    }
+
+    var expectedEcCol = loader.createEdgeContainersByGraphVariables("expected");
+
+    validateEdgeContainerCollections(expectedEcCol, actualEcCol);
+  }
+
+  @Test
+  public void testVertexLabelAndSingleVertexProperty() throws Exception {
+    AsciiGraphLoader loader = getSocialNetworkLoader();
+
+    var edgeStream = loader
+        .createEdgeStreamByGraphVariables(config, "g0", "g1", "g2");
+
+    loader.appendFromString("expected[" +
+        "(l:Person {city : \"Leipzig\", count : 2L})" +
+        "(d:Person {city : \"Dresden\", count : 3L})" +
+        "(b:Person {city : \"Berlin\",  count : 1L})" +
+        "(d)-[{count : 2L}]->(d)" +
+        "(d)-[{count : 3L}]->(l)" +
+        "(l)-[{count : 2L}]->(l)" +
+        "(l)-[{count : 1L}]->(d)" +
+        "(b)-[{count : 2L}]->(d)" +
+        "]");
+
+    var finalStream = edgeStream
+        .callForStream(
+            Grouping.createGrouping()
+                .useVertexLabel(true)
+                .addVertexGroupingKey("city")
+                .addVertexAggregateFunction(new Count("count"))
+                .addEdgeAggregateFunction(new Count("count"))
+                .buildWithWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        );
+
+    var ecIt = finalStream.collect();
+    var actualEcCol = new ArrayList<EdgeContainer>();
+    while (ecIt.hasNext()) {
+      actualEcCol.add(ecIt.next());
+    }
+
+    var expectedEcCol = loader.createEdgeContainersByGraphVariables("expected");
+
+    validateEdgeContainerCollections(expectedEcCol, actualEcCol);
+  }
+
+  @Test
+  public void testVertexLabelAndSingleVertexPropertyWithAbsentValue() throws Exception {
+    AsciiGraphLoader loader = getSocialNetworkLoader();
+
+    var edgeStream = loader.createEdgeStream(config);
+
+    loader.appendFromString("expected[" +
+        "(pL:Person {city : \"Leipzig\", count : 2L})" +
+        "(pD:Person {city : \"Dresden\", count : 3L})" +
+        "(pB:Person {city : \"Berlin\",  count : 1L})" +
+        "(t:Tag {city : " + NULL_STRING + ",   count : 3L})" +
+        "(f:Forum {city : " + NULL_STRING + ", count : 2L})" +
+        "(pD)-[{count : 2L}]->(pD)" +
+        "(pD)-[{count : 3L}]->(pL)" +
+        "(pL)-[{count : 2L}]->(pL)" +
+        "(pL)-[{count : 1L}]->(pD)" +
+        "(pB)-[{count : 2L}]->(pD)" +
+        "(pB)-[{count : 1L}]->(t)" +
+        "(pD)-[{count : 2L}]->(t)" +
+        "(pL)-[{count : 1L}]->(t)" +
+        "(f)-[{count : 3L}]->(pD)" +
+        "(f)-[{count : 3L}]->(pL)" +
+        "(f)-[{count : 4L}]->(t)" +
+        "]");
+
+    var finalStream = edgeStream
+        .callForStream(
+            Grouping.createGrouping()
+                .useVertexLabel(true)
+                .addVertexGroupingKey("city")
+                .addVertexAggregateFunction(new Count("count"))
+                .addEdgeAggregateFunction(new Count("count"))
+                .buildWithWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        );
+
+    var ecIt = finalStream.collect();
+    var actualEcCol = new ArrayList<EdgeContainer>();
+    while (ecIt.hasNext()) {
+      actualEcCol.add(ecIt.next());
+    }
+
+    var expectedEcCol = loader.createEdgeContainersByGraphVariables("expected");
+
+    validateEdgeContainerCollections(expectedEcCol, actualEcCol);
+  }
+
+  @Test
+  public void testVertexLabelAndSingleEdgeProperty() throws Exception {
+    AsciiGraphLoader loader = getSocialNetworkLoader();
+
+    var edgeStream = loader
+        .createEdgeStreamByGraphVariables(config, "g0", "g1", "g2");
+
+    loader.appendFromString("expected[" +
+        "(p:Person {count : 6L})" +
+        "(p)-[{since : 2014, count : 4L}]->(p)" +
+        "(p)-[{since : 2013, count : 3L}]->(p)" +
+        "(p)-[{since : 2015, count : 3L}]->(p)" +
+        "]");
+
+    var finalStream = edgeStream
+        .callForStream(
+            Grouping.createGrouping()
+                .useVertexLabel(true)
+                .addEdgeGroupingKey("since")
+                .addVertexAggregateFunction(new Count("count"))
+                .addEdgeAggregateFunction(new Count("count"))
+                .buildWithWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        );
+
+    var ecIt = finalStream.collect();
+    var actualEcCol = new ArrayList<EdgeContainer>();
+    while (ecIt.hasNext()) {
+      actualEcCol.add(ecIt.next());
+    }
+
+    var expectedEcCol = loader.createEdgeContainersByGraphVariables("expected");
+
+    validateEdgeContainerCollections(expectedEcCol, actualEcCol);
+  }
+
+  @Test
+  public void testVertexLabelAndSingleEdgePropertyWithAbsentValue() throws Exception {
+    AsciiGraphLoader loader = getSocialNetworkLoader();
+
+    var edgeStream = loader.createEdgeStream(config);
+
+    loader.appendFromString("expected[" +
+        "(p:Person  {count : 6L})" +
+        "(t:Tag     {count : 3L})" +
+        "(f:Forum   {count : 2L})" +
+        "(p)-[{since : 2014, count : 4L}]->(p)" +
+        "(p)-[{since : 2013, count : 3L}]->(p)" +
+        "(p)-[{since : 2015, count : 3L}]->(p)" +
+        "(f)-[{since : 2013, count : 1L}]->(p)" +
+        "(p)-[{since : " + NULL_STRING + ", count : 4L}]->(t)" +
+        "(f)-[{since : " + NULL_STRING + ", count : 4L}]->(t)" +
+        "(f)-[{since : " + NULL_STRING + ", count : 5L}]->(p)" +
+        "]");
+
+    var finalStream = edgeStream
+        .callForStream(
+            Grouping.createGrouping()
+                .useVertexLabel(true)
+                .addEdgeGroupingKey("since")
+                .addVertexAggregateFunction(new Count("count"))
+                .addEdgeAggregateFunction(new Count("count"))
+                .buildWithWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        );
+
+    var ecIt = finalStream.collect();
+    var actualEcCol = new ArrayList<EdgeContainer>();
+    while (ecIt.hasNext()) {
+      actualEcCol.add(ecIt.next());
+    }
+
+    var expectedEcCol = loader.createEdgeContainersByGraphVariables("expected");
+
+    validateEdgeContainerCollections(expectedEcCol, actualEcCol);
+  }
+
+  @Test
+  public void testVertexLabelAndSingleVertexAndSingleEdgeProperty() throws Exception {
+    AsciiGraphLoader loader = getSocialNetworkLoader();
+
+    var edgeStream = loader
+        .createEdgeStreamByGraphVariables(config, "g0", "g1", "g2");
+
+    loader.appendFromString("expected[" +
+        "(l:Person {city : \"Leipzig\", count : 2L})" +
+        "(d:Person {city : \"Dresden\", count : 3L})" +
+        "(b:Person {city : \"Berlin\",  count : 1L})" +
+        "(d)-[{since : 2014, count : 2L}]->(d)" +
+        "(d)-[{since : 2013, count : 2L}]->(l)" +
+        "(d)-[{since : 2015, count : 1L}]->(l)" +
+        "(l)-[{since : 2014, count : 2L}]->(l)" +
+        "(l)-[{since : 2013, count : 1L}]->(d)" +
+        "(b)-[{since : 2015, count : 2L}]->(d)" +
+        "]");
+
+    var finalStream = edgeStream
+        .callForStream(
+            Grouping.createGrouping()
+                .useVertexLabel(true)
+                .addVertexGroupingKey("city")
+                .addEdgeGroupingKey("since")
+                .addVertexAggregateFunction(new Count("count"))
+                .addEdgeAggregateFunction(new Count("count"))
+                .buildWithWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        );
+
+    var ecIt = finalStream.collect();
+    var actualEcCol = new ArrayList<EdgeContainer>();
+    while (ecIt.hasNext()) {
+      actualEcCol.add(ecIt.next());
+    }
+
+    var expectedEcCol = loader.createEdgeContainersByGraphVariables("expected");
+
+    validateEdgeContainerCollections(expectedEcCol, actualEcCol);
+
+  }
+
+  @Test
+  public void testVertexAndEdgeLabel() throws Exception {
+    AsciiGraphLoader loader = getSocialNetworkLoader();
+
+    var edgeStream = loader.createEdgeStream(config);
+
+    loader.appendFromString("expected[" +
+        "(p:Person  {count : 6L})" +
+        "(t:Tag     {count : 3L})" +
+        "(f:Forum   {count : 2L})" +
+        "(f)-[:hasModerator {count :  2L}]->(p)" +
+        "(p)-[:hasInterest  {count :  4L}]->(t)" +
+        "(f)-[:hasMember    {count :  4L}]->(p)" +
+        "(f)-[:hasTag       {count :  4L}]->(t)" +
+        "(p)-[:knows        {count : 10L}]->(p)" +
+        "]");
+
+    var finalStream = edgeStream
+        .callForStream(
+            Grouping.createGrouping()
+                .useVertexLabel(true)
+                .useEdgeLabel(true)
+
+                .addVertexAggregateFunction(new Count("count"))
+                .addEdgeAggregateFunction(new Count("count"))
+                .buildWithWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        );
+
+    var ecIt = finalStream.collect();
+    var actualEcCol = new ArrayList<EdgeContainer>();
+    while (ecIt.hasNext()) {
+      actualEcCol.add(ecIt.next());
+    }
+
+    var expectedEcCol = loader.createEdgeContainersByGraphVariables("expected");
+
+    validateEdgeContainerCollections(expectedEcCol, actualEcCol);
+  }
+
+  @Test
+  public void testVertexAndEdgeLabelAndSingleVertexProperty() throws Exception {
+    AsciiGraphLoader loader = getSocialNetworkLoader();
+
+    var edgeStream = loader
+        .createEdgeStreamByGraphVariables(config, "g0", "g1", "g2");
+
+    loader.appendFromString("expected[" +
+        "(l:Person {city : \"Leipzig\", count : 2L})" +
+        "(d:Person {city : \"Dresden\", count : 3L})" +
+        "(b:Person {city : \"Berlin\",  count : 1L})" +
+        "(d)-[:knows {count : 2L}]->(d)" +
+        "(d)-[:knows {count : 3L}]->(l)" +
+        "(l)-[:knows {count : 2L}]->(l)" +
+        "(l)-[:knows {count : 1L}]->(d)" +
+        "(b)-[:knows {count : 2L}]->(d)" +
+        "]");
+
+    var finalStream = edgeStream
+        .callForStream(
+            Grouping.createGrouping()
+                .addVertexGroupingKey("city")
+                .useVertexLabel(true)
+                .useEdgeLabel(true)
+                .addVertexAggregateFunction(new Count("count"))
+                .addEdgeAggregateFunction(new Count("count"))
+                .buildWithWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        );
+
+    var ecIt = finalStream.collect();
+    var actualEcCol = new ArrayList<EdgeContainer>();
+    while (ecIt.hasNext()) {
+      actualEcCol.add(ecIt.next());
+    }
+
+    var expectedEcCol = loader.createEdgeContainersByGraphVariables("expected");
+
+    validateEdgeContainerCollections(expectedEcCol, actualEcCol);
+  }
+
+  @Test
+  public void testVertexAndEdgeLabelAndVertexAndSingleEdgeProperty() throws Exception {
+    AsciiGraphLoader loader = getSocialNetworkLoader();
+
+    var edgeStream = loader
+        .createEdgeStreamByGraphVariables(config, "g0", "g1", "g2");
 
     loader.appendFromString("expected[" +
         "(pL:Person {city : \"Leipzig\", count : 2L})" +
@@ -78,6 +804,213 @@ public class GroupingTest {
         "(pL)-[:knows {since : 2014, count : 2L}]->(pL)" +
         "(pL)-[:knows {since : 2013, count : 1L}]->(pD)" +
         "(pB)-[:knows {since : 2015, count : 2L}]->(pD)" +
+        "]");
+
+    var finalStream = edgeStream
+        .callForStream(
+            Grouping.createGrouping()
+                .addVertexGroupingKey("city")
+                .addEdgeGroupingKey("since")
+                .useVertexLabel(true)
+                .useEdgeLabel(true)
+                .addVertexAggregateFunction(new Count("count"))
+                .addEdgeAggregateFunction(new Count("count"))
+                .buildWithWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        );
+    var ecIt = finalStream.collect();
+    var actualEcCol = new ArrayList<EdgeContainer>();
+    while (ecIt.hasNext()) {
+      actualEcCol.add(ecIt.next());
+    }
+
+    var expectedEcCol = loader.createEdgeContainersByGraphVariables("expected");
+
+    validateEdgeContainerCollections(expectedEcCol, actualEcCol);
+  }
+
+  @Test
+  public void testVertexAndEdgeLabelAndSingleVertexPropertyWithAbsentValue() throws Exception {
+    AsciiGraphLoader loader = getSocialNetworkLoader();
+
+    var edgeStream = loader.createEdgeStream(config);
+
+    loader.appendFromString("expected[" +
+        "(pL:Person {city : \"Leipzig\", count : 2L})" +
+        "(pD:Person {city : \"Dresden\", count : 3L})" +
+        "(pB:Person {city : \"Berlin\", count : 1L})" +
+        "(t:Tag   {city : " + NULL_STRING + ", count : 3L})" +
+        "(f:Forum {city : " + NULL_STRING + ", count : 2L})" +
+        "(pD)-[:knows {count : 2L}]->(pD)" +
+        "(pD)-[:knows {count : 3L}]->(pL)" +
+        "(pL)-[:knows {count : 2L}]->(pL)" +
+        "(pL)-[:knows {count : 1L}]->(pD)" +
+        "(pB)-[:knows {count : 2L}]->(pD)" +
+        "(pB)-[:hasInterest {count : 1L}]->(t)" +
+        "(pD)-[:hasInterest {count : 2L}]->(t)" +
+        "(pL)-[:hasInterest {count : 1L}]->(t)" +
+        "(f)-[:hasModerator {count : 1L}]->(pD)" +
+        "(f)-[:hasModerator {count : 1L}]->(pL)" +
+        "(f)-[:hasMember {count : 2L}]->(pD)" +
+        "(f)-[:hasMember {count : 2L}]->(pL)" +
+        "(f)-[:hasTag {count : 4L}]->(t)" +
+        "]");
+
+    var finalStream = edgeStream
+        .callForStream(
+            Grouping.createGrouping()
+                .addVertexGroupingKey("city")
+                .useVertexLabel(true)
+                .useEdgeLabel(true)
+                .addVertexAggregateFunction(new Count("count"))
+                .addEdgeAggregateFunction(new Count("count"))
+                .buildWithWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        );
+
+    var ecIt = finalStream.collect();
+    var actualEcCol = new ArrayList<EdgeContainer>();
+    while (ecIt.hasNext()) {
+      actualEcCol.add(ecIt.next());
+    }
+
+    var expectedEcCol = loader.createEdgeContainersByGraphVariables("expected");
+
+    validateEdgeContainerCollections(expectedEcCol, actualEcCol);
+  }
+
+  @Test
+  public void testVertexAndEdgeLabelAndSingleEdgeProperty() throws Exception {
+    AsciiGraphLoader loader = getSocialNetworkLoader();
+
+    var edgeStream = loader
+        .createEdgeStreamByGraphVariables(config, "g0", "g1", "g2");
+
+    loader.appendFromString("expected[" +
+        "(p:Person {count : 6L})" +
+        "(p)-[:knows {since : 2013, count : 3L}]->(p)" +
+        "(p)-[:knows {since : 2014, count : 4L}]->(p)" +
+        "(p)-[:knows {since : 2015, count : 3L}]->(p)" +
+        "]");
+
+    var finalStream = edgeStream
+        .callForStream(
+            Grouping.createGrouping()
+                .addEdgeGroupingKey("since")
+                .useVertexLabel(true)
+                .useEdgeLabel(true)
+                .addVertexAggregateFunction(new Count("count"))
+                .addEdgeAggregateFunction(new Count("count"))
+                .buildWithWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        );
+
+    var ecIt = finalStream.collect();
+    var actualEcCol = new ArrayList<EdgeContainer>();
+    while (ecIt.hasNext()) {
+      actualEcCol.add(ecIt.next());
+    }
+
+    var expectedEcCol = loader.createEdgeContainersByGraphVariables("expected");
+
+    validateEdgeContainerCollections(expectedEcCol, actualEcCol);
+  }
+
+  @Test
+  public void testVertexAndEdgeLabelAndSingleEdgePropertyWithAbsentValue() throws Exception {
+    AsciiGraphLoader loader = getSocialNetworkLoader();
+
+    var edgeStream = loader.createEdgeStream(config);
+
+    loader.appendFromString("expected[" +
+        "(p:Person  {count : 6L})" +
+        "(t:Tag     {count : 3L})" +
+        "(f:Forum   {count : 2L})" +
+        "(p)-[:knows {since : 2014, count : 4L}]->(p)" +
+        "(p)-[:knows {since : 2013, count : 3L}]->(p)" +
+        "(p)-[:knows {since : 2015, count : 3L}]->(p)" +
+        "(f)-[:hasModerator {since : 2013, count : 1L}]->(p)" +
+        "(f)-[:hasModerator {since : " + NULL_STRING + ", count : 1L}]->(p)" +
+        "(p)-[:hasInterest  {since : " + NULL_STRING + ", count : 4L}]->(t)" +
+        "(f)-[:hasMember    {since : " + NULL_STRING + ", count : 4L}]->(p)" +
+        "(f)-[:hasTag       {since : " + NULL_STRING + ", count : 4L}]->(t)" +
+
+        "]");
+
+    var finalStream = edgeStream
+        .callForStream(
+            Grouping.createGrouping()
+                .addEdgeGroupingKey("since")
+                .useVertexLabel(true)
+                .useEdgeLabel(true)
+                .addVertexAggregateFunction(new Count("count"))
+                .addEdgeAggregateFunction(new Count("count"))
+
+                .buildWithWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        );
+
+    var ecIt = finalStream.collect();
+    var actualEcCol = new ArrayList<EdgeContainer>();
+    while (ecIt.hasNext()) {
+      actualEcCol.add(ecIt.next());
+    }
+
+    var expectedEcCol = loader.createEdgeContainersByGraphVariables("expected");
+
+    validateEdgeContainerCollections(expectedEcCol, actualEcCol);
+  }
+
+  @Test
+  public void testVertexAndEdgeLabelAndSingleVertexAndSingleEdgePropertyWithAbsentValue()
+      throws Exception {
+    AsciiGraphLoader loader = getSocialNetworkLoader();
+
+    var edgeStream = loader.createEdgeStream(config);
+
+    loader.appendFromString("expected[" +
+        "(pL:Person {city : \"Leipzig\", count : 2L})" +
+        "(pD:Person {city : \"Dresden\", count : 3L})" +
+        "(pB:Person {city : \"Berlin\", count : 1L})" +
+        "(t:Tag   {city : " + NULL_STRING + ", count : 3L})" +
+        "(f:Forum {city : " + NULL_STRING + ", count : 2L})" +
+        "(pD)-[:knows {since : 2014, count : 2L}]->(pD)" +
+        "(pD)-[:knows {since : 2013, count : 2L}]->(pL)" +
+        "(pD)-[:knows {since : 2015, count : 1L}]->(pL)" +
+        "(pL)-[:knows {since : 2014, count : 2L}]->(pL)" +
+        "(pL)-[:knows {since : 2013, count : 1L}]->(pD)" +
+        "(pB)-[:knows {since : 2015, count : 2L}]->(pD)" +
+        "(pB)-[:hasInterest {since : " + NULL_STRING + ", count : 1L}]->(t)" +
+        "(pD)-[:hasInterest {since : " + NULL_STRING + ", count : 2L}]->(t)" +
+        "(pL)-[:hasInterest {since : " + NULL_STRING + ", count : 1L}]->(t)" +
+        "(f)-[:hasModerator {since : 2013, count : 1L}]->(pD)" +
+        "(f)-[:hasModerator {since : " + NULL_STRING + ", count : 1L}]->(pL)" +
+        "(f)-[:hasMember {since : " + NULL_STRING + ", count : 2L}]->(pD)" +
+        "(f)-[:hasMember {since : " + NULL_STRING + ", count : 2L}]->(pL)" +
+        "(f)-[:hasTag {since : " + NULL_STRING + ", count : 4L}]->(t)" +
+        "]");
+
+    var finalStream =
+        edgeStream
+            .callForStream(
+                Grouping.createGrouping()
+                    .addVertexGroupingKey("city")
+                    .addEdgeGroupingKey("since")
+                    .useVertexLabel(true)
+                    .useEdgeLabel(true)
+                    .addVertexAggregateFunction(new Count("count"))
+                    .addEdgeAggregateFunction(new Count("count"))
+
+                    .buildWithWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+            );
+
+    var ecIt = finalStream.collect();
+    var actualEcCol = new ArrayList<EdgeContainer>();
+    while (ecIt.hasNext()) {
+      actualEcCol.add(ecIt.next());
+    }
+
+    var expectedEcCol = loader.createEdgeContainersByGraphVariables("expected");
+
+    validateEdgeContainerCollections(expectedEcCol, actualEcCol);
+  }
+
         "]");
     var expectedEcCol = loader.createEdgeContainersByGraphVariables("expected");
 
