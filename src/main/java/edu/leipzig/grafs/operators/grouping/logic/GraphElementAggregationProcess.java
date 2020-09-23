@@ -37,7 +37,11 @@ public abstract class GraphElementAggregationProcess<W extends Window> extends
         emptyElem.setLabel(masterElem.getLabel());
       }
       for (var key : groupInfo.getKeys()) {
-        emptyElem.setProperty(key, masterElem.getPropertyValue(key));
+        if (masterElem.hasProperty(key)) {
+          emptyElem.setProperty(key, masterElem.getPropertyValue(key));
+        } else {
+          emptyElem.setProperty(key, PropertyValue.NULL_VALUE);
+        }
       }
     } else { // null means we group over everything, so copy all information out of master
       emptyElem.setLabel(masterElem.getLabel());
