@@ -3,6 +3,7 @@ package edu.leipzig.grafs.model;
 import edu.leipzig.grafs.factory.EdgeFactory;
 import edu.leipzig.grafs.factory.VertexFactory;
 import java.util.Objects;
+import org.gradoop.common.model.impl.id.GradoopId;
 
 public class EdgeContainer {
 
@@ -53,6 +54,12 @@ public class EdgeContainer {
 
   public Vertex getTargetVertex() {
     return targetVertex;
+  }
+
+  public void addGraphId(GradoopId graphId) {
+    this.edge.addGraphId(graphId);
+    this.sourceVertex.addGraphId(graphId);
+    this.targetVertex.addGraphId(graphId);
   }
 
   public EdgeContainer createReverseEdgeContainer() {
