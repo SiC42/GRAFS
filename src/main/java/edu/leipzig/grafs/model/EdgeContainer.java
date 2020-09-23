@@ -8,6 +8,7 @@ import java.util.Objects;
 
 public class EdgeContainer implements Serializable {
 
+  private static final long serialVersionUID = 547531514201914518L;
   private Edge edge;
   private Vertex sourceVertex;
   private Vertex targetVertex;
