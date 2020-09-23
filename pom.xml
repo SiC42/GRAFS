@@ -165,7 +165,7 @@ under the License.
 
     <!-- Add GRADOOP and GDL -->
     <dependency>
-      <artifactId>gradoop-flink</artifactId>
+      <artifactId>gradoop-common</artifactId>
       <groupId>org.gradoop</groupId>
       <version>0.6.0-SNAPSHOT</version>
     </dependency>
