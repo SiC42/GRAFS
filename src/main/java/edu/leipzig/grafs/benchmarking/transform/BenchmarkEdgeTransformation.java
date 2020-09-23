@@ -4,12 +4,14 @@ import edu.leipzig.grafs.benchmarking.functions.MapFunctionWithMeter;
 import edu.leipzig.grafs.model.Edge;
 import edu.leipzig.grafs.model.EdgeContainer;
 import edu.leipzig.grafs.operators.transform.EdgeTransformation;
+import java.io.IOException;
 import org.apache.flink.api.common.functions.MapFunction;
-import org.apache.flink.metrics.Meter;
 
 public class BenchmarkEdgeTransformation extends EdgeTransformation {
 
-  private transient Meter meter;
+  protected BenchmarkEdgeTransformation() {
+    super(null);
+  }
 
   public BenchmarkEdgeTransformation(MapFunction<Edge, Edge> mapper) {
     this(mapper, "edgeTransformationMeter");
@@ -23,6 +25,16 @@ public class BenchmarkEdgeTransformation extends EdgeTransformation {
         return ecMapper.map(ec);
       }
     };
+  }
+
+  private void writeObject(java.io.ObjectOutputStream out)
+      throws IOException {
+    out.writeObject(ecMapper);
+  }
+
+  @SuppressWarnings("unchecked")
+  private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
+    this.ecMapper = (MapFunction<EdgeContainer, EdgeContainer>) in.readObject();
   }
 
 
