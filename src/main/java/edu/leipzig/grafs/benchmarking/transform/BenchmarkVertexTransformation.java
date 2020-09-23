@@ -38,7 +38,6 @@ public class BenchmarkVertexTransformation extends VertexTransformation implemen
   @SuppressWarnings("unchecked")
   private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
     this.ecMapper = (MapFunction<EdgeContainer, EdgeContainer>) in.readObject();
-
   }
 
 }
