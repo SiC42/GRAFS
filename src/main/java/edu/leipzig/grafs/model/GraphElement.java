@@ -15,6 +15,7 @@ public abstract class GraphElement extends Element {
    */
   public GraphElement() {
     super();
+    graphIds = new GradoopIdSet();
   }
 
   /**
