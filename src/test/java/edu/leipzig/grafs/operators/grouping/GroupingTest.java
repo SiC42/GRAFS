@@ -6,6 +6,7 @@ import static org.gradoop.common.util.GradoopConstants.NULL_STRING;
 
 import edu.leipzig.grafs.model.EdgeContainer;
 import edu.leipzig.grafs.operators.grouping.functions.Count;
+import edu.leipzig.grafs.operators.grouping.functions.SumProperty;
 import edu.leipzig.grafs.operators.grouping.model.GroupingInformation;
 import edu.leipzig.grafs.util.AsciiGraphLoader;
 import edu.leipzig.grafs.util.FlinkConfig;
@@ -1011,7 +1012,257 @@ public class GroupingTest {
     validateEdgeContainerCollections(expectedEcCol, actualEcCol);
   }
 
+  //----------------------------------------------------------------------------
+  // Tests for aggregate functions
+  //----------------------------------------------------------------------------
+
+  @Test
+  public void testNoAggregate() throws Exception {
+    AsciiGraphLoader loader = AsciiGraphLoader.fromString("input[" +
+        "(v0:Blue {a : 3})" +
+        "(v1:Blue {a : 2})" +
+        "(v2:Blue {a : 4})" +
+        "(v3:Red  {a : 4})" +
+        "(v4:Red  {a : 2})" +
+        "(v5:Red  {a : 4})" +
+        "(v0)-[{b : 2}]->(v1)" +
+        "(v0)-[{b : 1}]->(v2)" +
+        "(v1)-[{b : 2}]->(v2)" +
+        "(v2)-[{b : 3}]->(v3)" +
+        "(v2)-[{b : 1}]->(v3)" +
+        "(v3)-[{b : 3}]->(v4)" +
+        "(v4)-[{b : 1}]->(v5)" +
+        "(v5)-[{b : 1}]->(v3)" +
         "]");
+
+    var edgeStream = loader.createEdgeStreamByGraphVariables(config, "input");
+
+    loader.appendFromString("expected[" +
+        "(v00:Blue)" +
+        "(v01:Red)" +
+        "(v00)-->(v00)" +
+        "(v00)-->(v01)" +
+        "(v01)-->(v01)" +
+        "]");
+
+    var finalStream =
+        edgeStream
+            .callForStream(
+                Grouping.createGrouping()
+                    .useVertexLabel(true)
+                    .buildWithWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+            );
+
+    var ecIt = finalStream.collect();
+    var actualEcCol = new ArrayList<EdgeContainer>();
+    while (ecIt.hasNext()) {
+      actualEcCol.add(ecIt.next());
+    }
+
+    var expectedEcCol = loader.createEdgeContainersByGraphVariables("expected");
+
+    validateEdgeContainerCollections(expectedEcCol, actualEcCol);
+  }
+
+  @Test
+  public void testCount() throws Exception {
+    AsciiGraphLoader loader = AsciiGraphLoader.fromString("input[" +
+        "(v0:Blue {a : 3})" +
+        "(v1:Blue {a : 2})" +
+        "(v2:Blue {a : 4})" +
+        "(v3:Red  {a : 4})" +
+        "(v4:Red  {a : 2})" +
+        "(v5:Red  {a : 4})" +
+        "(v0)-[{b : 2}]->(v1)" +
+        "(v0)-[{b : 1}]->(v2)" +
+        "(v1)-[{b : 2}]->(v2)" +
+        "(v2)-[{b : 3}]->(v3)" +
+        "(v2)-[{b : 1}]->(v3)" +
+        "(v3)-[{b : 3}]->(v4)" +
+        "(v4)-[{b : 1}]->(v5)" +
+        "(v5)-[{b : 1}]->(v3)" +
+        "]");
+
+    var edgeStream = loader.createEdgeStreamByGraphVariables(config, "input");
+
+    loader.appendFromString("expected[" +
+        "(v00:Blue {count : 3L})" +
+        "(v01:Red  {count : 3L})" +
+        "(v00)-[{count : 3L}]->(v00)" +
+        "(v00)-[{count : 2L}]->(v01)" +
+        "(v01)-[{count : 3L}]->(v01)" +
+        "]");
+
+    var finalStream =
+        edgeStream
+            .callForStream(
+                Grouping.createGrouping()
+                    .useVertexLabel(true)
+                    .addVertexAggregateFunction(new Count("count"))
+                    .addEdgeAggregateFunction(new Count("count"))
+
+                    .buildWithWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+            );
+
+    var ecIt = finalStream.collect();
+    var actualEcCol = new ArrayList<EdgeContainer>();
+    while (ecIt.hasNext()) {
+      actualEcCol.add(ecIt.next());
+    }
+
+    var expectedEcCol = loader.createEdgeContainersByGraphVariables("expected");
+
+    validateEdgeContainerCollections(expectedEcCol, actualEcCol);
+  }
+
+  @Test
+  public void testSum() throws Exception {
+    AsciiGraphLoader loader = AsciiGraphLoader.fromString("input[" +
+        "(v0:Blue {a : 3})" +
+        "(v1:Blue {a : 2})" +
+        "(v2:Blue {a : 4})" +
+        "(v3:Red  {a : 4})" +
+        "(v4:Red  {a : 2})" +
+        "(v5:Red  {a : 4})" +
+        "(v0)-[{b : 2}]->(v1)" +
+        "(v0)-[{b : 1}]->(v2)" +
+        "(v1)-[{b : 2}]->(v2)" +
+        "(v2)-[{b : 3}]->(v3)" +
+        "(v2)-[{b : 1}]->(v3)" +
+        "(v3)-[{b : 3}]->(v4)" +
+        "(v4)-[{b : 1}]->(v5)" +
+        "(v5)-[{b : 1}]->(v3)" +
+        "]");
+
+    var edgeStream = loader.createEdgeStreamByGraphVariables(config, "input");
+
+    loader.appendFromString("expected[" +
+        "(v00:Blue {sumA :  9})" +
+        "(v01:Red  {sumA : 10})" +
+        "(v00)-[{sumB : 5}]->(v00)" +
+        "(v00)-[{sumB : 4}]->(v01)" +
+        "(v01)-[{sumB : 5}]->(v01)" +
+        "]");
+
+    var finalStream =
+        edgeStream
+            .callForStream(
+                Grouping.createGrouping()
+                    .useVertexLabel(true)
+                    .addVertexAggregateFunction(new SumProperty("a", "sumA"))
+                    .addEdgeAggregateFunction(new SumProperty("b", "sumB"))
+
+                    .buildWithWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+            );
+
+    var ecIt = finalStream.collect();
+    var actualEcCol = new ArrayList<EdgeContainer>();
+    while (ecIt.hasNext()) {
+      actualEcCol.add(ecIt.next());
+    }
+
+    var expectedEcCol = loader.createEdgeContainersByGraphVariables("expected");
+
+    validateEdgeContainerCollections(expectedEcCol, actualEcCol);
+  }
+
+  @Test
+  public void testSumWithMissingValue() throws Exception {
+    AsciiGraphLoader loader = AsciiGraphLoader.fromString("input[" +
+        "(v0:Blue {a : 3})" +
+        "(v1:Blue)" +
+        "(v2:Blue {a : 4})" +
+        "(v3:Red  {a : 4})" +
+        "(v4:Red  {a : 2})" +
+        "(v5:Red  {a : 4})" +
+        "(v0)-->(v1)" +
+        "(v0)-[{b : 1}]->(v2)" +
+        "(v1)-[{b : 2}]->(v2)" +
+        "(v2)-[{b : 3}]->(v3)" +
+        "(v2)-[{b : 1}]->(v3)" +
+        "(v3)-[{b : 3}]->(v4)" +
+        "(v4)-[{b : 1}]->(v5)" +
+        "(v5)-[{b : 1}]->(v3)" +
+        "]");
+
+    var edgeStream = loader.createEdgeStreamByGraphVariables(config, "input");
+
+    loader.appendFromString("expected[" +
+        "(v00:Blue {sumA :  7})" +
+        "(v01:Red  {sumA : 10})" +
+        "(v00)-[{sumB : 3}]->(v00)" +
+        "(v00)-[{sumB : 4}]->(v01)" +
+        "(v01)-[{sumB : 5}]->(v01)" +
+        "]");
+
+    var finalStream =
+        edgeStream
+            .callForStream(
+                Grouping.createGrouping()
+                    .useVertexLabel(true)
+                    .addVertexAggregateFunction(new SumProperty("a", "sumA"))
+                    .addEdgeAggregateFunction(new SumProperty("b", "sumB"))
+
+                    .buildWithWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+            );
+
+    var ecIt = finalStream.collect();
+    var actualEcCol = new ArrayList<EdgeContainer>();
+    while (ecIt.hasNext()) {
+      actualEcCol.add(ecIt.next());
+    }
+
+    var expectedEcCol = loader.createEdgeContainersByGraphVariables("expected");
+
+    validateEdgeContainerCollections(expectedEcCol, actualEcCol);
+  }
+
+  @Test
+  public void testSumWithMissingValues() throws Exception {
+    AsciiGraphLoader loader = AsciiGraphLoader.fromString("input[" +
+        "(v0:Blue)" +
+        "(v1:Blue)" +
+        "(v2:Blue)" +
+        "(v3:Red)" +
+        "(v4:Red)" +
+        "(v5:Red)" +
+        "(v0)-->(v1)" +
+        "(v0)-->(v2)" +
+        "(v1)-->(v2)" +
+        "(v2)-->(v3)" +
+        "(v2)-->(v3)" +
+        "(v3)-->(v4)" +
+        "(v4)-->(v5)" +
+        "(v5)-->(v3)" +
+        "]");
+
+    var edgeStream = loader.createEdgeStreamByGraphVariables(config, "input");
+
+    loader.appendFromString("expected[" +
+        "(v00:Blue {sumA :  " + NULL_STRING + "})" +
+        "(v01:Red  {sumA :  " + NULL_STRING + "})" +
+        "(v00)-[{sumB : " + NULL_STRING + "}]->(v00)" +
+        "(v00)-[{sumB : " + NULL_STRING + "}]->(v01)" +
+        "(v01)-[{sumB : " + NULL_STRING + "}]->(v01)" +
+        "]");
+
+    var finalStream =
+        edgeStream
+            .callForStream(
+                Grouping.createGrouping()
+                    .useVertexLabel(true)
+                    .addVertexAggregateFunction(new SumProperty("a", "sumA"))
+                    .addEdgeAggregateFunction(new SumProperty("b", "sumB"))
+
+                    .buildWithWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+            );
+
+    var ecIt = finalStream.collect();
+    var actualEcCol = new ArrayList<EdgeContainer>();
+    while (ecIt.hasNext()) {
+      actualEcCol.add(ecIt.next());
+    }
+
     var expectedEcCol = loader.createEdgeContainersByGraphVariables("expected");
 
     validateEdgeContainerCollections(expectedEcCol, actualEcCol);
