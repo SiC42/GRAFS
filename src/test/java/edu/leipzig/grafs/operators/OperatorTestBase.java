@@ -32,7 +32,7 @@ public abstract class OperatorTestBase {
   /**
    * Flink Execution Environment
    */
-  private StreamExecutionEnvironment env;
+  private final StreamExecutionEnvironment env;
 
   /**
    * Gradoop Flink configuration
