@@ -1,4 +1,4 @@
-package edu.leipzig.grafs.operators.grouping.model;
+package edu.leipzig.grafs.operators.grouping.functions;
 
 import java.io.Serializable;
 import java.util.function.BiFunction;

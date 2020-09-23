@@ -1,5 +1,7 @@
 package edu.leipzig.grafs.operators.grouping.model;
 
+import edu.leipzig.grafs.operators.grouping.functions.PropertiesAggregationFunction;
+
 public class AggregationMappingEntry {
 
   private final String propertyKey;

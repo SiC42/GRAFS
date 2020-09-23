@@ -1,6 +1,7 @@
 package edu.leipzig.grafs.operators.grouping;
 
 import edu.leipzig.grafs.model.EdgeContainer;
+import edu.leipzig.grafs.operators.grouping.functions.PropertiesAggregationFunction;
 import edu.leipzig.grafs.operators.grouping.logic.EdgeAggregation;
 import edu.leipzig.grafs.operators.grouping.logic.EdgeKeySelector;
 import edu.leipzig.grafs.operators.grouping.logic.VertexAggregation;
@@ -8,7 +9,6 @@ import edu.leipzig.grafs.operators.grouping.model.AggregateMode;
 import edu.leipzig.grafs.operators.grouping.model.AggregationMapping;
 import edu.leipzig.grafs.operators.grouping.model.AggregationMappingEntry;
 import edu.leipzig.grafs.operators.grouping.model.GroupingInformation;
-import edu.leipzig.grafs.operators.grouping.model.PropertiesAggregationFunction;
 import edu.leipzig.grafs.operators.interfaces.GraphToGraphOperatorI;
 import java.util.Objects;
 import java.util.Set;
