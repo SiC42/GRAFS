@@ -26,7 +26,7 @@ public class IsomorphismTest extends MatchingTestBase {
   EdgeStream edgeStream;
 
   @BeforeAll
-  static void initConfig(){
+  static void initConfig() {
     StreamExecutionEnvironment env =
         StreamExecutionEnvironment.getExecutionEnvironment();
     config = new FlinkConfigBuilder(env)
@@ -63,7 +63,7 @@ public class IsomorphismTest extends MatchingTestBase {
 
     Iterator<EdgeContainer> matchedEcIt = edgeStream
         .callForStream(new Isomorphism<>(queryGraphGdlStr,
-                TumblingEventTimeWindows.of(Time.milliseconds(10))))
+            TumblingEventTimeWindows.of(Time.milliseconds(10))))
         .collect();
     var actualEcs = new ArrayList<EdgeContainer>();
     matchedEcIt.forEachRemaining(actualEcs::add);

@@ -12,10 +12,11 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 class VertexQueryFilterTest {
+
   static VertexQueryFilter vertexFilter;
 
   @BeforeAll
-  static void init(){
+  static void init() {
     var queryGraph = new QueryGraph();
     var vertexA = new Vertex();
     vertexA.setLabel("A");

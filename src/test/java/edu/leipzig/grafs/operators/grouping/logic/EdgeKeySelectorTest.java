@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 
 class EdgeKeySelectorTest {
 
-  private EdgeContainer ec;
+  private final EdgeContainer ec;
 
   public EdgeKeySelectorTest() {
     AsciiGraphLoader loader = AsciiGraphLoader.fromString(

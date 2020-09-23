@@ -31,7 +31,6 @@ public class VertexAggregation<W extends Window> extends VertexAggregationProces
     var aggregatedVertex = new AggregatedVertex();
 
     var isInitialAggregation = true;
-
     for (EdgeContainer ec : ecIterable) {
       Vertex curVertex;
       if (aggregateMode.equals(AggregateMode.SOURCE)) {

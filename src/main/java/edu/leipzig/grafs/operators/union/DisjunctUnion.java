@@ -10,7 +10,7 @@ public class DisjunctUnion implements GraphToGraphOperatorI, GraphToGraphCollect
 
   private final EdgeStream[] streams;
 
-  public DisjunctUnion(EdgeStream... streams){
+  public DisjunctUnion(EdgeStream... streams) {
     this.streams = streams;
   }
 

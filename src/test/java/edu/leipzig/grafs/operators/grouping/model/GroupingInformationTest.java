@@ -14,14 +14,14 @@ import org.junit.jupiter.api.Test;
 public class GroupingInformationTest {
 
   @Test
-  public void testGroupingInformation_emptyConstructor(){
+  public void testGroupingInformation_emptyConstructor() {
     var gi = new GroupingInformation();
     assertFalse(gi.shouldUseLabel());
     assertThat(gi.getKeys(), empty());
   }
 
   @Test
-  public void testGroupingInformation_withKeySet(){
+  public void testGroupingInformation_withKeySet() {
     var groupingKeys = Set.of(TestUtils.KEY_1, TestUtils.KEY_2);
     var gi = new GroupingInformation(groupingKeys);
     assertFalse(gi.shouldUseLabel());
@@ -29,7 +29,7 @@ public class GroupingInformationTest {
   }
 
   @Test
-  public void testGroupingInformation_withValues(){
+  public void testGroupingInformation_withValues() {
     var useLabel = true;
     var useMemberShip = true;
     var groupingKeys = Set.of(TestUtils.KEY_1, TestUtils.KEY_2);
@@ -39,14 +39,14 @@ public class GroupingInformationTest {
   }
 
   @Test
-  public void testAddKey(){
+  public void testAddKey() {
     var gi = new GroupingInformation();
     gi.addKey("1");
     assertThat(gi.getKeys(), is(equalTo(Set.of("1"))));
   }
 
   @Test
-  public void testAddKey_twoOfSameKey(){
+  public void testAddKey_twoOfSameKey() {
     var gi = new GroupingInformation();
     gi.addKey("1");
     gi.addKey("1");
@@ -54,7 +54,7 @@ public class GroupingInformationTest {
   }
 
   @Test
-  public void testShouldUseLabel(){
+  public void testShouldUseLabel() {
     var gi = new GroupingInformation();
     gi.useLabel(true);
     assertTrue(gi.shouldUseLabel());

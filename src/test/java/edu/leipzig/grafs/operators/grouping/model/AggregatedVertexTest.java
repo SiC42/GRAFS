@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
 class AggregatedVertexTest {
 
   @Test
-  public void testIsAggregated_withVertex(){
+  public void testIsAggregated_withVertex() {
     var v = VertexFactory.createVertex();
     var av = new AggregatedVertex();
     av.addVertex(v);
@@ -21,7 +21,7 @@ class AggregatedVertexTest {
   }
 
   @Test
-  public void testIsAggregated_withId(){
+  public void testIsAggregated_withId() {
     var id = GradoopId.get();
     var av = new AggregatedVertex();
     av.addVertex(id);
@@ -29,7 +29,7 @@ class AggregatedVertexTest {
   }
 
   @Test
-  public void testIsAggregated_withMultipleIds(){
+  public void testIsAggregated_withMultipleIds() {
     var idSet = new GradoopIdSet();
     var id1 = GradoopId.get();
     var id2 = GradoopId.get();

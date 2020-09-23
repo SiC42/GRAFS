@@ -11,9 +11,9 @@ import org.junit.jupiter.api.Test;
 public class AggregationMappingEntryTest {
 
   @Test
-  public void AggregationMappingEntry(){
+  public void AggregationMappingEntry() {
     var pv = new PropertyValue();
-        pv.setString(TestUtils.STRING_VAL_6);
+    pv.setString(TestUtils.STRING_VAL_6);
     var paf = TestUtils.INT_ADD_FUNC;
     var ame = new AggregationMappingEntry(TestUtils.KEY_0, paf);
     assertThat(ame.getPropertyKey(), is(equalTo(TestUtils.KEY_0)));

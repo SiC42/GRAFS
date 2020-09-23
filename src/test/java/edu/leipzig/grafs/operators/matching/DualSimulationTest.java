@@ -28,7 +28,7 @@ public class DualSimulationTest extends MatchingTestBase {
   EdgeStream edgeStream;
 
   @BeforeAll
-  static void initConfig(){
+  static void initConfig() {
     StreamExecutionEnvironment env =
         StreamExecutionEnvironment.getExecutionEnvironment();
     config = new FlinkConfigBuilder(env)
