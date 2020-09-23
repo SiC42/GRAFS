@@ -20,6 +20,7 @@ import org.apache.flink.streaming.api.windowing.assigners.WindowAssigner;
 import org.apache.flink.streaming.api.windowing.triggers.Trigger;
 import org.apache.flink.streaming.api.windowing.windows.Window;
 import org.apache.flink.util.Collector;
+import org.gradoop.common.model.impl.id.GradoopId;
 
 public class Grouping<W extends Window> implements GraphToGraphOperatorI {
 
@@ -60,7 +61,12 @@ public class Grouping<W extends Window> implements GraphToGraphOperatorI {
     var aggregatedOnVertexStream = aggregateOnVertex(aggregatedOnSourceStream,
         AggregateMode.TARGET);
     var reducedStream = aggregatedOnVertexStream.filter(ec -> !ec.getEdge().isReverse());
-    return aggregateOnEdge(reducedStream);
+    var aggregatedOnEdgeStream = aggregateOnEdge(reducedStream);
+    var graphId = GradoopId.get();
+    return aggregatedOnEdgeStream.map(ec -> {
+      ec.addGraphId(graphId);
+      return ec;
+    });
   }
 
   private SingleOutputStreamOperator<EdgeContainer> createStreamWithReverseEdges(
