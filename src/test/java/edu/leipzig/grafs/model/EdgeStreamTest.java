@@ -1,9 +1,9 @@
 package edu.leipzig.grafs.model;
 
 import edu.leipzig.grafs.operators.grouping.Grouping;
+import edu.leipzig.grafs.operators.grouping.functions.PropertiesAggregationFunction;
 import edu.leipzig.grafs.operators.grouping.model.AggregationMapping;
 import edu.leipzig.grafs.operators.grouping.model.GroupingInformation;
-import edu.leipzig.grafs.operators.grouping.model.PropertiesAggregationFunction;
 import edu.leipzig.grafs.util.AsciiGraphLoader;
 import edu.leipzig.grafs.util.FlinkConfig;
 import edu.leipzig.grafs.util.FlinkConfigBuilder;
@@ -55,7 +55,7 @@ class EdgeStreamTest {
     var identity = new PropertyValue();
     identity.setInt(0);
     am.addAggregationForProperty("a",
-        new PropertiesAggregationFunction(identity, (PropertyValue pV1, PropertyValue pV2) -> {
+        new PropertiesAggregationFunction("a", identity, (PropertyValue pV1, PropertyValue pV2) -> {
           var newVal = new PropertyValue();
           newVal.setInt(pV1.getInt() + pV2.getInt());
           return newVal;
@@ -64,7 +64,7 @@ class EdgeStreamTest {
         Grouping.createGrouping()
             .addVertexGroupingKey("n")
             .addVertexAggregateFunction("a",
-                new PropertiesAggregationFunction(identity,
+                new PropertiesAggregationFunction("a", identity,
                     (PropertyValue pV1, PropertyValue pV2) -> {
                       var newVal = new PropertyValue();
                       newVal.setInt(pV1.getInt() + pV2.getInt());

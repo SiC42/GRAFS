@@ -19,7 +19,7 @@ class VertexAggregationTest {
     var groupInfo = new GroupingInformation();
     groupInfo.addKey("n");
     var aggMap = new AggregationMapping();
-    aggMap.addAggregationForProperty("a", TestUtils.INT_ADD_FUNC);
+    aggMap.addAggregationForProperty("a", TestUtils.INT_ADD_FUNC.apply("a"));
 
     var vertexAggregation = new VertexAggregation<>(groupInfo, aggMap,
         AggregateMode.SOURCE);
@@ -63,7 +63,7 @@ class VertexAggregationTest {
     var groupInfo = new GroupingInformation();
     groupInfo.addKey("n");
     var aggMap = new AggregationMapping();
-    aggMap.addAggregationForProperty("a", TestUtils.INT_ADD_FUNC);
+    aggMap.addAggregationForProperty("a", TestUtils.INT_ADD_FUNC.apply("a"));
 
     var vertexAggregation = new VertexAggregation<>(groupInfo, aggMap,
         AggregateMode.TARGET);
@@ -106,7 +106,7 @@ class VertexAggregationTest {
     var groupInfo = new GroupingInformation();
     groupInfo.addKey("n");
     var aggMap = new AggregationMapping();
-    aggMap.addAggregationForProperty("a", TestUtils.INT_ADD_FUNC);
+    aggMap.addAggregationForProperty("a", TestUtils.INT_ADD_FUNC.apply("a"));
 
     var vertexAggregation = new VertexAggregation<>(groupInfo, aggMap,
         AggregateMode.SOURCE);

@@ -5,6 +5,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 
+import edu.leipzig.grafs.operators.grouping.functions.PropertiesAggregationFunction;
 import edu.leipzig.grafs.util.TestUtils;
 import java.io.IOException;
 import java.util.Random;
@@ -15,7 +16,7 @@ public class PropertiesAggregationFunctionTest {
 
   @Test
   public void testSerialization() throws IOException, ClassNotFoundException {
-    var propAggFunc = TestUtils.INT_ADD_FUNC;
+    var propAggFunc = TestUtils.INT_ADD_FUNC.apply("a");
     byte[] serializedPaf = TestUtils.pickle(propAggFunc);
     var deserializedPropAggFunc = TestUtils
         .unpickle(serializedPaf, PropertiesAggregationFunction.class);

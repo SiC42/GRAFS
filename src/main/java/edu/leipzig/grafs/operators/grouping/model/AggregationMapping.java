@@ -1,5 +1,7 @@
 package edu.leipzig.grafs.operators.grouping.model;
 
+import edu.leipzig.grafs.operators.grouping.functions.PropertiesAggregationFunction;
+import edu.leipzig.grafs.operators.grouping.functions.SerializableBiFunction;
 import java.io.IOException;
 import java.io.ObjectStreamException;
 import java.io.Serializable;
@@ -20,9 +22,9 @@ public class AggregationMapping implements Serializable {
     membershipAggregation = null;
   }
 
-  public void addAggregationForProperty(String key,
+  public void addAggregationForProperty(String propertyKey,
       final PropertiesAggregationFunction accumulator) {
-    propertyMappingMap.put(key, accumulator);
+    propertyMappingMap.put(propertyKey, accumulator);
   }
 
   public PropertiesAggregationFunction getAggregationForProperty(String key) {

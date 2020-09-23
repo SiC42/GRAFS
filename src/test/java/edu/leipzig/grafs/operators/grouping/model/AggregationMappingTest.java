@@ -5,6 +5,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 
+import edu.leipzig.grafs.operators.grouping.functions.SerializableBiFunction;
 import edu.leipzig.grafs.util.TestUtils;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -20,7 +21,7 @@ public class AggregationMappingTest {
   @Test
   public void testAddAggregationForProperty() {
     var am = new AggregationMapping();
-    var paf = TestUtils.INT_ADD_FUNC;
+    var paf = TestUtils.INT_ADD_FUNC.apply("a");
     var key = TestUtils.KEY_1;
     am.addAggregationForProperty(key, paf);
     assertThat(am.getAggregationForProperty(key), is(equalTo(paf)));
@@ -29,7 +30,7 @@ public class AggregationMappingTest {
   @Test
   public void testContainsAggregationForProperty() {
     var am = new AggregationMapping();
-    var paf = TestUtils.INT_ADD_FUNC;
+    var paf = TestUtils.INT_ADD_FUNC.apply("a");
     var key = TestUtils.KEY_1;
     am.addAggregationForProperty(key, paf);
     assertThat(am.containsAggregationForProperty(key), is(true));
@@ -56,9 +57,9 @@ public class AggregationMappingTest {
   public void testEntrySet() {
     var am = new AggregationMapping();
     var key1 = TestUtils.KEY_1;
-    var paf1 = TestUtils.INT_ADD_FUNC;
+    var paf1 = TestUtils.INT_ADD_FUNC.apply("a");
     var key2 = TestUtils.KEY_2;
-    var paf2 = TestUtils.STRING_CONC_FUNC;
+    var paf2 = TestUtils.STRING_CONC_FUNC.apply("a");
     am.addAggregationForProperty(key1, paf1);
     am.addAggregationForProperty(key2, paf2);
     assertThat(am.entrySet(), hasSize(2));
@@ -75,9 +76,9 @@ public class AggregationMappingTest {
   public void testSerialization() throws IOException, ClassNotFoundException {
     var am = new AggregationMapping();
     var key1 = TestUtils.KEY_1;
-    var propAggFunc1 = TestUtils.INT_ADD_FUNC;
+    var propAggFunc1 = TestUtils.INT_ADD_FUNC.apply("a");
     var key2 = TestUtils.KEY_2;
-    var propAggFunc2 = TestUtils.STRING_CONC_FUNC;
+    var propAggFunc2 = TestUtils.STRING_CONC_FUNC.apply("a");
     am.addAggregationForProperty(key1, propAggFunc1);
     am.addAggregationForProperty(key2, propAggFunc2);
 

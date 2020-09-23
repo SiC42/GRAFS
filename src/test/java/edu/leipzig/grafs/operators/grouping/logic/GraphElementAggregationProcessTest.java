@@ -19,7 +19,8 @@ class GraphElementAggregationProcessTest {
   @Test
   void testCheckAggregationAndGroupingKeyIntersection_withKeyConflict() {
     var aggMap = new AggregationMapping();
-    aggMap.addAggregationForProperty(TestUtils.KEY_0, TestUtils.STRING_CONC_FUNC);
+    aggMap.addAggregationForProperty(TestUtils.KEY_0,
+        TestUtils.STRING_CONC_FUNC.apply(TestUtils.KEY_0));
     var groupInfo = new GroupingInformation();
     groupInfo.addKey(TestUtils.KEY_1);
 
@@ -97,7 +98,7 @@ class GraphElementAggregationProcessTest {
     var aggKey = TestUtils.KEY_0;
 
     var aggMap = new AggregationMapping();
-    var func = TestUtils.INT_ADD_FUNC;
+    var func = TestUtils.INT_ADD_FUNC.apply(TestUtils.KEY_0);
     aggMap.addAggregationForProperty(aggKey, func);
 
     var prop1 = PropertyValue.create(TestUtils.INT_VAL_1);
@@ -123,7 +124,7 @@ class GraphElementAggregationProcessTest {
     var aggKey = TestUtils.KEY_0;
 
     var aggMap = new AggregationMapping();
-    var func = TestUtils.INT_ADD_FUNC;
+    var func = TestUtils.INT_ADD_FUNC.apply(TestUtils.KEY_0);
     aggMap.addAggregationForProperty(aggKey, func);
 
     var prop1 = PropertyValue.create(TestUtils.INT_VAL_1);
@@ -148,7 +149,7 @@ class GraphElementAggregationProcessTest {
     var aggKey = TestUtils.KEY_0;
 
     var aggMap = new AggregationMapping();
-    var func = TestUtils.INT_ADD_FUNC;
+    var func = TestUtils.INT_ADD_FUNC.apply(TestUtils.KEY_0);
     aggMap.addAggregationForProperty(aggKey, func);
 
     var prop1 = PropertyValue.create(TestUtils.INT_VAL_1);

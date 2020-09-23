@@ -9,7 +9,7 @@ import com.google.common.collect.Maps;
 import edu.leipzig.grafs.model.EdgeContainer;
 import edu.leipzig.grafs.model.Element;
 import edu.leipzig.grafs.model.GraphElement;
-import edu.leipzig.grafs.operators.grouping.model.PropertiesAggregationFunction;
+import edu.leipzig.grafs.operators.grouping.functions.PropertiesAggregationFunction;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Set;
+import java.util.function.Function;
 import org.gradoop.common.model.impl.id.GradoopId;
 import org.gradoop.common.model.impl.properties.PropertyValue;
 import org.junit.Assert;
@@ -78,11 +79,11 @@ public class TestUtils {
   public static final short SHORT_VAL_e = (short) 23;
   public static final Set<PropertyValue> SET_VAL_f = new HashSet<>();
   public static final Comparator<Element> ID_COMPARATOR = Comparator.comparing(Element::getId);
-  public static final PropertiesAggregationFunction STRING_CONC_FUNC =
-      new PropertiesAggregationFunction(PropertyValue.create(""),
+  public static final Function<String, PropertiesAggregationFunction> STRING_CONC_FUNC = k ->
+      new PropertiesAggregationFunction(k, PropertyValue.create(""),
           (v1, v2) -> PropertyValue.create(v1.getString() + v2.getString()));
-  public static final PropertiesAggregationFunction INT_ADD_FUNC =
-      new PropertiesAggregationFunction(PropertyValue.create(0),
+  public static final Function<String, PropertiesAggregationFunction> INT_ADD_FUNC = k ->
+      new PropertiesAggregationFunction(k, PropertyValue.create(0),
           (v1, v2) -> PropertyValue.create(v1.getInt() + v2.getInt()));
   private static final Comparator<EdgeContainer> edgeContainerComparator = (ec1, ec2) -> {
     int difference = 0;
@@ -330,6 +331,7 @@ public class TestUtils {
       return difference;
     }
     var unsortedPropKeys = elem1.getPropertyKeys();
+    unsortedPropKeys = unsortedPropKeys != null ? unsortedPropKeys : Set.of();
     var sortedPropKeys = new PriorityQueue<String>();
     for (var keys : unsortedPropKeys) {
       sortedPropKeys.add(keys);
@@ -345,6 +347,7 @@ public class TestUtils {
       }
     }
     unsortedPropKeys = elem2.getPropertyKeys();
+    unsortedPropKeys = unsortedPropKeys != null ? unsortedPropKeys : Set.of();
     sortedPropKeys = new PriorityQueue<String>();
     for (var keys : unsortedPropKeys) {
       sortedPropKeys.add(keys);
@@ -398,7 +401,9 @@ public class TestUtils {
       while (expectedKeyIt.hasNext() && actualKeyIt.hasNext()) {
         String expectedKey = expectedKeyIt.next();
         String actualKey = actualKeyIt.next();
-        assertEquals(expectedKey, actualKey, "property key mismatch");
+        assertEquals(expectedKey, actualKey,
+            String.format("Expected element %s mismatched actual element %s."
+                + "Property key mismatch", expectedElement, actualElement));
         assertEquals(expectedElement.getPropertyValue(expectedKey),
             actualElement.getPropertyValue(actualKey),
             String.format("Expected element %s mismatched actual element %s."

@@ -20,7 +20,7 @@ class VertexAggregationProcessTest {
   public void testAggregateVertex_curVertexNotAlreadyAggregated() {
     var vAggProcess = mock(VertexAggregationProcess.class, CALLS_REAL_METHODS);
     var aggKey = TestUtils.KEY_0;
-    var aggFunc = TestUtils.INT_ADD_FUNC;
+    var aggFunc = TestUtils.INT_ADD_FUNC.apply(TestUtils.KEY_0);
     var val1 = PropertyValue.create(TestUtils.INT_VAL_1);
     var val2 = PropertyValue.create(TestUtils.INT_VAL_2);
 
@@ -43,7 +43,7 @@ class VertexAggregationProcessTest {
   public void testAggregateVertex_curVertexAlreadyAggregated() {
     var vAggProcess = mock(VertexAggregationProcess.class, CALLS_REAL_METHODS);
     var aggKey = TestUtils.KEY_0;
-    var aggFunc = TestUtils.INT_ADD_FUNC;
+    var aggFunc = TestUtils.INT_ADD_FUNC.apply(TestUtils.KEY_0);
     var val1 = PropertyValue.create(TestUtils.INT_VAL_1);
     var val2 = PropertyValue.create(TestUtils.INT_VAL_2);
 

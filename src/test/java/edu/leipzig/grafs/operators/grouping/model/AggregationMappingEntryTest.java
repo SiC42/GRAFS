@@ -14,7 +14,7 @@ public class AggregationMappingEntryTest {
   public void AggregationMappingEntry() {
     var pv = new PropertyValue();
     pv.setString(TestUtils.STRING_VAL_6);
-    var paf = TestUtils.INT_ADD_FUNC;
+    var paf = TestUtils.INT_ADD_FUNC.apply(TestUtils.KEY_0);
     var ame = new AggregationMappingEntry(TestUtils.KEY_0, paf);
     assertThat(ame.getPropertyKey(), is(equalTo(TestUtils.KEY_0)));
     assertThat(ame.getAggregationFunction(), is(equalTo(paf)));

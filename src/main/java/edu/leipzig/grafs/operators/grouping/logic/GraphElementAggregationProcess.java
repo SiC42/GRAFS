@@ -61,17 +61,25 @@ public abstract class GraphElementAggregationProcess<W extends Window> extends
       for (var aggregationEntry : aggregationMapping.entrySet()) {
         var key = aggregationEntry.getPropertyKey();
         var aggFunc = aggregationMapping.getAggregationForProperty(key);
-        PropertyValue prevValue = aggregatedElem.hasProperty(key)
-            ? aggregatedElem.getPropertyValue(key)
+        var aggKey = aggFunc.getAggregatePropertyKey();
+        PropertyValue prevValue = aggregatedElem.hasProperty(aggKey)
+            ? aggregatedElem.getPropertyValue(aggKey)
             : aggFunc.getIdentity();
-        PropertyValue curValue = curElem.hasProperty(key)
-            ? curElem.getPropertyValue(key)
-            : aggFunc.getIdentity();
-        PropertyValue newValue = aggFunc.apply(prevValue, curValue);
-        aggregatedElem.setProperty(key, newValue);
+        if (aggFunc.isBiFunction()) {
+          PropertyValue curValue;
+          if (!curElem.hasProperty(key)) {
+            curValue = PropertyValue.NULL_VALUE;
+          } else {
+            curValue = curElem.getPropertyValue(key);
+          }
+          PropertyValue newValue = aggFunc.apply(prevValue, curValue);
+          aggregatedElem.setProperty(aggKey, newValue);
+        } else {
+          PropertyValue newValue = aggFunc.apply(prevValue);
+          aggregatedElem.setProperty(aggKey, newValue);
+        }
       }
     }
-    // TODO: Deal with memberships
     return aggregatedElem;
   }
 
