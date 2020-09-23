@@ -7,9 +7,9 @@ import java.util.Set;
 
 public class GroupingInformation implements Serializable {
 
-  private static final String LABEL_SYMBOL = ":label";
+  public static final String LABEL_SYMBOL = ":label";
+  private final Set<String> groupingKeys;
   private boolean useLabel;
-  private Set<String> groupingKeys;
 
   public GroupingInformation() {
     useLabel = false;
