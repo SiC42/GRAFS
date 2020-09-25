@@ -1,7 +1,7 @@
 package edu.leipzig.grafs.model;
 
 import edu.leipzig.grafs.operators.grouping.Grouping;
-import edu.leipzig.grafs.operators.grouping.model.AggregationMapping;
+import edu.leipzig.grafs.operators.grouping.functions.AggregateFunction;
 import edu.leipzig.grafs.operators.grouping.model.GroupingInformation;
 import edu.leipzig.grafs.operators.interfaces.OperatorI;
 import edu.leipzig.grafs.operators.matching.DualSimulation;
@@ -12,6 +12,7 @@ import edu.leipzig.grafs.operators.transform.EdgeTransformation;
 import edu.leipzig.grafs.operators.transform.VertexTransformation;
 import edu.leipzig.grafs.operators.union.DisjunctUnion;
 import edu.leipzig.grafs.operators.union.UnionWithDuplicateInWindow;
+import java.util.Set;
 import org.apache.flink.api.common.functions.FilterFunction;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.streaming.api.windowing.assigners.WindowAssigner;
@@ -26,18 +27,22 @@ public interface EdgeStreamOperators {
   //  Grouping operators
   // ---------------------------------------------------------------------------
 
-  default EdgeStream grouping(GroupingInformation vertexGi, AggregationMapping vertexAggMap,
-      GroupingInformation edgeGi, AggregationMapping edgeAggMap,
+  default EdgeStream grouping(GroupingInformation vertexGi,
+      Set<AggregateFunction> vertexAggregateFunctions,
+      GroupingInformation edgeGi, Set<AggregateFunction> edgeAggregateFunctions,
       WindowAssigner<Object, Window> window) {
-    return grouping(vertexGi, vertexAggMap, edgeGi, edgeAggMap, window, null);
+    return grouping(vertexGi, vertexAggregateFunctions, edgeGi, edgeAggregateFunctions, window,
+        null);
   }
 
-  default EdgeStream grouping(GroupingInformation vertexGi, AggregationMapping vertexAggMap,
-      GroupingInformation edgeGi, AggregationMapping edgeAggMap,
+  default EdgeStream grouping(GroupingInformation vertexGi,
+      Set<AggregateFunction> vertexAggregateFunctions,
+      GroupingInformation edgeGi, Set<AggregateFunction> edgeAggregationFunctions,
       WindowAssigner<Object, Window> window,
       Trigger<EdgeContainer, Window> trigger) {
     return callForStream(
-        new Grouping<>(vertexGi, vertexAggMap, edgeGi, edgeAggMap, window, trigger));
+        new Grouping<>(vertexGi, vertexAggregateFunctions, edgeGi, edgeAggregationFunctions, window,
+            trigger));
   }
 
   // ---------------------------------------------------------------------------
