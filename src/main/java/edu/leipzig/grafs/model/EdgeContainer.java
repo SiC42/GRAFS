@@ -2,14 +2,21 @@ package edu.leipzig.grafs.model;
 
 import edu.leipzig.grafs.factory.EdgeFactory;
 import edu.leipzig.grafs.factory.VertexFactory;
+import java.io.IOException;
+import java.io.Serializable;
 import java.util.Objects;
 import org.gradoop.common.model.impl.id.GradoopId;
 
-public class EdgeContainer {
+public class EdgeContainer implements Serializable {
 
-  private final Edge edge;
-  private final Vertex sourceVertex;
-  private final Vertex targetVertex;
+  private static final long serialVersionUID = 547531514201914518L;
+  private Edge edge;
+  private Vertex sourceVertex;
+  private Vertex targetVertex;
+
+  protected EdgeContainer() {
+
+  }
 
 
   public EdgeContainer(Edge edge, Vertex sourceVertex, Vertex targetVertex) {
@@ -89,5 +96,20 @@ public class EdgeContainer {
   @Override
   public int hashCode() {
     return Objects.hash(edge, sourceVertex, targetVertex);
+  }
+
+  private void writeObject(java.io.ObjectOutputStream out)
+      throws IOException {
+    out.writeObject(edge);
+    out.writeObject(sourceVertex);
+    out.writeObject(targetVertex);
+  }
+
+  private void readObject(java.io.ObjectInputStream in)
+      throws IOException, ClassNotFoundException {
+    this.edge = (Edge) in.readObject();
+    this.sourceVertex = (Vertex) in.readObject();
+    this.targetVertex = (Vertex) in.readObject();
+
   }
 }

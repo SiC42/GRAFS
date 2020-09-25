@@ -10,7 +10,7 @@ import org.apache.flink.streaming.api.datastream.DataStream;
 
 public class Subgraph implements GraphToGraphOperatorI {
 
-  private final FilterFunction<EdgeContainer> ecFilter;
+  protected FilterFunction<EdgeContainer> ecFilter;
 
 
   public Subgraph(

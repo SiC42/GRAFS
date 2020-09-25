@@ -53,7 +53,6 @@ public class Grouping<W extends Window> implements GraphToGraphOperatorI {
   }
 
   public DataStream<EdgeContainer> groupBy(DataStream<EdgeContainer> stream) {
-
     // Enrich stream with reverse edges
     var expandedStream = createStreamWithReverseEdges(stream);
 
