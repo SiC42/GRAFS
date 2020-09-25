@@ -8,9 +8,10 @@ import static org.mockito.Mockito.CALLS_REAL_METHODS;
 import static org.mockito.Mockito.mock;
 
 import edu.leipzig.grafs.model.Vertex;
-import edu.leipzig.grafs.operators.grouping.model.AggregationMapping;
+import edu.leipzig.grafs.operators.grouping.functions.AggregateFunction;
 import edu.leipzig.grafs.operators.grouping.model.GroupingInformation;
 import edu.leipzig.grafs.util.TestUtils;
+import java.util.HashSet;
 import org.gradoop.common.model.impl.properties.PropertyValue;
 import org.junit.jupiter.api.Test;
 
@@ -18,9 +19,8 @@ class GraphElementAggregationProcessTest {
 
   @Test
   void testCheckAggregationAndGroupingKeyIntersection_withKeyConflict() {
-    var aggMap = new AggregationMapping();
-    aggMap.addAggregationForProperty(TestUtils.KEY_0,
-        TestUtils.STRING_CONC_FUNC.apply(TestUtils.KEY_0));
+    var aggMap = new HashSet<AggregateFunction>();
+    aggMap.add(TestUtils.STRING_CONC_FUNC.apply(TestUtils.KEY_0));
     var groupInfo = new GroupingInformation();
     groupInfo.addKey(TestUtils.KEY_1);
 
@@ -97,9 +97,9 @@ class GraphElementAggregationProcessTest {
     var aggProcess = mock(GraphElementAggregationProcess.class, CALLS_REAL_METHODS);
     var aggKey = TestUtils.KEY_0;
 
-    var aggMap = new AggregationMapping();
-    var func = TestUtils.INT_ADD_FUNC.apply(TestUtils.KEY_0);
-    aggMap.addAggregationForProperty(aggKey, func);
+    var aggMap = new HashSet<AggregateFunction>();
+    var func = TestUtils.INT_ADD_FUNC.apply(aggKey);
+    aggMap.add(func);
 
     var prop1 = PropertyValue.create(TestUtils.INT_VAL_1);
     var prop2 = PropertyValue.create(TestUtils.INT_VAL_2);
@@ -110,9 +110,9 @@ class GraphElementAggregationProcessTest {
     var aggVertex = new Vertex();
     aggVertex.setProperty(aggKey, prop2);
 
-    var expected = func.apply(prop1, prop2);
+    var expected = func.aggregate(prop1.copy(), prop2.copy());
 
-    var resultVertex = aggProcess.aggregateGraphElement(aggMap, aggVertex, curVertex);
+    var resultVertex = aggProcess.aggregateGraphElement(aggVertex, curVertex, aggMap);
 
     assertThat(resultVertex.getProperties().size(), is(1));
     assertThat(resultVertex.getPropertyValue(aggKey), is(equalTo(expected)));
@@ -123,9 +123,9 @@ class GraphElementAggregationProcessTest {
     var aggProcess = mock(GraphElementAggregationProcess.class, CALLS_REAL_METHODS);
     var aggKey = TestUtils.KEY_0;
 
-    var aggMap = new AggregationMapping();
+    var aggMap = new HashSet<AggregateFunction>();
     var func = TestUtils.INT_ADD_FUNC.apply(TestUtils.KEY_0);
-    aggMap.addAggregationForProperty(aggKey, func);
+    aggMap.add(func);
 
     var prop1 = PropertyValue.create(TestUtils.INT_VAL_1);
     var prop2 = PropertyValue.create(TestUtils.INT_VAL_2);
@@ -135,9 +135,9 @@ class GraphElementAggregationProcessTest {
     curVertex.setProperty(TestUtils.KEY_1, prop1);
     var aggVertex = new Vertex();
 
-    var expected = func.apply(func.getIdentity(), prop1);
+    var expected = func.aggregate(PropertyValue.create(0), prop1);
 
-    var resultVertex = aggProcess.aggregateGraphElement(aggMap, aggVertex, curVertex);
+    var resultVertex = aggProcess.aggregateGraphElement(aggVertex, curVertex, aggMap);
 
     assertThat(resultVertex.getProperties().size(), is(1));
     assertThat(resultVertex.getPropertyValue(aggKey), is(equalTo(expected)));
@@ -148,9 +148,9 @@ class GraphElementAggregationProcessTest {
     var aggProcess = mock(GraphElementAggregationProcess.class, CALLS_REAL_METHODS);
     var aggKey = TestUtils.KEY_0;
 
-    var aggMap = new AggregationMapping();
+    var aggMap = new HashSet<AggregateFunction>();
     var func = TestUtils.INT_ADD_FUNC.apply(TestUtils.KEY_0);
-    aggMap.addAggregationForProperty(aggKey, func);
+    aggMap.add(func);
 
     var prop1 = PropertyValue.create(TestUtils.INT_VAL_1);
     var prop2 = PropertyValue.create(TestUtils.INT_VAL_2);
@@ -164,7 +164,7 @@ class GraphElementAggregationProcessTest {
     var notTouchedPropKey = TestUtils.KEY_2;
     aggVertex.setProperty(notTouchedPropKey, prop2);
 
-    var resultVertex = aggProcess.aggregateGraphElement(aggMap, aggVertex, curVertex);
+    var resultVertex = aggProcess.aggregateGraphElement(aggVertex, curVertex, aggMap);
 
     assertThat(resultVertex.getProperties().size(), is(2));
     assertThat(resultVertex.getPropertyValue(notTouchedPropKey),

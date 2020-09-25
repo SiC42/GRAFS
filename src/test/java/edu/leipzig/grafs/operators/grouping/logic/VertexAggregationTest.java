@@ -4,12 +4,13 @@ import static edu.leipzig.grafs.util.TestUtils.validateEdgeContainerCollections;
 
 import edu.leipzig.grafs.model.EdgeContainer;
 import edu.leipzig.grafs.operators.DummyCollector;
+import edu.leipzig.grafs.operators.grouping.functions.AggregateFunction;
 import edu.leipzig.grafs.operators.grouping.model.AggregateMode;
-import edu.leipzig.grafs.operators.grouping.model.AggregationMapping;
 import edu.leipzig.grafs.operators.grouping.model.GroupingInformation;
 import edu.leipzig.grafs.util.AsciiGraphLoader;
 import edu.leipzig.grafs.util.TestUtils;
 import java.util.ArrayList;
+import java.util.HashSet;
 import org.junit.jupiter.api.Test;
 
 class VertexAggregationTest {
@@ -18,8 +19,8 @@ class VertexAggregationTest {
   void flatMap_testSimpleAggregationForSource() {
     var groupInfo = new GroupingInformation();
     groupInfo.addKey("n");
-    var aggMap = new AggregationMapping();
-    aggMap.addAggregationForProperty("a", TestUtils.INT_ADD_FUNC.apply("a"));
+    var aggMap = new HashSet<AggregateFunction>();
+    aggMap.add(TestUtils.INT_ADD_FUNC.apply("a"));
 
     var vertexAggregation = new VertexAggregation<>(groupInfo, aggMap,
         AggregateMode.SOURCE);
@@ -62,8 +63,8 @@ class VertexAggregationTest {
   void flatMap_testSimpleAggregationForTarget() {
     var groupInfo = new GroupingInformation();
     groupInfo.addKey("n");
-    var aggMap = new AggregationMapping();
-    aggMap.addAggregationForProperty("a", TestUtils.INT_ADD_FUNC.apply("a"));
+    var aggMap = new HashSet<AggregateFunction>();
+    aggMap.add(TestUtils.INT_ADD_FUNC.apply("a"));
 
     var vertexAggregation = new VertexAggregation<>(groupInfo, aggMap,
         AggregateMode.TARGET);
@@ -105,8 +106,8 @@ class VertexAggregationTest {
   void flatMap_testSimpleAggregationWithInvertedEdge() {
     var groupInfo = new GroupingInformation();
     groupInfo.addKey("n");
-    var aggMap = new AggregationMapping();
-    aggMap.addAggregationForProperty("a", TestUtils.INT_ADD_FUNC.apply("a"));
+    var aggMap = new HashSet<AggregateFunction>();
+    aggMap.add(TestUtils.INT_ADD_FUNC.apply("a"));
 
     var vertexAggregation = new VertexAggregation<>(groupInfo, aggMap,
         AggregateMode.SOURCE);

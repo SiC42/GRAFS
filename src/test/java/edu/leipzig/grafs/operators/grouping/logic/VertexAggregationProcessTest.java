@@ -8,9 +8,10 @@ import static org.mockito.Mockito.CALLS_REAL_METHODS;
 import static org.mockito.Mockito.mock;
 
 import edu.leipzig.grafs.model.Vertex;
+import edu.leipzig.grafs.operators.grouping.functions.AggregateFunction;
 import edu.leipzig.grafs.operators.grouping.model.AggregatedVertex;
-import edu.leipzig.grafs.operators.grouping.model.AggregationMapping;
 import edu.leipzig.grafs.util.TestUtils;
+import java.util.HashSet;
 import org.gradoop.common.model.impl.properties.PropertyValue;
 import org.junit.jupiter.api.Test;
 
@@ -24,13 +25,13 @@ class VertexAggregationProcessTest {
     var val1 = PropertyValue.create(TestUtils.INT_VAL_1);
     var val2 = PropertyValue.create(TestUtils.INT_VAL_2);
 
-    var aggMap = new AggregationMapping();
-    aggMap.addAggregationForProperty(aggKey, aggFunc);
+    var aggMap = new HashSet<AggregateFunction>();
+    aggMap.add(aggFunc);
     var aggV = new AggregatedVertex();
     var curV = new Vertex();
     aggV.setProperty(aggKey, val1);
     curV.setProperty(aggKey, val2);
-    var expectedProp = aggFunc.apply(val1, val2);
+    var expectedProp = aggFunc.aggregate(val1, val2);
 
     var resultV = vAggProcess.aggregateVertex(aggMap, aggV, curV);
 
@@ -47,8 +48,8 @@ class VertexAggregationProcessTest {
     var val1 = PropertyValue.create(TestUtils.INT_VAL_1);
     var val2 = PropertyValue.create(TestUtils.INT_VAL_2);
 
-    var aggMap = new AggregationMapping();
-    aggMap.addAggregationForProperty(aggKey, aggFunc);
+    var aggMap = new HashSet<AggregateFunction>();
+    aggMap.add(aggFunc);
     var aggV = new AggregatedVertex();
     var curV = new Vertex();
     aggV.addVertex(curV);
