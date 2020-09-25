@@ -1408,7 +1408,6 @@ public class GroupingTest {
                     .useVertexLabel(true)
                     .addVertexAggregateFunction(new MinProperty("a", "minA"))
                     .addEdgeAggregateFunction(new MinProperty("b", "minB"))
-
                     .buildWithWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
             );
 
@@ -1459,7 +1458,6 @@ public class GroupingTest {
                     .useVertexLabel(true)
                     .addVertexAggregateFunction(new MaxProperty("a", "maxA"))
                     .addEdgeAggregateFunction(new MaxProperty("b", "maxB"))
-
                     .buildWithWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
             );
 
@@ -1510,7 +1508,6 @@ public class GroupingTest {
                     .useVertexLabel(true)
                     .addVertexAggregateFunction(new MaxProperty("a", "maxA"))
                     .addEdgeAggregateFunction(new MaxProperty("b", "maxB"))
-
                     .buildWithWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
             );
 
@@ -1561,7 +1558,6 @@ public class GroupingTest {
                     .useVertexLabel(true)
                     .addVertexAggregateFunction(new MaxProperty("a", "maxA"))
                     .addEdgeAggregateFunction(new MaxProperty("b", "maxB"))
-
                     .buildWithWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
             );
 
@@ -1604,19 +1600,6 @@ public class GroupingTest {
         "(v00)-[{minB : 1,maxB : 3,sumB : 4,count : 2L}]->(v01)" +
         "(v01)-[{minB : 1,maxB : 3,sumB : 5,count : 3L}]->(v01)" +
         "]");
-
-    var test = Grouping.createGrouping()
-        .useVertexLabel(true)
-        .addVertexAggregateFunction(new MinProperty("a", "minA"))
-        .addVertexAggregateFunction(new MaxProperty("a", "maxA"))
-        .addVertexAggregateFunction(new SumProperty("a", "sumA"))
-        .addVertexAggregateFunction(new Count("count"))
-        .addEdgeAggregateFunction(new MinProperty("b", "minB"))
-        .addEdgeAggregateFunction(new MaxProperty("b", "maxB"))
-        .addEdgeAggregateFunction(new SumProperty("b", "sumB"))
-        .addEdgeAggregateFunction(new Count("count"))
-
-        .buildWithWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)));
     var finalStream =
         edgeStream
             .callForStream(
@@ -1630,7 +1613,6 @@ public class GroupingTest {
                     .addEdgeAggregateFunction(new MaxProperty("b", "maxB"))
                     .addEdgeAggregateFunction(new SumProperty("b", "sumB"))
                     .addEdgeAggregateFunction(new Count("count"))
-
                     .buildWithWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
             );
 
