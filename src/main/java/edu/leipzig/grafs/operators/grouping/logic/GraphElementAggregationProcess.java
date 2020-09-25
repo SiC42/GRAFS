@@ -33,8 +33,8 @@ public abstract class GraphElementAggregationProcess<W extends Window> extends
    * @param masterElem element which holds the fields used to set the 'empty' element
    * @return the given 'empty' element, now with the fields set from the 'master' element
    */
-  protected GraphElement setGroupedProperties(GroupingInformation groupInfo,
-      GraphElement emptyElem, GraphElement masterElem) {
+  protected Element setGroupedProperties(GroupingInformation groupInfo,
+      Element emptyElem, Element masterElem) {
     if (groupInfo != null) {
       if (groupInfo.shouldUseLabel()) {
         emptyElem.setLabel(masterElem.getLabel());
