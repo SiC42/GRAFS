@@ -7,7 +7,7 @@ import java.util.Set;
 import org.apache.flink.streaming.api.windowing.windows.Window;
 
 abstract class VertexAggregationProcess<W extends Window> extends
-    GraphElementAggregationProcess<W> {
+    ElementAggregationProcess<W> {
 
   protected AggregatedVertex aggregateVertex(Set<AggregateFunction> aggregateFunctions,
       AggregatedVertex aggregatedVertex,
@@ -16,7 +16,7 @@ abstract class VertexAggregationProcess<W extends Window> extends
       return aggregatedVertex;
     } else {
       aggregatedVertex.addVertex(curVertex);
-      return (AggregatedVertex) aggregateGraphElement(aggregatedVertex, curVertex,
+      return (AggregatedVertex) aggregateElement(aggregatedVertex, curVertex,
           aggregateFunctions
       );
     }

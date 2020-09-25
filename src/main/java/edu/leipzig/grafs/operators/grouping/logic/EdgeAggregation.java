@@ -8,7 +8,7 @@ import java.util.Set;
 import org.apache.flink.streaming.api.windowing.windows.Window;
 import org.apache.flink.util.Collector;
 
-public class EdgeAggregation<W extends Window> extends GraphElementAggregationProcess<W> {
+public class EdgeAggregation<W extends Window> extends ElementAggregationProcess<W> {
 
 
   private final GroupingInformation edgeGroupInfo;
@@ -31,7 +31,7 @@ public class EdgeAggregation<W extends Window> extends GraphElementAggregationPr
     EdgeContainer lastEc = null;
 
     for (var ec : ecIterable) {
-      aggregatedEdge = (Edge) aggregateGraphElement(aggregatedEdge, ec.getEdge(),
+      aggregatedEdge = (Edge) aggregateElement(aggregatedEdge, ec.getEdge(),
           edgeAggregateFunctions
       );
       lastEc = ec;

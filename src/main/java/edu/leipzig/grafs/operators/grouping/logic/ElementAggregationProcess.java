@@ -9,7 +9,7 @@ import org.apache.flink.streaming.api.functions.windowing.ProcessWindowFunction;
 import org.apache.flink.streaming.api.windowing.windows.Window;
 import org.gradoop.common.model.impl.properties.PropertyValue;
 
-public abstract class GraphElementAggregationProcess<W extends Window> extends
+public abstract class ElementAggregationProcess<W extends Window> extends
     ProcessWindowFunction<EdgeContainer, EdgeContainer, String, W> {
 
   protected void checkAggregationAndGroupingKeyIntersection(
@@ -57,7 +57,7 @@ public abstract class GraphElementAggregationProcess<W extends Window> extends
     return emptyElem;
   }
 
-  protected Element aggregateGraphElement(
+  protected Element aggregateElement(
       Element aggregationElement, Element element,
       Set<AggregateFunction> aggregateFunctions) {
     for (AggregateFunction aggFunc : aggregateFunctions) {
