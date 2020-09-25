@@ -3,8 +3,9 @@ package edu.leipzig.grafs.benchmarking.grouping;
 import edu.leipzig.grafs.benchmarking.functions.SimpleMeter;
 import edu.leipzig.grafs.model.EdgeContainer;
 import edu.leipzig.grafs.operators.grouping.Grouping;
-import edu.leipzig.grafs.operators.grouping.model.AggregationMapping;
+import edu.leipzig.grafs.operators.grouping.functions.AggregateFunction;
 import edu.leipzig.grafs.operators.grouping.model.GroupingInformation;
+import java.util.Set;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.windowing.assigners.WindowAssigner;
 import org.apache.flink.streaming.api.windowing.triggers.Trigger;
@@ -15,22 +16,22 @@ public class BenchmarkGrouping<W extends Window> extends Grouping<W> {
   private final String meterName;
 
   public BenchmarkGrouping(GroupingInformation vertexGi,
-      AggregationMapping vertexAggMap,
-      GroupingInformation edgeGi,
-      AggregationMapping edgeAggMap,
+      Set<AggregateFunction> vertexAggregateFunctions,
+      GroupingInformation edgeGi, Set<AggregateFunction> edgeAggregateFunctions,
       WindowAssigner<Object, W> window,
       Trigger<EdgeContainer, W> trigger) {
-    this(vertexGi, vertexAggMap, edgeGi, edgeAggMap, window, trigger, "groupingMeter");
+    this(vertexGi, vertexAggregateFunctions, edgeGi, edgeAggregateFunctions, window, trigger,
+        "groupingMeter");
   }
 
   public BenchmarkGrouping(GroupingInformation vertexGi,
-      AggregationMapping vertexAggMap,
+      Set<AggregateFunction> vertexAggregateFunctions,
       GroupingInformation edgeGi,
-      AggregationMapping edgeAggMap,
+      Set<AggregateFunction> edgeAggregateFunctions,
       WindowAssigner<Object, W> window,
       Trigger<EdgeContainer, W> trigger,
       String meterName) {
-    super(vertexGi, vertexAggMap, edgeGi, edgeAggMap, window, trigger);
+    super(vertexGi, vertexAggregateFunctions, edgeGi, edgeAggregateFunctions, window, trigger);
     this.meterName = meterName;
   }
 
