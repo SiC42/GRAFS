@@ -43,6 +43,19 @@ public class Grouping<W extends Window> implements GraphToGraphOperatorI {
     this.trigger = trigger;
   }
 
+  public Grouping(Set<String> vertexGiSet, Set<AggregateFunction> vertexAggregateFunctions,
+      Set<String> edgeGiSet, Set<AggregateFunction> edgeAggregateFunctions,
+      WindowAssigner<Object, W> window,
+      Trigger<EdgeContainer, W> trigger) {
+    this(new GroupingInformation(vertexGiSet),
+        vertexAggregateFunctions,
+        new GroupingInformation(edgeGiSet),
+        edgeAggregateFunctions,
+        window,
+        trigger);
+  }
+
+
   public static GroupingBuilder createGrouping() {
     return new GroupingBuilder();
   }
