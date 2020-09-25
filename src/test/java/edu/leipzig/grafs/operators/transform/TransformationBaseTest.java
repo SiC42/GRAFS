@@ -43,7 +43,7 @@ public abstract class TransformationBaseTest extends OperatorTestBase {
    * @param expectedCollection first collection
    * @param actualCollection   second collection
    */
-  void validateDataInequality(Collection<? extends Element> expectedCollection,
+  protected void validateDataInequality(Collection<? extends Element> expectedCollection,
       Collection<? extends Element> actualCollection) {
 
     List<? extends Element> list1 = new ArrayList<>(expectedCollection);
