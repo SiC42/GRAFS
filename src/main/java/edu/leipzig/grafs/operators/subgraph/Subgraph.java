@@ -12,6 +12,10 @@ public class Subgraph implements GraphToGraphOperatorI {
 
   protected FilterFunction<EdgeContainer> ecFilter;
 
+  protected Subgraph() {
+    ecFilter = null;
+  }
+
 
   public Subgraph(
       final FilterFunction<Vertex> vertexFilter,
