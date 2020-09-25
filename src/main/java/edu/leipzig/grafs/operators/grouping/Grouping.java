@@ -1,15 +1,14 @@
 package edu.leipzig.grafs.operators.grouping;
 
 import edu.leipzig.grafs.model.EdgeContainer;
-import edu.leipzig.grafs.operators.grouping.functions.PropertiesAggregationFunction;
+import edu.leipzig.grafs.operators.grouping.functions.AggregateFunction;
 import edu.leipzig.grafs.operators.grouping.logic.EdgeAggregation;
 import edu.leipzig.grafs.operators.grouping.logic.EdgeKeySelector;
 import edu.leipzig.grafs.operators.grouping.logic.VertexAggregation;
 import edu.leipzig.grafs.operators.grouping.model.AggregateMode;
-import edu.leipzig.grafs.operators.grouping.model.AggregationMapping;
-import edu.leipzig.grafs.operators.grouping.model.AggregationMappingEntry;
 import edu.leipzig.grafs.operators.grouping.model.GroupingInformation;
 import edu.leipzig.grafs.operators.interfaces.GraphToGraphOperatorI;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 import org.apache.flink.api.common.functions.FlatMapFunction;
@@ -25,20 +24,21 @@ import org.gradoop.common.model.impl.id.GradoopId;
 public class Grouping<W extends Window> implements GraphToGraphOperatorI {
 
   private final GroupingInformation vertexGi;
-  private final AggregationMapping vertexAggregationFunctions;
+  private final Set<AggregateFunction> vertexAggregateFunctions;
   private final GroupingInformation edgeGi;
-  private final AggregationMapping edgeAggregationFunctions;
+  private final Set<AggregateFunction> edgeAggregateFunctions;
 
   private final WindowAssigner<Object, W> window;
   private final Trigger<EdgeContainer, W> trigger;
 
-  public Grouping(GroupingInformation vertexGi, AggregationMapping vertexAggMap,
-      GroupingInformation edgeGi, AggregationMapping edgeAggMap, WindowAssigner<Object, W> window,
+  public Grouping(GroupingInformation vertexGi, Set<AggregateFunction> vertexAggregateFunctions,
+      GroupingInformation edgeGi, Set<AggregateFunction> edgeAggregateFunctions,
+      WindowAssigner<Object, W> window,
       Trigger<EdgeContainer, W> trigger) {
     this.vertexGi = vertexGi;
-    this.vertexAggregationFunctions = vertexAggMap;
+    this.vertexAggregateFunctions = vertexAggregateFunctions;
     this.edgeGi = edgeGi;
-    this.edgeAggregationFunctions = edgeAggMap;
+    this.edgeAggregateFunctions = edgeAggregateFunctions;
     this.window = window;
     this.trigger = trigger;
   }
@@ -85,12 +85,12 @@ public class Grouping<W extends Window> implements GraphToGraphOperatorI {
       AggregateMode mode) {
     var windowedStream = createKeyedWindowedStream(stream, mode);
     return windowedStream.process(
-        new VertexAggregation<>(vertexGi, vertexAggregationFunctions, mode));
+        new VertexAggregation<>(vertexGi, vertexAggregateFunctions, mode));
   }
 
   private DataStream<EdgeContainer> aggregateOnEdge(DataStream<EdgeContainer> stream) {
     var windowedStream = createKeyedWindowedStream(stream, AggregateMode.EDGE);
-    return windowedStream.process(new EdgeAggregation<W>(edgeGi, edgeAggregationFunctions));
+    return windowedStream.process(new EdgeAggregation<W>(edgeGi, edgeAggregateFunctions));
   }
 
   private WindowedStream<EdgeContainer, String, W> createKeyedWindowedStream(
@@ -107,16 +107,16 @@ public class Grouping<W extends Window> implements GraphToGraphOperatorI {
   public static final class GroupingBuilder {
 
     private final GroupingInformation vertexGi;
-    private final AggregationMapping vertexAggMap;
+    private final Set<AggregateFunction> vertexAggFunctions;
 
     private final GroupingInformation edgeGi;
-    private final AggregationMapping edgeAggMap;
+    private final Set<AggregateFunction> aggregateFunctions;
 
     public GroupingBuilder() {
       vertexGi = new GroupingInformation();
-      vertexAggMap = new AggregationMapping();
+      vertexAggFunctions = new HashSet<>();
       edgeGi = new GroupingInformation();
-      edgeAggMap = new AggregationMapping();
+      aggregateFunctions = new HashSet<>();
     }
 
     public GroupingBuilder addVertexGroupingKey(String vertexGroupingKey) {
@@ -140,13 +140,14 @@ public class Grouping<W extends Window> implements GraphToGraphOperatorI {
     }
 
     public <W extends Window> Grouping<W> buildWithWindow(WindowAssigner<Object, W> window) {
-      return new Grouping<>(vertexGi, vertexAggMap, edgeGi, edgeAggMap, window, null);
+      return new Grouping<>(vertexGi, vertexAggFunctions, edgeGi, aggregateFunctions, window, null);
     }
 
     public <W extends Window> Grouping<W> buildWithWindowAndTrigger(
         WindowAssigner<Object, W> window,
         Trigger<EdgeContainer, W> trigger) {
-      return new Grouping<>(vertexGi, vertexAggMap, edgeGi, edgeAggMap, window, trigger);
+      return new Grouping<>(vertexGi, vertexAggFunctions, edgeGi, aggregateFunctions, window,
+          trigger);
     }
 
     /**
@@ -175,52 +176,24 @@ public class Grouping<W extends Window> implements GraphToGraphOperatorI {
      * Add an aggregate function which is applied on all vertices represented by a single super
      * vertex.
      *
-     * @param vAggregationMapping vertex aggregate mapping
+     * @param aggregateFunction vertex aggregate mapping
      * @return this builder
      */
-    public GroupingBuilder addVertexAggregateFunction(AggregationMappingEntry vAggregationMapping) {
-      Objects.requireNonNull(vAggregationMapping, "Aggregate function must not be null");
-      vertexAggMap.addAggregationMappingEntry(vAggregationMapping);
-      return this;
-    }
-
-    /**
-     * Add an aggregate function which is applied on all vertices represented by a single super
-     * vertex.
-     *
-     * @param key       key on which information should be grouped upon
-     * @param vFunction vertex aggregate function
-     * @return this builder
-     */
-    public GroupingBuilder addVertexAggregateFunction(String key,
-        PropertiesAggregationFunction vFunction) {
-      vertexAggMap.addAggregationMappingEntry(new AggregationMappingEntry(key, vFunction));
+    public GroupingBuilder addVertexAggregateFunction(AggregateFunction aggregateFunction) {
+      Objects.requireNonNull(aggregateFunction, "Aggregate function must not be null");
+      vertexAggFunctions.add(aggregateFunction);
       return this;
     }
 
     /**
      * Add an aggregate function which is applied on all edges represented by a single super edge.
      *
-     * @param eAggregationMapping edge aggregate mapping
+     * @param eFunctions edge aggregate mapping
      * @return this builder
      */
-    public GroupingBuilder addEdgeAggregateFunction(AggregationMappingEntry eAggregationMapping) {
-      Objects.requireNonNull(eAggregationMapping, "Aggregate function must not be null");
-      edgeAggMap.addAggregationMappingEntry(eAggregationMapping);
-      return this;
-    }
-
-    /**
-     * Add an aggregate function which is applied on all vertices represented by a single super
-     * vertex.
-     *
-     * @param key       key on which information should be grouped upon
-     * @param eFunction vertex aggregate function
-     * @return this builder
-     */
-    public GroupingBuilder addEdgeAggregateFunction(String key,
-        PropertiesAggregationFunction eFunction) {
-      edgeAggMap.addAggregationMappingEntry(new AggregationMappingEntry(key, eFunction));
+    public GroupingBuilder addEdgeAggregateFunction(AggregateFunction eFunctions) {
+      Objects.requireNonNull(eFunctions, "Aggregate function must not be null");
+      aggregateFunctions.add(eFunctions);
       return this;
     }
 
