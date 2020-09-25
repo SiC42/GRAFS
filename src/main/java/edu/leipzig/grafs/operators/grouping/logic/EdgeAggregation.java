@@ -2,8 +2,9 @@ package edu.leipzig.grafs.operators.grouping.logic;
 
 import edu.leipzig.grafs.model.Edge;
 import edu.leipzig.grafs.model.EdgeContainer;
-import edu.leipzig.grafs.operators.grouping.model.AggregationMapping;
+import edu.leipzig.grafs.operators.grouping.functions.AggregateFunction;
 import edu.leipzig.grafs.operators.grouping.model.GroupingInformation;
+import java.util.Set;
 import org.apache.flink.streaming.api.windowing.windows.Window;
 import org.apache.flink.util.Collector;
 
@@ -11,15 +12,15 @@ public class EdgeAggregation<W extends Window> extends GraphElementAggregationPr
 
 
   private final GroupingInformation edgeGroupInfo;
-  private final AggregationMapping edgeAggregationMapping;
+  private final Set<AggregateFunction> edgeAggregateFunctions;
 
   public EdgeAggregation(GroupingInformation edgeGroupInfo,
-      AggregationMapping edgeAggregationMapping) {
-    if (edgeAggregationMapping != null && edgeGroupInfo != null) {
-      checkAggregationAndGroupingKeyIntersection(edgeAggregationMapping, edgeGroupInfo);
+      Set<AggregateFunction> edgeAggregateFunctions) {
+    if (edgeAggregateFunctions != null && edgeGroupInfo != null) {
+      checkAggregationAndGroupingKeyIntersection(edgeAggregateFunctions, edgeGroupInfo);
     }
     this.edgeGroupInfo = edgeGroupInfo;
-    this.edgeAggregationMapping = edgeAggregationMapping;
+    this.edgeAggregateFunctions = edgeAggregateFunctions;
   }
 
   @Override
@@ -30,8 +31,9 @@ public class EdgeAggregation<W extends Window> extends GraphElementAggregationPr
     EdgeContainer lastEc = null;
 
     for (var ec : ecIterable) {
-      aggregatedEdge = (Edge) aggregateGraphElement(edgeAggregationMapping, aggregatedEdge,
-          ec.getEdge());
+      aggregatedEdge = (Edge) aggregateGraphElement(aggregatedEdge, ec.getEdge(),
+          edgeAggregateFunctions
+      );
       lastEc = ec;
     }
     EdgeContainer aggregatedEContainer;
