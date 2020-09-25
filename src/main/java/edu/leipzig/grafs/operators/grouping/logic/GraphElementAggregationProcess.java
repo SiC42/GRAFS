@@ -57,33 +57,25 @@ public abstract class GraphElementAggregationProcess<W extends Window> extends
     return emptyElem;
   }
 
-  protected GraphElement aggregateGraphElement(AggregationMapping aggregationMapping,
-      GraphElement aggregatedElem,
-      GraphElement curElem) {
-    if (aggregationMapping != null) {
-      for (var aggregationEntry : aggregationMapping.entrySet()) {
-        var key = aggregationEntry.getPropertyKey();
-        var aggFunc = aggregationMapping.getAggregationForProperty(key);
-        var aggKey = aggFunc.getAggregatePropertyKey();
-        PropertyValue prevValue = aggregatedElem.hasProperty(aggKey)
-            ? aggregatedElem.getPropertyValue(aggKey)
-            : aggFunc.getIdentity();
-        if (aggFunc.isBiFunction()) {
-          PropertyValue curValue;
-          if (!curElem.hasProperty(key)) {
-            curValue = PropertyValue.NULL_VALUE;
-          } else {
-            curValue = curElem.getPropertyValue(key);
-          }
-          PropertyValue newValue = aggFunc.apply(prevValue, curValue);
-          aggregatedElem.setProperty(aggKey, newValue);
+  protected Element aggregateGraphElement(
+      Element aggregationElement, Element element,
+      Set<AggregateFunction> aggregateFunctions) {
+    for (AggregateFunction aggFunc : aggregateFunctions) {
+      PropertyValue increment = aggFunc.getIncrement(element);
+      String key = aggFunc.getAggregatePropertyKey();
+      if (increment != null) {
+        PropertyValue aggregated;
+        if (aggregationElement.hasProperty(key)) {
+          PropertyValue aggregate = aggregationElement.getPropertyValue(key);
+          aggregated = aggFunc.aggregate(aggregate, increment);
         } else {
-          PropertyValue newValue = aggFunc.apply(prevValue);
-          aggregatedElem.setProperty(aggKey, newValue);
+          aggregated = increment.copy();
         }
+        aggregationElement.setProperty(key, aggregated);
       }
     }
-    return aggregatedElem;
+    return aggregationElement;
+  }
   }
 
 }
