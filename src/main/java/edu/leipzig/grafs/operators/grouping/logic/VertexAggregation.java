@@ -4,24 +4,25 @@ import edu.leipzig.grafs.factory.EdgeFactory;
 import edu.leipzig.grafs.factory.VertexFactory;
 import edu.leipzig.grafs.model.EdgeContainer;
 import edu.leipzig.grafs.model.Vertex;
+import edu.leipzig.grafs.operators.grouping.functions.AggregateFunction;
 import edu.leipzig.grafs.operators.grouping.model.AggregateMode;
 import edu.leipzig.grafs.operators.grouping.model.AggregatedVertex;
-import edu.leipzig.grafs.operators.grouping.model.AggregationMapping;
 import edu.leipzig.grafs.operators.grouping.model.GroupingInformation;
+import java.util.Set;
 import org.apache.flink.streaming.api.windowing.windows.Window;
 import org.apache.flink.util.Collector;
 
 public class VertexAggregation<W extends Window> extends VertexAggregationProcess<W> {
 
   private final GroupingInformation vertexGroupInfo;
-  private final AggregationMapping aggregationMapping;
+  private final Set<AggregateFunction> aggregateFunctions;
   private final AggregateMode aggregateMode;
 
   public VertexAggregation(GroupingInformation vertexGroupInfo,
-      AggregationMapping aggregationMapping, AggregateMode aggregateMode) {
-    checkAggregationAndGroupingKeyIntersection(aggregationMapping, vertexGroupInfo);
+      Set<AggregateFunction> aggregateFunctions, AggregateMode aggregateMode) {
+    checkAggregationAndGroupingKeyIntersection(aggregateFunctions, vertexGroupInfo);
     this.vertexGroupInfo = vertexGroupInfo;
-    this.aggregationMapping = aggregationMapping;
+    this.aggregateFunctions = aggregateFunctions;
     this.aggregateMode = aggregateMode;
   }
 
@@ -43,7 +44,7 @@ public class VertexAggregation<W extends Window> extends VertexAggregationProces
         aggregatedVertex = (AggregatedVertex) setGroupedProperties(vertexGroupInfo,
             aggregatedVertex, curVertex);
       }
-      aggregatedVertex = aggregateVertex(aggregationMapping, aggregatedVertex, curVertex);
+      aggregatedVertex = aggregateVertex(aggregateFunctions, aggregatedVertex, curVertex);
     }
     for (EdgeContainer ec : ecIterable) {
       if (ec.getEdge().isReverse()) {
