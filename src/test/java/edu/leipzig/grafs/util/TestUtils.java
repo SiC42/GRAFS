@@ -9,7 +9,7 @@ import com.google.common.collect.Maps;
 import edu.leipzig.grafs.model.EdgeContainer;
 import edu.leipzig.grafs.model.Element;
 import edu.leipzig.grafs.model.GraphElement;
-import edu.leipzig.grafs.operators.grouping.functions.PropertiesAggregationFunction;
+import edu.leipzig.grafs.operators.grouping.functions.AggregateFunction;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -36,6 +36,7 @@ import java.util.Set;
 import java.util.function.Function;
 import org.gradoop.common.model.impl.id.GradoopId;
 import org.gradoop.common.model.impl.properties.PropertyValue;
+import org.gradoop.common.model.impl.properties.PropertyValueUtils;
 import org.junit.Assert;
 
 
@@ -79,12 +80,38 @@ public class TestUtils {
   public static final short SHORT_VAL_e = (short) 23;
   public static final Set<PropertyValue> SET_VAL_f = new HashSet<>();
   public static final Comparator<Element> ID_COMPARATOR = Comparator.comparing(Element::getId);
-  public static final Function<String, PropertiesAggregationFunction> STRING_CONC_FUNC = k ->
-      new PropertiesAggregationFunction(k, PropertyValue.create(""),
-          (v1, v2) -> PropertyValue.create(v1.getString() + v2.getString()));
-  public static final Function<String, PropertiesAggregationFunction> INT_ADD_FUNC = k ->
-      new PropertiesAggregationFunction(k, PropertyValue.create(0),
-          (v1, v2) -> PropertyValue.create(v1.getInt() + v2.getInt()));
+  public static final Function<String, AggregateFunction> STRING_CONC_FUNC = (key) -> new AggregateFunction() {
+    @Override
+    public PropertyValue aggregate(PropertyValue aggregate, PropertyValue increment) {
+      return PropertyValue.create(aggregate.getString() + increment.getString());
+    }
+
+    @Override
+    public String getAggregatePropertyKey() {
+      return key;
+    }
+
+    @Override
+    public PropertyValue getIncrement(Element element) {
+      return element.getPropertyValue(key);
+    }
+  };
+  public static final Function<String, AggregateFunction> INT_ADD_FUNC = (key) -> new AggregateFunction() {
+    @Override
+    public PropertyValue aggregate(PropertyValue aggregate, PropertyValue increment) {
+      return PropertyValueUtils.Numeric.add(aggregate, increment);
+    }
+
+    @Override
+    public String getAggregatePropertyKey() {
+      return key;
+    }
+
+    @Override
+    public PropertyValue getIncrement(Element element) {
+      return element.getPropertyValue(key);
+    }
+  };
   private static final Comparator<EdgeContainer> edgeContainerComparator = (ec1, ec2) -> {
     int difference = 0;
 
