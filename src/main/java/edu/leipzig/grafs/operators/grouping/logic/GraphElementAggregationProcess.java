@@ -76,6 +76,17 @@ public abstract class GraphElementAggregationProcess<W extends Window> extends
     }
     return aggregationElement;
   }
+
+  protected Element checkForMissingAggregationsAndApply(Set<AggregateFunction> aggregateFunctions,
+      Element aggregationElement) {
+    for (var func : aggregateFunctions) {
+      var aggregateKey = func.getAggregatePropertyKey();
+      if (!aggregationElement.hasProperty(aggregateKey)) {
+        aggregationElement.setProperty(func.getAggregatePropertyKey(), func.getDefaultValue());
+      }
+    }
+    return aggregationElement;
+
   }
 
 }
