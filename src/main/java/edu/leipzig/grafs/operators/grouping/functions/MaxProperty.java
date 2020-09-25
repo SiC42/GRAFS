@@ -24,7 +24,7 @@ public class MaxProperty extends BaseAggregateFunction {
   /**
    * Creates a new instance of a MaxProperty aggregate function.
    *
-   * @param propertyKey property key to aggregate
+   * @param propertyKey          property key to aggregate
    * @param aggregatePropertyKey aggregate property key
    */
   public MaxProperty(String propertyKey, String aggregatePropertyKey) {

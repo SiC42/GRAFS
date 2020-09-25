@@ -11,7 +11,6 @@ public interface AggregateFunction extends Serializable {
    *
    * @param aggregate previously aggregated value
    * @param increment value that is added to the aggregate
-   *
    * @return new aggregate
    */
   PropertyValue aggregate(PropertyValue aggregate, PropertyValue increment);
@@ -31,7 +30,7 @@ public interface AggregateFunction extends Serializable {
    */
   PropertyValue getIncrement(Element element);
 
-  default PropertyValue getDefaultValue(){
+  default PropertyValue getDefaultValue() {
     return PropertyValue.NULL_VALUE;
   }
 }

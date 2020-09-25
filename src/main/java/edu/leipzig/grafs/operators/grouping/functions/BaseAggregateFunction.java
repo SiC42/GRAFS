@@ -3,6 +3,7 @@ package edu.leipzig.grafs.operators.grouping.functions;
 import java.util.Objects;
 
 public abstract class BaseAggregateFunction implements AggregateFunction {
+
   /**
    * Key of the aggregate property.
    */
