@@ -268,7 +268,7 @@ under the License.
     <maven.compiler.target>${java.version}</maven.compiler.target>
     <metrics.version>4.1.2</metrics.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <scala.binary.version>2.12</scala.binary.version>
+    <scala.binary.version>2.11</scala.binary.version>
   </properties>
 
   <repositories>
