@@ -1,9 +1,10 @@
 package edu.leipzig.grafs.operators.grouping.logic;
 
 import edu.leipzig.grafs.model.EdgeContainer;
-import edu.leipzig.grafs.model.GraphElement;
-import edu.leipzig.grafs.operators.grouping.model.AggregationMapping;
+import edu.leipzig.grafs.model.Element;
+import edu.leipzig.grafs.operators.grouping.functions.AggregateFunction;
 import edu.leipzig.grafs.operators.grouping.model.GroupingInformation;
+import java.util.Set;
 import org.apache.flink.streaming.api.functions.windowing.ProcessWindowFunction;
 import org.apache.flink.streaming.api.windowing.windows.Window;
 import org.gradoop.common.model.impl.properties.PropertyValue;
@@ -11,10 +12,12 @@ import org.gradoop.common.model.impl.properties.PropertyValue;
 public abstract class GraphElementAggregationProcess<W extends Window> extends
     ProcessWindowFunction<EdgeContainer, EdgeContainer, String, W> {
 
-  protected void checkAggregationAndGroupingKeyIntersection(AggregationMapping aggregationMapping,
+  protected void checkAggregationAndGroupingKeyIntersection(
+      Set<AggregateFunction> aggregateFunctions,
       GroupingInformation elemGroupInfo) {
-    for (var key : elemGroupInfo.getKeys()) {
-      if (aggregationMapping.containsAggregationForProperty(key)) {
+    for (var function : aggregateFunctions) {
+      var key = function.getAggregatePropertyKey();
+      if (elemGroupInfo.getKeys().contains(key)) {
         throw new RuntimeException(
             String.format("Aggregation key '%s' is also present in grouping keys", key));
       }
