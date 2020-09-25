@@ -36,6 +36,8 @@ public class EdgeAggregation<W extends Window> extends GraphElementAggregationPr
       );
       lastEc = ec;
     }
+    aggregatedEdge = (Edge) checkForMissingAggregationsAndApply(edgeAggregateFunctions,
+        aggregatedEdge);
     EdgeContainer aggregatedEContainer;
 
     // we have not set the grouped properties yet

@@ -46,6 +46,8 @@ public class VertexAggregation<W extends Window> extends VertexAggregationProces
       }
       aggregatedVertex = aggregateVertex(aggregateFunctions, aggregatedVertex, curVertex);
     }
+    aggregatedVertex = (AggregatedVertex) checkForMissingAggregationsAndApply(aggregateFunctions,
+        aggregatedVertex);
     for (EdgeContainer ec : ecIterable) {
       if (ec.getEdge().isReverse()) {
         out.collect(ec); // No need to aggregate for reverse edges
