@@ -14,4 +14,9 @@ public class Count extends BaseAggregateFunction implements Sum {
   public PropertyValue getIncrement(Element element) {
     return PropertyValue.create(1L);
   }
+
+  @Override
+  public PropertyValue getDefaultValue() {
+    return PropertyValue.create(0L);
+  }
 }
