@@ -59,9 +59,9 @@ public class BenchmarkGroupingTest {
             new BenchmarkGrouping<>(
                 Set.of(GroupingInformation.LABEL_SYMBOL, "city"),
                 Set.of(new Count("count")),
-                    Set.of(GroupingInformation.LABEL_SYMBOL, "since"),
-                    Set.of(new Count("count")),
-                        TumblingEventTimeWindows.of(Time.milliseconds(10)),
+                Set.of(GroupingInformation.LABEL_SYMBOL, "since"),
+                Set.of(new Count("count")),
+                TumblingEventTimeWindows.of(Time.milliseconds(10)),
                 null
             )
         );

@@ -11,13 +11,13 @@ public class BenchmarkDisjunctUnion extends DisjunctUnion {
 
   private final String meterName;
 
-  public BenchmarkDisjunctUnion(EdgeStream... streams){
+  public BenchmarkDisjunctUnion(EdgeStream... streams) {
     this("disjunctUnionMeter", streams);
   }
 
-  public BenchmarkDisjunctUnion(String meterName, EdgeStream... streams){
-   super(streams);
-   this.meterName = meterName;
+  public BenchmarkDisjunctUnion(String meterName, EdgeStream... streams) {
+    super(streams);
+    this.meterName = meterName;
   }
 
   @Override

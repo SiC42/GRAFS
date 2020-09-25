@@ -44,7 +44,9 @@ public class VertexTransformationTest extends TransformationBaseTest {
 
     EdgeStream original = loader.createEdgeStreamByGraphVariables(getConfig(), "g0");
 
-    var result = original.callForStream(new VertexTransformation(VertexTransformationTest::transformVertex)).collect();
+    var result = original
+        .callForStream(new VertexTransformation(VertexTransformationTest::transformVertex))
+        .collect();
 
     Set<Edge> actualEdgeResult = new HashSet<>();
     Set<Vertex> actualVertexResult = new HashSet<>();

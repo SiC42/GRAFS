@@ -8,16 +8,19 @@ import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.windowing.assigners.WindowAssigner;
 import org.apache.flink.streaming.api.windowing.windows.Window;
 
-public class BenchmarkUnionWithDuplicateInWindow<W extends Window> extends UnionWithDuplicateInWindow<W> {
+public class BenchmarkUnionWithDuplicateInWindow<W extends Window> extends
+    UnionWithDuplicateInWindow<W> {
 
 
   private final String meterName;
 
-  public BenchmarkUnionWithDuplicateInWindow(WindowAssigner<Object, W> window, EdgeStream... streams) {
+  public BenchmarkUnionWithDuplicateInWindow(WindowAssigner<Object, W> window,
+      EdgeStream... streams) {
     this(window, "unionWithDuplicateInWindowMeter", streams);
   }
 
-  public BenchmarkUnionWithDuplicateInWindow(WindowAssigner<Object, W> window, String meterName, EdgeStream... streams) {
+  public BenchmarkUnionWithDuplicateInWindow(WindowAssigner<Object, W> window, String meterName,
+      EdgeStream... streams) {
     super(window, streams);
     this.meterName = meterName;
   }

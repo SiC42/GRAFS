@@ -15,6 +15,7 @@ public class BenchmarkDualSimulation<W extends Window> extends DualSimulation<W>
   public BenchmarkDualSimulation(String query, WindowAssigner<Object, W> window) {
     this(query, window, "dualSimulationMeter");
   }
+
   public BenchmarkDualSimulation(String query, WindowAssigner<Object, W> window, String meterName) {
     super(query, window);
 
