@@ -77,10 +77,5 @@ public class VertexFactory implements Serializable {
         vertex.getProperties(),
         vertex.getGraphIds());
   }
-
-
-  public static Class<Vertex> getType() {
-    return Vertex.class;
-  }
 }
 

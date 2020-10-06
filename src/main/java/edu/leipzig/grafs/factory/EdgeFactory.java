@@ -93,8 +93,4 @@ public class EdgeFactory implements Serializable {
     return new Edge(id, label, sourceVertexId, targetVertexId,
         properties, graphIds);
   }
-
-  public static Class<Edge> getType() {
-    return Edge.class;
-  }
 }
