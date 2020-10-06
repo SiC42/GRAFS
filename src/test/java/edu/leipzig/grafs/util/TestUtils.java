@@ -1,12 +1,14 @@
 package edu.leipzig.grafs.util;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import com.google.common.collect.Maps;
 import edu.leipzig.grafs.model.EdgeContainer;
+import edu.leipzig.grafs.model.EdgeStream;
 import edu.leipzig.grafs.model.Element;
 import edu.leipzig.grafs.model.GraphElement;
 import edu.leipzig.grafs.operators.grouping.functions.AggregateFunction;
@@ -113,7 +115,7 @@ public class TestUtils {
     }
   };
   private static final Comparator<EdgeContainer> edgeContainerComparator = (ec1, ec2) -> {
-    int difference = 0;
+    int difference;
 
     // compare edges
     difference = compareGraphElementsViaProperties(ec1.getEdge(), ec2.getEdge());
@@ -351,7 +353,7 @@ public class TestUtils {
 
   public static int compareGraphElementsViaProperties(GraphElement elem1, GraphElement elem2) {
     Comparator<GraphElement> elementComparator;
-    int difference = 0;
+    int difference;
 
     elementComparator = Comparator.comparing(Element::getLabel);
     if ((difference = elementComparator.compare(elem1, elem2)) != 0) {
@@ -375,7 +377,7 @@ public class TestUtils {
     }
     unsortedPropKeys = elem2.getPropertyKeys();
     unsortedPropKeys = unsortedPropKeys != null ? unsortedPropKeys : Set.of();
-    sortedPropKeys = new PriorityQueue<String>();
+    sortedPropKeys = new PriorityQueue<>();
     for (var keys : unsortedPropKeys) {
       sortedPropKeys.add(keys);
     }
