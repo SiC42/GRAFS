@@ -5,9 +5,10 @@ import edu.leipzig.grafs.model.Edge;
 import edu.leipzig.grafs.model.EdgeContainer;
 import edu.leipzig.grafs.operators.transform.EdgeTransformation;
 import java.io.IOException;
+import java.io.Serializable;
 import org.apache.flink.api.common.functions.MapFunction;
 
-public class BenchmarkEdgeTransformation extends EdgeTransformation {
+public class BenchmarkEdgeTransformation extends EdgeTransformation implements Serializable {
 
   protected BenchmarkEdgeTransformation() {
     super(null);
@@ -19,10 +20,11 @@ public class BenchmarkEdgeTransformation extends EdgeTransformation {
 
   public BenchmarkEdgeTransformation(MapFunction<Edge, Edge> mapper, String meterName) {
     super(mapper);
+    var oldMapper = ecMapper;
     this.ecMapper = new MapFunctionWithMeter<>(meterName) {
       @Override
-      public EdgeContainer plainMap(EdgeContainer ec) throws Exception {
-        return ecMapper.map(ec);
+      protected EdgeContainer plainMap(EdgeContainer ec) throws Exception {
+        return oldMapper.map(ec);
       }
     };
   }
