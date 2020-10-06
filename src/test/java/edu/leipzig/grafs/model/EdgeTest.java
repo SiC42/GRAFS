@@ -77,23 +77,6 @@ public class EdgeTest {
     });
   }
 
-  @Test
-  public void createWithNullSourceIdTest() {
-    GradoopId edgeId = GradoopId.get();
-    GradoopId targetId = GradoopId.get();
-    assertThrows(NullPointerException.class, () -> {
-      EdgeFactory.initEdge(edgeId, null, targetId);
-    });
-  }
-
-  @Test
-  public void createWithNullTargetIdTest() {
-    GradoopId edgeId = GradoopId.get();
-    GradoopId sourceId = GradoopId.get();
-    assertThrows(NullPointerException.class, () -> {
-      EdgeFactory.initEdge(edgeId, sourceId, null);
-    });
-  }
 
   @Test
   public void createWithNullLabelTest() {
