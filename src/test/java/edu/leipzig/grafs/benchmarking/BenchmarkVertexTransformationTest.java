@@ -13,7 +13,7 @@ import java.util.HashSet;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
 
-public class VertexTransformationTest extends TransformationBaseTest {
+public class BenchmarkVertexTransformationTest extends TransformationBaseTest {
 
   final String testGraphString = "" +
       "g0:A  { a : 1 } [(:A { a : 1, b : 2 })-[:a { a : 1, b : 2 }]->(:B { c : 2 })]" +
@@ -45,7 +45,8 @@ public class VertexTransformationTest extends TransformationBaseTest {
     EdgeStream original = loader.createEdgeStreamByGraphVariables(getConfig(), "g0");
 
     var result = original
-        .callForStream(new BenchmarkVertexTransformation(VertexTransformationTest::transformVertex))
+        .callForStream(
+            new BenchmarkVertexTransformation(BenchmarkVertexTransformationTest::transformVertex))
         .collect();
 
     Set<Edge> actualEdgeResult = new HashSet<>();

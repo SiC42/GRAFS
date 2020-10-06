@@ -21,7 +21,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class IsomorphismTest extends MatchingTestBase {
+public class BenchmarkIsomorphismTest extends MatchingTestBase {
 
   private static FlinkConfig config;
   EdgeStream edgeStream;

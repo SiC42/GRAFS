@@ -13,7 +13,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import org.junit.jupiter.api.Test;
 
-public class SubgraphTest extends OperatorTestBase {
+public class BenchmarkSubgraphTest extends OperatorTestBase {
 
   @Test
   public void test() throws Exception {

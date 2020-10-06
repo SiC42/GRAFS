@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 import org.gradoop.common.model.impl.id.GradoopId;
 import org.junit.jupiter.api.Test;
 
-public class EdgeTransformationTest extends TransformationBaseTest {
+public class BenchmarkEdgeTransformationTest extends TransformationBaseTest {
 
   final String testGraphString = "" +
       "g0:A  { a : 1 } [(:A { a : 1, b : 2 })-[:a { a : 1, b : 2 }]->(:B { c : 2 })]" +
@@ -42,7 +42,8 @@ public class EdgeTransformationTest extends TransformationBaseTest {
 
     var inputStream = loader.createEdgeStreamByGraphVariables(getConfig(), "g0");
     var ecResultIterator = inputStream
-        .callForStream(new BenchmarkEdgeTransformation(EdgeTransformationTest::transformEdge))
+        .callForStream(
+            new BenchmarkEdgeTransformation(BenchmarkEdgeTransformationTest::transformEdge))
         .collect();
     List<GradoopId> resultEdgeIds = new ArrayList<>();
     while (ecResultIterator.hasNext()) {
