@@ -63,7 +63,7 @@ public class IsomorphismTest extends MatchingTestBase {
     var expectedEcs = graphLoader.createEdgeContainersByGraphVariables("iso");
 
     Iterator<EdgeContainer> matchedEcIt = edgeStream
-        .callForStream(new BenchmarkIsomorphism<>(queryGraphGdlStr,
+        .callForStream(new BenchmarkIsomorphism<>(queryPaperGraphGdlStr,
             TumblingEventTimeWindows.of(Time.milliseconds(10))))
         .collect();
     var actualEcs = new ArrayList<EdgeContainer>();

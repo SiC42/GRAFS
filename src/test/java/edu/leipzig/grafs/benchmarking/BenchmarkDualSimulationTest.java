@@ -97,7 +97,7 @@ public class BenchmarkDualSimulationTest extends MatchingTestBase {
     var expectedEcs = graphLoader.createEdgeContainersByGraphVariables("ds");
 
     Iterator<EdgeContainer> matchedEcIt = edgeStream
-        .callForStream(new BenchmarkDualSimulation<>(queryGraphGdlStr,
+        .callForStream(new BenchmarkDualSimulation<>(queryPaperGraphGdlStr,
             TumblingEventTimeWindows.of(Time.milliseconds(10))))
         .collect();
     var actualEcs = new ArrayList<EdgeContainer>();
