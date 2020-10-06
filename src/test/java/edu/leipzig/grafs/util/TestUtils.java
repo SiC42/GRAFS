@@ -499,5 +499,14 @@ public class TestUtils {
     Object o = ois.readObject();
     return cl.cast(o);
   }
+
+  public static void assertThatStreamContains(EdgeStream actualResultStream,
+      Collection<EdgeContainer> expectedResult)
+      throws IOException {
+    var ecIt = actualResultStream.collect();
+    var actualEcs = new ArrayList<EdgeContainer>();
+    ecIt.forEachRemaining(actualEcs::add);
+    assertThat(actualEcs, containsInAnyOrder(expectedResult.toArray()));
+  }
 }
 
