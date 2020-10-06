@@ -5,16 +5,33 @@ import org.gradoop.common.model.impl.id.GradoopId;
 import org.gradoop.common.model.impl.id.GradoopIdSet;
 import org.gradoop.common.model.impl.properties.Properties;
 
+/**
+ * Data model that represents an edge of a property graph model (with graph membership).
+ */
 public class Edge extends GraphElement {
 
   private GradoopId sourceId;
   private GradoopId targetId;
   private boolean reverse;
 
-  public Edge() {
+
+  /**
+   * Empty constructor for flink serialization.
+   */
+  protected Edge() {
     super();
   }
 
+  /**
+   * Creates an edge with the given information
+   *
+   * @param id         ID for the edge
+   * @param label      label for the edge
+   * @param sourceId   ID of the source vertex for the edge
+   * @param targetId   ID of the target vertex for the edge
+   * @param properties properties for the edge
+   * @param graphIds   graph ids for the edge
+   */
   public Edge(GradoopId id, String label, GradoopId sourceId, GradoopId targetId,
       Properties properties,
       GradoopIdSet graphIds) {
@@ -23,37 +40,73 @@ public class Edge extends GraphElement {
     this.targetId = targetId;
   }
 
-
+  /**
+   * Returns ID of the source vertex.
+   *
+   * @return ID of the source vertex
+   */
   public GradoopId getSourceId() {
     return sourceId;
   }
 
-  public void setSourceId(GradoopId newSource) {
-    if (sourceId != null) {
-      throw new RuntimeException("Source vertex id is already set. Make a new edge instead.");
+  /**
+   * Sets the source vertex ID for this edge. Only use this if the ID was not set yet.
+   *
+   * @param sourceId source vertex ID for this edge.
+   * @throws RuntimeException if the source ID is already set. Make a new edge instead.
+   */
+  public void setSourceId(GradoopId sourceId) throws RuntimeException {
+    if (this.sourceId != null) {
+      throw new RuntimeException("Source vertex ID is already set. Make a new edge instead.");
     }
-    sourceId = newSource;
+    this.sourceId = sourceId;
   }
 
+  /**
+   * Returns ID of the target vertex.
+   *
+   * @return ID of the target vertex
+   */
   public GradoopId getTargetId() {
     return targetId;
   }
 
-  public void setTargetId(GradoopId newTarget) {
-    if (targetId != null) {
-      throw new RuntimeException("Target vertex id is already set. Make a new edge instead.");
+  /**
+   * Sets the target vertex ID for this edge. Only use this if the ID was not set yet.
+   *
+   * @param targetId target vertex ID for this edge.
+   * @throws RuntimeException if the target ID is already set. Make a new edge instead.
+   */
+  public void setTargetId(GradoopId targetId) throws RuntimeException {
+    if (this.targetId != null) {
+      throw new RuntimeException("Target vertex ID is already set. Make a new edge instead.");
     }
-    targetId = newTarget;
+    this.targetId = targetId;
   }
 
+  /**
+   * Marks this edge as reverse. Reverse edges are used for certain parameters, where we group by
+   * the vertice in a edge, as we can't group them otherwise
+   */
   private void setReverse() {
     reverse = true;
   }
 
+  /**
+   * Returns true if this edge is marked as reverse.
+   *
+   * @return true if this edge is marked as reverse
+   */
   public boolean isReverse() {
     return reverse;
   }
 
+  /**
+   * Create a copy of this edge, with source and target vertex reversed and the appropriate flag
+   * set.
+   *
+   * @return "reverse" edge, with source and target vertex reversed and the appropriate flag set.
+   */
   public Edge createReverseEdge() {
     Edge reverseEdge = EdgeFactory
         .initEdge(this.getId(), this.getLabel(), this.getTargetId(), this.getSourceId(),

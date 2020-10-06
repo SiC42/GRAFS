@@ -7,19 +7,38 @@ import java.io.Serializable;
 import java.util.Objects;
 import org.gradoop.common.model.impl.id.GradoopId;
 
+/**
+ * Data model that encapsulates {@link Edge} and its {@link Vertex}. Used for separation purposes
+ * (e.g. an edge shouldn't be modified in vertex transformations and vice versa).
+ */
 public class EdgeContainer implements Serializable {
 
+  /**
+   * Serial UID. Number represents the position of the letters of this class name (EdgeContainer)
+   */
   private static final long serialVersionUID = 547531514201914518L;
   private Edge edge;
   private Vertex sourceVertex;
   private Vertex targetVertex;
 
+  /**
+   * Empty constructor used for serialization.
+   */
   protected EdgeContainer() {
 
   }
 
-
-  public EdgeContainer(Edge edge, Vertex sourceVertex, Vertex targetVertex) {
+  /**
+   * Constructs an <tt>EdgeContainer</tt> with the given information.
+   *
+   * @param edge         edge information
+   * @param sourceVertex source vertex of the given edge
+   * @param targetVertex target vertex of the given edge
+   * @throws RuntimeException when the IDs of the given vertices do not match with the corresponding
+   *                          IDs in the edge
+   */
+  public EdgeContainer(Edge edge, Vertex sourceVertex, Vertex targetVertex)
+      throws RuntimeException {
     if (!sourceVertex.getId().equals(edge.getSourceId())) {
       throw new RuntimeException(
           "ID of provided source vertex does not match with source id in provided edge.");
@@ -33,6 +52,14 @@ public class EdgeContainer implements Serializable {
     this.targetVertex = targetVertex;
   }
 
+  /**
+   * Constructs an <tt>EdgeContainer</tt> with the given information. Here, the edge is constructed
+   * using the ids in <tt>sourceVertex</tt> and <tt>targetVertex</tt> parameter
+   *
+   * @param prevEdge     edge information
+   * @param sourceVertex source vertex of the given edge
+   * @param targetVertex target vertex of the given edge
+   */
   public EdgeContainer(GraphElement prevEdge, GraphElement sourceVertex,
       GraphElement targetVertex) {
     this.sourceVertex = VertexFactory.createVertex(
@@ -51,24 +78,48 @@ public class EdgeContainer implements Serializable {
         prevEdge.getGraphIds());
   }
 
+  /**
+   * Returns edge of this container.
+   *
+   * @return edge of this container
+   */
   public Edge getEdge() {
     return edge;
   }
 
+  /**
+   * Returns source vertex of this container.
+   *
+   * @return source vertex of this container
+   */
   public Vertex getSourceVertex() {
     return sourceVertex;
   }
 
+  /**
+   * Returns target vertex of this container.
+   *
+   * @return target vertex of this container
+   */
   public Vertex getTargetVertex() {
     return targetVertex;
   }
 
+  /**
+   * Adds the given graph ID to the edge, source and target vertex.
+   *
+   * @param graphId graph ID that should be added to the elements
+   */
   public void addGraphId(GradoopId graphId) {
     this.edge.addGraphId(graphId);
     this.sourceVertex.addGraphId(graphId);
     this.targetVertex.addGraphId(graphId);
   }
 
+  /**
+   * Creates a copy of this <tt>EdgeContainer</tt>, but with source and target vertex reversed and
+   * the appropriate flags in edge set.
+   */
   public EdgeContainer createReverseEdgeContainer() {
     Edge reverseEdge = this.edge.createReverseEdge();
     return new EdgeContainer(reverseEdge, targetVertex, sourceVertex);
