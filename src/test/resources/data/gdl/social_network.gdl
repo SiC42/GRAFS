@@ -16,9 +16,9 @@
 (alice)-[:hasInterest]->(databases)
 (frank)-[:hasInterest]->(hadoop)
 (dave)-[:hasInterest]->(hadoop)
-(gdbs)-[:hasModerator]->(alice)
-(gdbs)-[:hasMember]->(alice)
-(gdbs)-[:hasMember]->(bob)
+(gdbs)-[gdbshmoa:hasModerator]->(alice)
+(gdbs)-[gdbshma:hasMember]->(alice)
+(gdbs)-[gdbshmb:hasMember]->(bob)
 
 (databases)<-[ghtd:hasTag]-(gdbs)-[ghtg1:hasTag]->(graphs)<-[ghtg2:hasTag]-(gps)-[ghth:hasTag]->(hadoop)
 
@@ -36,9 +36,9 @@ g2:Community {interest : "Graphs", vertexCount : 4} [
     (alice)<-[bka]-(bob)<-[ckb:knows {since : 2013}]-(carol)<-[dkc]-(dave)
 ]
 g3:Forum [
-    (gps)-[:hasModerator {since : 2013}]->(dave)
-    (gps)-[:hasMember]->(dave)
-    (gps)-[:hasMember]->(carol)-[ckd]->(dave)
+    (gps)-[gpshmod:hasModerator {since : 2013}]->(dave)
+    (gps)-[gpshmd:hasMember]->(dave)
+    (gps)-[gpshmc:hasMember]->(carol)-[ckd]->(dave)
 ]
 
 
