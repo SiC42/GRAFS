@@ -92,7 +92,6 @@ public class GroupingTest {
     AsciiGraphLoader loader = getSocialNetworkLoader();
 
     var edgeStream = loader.createEdgeStreamByGraphVariables(config, "g2");
-
     var finalStream = edgeStream
         .callForStream(
             Grouping.createGrouping()

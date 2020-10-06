@@ -39,7 +39,6 @@ class DualSimulationProcessTest extends MatchingTestBase {
     currentQueryVertex = queryLoader.getVertexByVariable("qc4");
     currentCandidates = candidateMap.getCandidatesFor(currentQueryVertex);
     assertThat(currentCandidates, containsInAnyOrder(expectedCandidates.toArray()));
-
   }
 
   @Test
