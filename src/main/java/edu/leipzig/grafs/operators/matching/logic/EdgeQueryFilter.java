@@ -1,6 +1,5 @@
 package edu.leipzig.grafs.operators.matching.logic;
 
-import static edu.leipzig.grafs.operators.matching.logic.ElementMatcher.matchesQueryElem;
 
 import edu.leipzig.grafs.model.Edge;
 import edu.leipzig.grafs.model.EdgeContainer;
@@ -27,13 +26,13 @@ public class EdgeQueryFilter implements FilterFunction<EdgeContainer> {
 
   public boolean filter(Edge edge, Vertex source, Vertex target) {
     for (var queryEdge : queryGraph.getEdges()) {
-      if (matchesQueryElem(queryEdge, edge)) {
+      if (ElementMatcher.matchesQueryElem(queryEdge, edge)) {
         var querySource = queryGraph.getSourceForEdge(queryEdge);
         var queryTarget = queryGraph.getTargetForEdge(queryEdge);
-        if (!matchesQueryElem(querySource, source)) {
+        if (!ElementMatcher.matchesQueryElem(querySource, source)) {
           continue;
         }
-        if (matchesQueryElem(queryTarget, target)) {
+        if (ElementMatcher.matchesQueryElem(queryTarget, target)) {
           return true;
         }
       }
@@ -43,7 +42,7 @@ public class EdgeQueryFilter implements FilterFunction<EdgeContainer> {
 
   public boolean filter(Edge edge) {
     for (var queryEdge : queryGraph.getEdges()) {
-      if (matchesQueryElem(queryEdge, edge)) {
+      if (ElementMatcher.matchesQueryElem(queryEdge, edge)) {
         return true;
       }
     }
