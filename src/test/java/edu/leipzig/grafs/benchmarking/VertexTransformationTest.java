@@ -2,11 +2,11 @@ package edu.leipzig.grafs.benchmarking;
 
 import static edu.leipzig.grafs.util.TestUtils.validateElementCollections;
 
+import edu.leipzig.grafs.benchmarking.transform.BenchmarkVertexTransformation;
 import edu.leipzig.grafs.model.Edge;
 import edu.leipzig.grafs.model.EdgeStream;
 import edu.leipzig.grafs.model.Vertex;
 import edu.leipzig.grafs.operators.transform.TransformationBaseTest;
-import edu.leipzig.grafs.operators.transform.VertexTransformation;
 import edu.leipzig.grafs.util.AsciiGraphLoader;
 import java.util.Collection;
 import java.util.HashSet;
@@ -45,7 +45,7 @@ public class VertexTransformationTest extends TransformationBaseTest {
     EdgeStream original = loader.createEdgeStreamByGraphVariables(getConfig(), "g0");
 
     var result = original
-        .callForStream(new VertexTransformation(VertexTransformationTest::transformVertex))
+        .callForStream(new BenchmarkVertexTransformation(VertexTransformationTest::transformVertex))
         .collect();
 
     Set<Edge> actualEdgeResult = new HashSet<>();
