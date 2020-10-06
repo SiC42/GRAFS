@@ -90,8 +90,6 @@ public class EdgeFactory implements Serializable {
       final Properties properties, GradoopIdSet graphIds) {
     Objects.requireNonNull(id, "Identifier was null");
     Objects.requireNonNull(label, "Label was null");
-    Objects.requireNonNull(sourceVertexId, "Source vertex id was null");
-    Objects.requireNonNull(targetVertexId, "Target vertex id was null");
     return new Edge(id, label, sourceVertexId, targetVertexId,
         properties, graphIds);
   }
