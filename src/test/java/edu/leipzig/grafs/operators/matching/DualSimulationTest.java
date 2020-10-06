@@ -1,36 +1,31 @@
 package edu.leipzig.grafs.operators.matching;
 
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsInAnyOrder;
-
 import edu.leipzig.grafs.model.EdgeContainer;
 import edu.leipzig.grafs.model.EdgeStream;
 import edu.leipzig.grafs.operators.matching.logic.MatchingTestBase;
 import edu.leipzig.grafs.util.FlinkConfig;
 import edu.leipzig.grafs.util.FlinkConfigBuilder;
+import edu.leipzig.grafs.util.TestUtils;
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.Iterator;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.windowing.assigners.TumblingEventTimeWindows;
 import org.apache.flink.streaming.api.windowing.time.Time;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class DualSimulationTest extends MatchingTestBase {
 
 
   private static FlinkConfig config;
-  EdgeStream edgeStream;
 
   @BeforeAll
   static void initConfig() {
     StreamExecutionEnvironment env =
         StreamExecutionEnvironment.getExecutionEnvironment();
+    env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
     config = new FlinkConfigBuilder(env)
         .withWaterMarkStrategy(WatermarkStrategy
             .<EdgeContainer>forBoundedOutOfOrderness(Duration.ZERO)
@@ -38,20 +33,8 @@ public class DualSimulationTest extends MatchingTestBase {
         .build();
   }
 
-  @BeforeEach
-  void init() {
-    var env = config.getExecutionEnvironment();
-    env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
-    FlinkConfig config = new FlinkConfigBuilder(env)
-        .withWaterMarkStrategy(WatermarkStrategy
-            .<EdgeContainer>forBoundedOutOfOrderness(Duration.ZERO)
-            .withTimestampAssigner((ec, timestamp) -> 0))
-        .build();
-    edgeStream = graphLoader.createEdgeStream(config);
-  }
-
   @Test
-  void test() throws Exception {
+  void testPaperGraph() throws Exception {
     var appendDsGraph = "ds {}["
         // ds-edges
         // from blue
@@ -92,16 +75,16 @@ public class DualSimulationTest extends MatchingTestBase {
         + "(v29)-[e35]->(v28)"
         + "(v29)-[e36]->(v30)"
         + "(v30)-[e37]->(v23)]";
-    graphLoader.appendFromString(appendDsGraph);
-    var expectedEcs = graphLoader.createEdgeContainersByGraphVariables("ds");
+    var loader = graphLoader;
+    EdgeStream edgeStream = loader.createEdgeStream(config);
+    loader.appendFromString(appendDsGraph);
+    var expectedEcs = loader.createEdgeContainersByGraphVariables("ds");
 
-    Iterator<EdgeContainer> matchedEcIt = edgeStream
-        .callForStream(new DualSimulation<>(queryGraphGdlStr,
-            TumblingEventTimeWindows.of(Time.milliseconds(10))))
-        .collect();
-    var actualEcs = new ArrayList<EdgeContainer>();
-    matchedEcIt.forEachRemaining(actualEcs::add);
-    assertThat(actualEcs, containsInAnyOrder(expectedEcs.toArray()));
+    var resultStream = edgeStream
+        .callForStream(new DualSimulation<>(queryPaperGraphGdlStr,
+            TumblingEventTimeWindows.of(Time.milliseconds(10))));
+    TestUtils.assertThatStreamContains(resultStream, expectedEcs);
+  }
   }
 
 }
