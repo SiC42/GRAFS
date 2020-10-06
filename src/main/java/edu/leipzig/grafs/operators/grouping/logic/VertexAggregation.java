@@ -53,22 +53,22 @@ public class VertexAggregation<W extends Window> extends VertexAggregationProces
         out.collect(ec); // No need to aggregate for reverse edges
       } else {
         Vertex finalVertex = VertexFactory.createVertex(aggregatedVertex);
-        EdgeContainer aggregatedEdge;
+        EdgeContainer aggregatedEC;
         var edge = ec.getEdge();
         if (aggregateMode.equals(AggregateMode.SOURCE)) {
           var newEdge = EdgeFactory.createEdge(edge.getLabel(),
               finalVertex.getId(),
               ec.getTargetVertex().getId(),
               edge.getProperties());
-          aggregatedEdge = new EdgeContainer(newEdge, finalVertex, ec.getTargetVertex());
+          aggregatedEC = new EdgeContainer(newEdge, finalVertex, ec.getTargetVertex());
         } else { // TARGET-mode
           var newEdge = EdgeFactory.createEdge(edge.getLabel(),
               ec.getSourceVertex().getId(),
               finalVertex.getId(),
               edge.getProperties());
-          aggregatedEdge = new EdgeContainer(newEdge, ec.getSourceVertex(), finalVertex);
+          aggregatedEC = new EdgeContainer(newEdge, ec.getSourceVertex(), finalVertex);
         }
-        out.collect(aggregatedEdge);
+        out.collect(aggregatedEC);
       }
     }
   }
