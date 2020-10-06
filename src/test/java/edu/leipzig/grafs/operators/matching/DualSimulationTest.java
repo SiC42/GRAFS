@@ -85,6 +85,142 @@ public class DualSimulationTest extends MatchingTestBase {
             TumblingEventTimeWindows.of(Time.milliseconds(10))));
     TestUtils.assertThatStreamContains(resultStream, expectedEcs);
   }
+
+  @Test
+  void testWithSocialGraph_personKnowsPerson() throws Exception {
+    var loader = TestUtils.getSocialNetworkLoader();
+    var queryStr = "(:Person)-[:knows]->(:Person)";
+    EdgeStream edgeStream = loader.createEdgeStream(config);
+    var appendDsString = "ds {}["
+        + "(alice)-[akb]->(bob)"
+        + "(bob)-[bka]->(alice)"
+        + "(bob)-[bkc]->(carol)"
+        + "(carol)-[ckb]->(bob)"
+        + "(carol)-[ckd]->(dave)"
+        + "(dave)-[dkc]->(carol)"
+        + "(eve)-[eka]->(alice)"
+        + "(eve)-[ekb]->(bob)"
+        + "(frank)-[fkc]->(carol)"
+        + "(frank)-[fkd]->(dave)"
+        + "]";
+    loader.appendFromString(appendDsString);
+    var expectedEcs = loader.createEdgeContainersByGraphVariables("ds");
+
+    var resultStream = edgeStream
+        .callForStream(new DualSimulation<>(queryStr,
+            TumblingEventTimeWindows.of(Time.milliseconds(10))));
+    TestUtils.assertThatStreamContains(resultStream, expectedEcs);
   }
 
+  @Test
+  void testWithSocialGraph_personKnowsPersonSince2014() throws Exception {
+    var loader = TestUtils.getSocialNetworkLoader();
+    var queryStr = "(:Person)-[:knows {since: 2014}]->(:Person)";
+    EdgeStream edgeStream = loader.createEdgeStream(config);
+    var appendDsString = "ds {}["
+        + "(alice)-[akb]->(bob)"
+        + "(bob)-[bka]->(alice)"
+        + "(carol)-[ckd]->(dave)"
+        + "(dave)-[dkc]->(carol)"
+        + "]";
+    loader.appendFromString(appendDsString);
+    var expectedEcs = loader.createEdgeContainersByGraphVariables("ds");
+
+    var resultStream = edgeStream
+        .callForStream(new DualSimulation<>(queryStr,
+            TumblingEventTimeWindows.of(Time.milliseconds(10))));
+    TestUtils.assertThatStreamContains(resultStream, expectedEcs);
+  }
+
+  @Test
+  void testWithSocialGraph_TripleWithPersonVertices() throws Exception {
+    var loader = TestUtils.getSocialNetworkLoader();
+    var queryStr = "(:Person)-[]->(:Person)";
+    EdgeStream edgeStream = loader.createEdgeStream(config);
+    var appendDsString = "ds {}["
+        + "(alice)-[akb]->(bob)"
+        + "(bob)-[bka]->(alice)"
+        + "(bob)-[bkc]->(carol)"
+        + "(carol)-[ckb]->(bob)"
+        + "(carol)-[ckd]->(dave)"
+        + "(dave)-[dkc]->(carol)"
+        + "(eve)-[eka]->(alice)"
+        + "(eve)-[ekb]->(bob)"
+        + "(frank)-[fkc]->(carol)"
+        + "(frank)-[fkd]->(dave)"
+        + "]";
+    loader.appendFromString(appendDsString);
+    var expectedEcs = loader.createEdgeContainersByGraphVariables("ds");
+
+    var resultStream = edgeStream
+        .callForStream(new DualSimulation<>(queryStr,
+            TumblingEventTimeWindows.of(Time.milliseconds(10))));
+    TestUtils.assertThatStreamContains(resultStream, expectedEcs);
+  }
+
+  @Test
+  void testWithSocialGraph_TripleWithKnowsEdge() throws Exception {
+    var loader = TestUtils.getSocialNetworkLoader();
+    var queryStr = "()-[:knows]->()";
+    EdgeStream edgeStream = loader.createEdgeStream(config);
+    var appendDsString = "ds {}["
+        + "(alice)-[akb]->(bob)"
+        + "(bob)-[bka]->(alice)"
+        + "(bob)-[bkc]->(carol)"
+        + "(carol)-[ckb]->(bob)"
+        + "(carol)-[ckd]->(dave)"
+        + "(dave)-[dkc]->(carol)"
+        + "(eve)-[eka]->(alice)"
+        + "(eve)-[ekb]->(bob)"
+        + "(frank)-[fkc]->(carol)"
+        + "(frank)-[fkd]->(dave)"
+        + "]";
+    loader.appendFromString(appendDsString);
+    var expectedEcs = loader.createEdgeContainersByGraphVariables("ds");
+
+    var resultStream = edgeStream
+        .callForStream(new DualSimulation<>(queryStr,
+            TumblingEventTimeWindows.of(Time.milliseconds(10))));
+    TestUtils.assertThatStreamContains(resultStream, expectedEcs);
+  }
+
+  @Test
+  void testWithSocialGraph_PersonsKnowEachOther() throws Exception {
+    var loader = TestUtils.getSocialNetworkLoader();
+    var queryStr = "(a)-[:knows]->(b)-[:knows]->(a)";
+    EdgeStream edgeStream = loader.createEdgeStream(config);
+    var appendDsString = "ds {}["
+        + "(alice)-[akb]->(bob)"
+        + "(bob)-[bka]->(alice)"
+        + "(bob)-[bkc]->(carol)"
+        + "(carol)-[ckb]->(bob)"
+        + "(carol)-[ckd]->(dave)"
+        + "(dave)-[dkc]->(carol)"
+        + "]";
+    loader.appendFromString(appendDsString);
+    var expectedEcs = loader.createEdgeContainersByGraphVariables("ds");
+
+    var resultStream = edgeStream
+        .callForStream(new DualSimulation<>(queryStr,
+            TumblingEventTimeWindows.of(Time.milliseconds(10))));
+    TestUtils.assertThatStreamContains(resultStream, expectedEcs);
+  }
+
+  @Test
+  void testWithSocialGraph_forumHasModerator() throws Exception {
+    var loader = TestUtils.getSocialNetworkLoader();
+    var queryStr = "(:Forum)-[:hasModerator]->()";
+    EdgeStream edgeStream = loader.createEdgeStream(config);
+    var appendDsString = "ds {}["
+        + "(gps)-[gpshmod]->(dave)"
+        + "(gdbs)-[gdbshmoa]->(alice)"
+        + "]";
+    loader.appendFromString(appendDsString);
+    var expectedEcs = loader.createEdgeContainersByGraphVariables("ds");
+
+    var resultStream = edgeStream
+        .callForStream(new DualSimulation<>(queryStr,
+            TumblingEventTimeWindows.of(Time.milliseconds(10))));
+    TestUtils.assertThatStreamContains(resultStream, expectedEcs);
+  }
 }
