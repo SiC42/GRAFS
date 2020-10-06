@@ -20,6 +20,9 @@ public class EdgeFactory implements Serializable {
    */
   private static final long serialVersionUID = 42L;
 
+  public static Edge createEdge() {
+    return initEdge(GradoopId.get(), null, null);
+  }
   public static Edge createEdge(GradoopId sourceVertexId,
       GradoopId targetVertexId) {
     return initEdge(GradoopId.get(), sourceVertexId, targetVertexId);
