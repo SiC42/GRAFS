@@ -1,5 +1,6 @@
 package edu.leipzig.grafs.operators.grouping.logic;
 
+import edu.leipzig.grafs.factory.EdgeFactory;
 import edu.leipzig.grafs.model.Edge;
 import edu.leipzig.grafs.model.EdgeContainer;
 import edu.leipzig.grafs.operators.grouping.functions.AggregateFunction;
@@ -26,7 +27,7 @@ public class EdgeAggregation<W extends Window> extends ElementAggregationProcess
   @Override
   public void process(String s, Context context, Iterable<EdgeContainer> ecIterable,
       Collector<EdgeContainer> out) {
-    var aggregatedEdge = new Edge();
+    var aggregatedEdge = EdgeFactory.createEdge();
 
     EdgeContainer lastEc = null;
 
