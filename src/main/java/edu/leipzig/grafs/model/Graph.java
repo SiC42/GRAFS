@@ -75,13 +75,14 @@ public class Graph implements Serializable {
   }
 
   public boolean addEdge(Edge edge) {
+  public boolean addEdge(Edge edge) throws VertexNotPartOfTheGraphException {
     if (!vertexMap.containsKey(edge.getSourceId())) {
-      System.out.println(vertices);
-      throw new RuntimeException(
+      throw new VertexNotPartOfTheGraphException(
           String.format("No source vertex with id %s found for edge %s", edge.getSourceId(), edge));
     }
     if (!vertexMap.containsKey(edge.getTargetId())) {
-      throw new RuntimeException(String.format("No target vertex found for edge %s", edge));
+      throw new VertexNotPartOfTheGraphException(
+          String.format("No target vertex found for edge %s", edge));
     }
     boolean isNewEdge = edges.add(edge);
     if (isNewEdge) {
@@ -92,6 +93,7 @@ public class Graph implements Serializable {
   }
 
   public boolean addEdges(Collection<Edge> edges) {
+  public boolean addEdges(Collection<Edge> edges) throws VertexNotPartOfTheGraphException {
     var addedNewEdge = false;
     for (var edge : edges) {
       if (addEdge(edge)) {
