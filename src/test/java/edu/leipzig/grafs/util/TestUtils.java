@@ -12,6 +12,7 @@ import edu.leipzig.grafs.model.EdgeStream;
 import edu.leipzig.grafs.model.Element;
 import edu.leipzig.grafs.model.GraphElement;
 import edu.leipzig.grafs.operators.grouping.functions.AggregateFunction;
+import edu.leipzig.grafs.operators.grouping.functions.BaseAggregateFunction;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -82,7 +83,7 @@ public class TestUtils {
   public static final short SHORT_VAL_e = (short) 23;
   public static final Set<PropertyValue> SET_VAL_f = new HashSet<>();
   public static final Comparator<Element> ID_COMPARATOR = Comparator.comparing(Element::getId);
-  public static final Function<String, AggregateFunction> STRING_CONC_FUNC = (key) -> new AggregateFunction() {
+  public static final Function<String, AggregateFunction> STRING_CONC_FUNC = (key) -> new BaseAggregateFunction() {
     @Override
     public PropertyValue aggregate(PropertyValue aggregate, PropertyValue increment) {
       return PropertyValue.create(aggregate.getString() + increment.getString());
@@ -98,7 +99,7 @@ public class TestUtils {
       return element.getPropertyValue(key);
     }
   };
-  public static final Function<String, AggregateFunction> INT_ADD_FUNC = (key) -> new AggregateFunction() {
+  public static final Function<String, AggregateFunction> INT_ADD_FUNC = (key) -> new BaseAggregateFunction() {
     @Override
     public PropertyValue aggregate(PropertyValue aggregate, PropertyValue increment) {
       return PropertyValueUtils.Numeric.add(aggregate, increment);
