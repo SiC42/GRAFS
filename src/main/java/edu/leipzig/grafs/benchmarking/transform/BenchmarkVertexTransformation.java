@@ -10,7 +10,6 @@ import org.apache.flink.api.common.functions.MapFunction;
 
 public class BenchmarkVertexTransformation extends VertexTransformation implements Serializable {
 
-
   protected BenchmarkVertexTransformation() {
     super(null);
   }
