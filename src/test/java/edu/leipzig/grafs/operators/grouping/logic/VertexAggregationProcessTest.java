@@ -33,7 +33,7 @@ class VertexAggregationProcessTest {
     curV.setProperty(aggKey, val2);
     var expectedProp = aggFunc.aggregate(val1, val2);
 
-    var resultV = vAggProcess.aggregateVertex(aggMap, aggV, curV);
+    var resultV = vAggProcess.aggregateVertex(aggV, curV, aggMap);
 
     assertThat(resultV.getProperties().size(), is(1));
     assertThat(resultV.getPropertyValue(aggKey), is(equalTo(expectedProp)));
@@ -57,7 +57,7 @@ class VertexAggregationProcessTest {
     curV.setProperty(aggKey, val2);
     var expected = aggV.getPropertyValue(aggKey);
 
-    var resultV = vAggProcess.aggregateVertex(aggMap, aggV, curV);
+    var resultV = vAggProcess.aggregateVertex(aggV, curV, aggMap);
     assertThat(resultV.getPropertyValue(aggKey), is(equalTo(expected)));
 
   }

@@ -44,7 +44,7 @@ public class VertexAggregation<W extends Window> extends VertexAggregationProces
         aggregatedVertex = (AggregatedVertex) setGroupedProperties(vertexGroupInfo,
             aggregatedVertex, curVertex);
       }
-      aggregatedVertex = aggregateVertex(aggregateFunctions, aggregatedVertex, curVertex);
+      aggregatedVertex = aggregateVertex(aggregatedVertex, curVertex, aggregateFunctions);
     }
     aggregatedVertex = (AggregatedVertex) checkForMissingAggregationsAndApply(aggregateFunctions,
         aggregatedVertex);

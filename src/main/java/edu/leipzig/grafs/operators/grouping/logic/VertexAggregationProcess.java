@@ -9,9 +9,8 @@ import org.apache.flink.streaming.api.windowing.windows.Window;
 abstract class VertexAggregationProcess<W extends Window> extends
     ElementAggregationProcess<W> {
 
-  protected AggregatedVertex aggregateVertex(Set<AggregateFunction> aggregateFunctions,
-      AggregatedVertex aggregatedVertex,
-      Vertex curVertex) {
+  AggregatedVertex aggregateVertex(AggregatedVertex aggregatedVertex,
+      Vertex curVertex, Set<AggregateFunction> aggregateFunctions) {
     if (aggregatedVertex.isAlreadyAggregated(curVertex)) {
       return aggregatedVertex;
     } else {
