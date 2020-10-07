@@ -48,28 +48,31 @@ public class VertexAggregation<W extends Window> extends VertexAggregationProces
     }
     aggregatedVertex = (AggregatedVertex) checkForMissingAggregationsAndApply(aggregateFunctions,
         aggregatedVertex);
+
+    // build new edge containers using the aggregated vertice
     for (EdgeContainer ec : ecIterable) {
       if (ec.getEdge().isReverse()) {
         out.collect(ec); // No need to aggregate for reverse edges
-      } else {
-        Vertex finalVertex = VertexFactory.createVertex(aggregatedVertex);
-        EdgeContainer aggregatedEC;
-        var edge = ec.getEdge();
-        if (aggregateMode.equals(AggregateMode.SOURCE)) {
-          var newEdge = EdgeFactory.createEdge(edge.getLabel(),
-              finalVertex.getId(),
-              ec.getTargetVertex().getId(),
-              edge.getProperties());
-          aggregatedEC = new EdgeContainer(newEdge, finalVertex, ec.getTargetVertex());
-        } else { // TARGET-mode
-          var newEdge = EdgeFactory.createEdge(edge.getLabel(),
-              ec.getSourceVertex().getId(),
-              finalVertex.getId(),
-              edge.getProperties());
-          aggregatedEC = new EdgeContainer(newEdge, ec.getSourceVertex(), finalVertex);
-        }
-        out.collect(aggregatedEC);
+        continue;
       }
+      Vertex finalVertex = VertexFactory.createVertex(aggregatedVertex);
+      EdgeContainer aggregatedEC;
+      var edge = ec.getEdge();
+      if (aggregateMode.equals(AggregateMode.SOURCE)) {
+        var newEdge = EdgeFactory.createEdge(edge.getLabel(),
+            finalVertex.getId(),
+            ec.getTargetVertex().getId(),
+            edge.getProperties());
+        aggregatedEC = new EdgeContainer(newEdge, finalVertex, ec.getTargetVertex());
+      } else { // TARGET-mode
+        var newEdge = EdgeFactory.createEdge(edge.getLabel(),
+            ec.getSourceVertex().getId(),
+            finalVertex.getId(),
+            edge.getProperties());
+        aggregatedEC = new EdgeContainer(newEdge, ec.getSourceVertex(), finalVertex);
+      }
+      out.collect(aggregatedEC);
+
     }
   }
 
