@@ -9,7 +9,8 @@ import org.gradoop.common.model.impl.properties.Property;
 import org.gradoop.common.model.impl.properties.PropertyValue;
 
 /**
- * Data model that represents a base element of a property graph model (with graph membership).
+ * Data model represents the base element of a graph. While not part of the property graph model,
+ * this abstraction eases the modeling of other elements, namely {@link Edge} & {@link Vertex}.
  */
 public abstract class Element implements Serializable {
 
@@ -169,6 +170,13 @@ public abstract class Element implements Serializable {
         properties == null ? "" : properties);
   }
 
+  /**
+   * Returns <tt>true</tt>> if the given object is an <tt>Element</tt> and the IDs match with this
+   * element.
+   *
+   * @param o object to be tested for equality
+   * @return <tt>true</tt> if the other object is an <tt>Element</tt> and the IDs match.
+   */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -185,7 +193,7 @@ public abstract class Element implements Serializable {
 
   @Override
   public int hashCode() {
-    return Objects.hash(properties, label);
+    return id.hashCode();
   }
 
   public PropertyValue removeProperty(String key) {

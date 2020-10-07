@@ -1,12 +1,13 @@
 package edu.leipzig.grafs.model;
 
+import edu.leipzig.grafs.exceptions.VerticesAlreadySetException;
 import edu.leipzig.grafs.factory.EdgeFactory;
 import org.gradoop.common.model.impl.id.GradoopId;
 import org.gradoop.common.model.impl.id.GradoopIdSet;
 import org.gradoop.common.model.impl.properties.Properties;
 
 /**
- * Data model that represents an edge of a property graph model (with graph membership).
+ * Data model that represents the edge in the property graph model (with graph membership).
  */
 public class Edge extends GraphElement {
 
