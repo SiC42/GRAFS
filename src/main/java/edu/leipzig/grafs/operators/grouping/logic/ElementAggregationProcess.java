@@ -1,5 +1,6 @@
 package edu.leipzig.grafs.operators.grouping.logic;
 
+import edu.leipzig.grafs.exceptions.KeyOverlapException;
 import edu.leipzig.grafs.model.EdgeContainer;
 import edu.leipzig.grafs.model.Element;
 import edu.leipzig.grafs.operators.grouping.functions.AggregateFunction;
@@ -14,11 +15,11 @@ public abstract class ElementAggregationProcess<W extends Window> extends
 
   protected void checkAggregationAndGroupingKeyIntersection(
       Set<AggregateFunction> aggregateFunctions,
-      GroupingInformation elemGroupInfo) {
+      GroupingInformation elemGroupInfo) throws KeyOverlapException {
     for (var function : aggregateFunctions) {
       var key = function.getAggregatePropertyKey();
       if (elemGroupInfo.getKeys().contains(key)) {
-        throw new RuntimeException(
+        throw new KeyOverlapException(
             String.format("Aggregation key '%s' is also present in grouping keys", key));
       }
     }
