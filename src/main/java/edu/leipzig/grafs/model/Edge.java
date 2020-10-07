@@ -53,11 +53,12 @@ public class Edge extends GraphElement {
    * Sets the source vertex ID for this edge. Only use this if the ID was not set yet.
    *
    * @param sourceId source vertex ID for this edge.
-   * @throws RuntimeException if the source ID is already set. Make a new edge instead.
+   * @throws VerticesAlreadySetException if the source ID is already set. Make a new edge instead.
    */
-  public void setSourceId(GradoopId sourceId) throws RuntimeException {
+  public void setSourceId(GradoopId sourceId) throws VerticesAlreadySetException {
     if (this.sourceId != null) {
-      throw new RuntimeException("Source vertex ID is already set. Make a new edge instead.");
+      throw new VerticesAlreadySetException(
+          "Source vertex ID is already set. Make a new edge instead.");
     }
     this.sourceId = sourceId;
   }
@@ -75,11 +76,12 @@ public class Edge extends GraphElement {
    * Sets the target vertex ID for this edge. Only use this if the ID was not set yet.
    *
    * @param targetId target vertex ID for this edge.
-   * @throws RuntimeException if the target ID is already set. Make a new edge instead.
+   * @throws VerticesAlreadySetException if the target ID is already set. Make a new edge instead.
    */
-  public void setTargetId(GradoopId targetId) throws RuntimeException {
+  public void setTargetId(GradoopId targetId) throws VerticesAlreadySetException {
     if (this.targetId != null) {
-      throw new RuntimeException("Target vertex ID is already set. Make a new edge instead.");
+      throw new VerticesAlreadySetException(
+          "Target vertex ID is already set. Make a new edge instead.");
     }
     this.targetId = targetId;
   }
