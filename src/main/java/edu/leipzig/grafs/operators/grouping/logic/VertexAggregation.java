@@ -12,12 +12,27 @@ import java.util.Set;
 import org.apache.flink.streaming.api.windowing.windows.Window;
 import org.apache.flink.util.Collector;
 
+/**
+ * Provides the ability to aggregate on vertices of the streams by providing the {@link
+ * #process(String, Context, Iterable, Collector)} method.
+ *
+ * @param <W> the type of window to be used for the grouping
+ */
 public class VertexAggregation<W extends Window> extends VertexAggregationProcess<W> {
 
   private final GroupingInformation vertexGroupInfo;
   private final Set<AggregateFunction> aggregateFunctions;
   private final AggregateMode aggregateMode;
 
+  /**
+   * Constructs the vertex aggregation with the given information.
+   *
+   * @param vertexGroupInfo    grouping information used to determine which vertex are in a group
+   * @param aggregateFunctions aggregate functions that are used to calculate the aggregates and set
+   *                           them in the aggregated vertex
+   * @param aggregateMode      determines if the source or target vertex of the edge stream should
+   *                           be aggregated
+   */
   public VertexAggregation(GroupingInformation vertexGroupInfo,
       Set<AggregateFunction> aggregateFunctions, AggregateMode aggregateMode) {
     checkAggregationAndGroupingKeyIntersection(aggregateFunctions, vertexGroupInfo);
@@ -26,11 +41,21 @@ public class VertexAggregation<W extends Window> extends VertexAggregationProces
     this.aggregateMode = aggregateMode;
   }
 
+  /**
+   * Aggregates all vertices in the provided window using the given information in the constructor.
+   *
+   * @param obsoleteStr     the key selector string, which is not used in this process
+   * @param obsoleteContext context, which is not used in this process
+   * @param ecIterable      iterable of the edge containers in this window
+   * @param out             the collector in which the aggregated edge container are collected
+   */
   @Override
-  public void process(String s, Context context, Iterable<EdgeContainer> ecIterable,
+  public void process(String obsoleteStr, Context obsoleteContext,
+      Iterable<EdgeContainer> ecIterable,
       Collector<EdgeContainer> out) {
     var aggregatedVertex = new AggregatedVertex();
 
+    // determine the aggregated vertice
     var isInitialAggregation = true;
     for (EdgeContainer ec : ecIterable) {
       Vertex curVertex;

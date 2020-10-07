@@ -21,10 +21,12 @@ public class EdgeContainerKeySelector implements KeySelector<EdgeContainer, Stri
   private final AggregateMode makeKeyFor;
 
   /**
-   * Constructors the key selector
-   * @param vertexGi
-   * @param edgeGi
-   * @param makeKeyFor
+   * Constructors the key selector using the given information.
+   *
+   * @param vertexGi   information on which the vertices should be grouped upon
+   * @param edgeGi     information on which the edges should be grouped upon
+   * @param makeKeyFor determines if the key should be made for the source vertex, target vertex or
+   *                   edge
    */
   public EdgeContainerKeySelector(GroupingInformation vertexGi, GroupingInformation edgeGi,
       AggregateMode makeKeyFor) {
@@ -33,6 +35,19 @@ public class EdgeContainerKeySelector implements KeySelector<EdgeContainer, Stri
     this.makeKeyFor = makeKeyFor;
   }
 
+  /**
+   * Constructs the key for the given edge container using the information provided in the
+   * constructor.
+   * <p>
+   * Two edge container generate the same key, if the selected element (i.e. the element for which
+   * the key is made for via {@link AggregateMode}) are in the same group using the grouping
+   * information.
+   * <p>
+   * The default toString methods of the elements are used for this to ease debugging.
+   *
+   * @param ec edge container for which the key should be made
+   * @return key for the edge container that represents the group of the selected element
+   */
   @Override
   public String getKey(EdgeContainer ec) {
     final String EMPTY_VERTEX = "()";
