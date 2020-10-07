@@ -8,10 +8,18 @@ import org.gradoop.common.model.impl.properties.PropertyValue;
  */
 public abstract class BaseAggregateFunction implements AggregateFunction {
 
+  private static final String AGGREGATE_DEFAULT_KEY = "aggregate";
   /**
    * Key of the aggregate property.
    */
   private String aggregatePropertyKey;
+
+  /**
+   * Creates a new instance of a base aggregate function.
+   */
+  public BaseAggregateFunction() {
+    this(AGGREGATE_DEFAULT_KEY);
+  }
 
   /**
    * Creates a new instance of a base aggregate function.
