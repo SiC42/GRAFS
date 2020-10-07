@@ -10,11 +10,11 @@ import edu.leipzig.grafs.util.AsciiGraphLoader;
 import java.util.Collection;
 import org.junit.jupiter.api.Test;
 
-class EdgeKeySelectorTest {
+class EdgeContainerKeySelectorTest {
 
   private final EdgeContainer ec;
 
-  public EdgeKeySelectorTest() {
+  public EdgeContainerKeySelectorTest() {
     AsciiGraphLoader loader = AsciiGraphLoader.fromString(
         "(a18:v {n : \"A\", a : 18})," +
             "(b17:v {n : \"B\", a : 17})," +
@@ -29,7 +29,7 @@ class EdgeKeySelectorTest {
   void getKey_forSourceVertex() {
     GroupingInformation gi = new GroupingInformation();
     gi.addKey("n");
-    EdgeKeySelector eks = new EdgeKeySelector(gi, null, AggregateMode.SOURCE);
+    EdgeContainerKeySelector eks = new EdgeContainerKeySelector(gi, null, AggregateMode.SOURCE);
     assertThat(eks.getKey(ec), equalTo("({n:A})-[]->()"));
   }
 
@@ -37,7 +37,7 @@ class EdgeKeySelectorTest {
   void getKey_testNumberProperty() {
     GroupingInformation gi = new GroupingInformation();
     gi.addKey("a");
-    EdgeKeySelector eks = new EdgeKeySelector(gi, null, AggregateMode.SOURCE);
+    EdgeContainerKeySelector eks = new EdgeContainerKeySelector(gi, null, AggregateMode.SOURCE);
     assertThat(eks.getKey(ec), equalTo("({a:18})-[]->()"));
   }
 
@@ -45,7 +45,7 @@ class EdgeKeySelectorTest {
   void getKey_testLabelForVertex() {
     GroupingInformation gi = new GroupingInformation();
     gi.useLabel(true);
-    EdgeKeySelector eks = new EdgeKeySelector(gi, null, AggregateMode.SOURCE);
+    EdgeContainerKeySelector eks = new EdgeContainerKeySelector(gi, null, AggregateMode.SOURCE);
     assertThat(eks.getKey(ec), equalTo("(:v)-[]->()"));
   }
 
@@ -53,7 +53,7 @@ class EdgeKeySelectorTest {
   void getKey_forTargetVertex() {
     GroupingInformation gi = new GroupingInformation();
     gi.addKey("n");
-    EdgeKeySelector eks = new EdgeKeySelector(gi, null, AggregateMode.TARGET);
+    EdgeContainerKeySelector eks = new EdgeContainerKeySelector(gi, null, AggregateMode.TARGET);
     assertThat(eks.getKey(ec), equalTo("()-[]->({n:B})"));
   }
 
@@ -63,7 +63,7 @@ class EdgeKeySelectorTest {
     vgi.addKey("n");
     GroupingInformation egi = new GroupingInformation();
     egi.addKey("t");
-    EdgeKeySelector eks = new EdgeKeySelector(vgi, egi, AggregateMode.EDGE);
+    EdgeContainerKeySelector eks = new EdgeContainerKeySelector(vgi, egi, AggregateMode.EDGE);
     assertThat(eks.getKey(ec), equalTo("({n:A})-[{t:5}]->({n:B})"));
   }
 
@@ -72,14 +72,14 @@ class EdgeKeySelectorTest {
     GroupingInformation vgi = new GroupingInformation();
     GroupingInformation egi = new GroupingInformation();
     egi.useLabel(true);
-    EdgeKeySelector eks = new EdgeKeySelector(vgi, egi, AggregateMode.EDGE);
+    EdgeContainerKeySelector eks = new EdgeContainerKeySelector(vgi, egi, AggregateMode.EDGE);
     assertThat(eks.getKey(ec), equalTo("()-[:e]->()"));
   }
 
   @Test
   void getKey_forEdgeWithoutEdgeGroupingInformation() {
     GroupingInformation vgi = new GroupingInformation();
-    EdgeKeySelector eks = new EdgeKeySelector(vgi, null, AggregateMode.EDGE);
+    EdgeContainerKeySelector eks = new EdgeContainerKeySelector(vgi, null, AggregateMode.EDGE);
     assertThat(eks.getKey(ec), equalTo("()-[:e {a:8,t:5,x:value}]->()"));
   }
 }

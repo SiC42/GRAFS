@@ -3,7 +3,7 @@ package edu.leipzig.grafs.operators.grouping;
 import edu.leipzig.grafs.model.EdgeContainer;
 import edu.leipzig.grafs.operators.grouping.functions.AggregateFunction;
 import edu.leipzig.grafs.operators.grouping.logic.EdgeAggregation;
-import edu.leipzig.grafs.operators.grouping.logic.EdgeKeySelector;
+import edu.leipzig.grafs.operators.grouping.logic.EdgeContainerKeySelector;
 import edu.leipzig.grafs.operators.grouping.logic.VertexAggregation;
 import edu.leipzig.grafs.operators.grouping.model.AggregateMode;
 import edu.leipzig.grafs.operators.grouping.model.GroupingInformation;
@@ -108,7 +108,7 @@ public class Grouping<W extends Window> implements GraphToGraphOperatorI {
   private WindowedStream<EdgeContainer, String, W> createKeyedWindowedStream(
       DataStream<EdgeContainer> es, AggregateMode mode) {
     var windowedStream = es
-        .keyBy(new EdgeKeySelector(vertexGi, edgeGi, mode))
+        .keyBy(new EdgeContainerKeySelector(vertexGi, edgeGi, mode))
         .window(window);
     if (trigger != null) {
       windowedStream = windowedStream.trigger(trigger);

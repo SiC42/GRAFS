@@ -10,13 +10,23 @@ import java.util.Objects;
 import java.util.TreeSet;
 import org.apache.flink.api.java.functions.KeySelector;
 
-public class EdgeKeySelector implements KeySelector<EdgeContainer, String> {
+/**
+ * Key selector used for grouping that returns a string representation of an {@link EdgeContainer}
+ * using the grouping information.
+ */
+public class EdgeContainerKeySelector implements KeySelector<EdgeContainer, String> {
 
   private final GroupingInformation vertexGi;
   private final GroupingInformation edgeGi;
   private final AggregateMode makeKeyFor;
 
-  public EdgeKeySelector(GroupingInformation vertexGi, GroupingInformation edgeGi,
+  /**
+   * Constructors the key selector
+   * @param vertexGi
+   * @param edgeGi
+   * @param makeKeyFor
+   */
+  public EdgeContainerKeySelector(GroupingInformation vertexGi, GroupingInformation edgeGi,
       AggregateMode makeKeyFor) {
     this.vertexGi = Objects.requireNonNull(vertexGi, "grouping information for vertex was null");
     this.edgeGi = edgeGi;
