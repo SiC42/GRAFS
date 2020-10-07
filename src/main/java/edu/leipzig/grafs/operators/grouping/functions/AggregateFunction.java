@@ -30,7 +30,5 @@ public interface AggregateFunction extends Serializable {
    */
   PropertyValue getIncrement(Element element);
 
-  default PropertyValue getDefaultValue() {
-    return PropertyValue.NULL_VALUE;
-  }
+  PropertyValue getDefaultValue();
 }
