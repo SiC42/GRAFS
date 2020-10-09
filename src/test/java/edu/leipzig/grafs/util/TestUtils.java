@@ -484,6 +484,33 @@ public class TestUtils {
     return (T1) (args != null ? m.invoke(object, args) : m.invoke(object));
   }
 
+  /**
+   * Uses reflection to call a private void method with arguments.
+   *
+   * @param clazz      class which has the method
+   * @param object     instance of the class
+   * @param methodName method name
+   * @param args       method arguments
+   * @param <Type>     type of the calling class
+   * @throws Exception in case anything goes wrong
+   */
+  @SuppressWarnings("unchecked")
+  public static <Type> void callVoid(
+      Class<Type> clazz,
+      Type object,
+      String methodName,
+      Class<?>[] parameterTypes, Object[] args)
+      throws Exception {
+    Method m = parameterTypes != null ?
+        clazz.getDeclaredMethod(methodName, parameterTypes) : clazz.getDeclaredMethod(methodName);
+    m.setAccessible(true);
+    if (args != null) {
+      m.invoke(object, args);
+    } else {
+      m.invoke(object);
+    }
+  }
+
   public static <T extends Serializable> byte[] pickle(T obj)
       throws IOException {
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
