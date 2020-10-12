@@ -10,6 +10,8 @@ import org.apache.flink.api.common.typeinfo.TypeInformation;
 
 public class EdgeContainerDeserializationSchema implements DeserializationSchema<EdgeContainer> {
 
+  public static final String END_OF_STREAM_LABEL = "_endOfStream";
+
   @Override
   public EdgeContainer deserialize(byte[] bytes) {
     try {
@@ -26,7 +28,8 @@ public class EdgeContainerDeserializationSchema implements DeserializationSchema
 
   @Override
   public boolean isEndOfStream(EdgeContainer edgeContainer) {
-    return false;
+    var edge = edgeContainer.getEdge();
+    return edgeContainer.getEdge().getLabel().equals(END_OF_STREAM_LABEL);
   }
 
   @Override
