@@ -1,13 +1,16 @@
 package edu.leipzig.grafs.setup.writer;
 
+import edu.leipzig.grafs.factory.EdgeFactory;
 import edu.leipzig.grafs.model.Edge;
 import edu.leipzig.grafs.model.EdgeContainer;
 import edu.leipzig.grafs.model.Vertex;
+import edu.leipzig.grafs.serialization.EdgeContainerDeserializationSchema;
 import edu.leipzig.grafs.setup.reader.EdgeReader;
 import edu.leipzig.grafs.setup.reader.VertexReader;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.lang.annotation.Target;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -75,6 +78,17 @@ public class VertexAndEdgesToOneEdgeContainerFileWriter {
                   var ec = new EdgeContainer(edge, source, target);
                   oos.writeObject(ec);
                 }
+
+                // send a last object that is not part of the analysis, but marks end of stream
+                var source = new Vertex();
+                var END_OF_STREAM_LABEL = EdgeContainerDeserializationSchema.END_OF_STREAM_LABEL;
+                source.setLabel(END_OF_STREAM_LABEL);
+                var target = new Vertex();
+                target.setLabel(END_OF_STREAM_LABEL);
+                edge = EdgeFactory.createEdge(source, target);
+                edge.setLabel(END_OF_STREAM_LABEL);
+                oos.writeObject(new EdgeContainer(edge, source, target));
+
                 System.out.print("Finished file '" + file.toString() + "'.");
                 numberOfEdges.addAndGet(i);
               } catch (IOException e) {
