@@ -4,9 +4,29 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>edu.uni-leipzig</groupId>
+  <groupId>edu.leipzig</groupId>
   <artifactId>grafs-data-setup</artifactId>
-  <version>1.0-SNAPSHOT</version>
+  <version>0.1</version>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>11</source>
+          <target>11</target>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 
-
+  <dependencies>
+    <dependency>
+      <groupId>edu.leipzig</groupId>
+      <artifactId>grafs</artifactId>
+      <version>0.1</version>
+      <scope>system</scope>
+      <systemPath>${project.basedir}/../grafs-impl/out/artifacts/grafs_jar/grafs.jar</systemPath>
+    </dependency>
+  </dependencies>
 </project>
