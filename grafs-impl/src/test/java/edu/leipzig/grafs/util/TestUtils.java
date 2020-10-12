@@ -1,5 +1,7 @@
 package edu.leipzig.grafs.util;
 
+import static org.hamcrest.CoreMatchers.hasItem;
+import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasSize;
@@ -40,7 +42,6 @@ import java.util.function.Function;
 import org.gradoop.common.model.impl.id.GradoopId;
 import org.gradoop.common.model.impl.properties.PropertyValue;
 import org.gradoop.common.model.impl.properties.PropertyValueUtils;
-import org.junit.Assert;
 
 
 public class TestUtils {
@@ -249,9 +250,7 @@ public class TestUtils {
   public static void validateIdInequality(Collection<GradoopId> originalCollection,
       Collection<GradoopId> newCollection) {
     for (var originalId : originalCollection) {
-      for (var newId : newCollection) {
-        Assert.assertNotEquals("id in both collections", originalId, newId);
-      }
+      assertThat(newCollection, not(hasItem(originalId)));
     }
   }
 
