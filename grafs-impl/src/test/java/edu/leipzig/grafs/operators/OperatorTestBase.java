@@ -27,8 +27,6 @@ public abstract class OperatorTestBase {
 
   private static final long TASKMANAGER_MEMORY_SIZE_MB = 512;
 
-  @ClassRule
-  public static MiniClusterWithClientResource miniClusterResource = getMiniCluster();
   /**
    * Flink Execution Environment
    */
@@ -46,16 +44,6 @@ public abstract class OperatorTestBase {
     this.env = StreamExecutionEnvironment.getExecutionEnvironment();
   }
 
-  private static MiniClusterWithClientResource getMiniCluster() {
-    Configuration config = new Configuration();
-    config.setLong("taskmanager.memory.size", TASKMANAGER_MEMORY_SIZE_MB);
-
-    return new MiniClusterWithClientResource(
-        new MiniClusterResourceConfiguration.Builder()
-            .setNumberTaskManagers(1)
-            .setNumberSlotsPerTaskManager(DEFAULT_PARALLELISM)
-            .setConfiguration(config).build());
-  }
 
   /**
    * Returns the execution environment for the tests
