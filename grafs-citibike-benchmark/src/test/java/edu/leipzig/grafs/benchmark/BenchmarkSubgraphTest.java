@@ -1,11 +1,10 @@
-package edu.leipzig.grafs.benchmarking;
+package edu.leipzig.grafs.benchmark;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import edu.leipzig.grafs.benchmarking.subgraph.BenchmarkSubgraph;
+import edu.leipzig.grafs.benchmark.operators.subgraph.BenchmarkSubgraph;
 import edu.leipzig.grafs.model.EdgeContainer;
 import edu.leipzig.grafs.model.EdgeStream;
-import edu.leipzig.grafs.operators.OperatorTestBase;
 import edu.leipzig.grafs.operators.subgraph.Subgraph.Strategy;
 import edu.leipzig.grafs.util.AsciiGraphLoader;
 import java.util.Collection;

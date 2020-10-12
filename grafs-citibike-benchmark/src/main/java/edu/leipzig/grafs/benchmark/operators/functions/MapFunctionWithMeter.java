@@ -1,8 +1,10 @@
-package edu.leipzig.grafs.benchmarking.functions;
+package edu.leipzig.grafs.benchmark.operators.functions;
 
+import edu.leipzig.grafs.benchmarking.functions.FunctionWithMeter;
 import org.apache.flink.api.common.functions.MapFunction;
 
-public abstract class MapFunctionWithMeter<IN, OUT> extends FunctionWithMeter implements
+public abstract class MapFunctionWithMeter<IN, OUT> extends
+    edu.leipzig.grafs.benchmarking.functions.FunctionWithMeter implements
     MapFunction<IN, OUT> {
 
 

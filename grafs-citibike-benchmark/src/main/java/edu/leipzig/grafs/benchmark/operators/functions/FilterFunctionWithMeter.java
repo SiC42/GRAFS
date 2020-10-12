@@ -1,8 +1,10 @@
-package edu.leipzig.grafs.benchmarking.functions;
+package edu.leipzig.grafs.benchmark.operators.functions;
 
+import edu.leipzig.grafs.benchmarking.functions.FunctionWithMeter;
 import org.apache.flink.api.common.functions.FilterFunction;
 
-public abstract class FilterFunctionWithMeter<T> extends FunctionWithMeter implements
+public abstract class FilterFunctionWithMeter<T> extends
+    edu.leipzig.grafs.benchmarking.functions.FunctionWithMeter implements
     FilterFunction<T> {
 
   protected FilterFunctionWithMeter(String name) {

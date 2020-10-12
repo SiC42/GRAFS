@@ -1,6 +1,6 @@
-package edu.leipzig.grafs.benchmarking.grouping;
+package edu.leipzig.grafs.benchmark.operators.grouping;
 
-import edu.leipzig.grafs.benchmarking.functions.SimpleMeter;
+import edu.leipzig.grafs.benchmark.operators.functions.SimpleMeter;
 import edu.leipzig.grafs.model.EdgeContainer;
 import edu.leipzig.grafs.operators.grouping.Grouping;
 import edu.leipzig.grafs.operators.grouping.functions.AggregateFunction;

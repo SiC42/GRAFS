@@ -1,6 +1,6 @@
-package edu.leipzig.grafs.benchmarking.subgraph;
+package edu.leipzig.grafs.benchmark.operators.subgraph;
 
-import edu.leipzig.grafs.benchmarking.functions.FilterFunctionWithMeter;
+import edu.leipzig.grafs.benchmark.operators.functions.FilterFunctionWithMeter;
 import edu.leipzig.grafs.model.Edge;
 import edu.leipzig.grafs.model.EdgeContainer;
 import edu.leipzig.grafs.model.Vertex;

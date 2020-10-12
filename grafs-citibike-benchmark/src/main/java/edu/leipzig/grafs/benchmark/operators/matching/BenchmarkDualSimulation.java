@@ -1,6 +1,6 @@
-package edu.leipzig.grafs.benchmarking.matching;
+package edu.leipzig.grafs.benchmark.operators.matching;
 
-import edu.leipzig.grafs.benchmarking.functions.SimpleMeter;
+import edu.leipzig.grafs.benchmark.operators.functions.SimpleMeter;
 import edu.leipzig.grafs.model.EdgeContainer;
 import edu.leipzig.grafs.operators.matching.DualSimulation;
 import org.apache.flink.streaming.api.datastream.DataStream;

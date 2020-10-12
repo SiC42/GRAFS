@@ -1,4 +1,4 @@
-package edu.leipzig.grafs.benchmarking.functions;
+package edu.leipzig.grafs.benchmark.operators.functions;
 
 public class SimpleMeter<T> extends MapFunctionWithMeter<T, T> {
 

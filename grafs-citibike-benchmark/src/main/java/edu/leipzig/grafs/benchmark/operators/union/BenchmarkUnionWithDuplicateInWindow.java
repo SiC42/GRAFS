@@ -1,6 +1,6 @@
-package edu.leipzig.grafs.benchmarking.union;
+package edu.leipzig.grafs.benchmark.operators.union;
 
-import edu.leipzig.grafs.benchmarking.functions.SimpleMeter;
+import edu.leipzig.grafs.benchmark.operators.functions.SimpleMeter;
 import edu.leipzig.grafs.model.EdgeContainer;
 import edu.leipzig.grafs.model.EdgeStream;
 import edu.leipzig.grafs.operators.union.UnionWithDuplicateInWindow;

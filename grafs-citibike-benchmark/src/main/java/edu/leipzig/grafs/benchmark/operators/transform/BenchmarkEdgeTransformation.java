@@ -1,24 +1,24 @@
-package edu.leipzig.grafs.benchmarking.transform;
+package edu.leipzig.grafs.benchmark.operators.transform;
 
-import edu.leipzig.grafs.benchmarking.functions.MapFunctionWithMeter;
+import edu.leipzig.grafs.benchmark.operators.functions.MapFunctionWithMeter;
+import edu.leipzig.grafs.model.Edge;
 import edu.leipzig.grafs.model.EdgeContainer;
-import edu.leipzig.grafs.model.Vertex;
-import edu.leipzig.grafs.operators.transform.VertexTransformation;
+import edu.leipzig.grafs.operators.transform.EdgeTransformation;
 import java.io.IOException;
 import java.io.Serializable;
 import org.apache.flink.api.common.functions.MapFunction;
 
-public class BenchmarkVertexTransformation extends VertexTransformation implements Serializable {
+public class BenchmarkEdgeTransformation extends EdgeTransformation implements Serializable {
 
-  protected BenchmarkVertexTransformation() {
+  protected BenchmarkEdgeTransformation() {
     super(null);
   }
 
-  public BenchmarkVertexTransformation(MapFunction<Vertex, Vertex> mapper) {
-    this(mapper, "vertexTransformationMeter");
+  public BenchmarkEdgeTransformation(MapFunction<Edge, Edge> mapper) {
+    this(mapper, "edgeTransformationMeter");
   }
 
-  public BenchmarkVertexTransformation(MapFunction<Vertex, Vertex> mapper, String meterName) {
+  public BenchmarkEdgeTransformation(MapFunction<Edge, Edge> mapper, String meterName) {
     super(mapper);
     var oldMapper = ecMapper;
     this.ecMapper = new MapFunctionWithMeter<>(meterName) {
@@ -38,5 +38,6 @@ public class BenchmarkVertexTransformation extends VertexTransformation implemen
   private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
     this.ecMapper = (MapFunction<EdgeContainer, EdgeContainer>) in.readObject();
   }
+
 
 }

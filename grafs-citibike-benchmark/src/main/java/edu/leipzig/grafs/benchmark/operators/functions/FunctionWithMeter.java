@@ -1,4 +1,4 @@
-package edu.leipzig.grafs.benchmarking.functions;
+package edu.leipzig.grafs.benchmark.operators.functions;
 
 import org.apache.flink.api.common.functions.AbstractRichFunction;
 import org.apache.flink.configuration.Configuration;

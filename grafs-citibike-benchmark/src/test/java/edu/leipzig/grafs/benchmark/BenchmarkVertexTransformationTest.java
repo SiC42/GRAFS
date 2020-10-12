@@ -1,12 +1,11 @@
-package edu.leipzig.grafs.benchmarking;
+package edu.leipzig.grafs.benchmark;
 
-import static edu.leipzig.grafs.util.TestUtils.validateElementCollections;
+import static grafs.TestUtils.validateElementCollections;
 
-import edu.leipzig.grafs.benchmarking.transform.BenchmarkVertexTransformation;
+import edu.leipzig.grafs.benchmark.operators.transform.BenchmarkVertexTransformation;
 import edu.leipzig.grafs.model.Edge;
 import edu.leipzig.grafs.model.EdgeStream;
 import edu.leipzig.grafs.model.Vertex;
-import edu.leipzig.grafs.operators.transform.TransformationBaseTest;
 import edu.leipzig.grafs.util.AsciiGraphLoader;
 import java.util.Collection;
 import java.util.HashSet;

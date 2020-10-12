@@ -1,9 +1,9 @@
-package edu.leipzig.grafs.benchmarking;
+package edu.leipzig.grafs.benchmark;
 
 import static edu.leipzig.grafs.util.TestUtils.getSocialNetworkLoader;
 import static edu.leipzig.grafs.util.TestUtils.validateEdgeContainerCollections;
 
-import edu.leipzig.grafs.benchmarking.grouping.BenchmarkGrouping;
+import edu.leipzig.grafs.benchmark.operators.grouping.BenchmarkGrouping;
 import edu.leipzig.grafs.model.EdgeContainer;
 import edu.leipzig.grafs.operators.grouping.functions.Count;
 import edu.leipzig.grafs.operators.grouping.model.GroupingInformation;

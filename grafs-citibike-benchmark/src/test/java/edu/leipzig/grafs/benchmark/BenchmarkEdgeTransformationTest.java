@@ -1,12 +1,11 @@
-package edu.leipzig.grafs.benchmarking;
+package edu.leipzig.grafs.benchmark;
 
 
-import static edu.leipzig.grafs.util.TestUtils.validateIdEquality;
+import static grafs.TestUtils.validateIdEquality;
 
-import edu.leipzig.grafs.benchmarking.transform.BenchmarkEdgeTransformation;
+import edu.leipzig.grafs.benchmark.operators.transform.BenchmarkEdgeTransformation;
 import edu.leipzig.grafs.model.Edge;
 import edu.leipzig.grafs.model.Element;
-import edu.leipzig.grafs.operators.transform.TransformationBaseTest;
 import edu.leipzig.grafs.util.AsciiGraphLoader;
 import java.util.ArrayList;
 import java.util.Collection;
