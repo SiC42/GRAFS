@@ -1,7 +1,8 @@
 package edu.leipzig.grafs.benchmark;
 
-import static edu.leipzig.grafs.util.TestUtils.getSocialNetworkLoader;
-import static edu.leipzig.grafs.util.TestUtils.validateEdgeContainerCollections;
+
+import static grafs.TestUtils.getSocialNetworkLoader;
+import static grafs.TestUtils.validateEdgeContainerCollections;
 
 import edu.leipzig.grafs.benchmark.operators.grouping.BenchmarkGrouping;
 import edu.leipzig.grafs.model.EdgeContainer;
