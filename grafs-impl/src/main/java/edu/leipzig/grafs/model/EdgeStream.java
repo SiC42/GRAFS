@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.Iterator;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.DataStreamUtils;
+import org.apache.flink.streaming.api.functions.sink.SinkFunction;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer;
 
 /**
@@ -38,6 +39,17 @@ public class EdgeStream implements EdgeStreamOperators {
       FlinkConfig config) {
     var stream = config.getExecutionEnvironment().addSource(fkConsumer);
     return new EdgeStream(stream, config);
+  }
+
+  /**
+   * Adds a sink function to the stream, which determines what should happen with the stream at the end.
+   *
+   * Only works once!
+   *
+   * @param sinkFunction The object containing the sink's invoke function.
+   */
+  public void addSink(SinkFunction<EdgeContainer> sinkFunction){
+    edgeStream.addSink(sinkFunction);
   }
 
   /**
