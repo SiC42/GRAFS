@@ -7,6 +7,7 @@ import edu.leipzig.grafs.model.EdgeStream;
 import edu.leipzig.grafs.serialization.EdgeContainerDeserializationSchema;
 import edu.leipzig.grafs.util.FlinkConfigBuilder;
 import java.time.Duration;
+import java.util.Properties;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 
@@ -43,7 +44,7 @@ public class MeterBenchmark {
         .build();
     var schema = new EdgeContainerDeserializationSchema();
     var kafkaConsumer = new RateLimitingKafkaConsumer<>("citibike", schema, CitibikeConsumer
-        .createProperties(), 100);
+        .createProperties(new Properties()), 100);
     kafkaConsumer.setStartFromEarliest();
 
     return EdgeStream.fromSource(kafkaConsumer, config);
