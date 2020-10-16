@@ -29,12 +29,12 @@ public class Grouping<W extends Window> implements GraphToGraphOperatorI {
   private final Set<AggregateFunction> edgeAggregateFunctions;
 
   private final WindowAssigner<Object, W> window;
-  private final Trigger<EdgeContainer, W> trigger;
+  private final Trigger<Object, W> trigger;
 
   public Grouping(GroupingInformation vertexGi, Set<AggregateFunction> vertexAggregateFunctions,
       GroupingInformation edgeGi, Set<AggregateFunction> edgeAggregateFunctions,
       WindowAssigner<Object, W> window,
-      Trigger<EdgeContainer, W> trigger) {
+      Trigger<Object, W> trigger) {
     this.vertexGi = vertexGi;
     this.vertexAggregateFunctions = vertexAggregateFunctions;
     this.edgeGi = edgeGi;
@@ -46,7 +46,7 @@ public class Grouping<W extends Window> implements GraphToGraphOperatorI {
   public Grouping(Set<String> vertexGiSet, Set<AggregateFunction> vertexAggregateFunctions,
       Set<String> edgeGiSet, Set<AggregateFunction> edgeAggregateFunctions,
       WindowAssigner<Object, W> window,
-      Trigger<EdgeContainer, W> trigger) {
+      Trigger<Object, W> trigger) {
     this(new GroupingInformation(vertexGiSet),
         vertexAggregateFunctions,
         new GroupingInformation(edgeGiSet),
@@ -157,7 +157,7 @@ public class Grouping<W extends Window> implements GraphToGraphOperatorI {
 
     public <W extends Window> Grouping<W> buildWithWindowAndTrigger(
         WindowAssigner<Object, W> window,
-        Trigger<EdgeContainer, W> trigger) {
+        Trigger<Object, W> trigger) {
       return new Grouping<>(vertexGi, vertexAggFunctions, edgeGi, aggregateFunctions, window,
           trigger);
     }

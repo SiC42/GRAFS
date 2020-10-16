@@ -46,10 +46,10 @@ public interface EdgeStreamOperators {
    * @param window                   window on which the operation should be applied on
    * @return result stream of the grouping operator
    */
-  default EdgeStream grouping(GroupingInformation vertexGi,
+  default <W extends Window> EdgeStream grouping(GroupingInformation vertexGi,
       Set<AggregateFunction> vertexAggregateFunctions,
       GroupingInformation edgeGi, Set<AggregateFunction> edgeAggregateFunctions,
-      WindowAssigner<Object, Window> window) {
+      WindowAssigner<Object, W> window) {
     return grouping(vertexGi, vertexAggregateFunctions, edgeGi, edgeAggregateFunctions, window,
         null);
   }
@@ -66,11 +66,11 @@ public interface EdgeStreamOperators {
    *                                 operation
    * @return result stream of the grouping operator
    */
-  default EdgeStream grouping(GroupingInformation vertexGi,
+  default <W extends Window> EdgeStream grouping(GroupingInformation vertexGi,
       Set<AggregateFunction> vertexAggregateFunctions,
       GroupingInformation edgeGi, Set<AggregateFunction> edgeAggregateFunctions,
-      WindowAssigner<Object, Window> window,
-      Trigger<EdgeContainer, Window> trigger) {
+      WindowAssigner<Object, W> window,
+      Trigger<Object, W> trigger) {
     return callForStream(
         new Grouping<>(vertexGi, vertexAggregateFunctions, edgeGi, edgeAggregateFunctions, window,
             trigger));
@@ -87,7 +87,7 @@ public interface EdgeStreamOperators {
    * @param window      window on which the operation should be applied on
    * @return result stream of the matching operator
    */
-  default EdgeStream dualSimulation(String gdlQueryStr, WindowAssigner<Object, Window> window) {
+  default <W extends Window> EdgeStream dualSimulation(String gdlQueryStr, WindowAssigner<Object, W> window) {
     return callForStream(new DualSimulation<>(gdlQueryStr, window));
   }
 
@@ -99,8 +99,8 @@ public interface EdgeStreamOperators {
    * @param trigger     trigger which should be applied to end the window for the operation
    * @return result stream of the matching operator
    */
-  default EdgeStream dualSimulation(String gdlQueryStr, WindowAssigner<Object, Window> window,
-      Trigger<EdgeContainer, Window> trigger) {
+  default <W extends Window> EdgeStream dualSimulation(String gdlQueryStr, WindowAssigner<Object, W> window,
+      Trigger<Object, W> trigger) {
     return callForStream(new DualSimulation<>(gdlQueryStr, window));
   }
 
@@ -112,8 +112,8 @@ public interface EdgeStreamOperators {
    * @param window      window on which the operation should be applied on
    * @return result stream of the matching operator
    */
-  default EdgeStream isomorphismMatching(String gdlQueryStr,
-      WindowAssigner<Object, Window> window) {
+  default <W extends Window> EdgeStream isomorphismMatching(String gdlQueryStr,
+      WindowAssigner<Object, W> window) {
     return callForStream(new Isomorphism<>(gdlQueryStr, window));
   }
 
@@ -126,8 +126,8 @@ public interface EdgeStreamOperators {
    * @param trigger     trigger which should be applied to end the window for the operation
    * @return result stream of the matching operator
    */
-  default EdgeStream isomorphismMatching(String gdlQueryStr, WindowAssigner<Object, Window> window,
-      Trigger<EdgeContainer, Window> trigger) {
+  default <W extends Window> EdgeStream isomorphismMatching(String gdlQueryStr, WindowAssigner<Object, W> window,
+      Trigger<Object, W> trigger) {
     return callForStream(new Isomorphism<>(gdlQueryStr, window));
   }
 

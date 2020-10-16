@@ -19,7 +19,7 @@ public class BenchmarkGrouping<W extends Window> extends Grouping<W> {
       Set<AggregateFunction> vertexAggregateFunctions,
       GroupingInformation edgeGi, Set<AggregateFunction> edgeAggregateFunctions,
       WindowAssigner<Object, W> window,
-      Trigger<EdgeContainer, W> trigger) {
+      Trigger<Object, W> trigger) {
     this(vertexGi, vertexAggregateFunctions, edgeGi, edgeAggregateFunctions, window, trigger,
         "groupingMeter");
   }
@@ -28,7 +28,7 @@ public class BenchmarkGrouping<W extends Window> extends Grouping<W> {
       Set<AggregateFunction> vertexAggregateFunctions,
       Set<String> edgeGi, Set<AggregateFunction> edgeAggregateFunctions,
       WindowAssigner<Object, W> window,
-      Trigger<EdgeContainer, W> trigger) {
+      Trigger<Object, W> trigger) {
     this(vertexGi, vertexAggregateFunctions, edgeGi, edgeAggregateFunctions, window, trigger,
         "groupingMeter");
   }
@@ -38,7 +38,7 @@ public class BenchmarkGrouping<W extends Window> extends Grouping<W> {
       GroupingInformation edgeGi,
       Set<AggregateFunction> edgeAggregateFunctions,
       WindowAssigner<Object, W> window,
-      Trigger<EdgeContainer, W> trigger,
+      Trigger<Object, W> trigger,
       String meterName) {
     super(vertexGi,
         vertexAggregateFunctions,
@@ -51,7 +51,7 @@ public class BenchmarkGrouping<W extends Window> extends Grouping<W> {
 
   public BenchmarkGrouping(Set<String> vertexGiSet, Set<AggregateFunction> vertexAggregateFunctions,
       Set<String> edgeGiSet, Set<AggregateFunction> edgeAggregateFunctions,
-      WindowAssigner<Object, W> window, Trigger<EdgeContainer, W> trigger, String groupingMeter) {
+      WindowAssigner<Object, W> window, Trigger<Object, W> trigger, String groupingMeter) {
     this(new GroupingInformation(vertexGiSet),
         vertexAggregateFunctions,
         new GroupingInformation(edgeGiSet),
