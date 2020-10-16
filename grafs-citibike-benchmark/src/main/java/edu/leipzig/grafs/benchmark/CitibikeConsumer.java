@@ -15,8 +15,8 @@ public class CitibikeConsumer {
   private final static String TOPIC = "citibike";
   private final static String BOOTSTRAP_SERVERS = "kafka:9092";
 
-  public static Properties createProperties(){
-    var props = new Properties();
+  public static Properties createProperties(Properties properties){
+    var props = properties;
     props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, BOOTSTRAP_SERVERS);
     props.put(ConsumerConfig.GROUP_ID_CONFIG, "CitibikeConsumer" + Math.random());
     props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
@@ -28,7 +28,7 @@ public class CitibikeConsumer {
   }
 
   public static Consumer<String, EdgeContainer> createConsumer() {
-    Consumer<String, EdgeContainer> consumer = new KafkaConsumer<>(createProperties());
+    Consumer<String, EdgeContainer> consumer = new KafkaConsumer<>(createProperties(new Properties()));
     consumer.subscribe(Collections.singletonList(TOPIC));
     return consumer;
   }
