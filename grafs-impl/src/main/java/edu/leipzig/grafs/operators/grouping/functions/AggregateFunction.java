@@ -34,10 +34,11 @@ public interface AggregateFunction extends Serializable {
   PropertyValue getIncrement(Element element);
 
   /**
-   * Returns the default value. Should be the identity of the function.
+   * Returns {@link PropertyValue#NULL_VALUE}.
    *
-   * @return the default value, may be {@link PropertyValue#NULL_VALUE}, which is handled by the
-   * operator
+   * @return the {@link PropertyValue#NULL_VALUE}
    */
-  PropertyValue getDefaultValue();
+  default PropertyValue getDefaultValue() {
+    return PropertyValue.NULL_VALUE;
+  }
 }

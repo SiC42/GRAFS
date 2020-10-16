@@ -45,16 +45,4 @@ public abstract class BaseAggregateFunction implements AggregateFunction {
     this.aggregatePropertyKey = aggregatePropertyKey;
   }
 
-  /**
-   * Returns {@link PropertyValue#NULL_VALUE}.
-   * <p>
-   * Overriding this method allows extending this class using lambdas.
-   *
-   * @return the {@link PropertyValue#NULL_VALUE}
-   */
-  @Override
-  public PropertyValue getDefaultValue() {
-    return PropertyValue.NULL_VALUE;
-  }
-
 }
