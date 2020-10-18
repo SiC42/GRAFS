@@ -7,6 +7,10 @@ import edu.leipzig.grafs.model.EdgeContainer;
 import edu.leipzig.grafs.model.EdgeStream;
 import edu.leipzig.grafs.serialization.EdgeContainerDeserializationSchema;
 import edu.leipzig.grafs.util.FlinkConfigBuilder;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.Writer;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -28,12 +32,14 @@ import org.apache.kafka.common.serialization.StringDeserializer;
 public abstract class AbstractBenchmark {
 
   public static final String TOPIC_KEY = "topic";
-  private final String INPUT = "fileinput";
-  private final String KAFKA = "kafka";
-  private final String RATE_LIMIT = "ratelimit";
+  private static final String INPUT = "fileinput";
+  private static final String KAFKA = "kafka";
+  private static final String RATE_LIMIT = "ratelimit";
+
   protected StreamExecutionEnvironment env;
   protected EdgeStream edgeStream;
   protected String operatorName;
+  protected Writer outputWriter;
 
   public AbstractBenchmark(String[] args) {
     init();
@@ -74,7 +80,8 @@ public abstract class AbstractBenchmark {
     edgeStream.addSink(new DiscardingSink<>());
     var result = env.execute();
     var timeInMilliSeconds = result.getNetRuntime(TimeUnit.MILLISECONDS);
-    // do output stuff
+    outputWriter.write(String.format("%s;%d\n", this.operatorName, timeInMilliSeconds));
+    outputWriter.close();
   }
 
   private void checkArgs(String[] args) {
@@ -87,6 +94,8 @@ public abstract class AbstractBenchmark {
       if (cmd.hasOption("help")) {
         formatter.printHelp("grafsbenchmark", header, options, "");
       }
+
+      // Process INPUT-stuff
       if (cmd.hasOption(INPUT) && cmd.hasOption(KAFKA)) {
         throw new ParseException(
             "Two inputs declared, but only one allowed. Either remove 'fileinput' or the kafka server information");
@@ -106,13 +115,26 @@ public abstract class AbstractBenchmark {
         throw new ParseException("Error. File input not supported yet.");
       } else if (cmd.hasOption(KAFKA)) {
         // do kafka stuff
-        var propsMap = new HashMap<String, String>(
+        var propsMap = new HashMap<>(
             extractKafkaInformation(cmd.getOptionValue(KAFKA)));
         buildStreamWithKafkaConsumer(propsMap, rateLimit);
       } else {
         throw new ParseException(
             "Missing input. Either declare a fileinput or provide the information to a kafka server");
       }
+
+      // Process OUTPUT
+      if (!cmd.hasOption("output")) {
+        throw new ParseException("Missing parameter: o");
+      } else {
+        try {
+          var fileOutputStream = new FileOutputStream(cmd.getOptionValue("output"));
+          this.outputWriter = new PrintWriter(fileOutputStream);
+        } catch (IOException e) {
+          throw new ParseException("Unreadable output path");
+        }
+      }
+
 
     } catch (ParseException e) {
       System.out.println(e.getMessage());
