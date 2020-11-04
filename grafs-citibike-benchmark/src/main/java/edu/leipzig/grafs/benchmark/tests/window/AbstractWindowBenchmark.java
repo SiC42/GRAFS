@@ -40,7 +40,7 @@ public abstract class AbstractWindowBenchmark extends AbstractBenchmark {
           int windowSizeInMs = Integer.parseInt(cmd.getOptionValue("windowsize"));
           this.windowSize = Time.seconds(windowSizeInMs);
           this.window = TumblingProcessingTimeWindows.of(windowSize);
-          this.operatorName += "-" + "tumblingwindow-" + windowSizeInMs;
+          this.operatorName += "-tumblingwindow-" + windowSizeInMs;
         } catch (NumberFormatException e) {
           throw new ParseException("Error. argument after windowsize is not an integer.");
         }
@@ -56,7 +56,7 @@ public abstract class AbstractWindowBenchmark extends AbstractBenchmark {
         this.windowSize = Time.days(5); // obsolete, as the trigger will fire instead
         this.window = TumblingProcessingTimeWindows.of(windowSize);
         this.countTrigger = CountTrigger.of(triggerSize);
-        this.operatorName += "-" + "counttrigger-" + triggerSize;
+        this.operatorName += "-counttrigger-" + triggerSize;
       }
     } catch (ParseException e) {
       System.out.println(e.getMessage());
