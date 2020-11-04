@@ -22,7 +22,8 @@ public class GraphTest {
     var ec = loader.createEdgeContainers();
     var actualGraph = Graph.fromEdgeContainers(ec);
     var expectedGraph = loader.createGraph();
-    assertThat(actualGraph, is(equalTo(expectedGraph)));
+    TestUtils.validateElementCollections(actualGraph.getVertices(), expectedGraph.getVertices());
+    TestUtils.validateElementCollections(actualGraph.getEdges(), expectedGraph.getEdges());
   }
 
 
@@ -235,7 +236,8 @@ public class GraphTest {
     var vertexSet = loader.getVerticesByGraphVariables("g0");
     var actualSubGraph = graph.getVertexInducedSubGraph(vertexSet);
 
-    assertThat(actualSubGraph, is(equalTo(expectedSubGraph)));
+    TestUtils.validateElementCollections(actualSubGraph.getVertices(), expectedSubGraph.getVertices());
+    TestUtils.validateElementCollections(actualSubGraph.getEdges(), expectedSubGraph.getEdges());
   }
 
   @Test
