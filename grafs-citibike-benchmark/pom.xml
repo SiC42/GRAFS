@@ -55,8 +55,6 @@
       <groupId>edu.leipzig</groupId>
       <artifactId>grafs</artifactId>
       <version>0.1</version>
-      <scope>system</scope>
-      <systemPath>${project.basedir}/../grafs-impl/out/artifacts/grafs_jar/grafs.jar</systemPath>
     </dependency>
     <dependency>
       <groupId>commons-cli</groupId>
