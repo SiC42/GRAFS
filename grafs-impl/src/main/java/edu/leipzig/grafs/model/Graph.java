@@ -313,7 +313,7 @@ public class Graph implements Serializable {
 
   @Override
   public String toString() {
-    return "Graph{" +
+    return "Graph@" + id + "{" +
         "vertices=" + vertices +
         ", edges=" + edges +
         '}';
