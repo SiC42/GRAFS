@@ -8,7 +8,9 @@ import edu.leipzig.grafs.model.EdgeStream;
 import edu.leipzig.grafs.serialization.EdgeContainerDeserializationSchema;
 import edu.leipzig.grafs.util.FlinkConfigBuilder;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.Writer;
 import java.util.Collections;
@@ -24,6 +26,7 @@ import org.apache.commons.cli.ParseException;
 import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.functions.sink.DiscardingSink;
+import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
@@ -68,7 +71,8 @@ public abstract class AbstractBenchmark {
       return Map.of(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, host + ":" + port, TOPIC_KEY, topic);
     } else {
       throw new ParseException(
-          "Error parsing 'kafka'. Not a valid kafka server address. Please provide a valid server address via hostname:port/topic");
+          String.format("Error parsing 'kafka'. '%s' is not a valid kafka server address. Please provide a valid server address via hostname:port/topic",
+              kafkaAddress));
     }
   }
 
@@ -78,10 +82,15 @@ public abstract class AbstractBenchmark {
 
   public void execute() throws Exception {
     edgeStream.addSink(new DiscardingSink<>());
-    var result = env.execute();
+    var result = env.execute(this.operatorName);
     var timeInMilliSeconds = result.getNetRuntime(TimeUnit.MILLISECONDS);
-    outputWriter.write(String.format("%s;%d\n", this.operatorName, timeInMilliSeconds));
+    outputWriter.write(getCsvLine(timeInMilliSeconds));
+    outputWriter.flush();
     outputWriter.close();
+  }
+
+  protected String getCsvLine(long timeInMilliSeconds) {
+    return String.format("%s;-1;-1;%d\n", this.operatorName, timeInMilliSeconds);
   }
 
   private void checkArgs(String[] args) {
@@ -131,13 +140,13 @@ public abstract class AbstractBenchmark {
           var fileOutputStream = new FileOutputStream(cmd.getOptionValue("output"));
           this.outputWriter = new PrintWriter(fileOutputStream);
         } catch (IOException e) {
+          e.printStackTrace();
           throw new ParseException("Unreadable output path");
         }
       }
 
 
     } catch (ParseException e) {
-      System.out.println(e.getMessage());
       formatter.printHelp("grafsbenchmark", header, options, "");
 
       System.exit(1);
@@ -166,7 +175,8 @@ public abstract class AbstractBenchmark {
 
     var config = new FlinkConfigBuilder(env).build();
     env.setStreamTimeCharacteristic(TimeCharacteristic.ProcessingTime);
-    edgeStream = EdgeStream.fromSource(kafkaConsumer, config);
+    var props = CitibikeConsumer.createProperties(new Properties());
+    edgeStream = EdgeStream.fromSource(new FlinkKafkaConsumer<>("citibike", schema, props), config);
   }
 
   private Properties createProperties(String bootstrapServerConfig) {
