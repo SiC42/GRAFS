@@ -30,14 +30,12 @@ public class FileToKafkaProducer {
   static void runProducer() throws Exception {
     var producer = createProducer();
     try (var reader = new SerializedEdgeContainerFileReader()) {
-      var lineCount = reader.getNumberOfLines();
       double curLine = 0;
+      System.out.println("Starting reading elements.");
       while (reader.hasNext()) {
         curLine++;
-        if (curLine % 5000 == 0) {
-          var relativeProgress = Math.round(curLine * 100 / lineCount);
-          System.out.print(" Progress: " + relativeProgress + "%\r");
-          System.out.flush();
+        if (curLine % 10000 == 0) {
+          System.out.println(curLine + " lines processed.");
         }
         var ec = reader.getNext();
         final var record = new ProducerRecord<>(TOPIC, ec.getEdge().getId().toString(), ec);
@@ -49,6 +47,7 @@ public class FileToKafkaProducer {
       producer.flush();
       producer.close();
     }
+    System.out.println("Finished reading elements.");
   }
 
   public static void main(String... args) throws Exception {
