@@ -18,9 +18,13 @@ public abstract class AbstractWindowBenchmark extends AbstractBenchmark {
   WindowAssigner<Object, TimeWindow> window;
   boolean useTrigger;
   Trigger<Object, TimeWindow> countTrigger;
+  private int windowSizeInMs;
+  private int countTriggerSize;
 
   public AbstractWindowBenchmark(String[] args) {
     super(args);
+    windowSizeInMs = -1;
+    countTriggerSize = -1;
     checkArgs(args);
   }
 
@@ -31,39 +35,45 @@ public abstract class AbstractWindowBenchmark extends AbstractBenchmark {
     HelpFormatter formatter = new HelpFormatter();
     try {
       var cmd = parser.parse(options, args);
+      if (!cmd.hasOption("windowsize") && !cmd.hasOption("triggersize")) {
+        throw new ParseException("Error. You have to set either 'windowsize' or 'triggersize'");
+      }
       if (cmd.hasOption("windowsize") && cmd.hasOption("triggersize")) {
-        throw new ParseException("Error. You cannot set windowsize and triggersize");
+        throw new ParseException("Error. You cannot set 'windowsize' and 'triggersize'");
       }
       if (cmd.hasOption("windowsize")) {
         try {
           this.useTrigger = false;
-          int windowSizeInMs = Integer.parseInt(cmd.getOptionValue("windowsize"));
-          this.windowSize = Time.seconds(windowSizeInMs);
+          windowSizeInMs = Integer.parseInt(cmd.getOptionValue("windowsize"));
+          this.windowSize = Time.milliseconds(windowSizeInMs);
           this.window = TumblingProcessingTimeWindows.of(windowSize);
-          this.operatorName += "-tumblingwindow-" + windowSizeInMs;
         } catch (NumberFormatException e) {
           throw new ParseException("Error. argument after windowsize is not an integer.");
         }
       }
       if (cmd.hasOption("triggersize")) {
-        int triggerSize;
         try {
-          triggerSize = Integer.parseInt(cmd.getOptionValue("triggersize"));
+          countTriggerSize = Integer.parseInt(cmd.getOptionValue("triggersize"));
         } catch (NumberFormatException e) {
           throw new ParseException("Error. argument after triggersize is not an integer.");
         }
         this.useTrigger = true;
         this.windowSize = Time.days(5); // obsolete, as the trigger will fire instead
         this.window = TumblingProcessingTimeWindows.of(windowSize);
-        this.countTrigger = CountTrigger.of(triggerSize);
-        this.operatorName += "-counttrigger-" + triggerSize;
+        this.countTrigger = CountTrigger.of(countTriggerSize);
       }
     } catch (ParseException e) {
-      System.out.println(e.getMessage());
+      e.printStackTrace();
       formatter.printHelp("grafsbenchmark", header, options, "");
 
       System.exit(1);
     }
+  }
+
+  protected String getCsvLine(long timeInMilliSeconds) {
+    return String
+        .format("%s;%d;%d;%d\n", this.operatorName, this.windowSizeInMs, this.countTriggerSize,
+            timeInMilliSeconds);
   }
 
   protected Options buildOptions() {
