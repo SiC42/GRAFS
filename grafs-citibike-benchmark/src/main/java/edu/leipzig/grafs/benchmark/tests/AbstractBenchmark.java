@@ -137,8 +137,8 @@ public abstract class AbstractBenchmark {
         throw new ParseException("Missing parameter: o");
       } else {
         try {
-          var fileOutputStream = new FileOutputStream(cmd.getOptionValue("output"));
-          this.outputWriter = new PrintWriter(fileOutputStream);
+          var fileOutputStream = new FileOutputStream(cmd.getOptionValue("output"), true);
+          this.outputWriter = new OutputStreamWriter(fileOutputStream);
         } catch (IOException e) {
           e.printStackTrace();
           throw new ParseException("Unreadable output path");
