@@ -186,7 +186,6 @@ class MultiMapTest {
     var multiMap = new MultiMap<Integer, Integer>();
     multiMap.putAll(1, Set.of(1, 2, 3));
     multiMap.putAll(4, Set.of(3, 4, 5, 6, 7));
-    System.out.println(multiMap.values());
     assertThat(multiMap.values(), containsInAnyOrder(1, 2, 3, 3, 4, 5, 6, 7));
   }
 }

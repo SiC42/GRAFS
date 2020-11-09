@@ -24,7 +24,6 @@ class IsomorphismMatchingProcessTest extends MatchingTestBase {
     var collector = new DummyCollector();
     isoMatching.processQuery(graph, collector);
     var actualEcs = collector.getCollected();
-    System.out.println(actualEcs);
     var expectedEcs = graphLoader.createEdgeContainersByGraphVariables("iso");
     assertThat(actualEcs, containsInAnyOrder(expectedEcs.toArray()));
   }
