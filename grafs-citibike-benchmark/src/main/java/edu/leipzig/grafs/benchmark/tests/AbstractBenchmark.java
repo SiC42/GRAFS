@@ -46,7 +46,7 @@ public abstract class AbstractBenchmark {
 
   public AbstractBenchmark(String[] args) {
     init();
-    this.env = new StreamExecutionEnvironment();
+    this.env = StreamExecutionEnvironment.getExecutionEnvironment();
     checkArgs(args);
   }
 
