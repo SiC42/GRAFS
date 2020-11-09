@@ -1,27 +1,24 @@
 package edu.leipzig.grafs.setup.reader;
 
 import edu.leipzig.grafs.model.EdgeContainer;
+import edu.leipzig.grafs.serialization.EdgeContainerDeserializationSchema;
 import java.io.Closeable;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 
 public class SerializedEdgeContainerFileReader implements Closeable {
 
-  private static final String BASE_SIZE = "100";
+  public static final String BASE_SIZE = "100";
 
   private static final String EDGECONTAINER_FILE_NAME =
-      "resources/edgecontainer_" + BASE_SIZE + ".serialized";
+      "/tmp/edgecontainer_" + BASE_SIZE + ".serialized";
 
   private final ObjectInputStream ois;
-
   private EdgeContainer nextEc;
 
   private boolean hasNext;
 
-  private final long lineCount;
 
   public SerializedEdgeContainerFileReader() throws IOException, ClassNotFoundException {
     this(EDGECONTAINER_FILE_NAME);
@@ -29,17 +26,23 @@ public class SerializedEdgeContainerFileReader implements Closeable {
 
   public SerializedEdgeContainerFileReader(String fileStr)
       throws IOException, ClassNotFoundException {
-    lineCount = Files.lines(Paths.get(fileStr)).count();
     var fileOutputStream = new FileInputStream(fileStr);
     this.ois = new ObjectInputStream(fileOutputStream);
     nextEc = (EdgeContainer) ois.readObject();
-    hasNext = nextEc != null;
+    hasNext = true;
+  }
+
+  private boolean isLast(EdgeContainer ec) {
+    return ec.getEdge().getLabel()
+        .equals(EdgeContainerDeserializationSchema.END_OF_STREAM_LABEL);
   }
 
   public EdgeContainer getNext() throws IOException, ClassNotFoundException {
     var lastEc = nextEc;
-    if ((nextEc = (EdgeContainer) ois.readObject()) == null) {
+    if (isLast(lastEc)) {
       hasNext = false;
+    } else {
+      nextEc = (EdgeContainer) ois.readObject();
     }
     return lastEc;
   }
@@ -48,9 +51,6 @@ public class SerializedEdgeContainerFileReader implements Closeable {
     return hasNext;
   }
 
-  public long getNumberOfLines() {
-    return lineCount;
-  }
 
   @Override
   public void close() throws IOException {
