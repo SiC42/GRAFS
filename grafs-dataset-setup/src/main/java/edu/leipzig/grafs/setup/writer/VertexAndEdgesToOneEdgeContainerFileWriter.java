@@ -1,5 +1,8 @@
 package edu.leipzig.grafs.setup.writer;
 
+
+import static edu.leipzig.grafs.setup.reader.SerializedEdgeContainerFileReader.BASE_SIZE;
+
 import edu.leipzig.grafs.factory.EdgeFactory;
 import edu.leipzig.grafs.model.Edge;
 import edu.leipzig.grafs.model.EdgeContainer;
@@ -10,7 +13,6 @@ import edu.leipzig.grafs.setup.reader.VertexReader;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
-import java.lang.annotation.Target;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -20,7 +22,6 @@ import org.gradoop.common.model.impl.id.GradoopId;
 
 public class VertexAndEdgesToOneEdgeContainerFileWriter {
 
-  private static final String BASE_SIZE = "100";
 
   private static final String VERTICE_PATH =
       "resources/2018-citibike-csv-" + BASE_SIZE + "/vertices.csv";
@@ -79,22 +80,22 @@ public class VertexAndEdgesToOneEdgeContainerFileWriter {
                   oos.writeObject(ec);
                 }
 
-                // send a last object that is not part of the analysis, but marks end of stream
-                var source = new Vertex();
-                var END_OF_STREAM_LABEL = EdgeContainerDeserializationSchema.END_OF_STREAM_LABEL;
-                source.setLabel(END_OF_STREAM_LABEL);
-                var target = new Vertex();
-                target.setLabel(END_OF_STREAM_LABEL);
-                edge = EdgeFactory.createEdge(source, target);
-                edge.setLabel(END_OF_STREAM_LABEL);
-                oos.writeObject(new EdgeContainer(edge, source, target));
-
-                System.out.print("Finished file '" + file.toString() + "'.");
+                System.out.println("Finished file '" + file.toString() + "'.");
                 numberOfEdges.addAndGet(i);
               } catch (IOException e) {
                 e.printStackTrace();
               }
             });
+        // send a last object that is not part of the analysis, but marks end of stream
+        var source = new Vertex();
+        var END_OF_STREAM_LABEL = EdgeContainerDeserializationSchema.END_OF_STREAM_LABEL;
+        source.setLabel(END_OF_STREAM_LABEL);
+        var target = new Vertex();
+        target.setLabel(END_OF_STREAM_LABEL);
+        var edge = EdgeFactory.createEdge(source, target);
+        edge.setLabel(END_OF_STREAM_LABEL);
+        oos.writeObject(new EdgeContainer(edge, source, target));
+        ;
       } catch (IOException e) {
         e.printStackTrace();
       }
