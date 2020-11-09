@@ -15,7 +15,7 @@ public class SimplePassthroughBenchmark extends AbstractBenchmark {
     benchmark.execute();
   }
 
-  public EdgeStream applyOperator() {
+  public EdgeStream applyOperator(EdgeStream edgeStream) {
     return edgeStream;
   }
 

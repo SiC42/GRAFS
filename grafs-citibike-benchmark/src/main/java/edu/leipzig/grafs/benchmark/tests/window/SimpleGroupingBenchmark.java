@@ -15,17 +15,17 @@ public class SimpleGroupingBenchmark extends AbstractWindowBenchmark {
     benchmark.execute();
   }
 
-  public EdgeStream applyOperator() {
+  public EdgeStream applyOperator(EdgeStream edgeStream) {
     var groupingBuilder = Grouping.createGrouping()
         .addVertexGroupingKey("id")
         .addVertexAggregateFunction(new Count("used"))
         .addEdgeGroupingKey("bike_id")
         .addVertexAggregateFunction(new Count("used"));
     if (useTrigger) {
-      return this.edgeStream.callForStream(
+      return edgeStream.callForStream(
           groupingBuilder.buildWithWindowAndTrigger(window, countTrigger));
     } else {
-      return this.edgeStream.callForStream(
+      return edgeStream.callForStream(
           groupingBuilder.buildWithWindow(window));
     }
   }

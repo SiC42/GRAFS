@@ -14,8 +14,8 @@ public class SimpleVertexInducedSubgraphBenchmark extends AbstractBenchmark {
     benchmark.execute();
   }
 
-  public EdgeStream applyOperator() {
-    return this.edgeStream.vertexInducedSubgraph(v -> v.hasProperty("key"));
+  public EdgeStream applyOperator(EdgeStream edgeStream) {
+    return edgeStream.vertexInducedSubgraph(v -> v.hasProperty("key"));
   }
 
 }

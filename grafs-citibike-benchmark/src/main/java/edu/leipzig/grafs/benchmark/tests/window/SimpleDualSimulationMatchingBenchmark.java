@@ -14,12 +14,12 @@ public class SimpleDualSimulationMatchingBenchmark extends AbstractWindowBenchma
     benchmark.execute();
   }
 
-  public EdgeStream applyOperator() {
+  public EdgeStream applyOperator(EdgeStream edgeStream) {
     var query = "(v1)-[]->(v2)-[]->(v1)";
     if (useTrigger) {
-      return this.edgeStream.dualSimulation(query, window, countTrigger);
+      return edgeStream.dualSimulation(query, window, countTrigger);
     } else {
-      return this.edgeStream.dualSimulation(query, window);
+      return edgeStream.dualSimulation(query, window);
     }
   }
 

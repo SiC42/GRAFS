@@ -15,8 +15,8 @@ public class SimpleEdgeInducedSubgraphBenchmark extends AbstractBenchmark {
     benchmark.execute();
   }
 
-  public EdgeStream applyOperator() {
-    return this.edgeStream.edgeInducedSubgraph(Edge::isReverse);
+  public EdgeStream applyOperator(EdgeStream edgeStream) {
+    return edgeStream.edgeInducedSubgraph(e -> Math.random() >= 0.5);
   }
 
 }

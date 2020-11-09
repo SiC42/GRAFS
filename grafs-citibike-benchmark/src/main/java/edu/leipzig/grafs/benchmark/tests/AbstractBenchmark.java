@@ -81,6 +81,7 @@ public abstract class AbstractBenchmark {
   }
 
   public void execute() throws Exception {
+    edgeStream = applyOperator(edgeStream);
     edgeStream.addSink(new DiscardingSink<>());
     var result = env.execute(this.operatorName);
     var timeInMilliSeconds = result.getNetRuntime(TimeUnit.MILLISECONDS);
@@ -193,5 +194,5 @@ public abstract class AbstractBenchmark {
     return props;
   }
 
-  public abstract EdgeStream applyOperator();
+  public abstract EdgeStream applyOperator(EdgeStream edgeStream);
 }

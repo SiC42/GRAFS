@@ -15,8 +15,8 @@ public class SimpleEdgeTransformationBenchmark extends AbstractBenchmark {
     benchmark.execute();
   }
 
-  public EdgeStream applyOperator() {
-    return this.edgeStream.transformEdges(e -> {
+  public EdgeStream applyOperator(EdgeStream edgeStream) {
+    return edgeStream.transformEdges(e -> {
       e.setProperty("edgetransformed", PropertyValue.create(true));
       return e;
     });

@@ -13,12 +13,12 @@ public class SimpleIsomorphismMatchingBenchmark extends AbstractWindowBenchmark 
     benchmark.execute();
   }
 
-  public EdgeStream applyOperator() {
+  public EdgeStream applyOperator(EdgeStream edgeStream) {
     var query = "(v1)-[]->(v2)-[]->(v1)";
     if (useTrigger) {
-      return this.edgeStream.isomorphismMatching(query, window, countTrigger);
+      return edgeStream.isomorphismMatching(query, window, countTrigger);
     } else {
-      return this.edgeStream.isomorphismMatching(query, window);
+      return edgeStream.isomorphismMatching(query, window);
     }
   }
 
