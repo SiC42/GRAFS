@@ -75,9 +75,12 @@ public class DualSimulationProcess<W extends Window> extends
   @Override
   void processQuery(Graph graph, Collector<EdgeContainer> collector) {
     var dualSimulationMatches = dualSimulationProcess(graph);
-    var permutations = makeAllPermutations(dualSimulationMatches);
-    var edgeContainerSet = buildEdgeContainerSet(permutations, graph);
-    emitEdgeContainer(collector, edgeContainerSet);
+    if(dualSimulationMatches.isEmpty()) {
+      return;
+    }
+      var permutations = makeAllPermutations(dualSimulationMatches);
+      var edgeContainerSet = buildEdgeContainerSet(permutations, graph);
+      emitEdgeContainer(collector, edgeContainerSet);
   }
 
   // TODO: Add ability to handle queries with edge properties

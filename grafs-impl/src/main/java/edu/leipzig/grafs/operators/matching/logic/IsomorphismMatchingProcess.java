@@ -20,8 +20,14 @@ public class IsomorphismMatchingProcess<W extends Window> extends AbstractMatchi
   @Override
   void processQuery(Graph graph, Collector<EdgeContainer> collector) {
     var candidatesMap = feasibleVertexMatches(graph);
-    var dualSimCandidates = DualSimulationProcess
-        .runAlgorithm(graph, queryGraph, candidatesMap);
+    if(candidatesMap.isEmpty()) {
+      return;
+    }
+      var dualSimCandidates = DualSimulationProcess
+          .runAlgorithm(graph, queryGraph, candidatesMap);
+    if(dualSimCandidates.isEmpty()) {
+      return;
+    }
     var permutations = search(graph, queryGraph, dualSimCandidates);
     var edgeContainerSet = buildEdgeContainerSet(permutations, graph);
     emitEdgeContainer(collector, edgeContainerSet);
