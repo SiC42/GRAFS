@@ -19,8 +19,8 @@ public class CitibikeConsumer {
     var props = properties;
     props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, BOOTSTRAP_SERVERS);
     props.put(ConsumerConfig.GROUP_ID_CONFIG, "CitibikeConsumer" + Math.random());
-    props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
-    props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, EdgeContainerDeserializer.class.getName());
+    //props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
+    //props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, EdgeContainerDeserializer.class.getName());
     props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false");
     props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
     props.put(ConsumerConfig.CONNECTIONS_MAX_IDLE_MS_CONFIG, 30_000);
@@ -33,38 +33,38 @@ public class CitibikeConsumer {
     return consumer;
   }
 
-  static void runConsumer() {
-    var consumer = createConsumer();
-    int noMessageFound = 0;
-    while (true) {
-      var consumerRecords = consumer.poll(Duration.ofMillis(1000));
-      // 1000 is the time in milliseconds consumer will wait if no record is found at broker.
-      if (consumerRecords.count() == 0) {
-        noMessageFound++;
-        if (noMessageFound > 100) {
-          System.out.println("No message received");
-          // If no message found count is reached to threshold exit loop.
-          break;
-        }
-        else
-          continue;
-      }
-      //print each record.
-      System.out.println((consumerRecords.count()));
-      consumerRecords.forEach(record -> {
-        System.out.println("Record Key " + record.key());
-        System.out.println("Record value " + record.value());
-        System.out.println("Record partition " + record.partition());
-        System.out.println("Record offset " + record.offset());
-      });
-      // commits the offset of record to broker.
-      consumer.commitAsync();
-    }
-    consumer.close();
-  }
-
-  public static void main(String[] args) {
-    runConsumer();
-  }
+//  static void runConsumer() {
+//    var consumer = createConsumer();
+//    int noMessageFound = 0;
+//    while (true) {
+//      var consumerRecords = consumer.poll(Duration.ofMillis(1000));
+//      // 1000 is the time in milliseconds consumer will wait if no record is found at broker.
+//      if (consumerRecords.count() == 0) {
+//        noMessageFound++;
+//        if (noMessageFound > 100) {
+//          System.out.println("No message received");
+//          // If no message found count is reached to threshold exit loop.
+//          break;
+//        }
+//        else
+//          continue;
+//      }
+//      //print each record.
+//      System.out.println((consumerRecords.count()));
+//      consumerRecords.forEach(record -> {
+//        System.out.println("Record Key " + record.key());
+//        System.out.println("Record value " + record.value());
+//        System.out.println("Record partition " + record.partition());
+//        System.out.println("Record offset " + record.offset());
+//      });
+//      // commits the offset of record to broker.
+//      consumer.commitAsync();
+//    }
+//    consumer.close();
+//  }
+//
+//  public static void main(String[] args) {
+//    runConsumer();
+//  }
 
 }
