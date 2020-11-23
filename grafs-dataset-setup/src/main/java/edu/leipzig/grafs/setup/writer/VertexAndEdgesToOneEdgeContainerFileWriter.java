@@ -95,7 +95,6 @@ public class VertexAndEdgesToOneEdgeContainerFileWriter {
         var edge = EdgeFactory.createEdge(source, target);
         edge.setLabel(END_OF_STREAM_LABEL);
         oos.writeObject(new EdgeContainer(edge, source, target));
-        ;
       } catch (IOException e) {
         e.printStackTrace();
       }
