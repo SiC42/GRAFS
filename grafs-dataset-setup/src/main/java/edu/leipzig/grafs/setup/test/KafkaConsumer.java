@@ -9,6 +9,10 @@ import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 
+
+/**
+ * Simple tests class, reads the given kafka consumer and prints the last 10 ECs.
+ */
 public class KafkaConsumer {
 
   private final static String TOPIC = "citibike";

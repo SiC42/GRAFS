@@ -7,6 +7,9 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 
+/**
+ * Simple tests class, reads the given serialized edge container file and prints the last 10 ECs.
+ */
 public class FileConsumer {
 
   public static void main(String[] args) throws IOException, ClassNotFoundException {
@@ -19,7 +22,7 @@ public class FileConsumer {
         .equals(EdgeContainerDeserializationSchema.END_OF_STREAM_LABEL)) {
       queue.add(ec);
       counter++;
-      if(counter % 10000 == 0){
+      if (counter % 10000 == 0) {
         System.out.print(counter + "\r");
         System.out.flush();
       }
