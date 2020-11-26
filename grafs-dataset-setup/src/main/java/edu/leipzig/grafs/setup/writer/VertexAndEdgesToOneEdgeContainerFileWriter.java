@@ -1,13 +1,12 @@
 package edu.leipzig.grafs.setup.writer;
 
 
-import static edu.leipzig.grafs.setup.reader.SerializedEdgeContainerFileReader.BASE_SIZE;
-
 import edu.leipzig.grafs.factory.EdgeFactory;
 import edu.leipzig.grafs.model.Edge;
 import edu.leipzig.grafs.model.EdgeContainer;
 import edu.leipzig.grafs.model.Vertex;
 import edu.leipzig.grafs.serialization.EdgeContainerDeserializationSchema;
+import edu.leipzig.grafs.setup.AbstractCmdBase;
 import edu.leipzig.grafs.setup.reader.EdgeReader;
 import edu.leipzig.grafs.setup.reader.VertexReader;
 import java.io.FileOutputStream;
@@ -18,22 +17,63 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
 import org.gradoop.common.model.impl.id.GradoopId;
 
-public class VertexAndEdgesToOneEdgeContainerFileWriter {
+
+/**
+ * Combines the csv-files of a graph into one file with serialized ECs.
+ */
+public class VertexAndEdgesToOneEdgeContainerFileWriter extends AbstractCmdBase {
 
 
-  private static final String VERTICE_PATH =
-      "resources/2018-citibike-csv-" + BASE_SIZE + "/vertices.csv";
-  private static final String EDGE_PATH = "resources/2018-citibike-csv-" + BASE_SIZE + "/edges.csv";
+  private final String VERTEX_PATH = BASE_PATH + "/vertices.csv";
+  private final String EDGE_PATH = BASE_PATH + "/edges.csv";
+  private final String OUTPUT = "output";
+  private String outputPath;
 
-  private static final String EDGECONTAINER_FILE_NAME =
-      "resources/edgecontainer_" + BASE_SIZE + ".serialized";
+  public VertexAndEdgesToOneEdgeContainerFileWriter(String[] args) {
+    super(args);
+    checkArgs(args);
+  }
 
   public static void main(String[] args) {
+    var writer = new VertexAndEdgesToOneEdgeContainerFileWriter(args);
+    writer.run();
+  }
+
+  private void checkArgs(String[] args) {
+    var parser = new DefaultParser();
+    var options = buildOptions();
+    var header = "Setup data for Benchmarking GRAFS";
+    HelpFormatter formatter = new HelpFormatter();
+    try {
+      var cmd = parser.parse(options, args);
+      if (cmd.hasOption(OUTPUT)) {
+        this.outputPath = cmd.getOptionValue(OUTPUT);
+      } else {
+        throw new ParseException("Missing parameter: o");
+      }
+    } catch (ParseException e) {
+      formatter.printHelp("grafs-data-setup", header, options, "");
+
+      System.exit(1);
+    }
+  }
+
+  protected Options buildOptions() {
+    var options = super.buildOptions();
+    options.addOption("o", OUTPUT, true, "path and name of the output file");
+    return options;
+  }
+
+  public void run() {
 
     Map<GradoopId, Vertex> vertexMap = new HashMap<>();
-    try (var pathsStream = Files.walk(Paths.get(VERTICE_PATH))) {
+    try (var pathsStream = Files.walk(Paths.get(VERTEX_PATH))) {
       pathsStream.filter(Files::isRegularFile)
           .forEach(file -> {
             System.out.print("Processing file '" + file.toString() + "'\r");
@@ -52,7 +92,7 @@ public class VertexAndEdgesToOneEdgeContainerFileWriter {
     System.out.println("Finished processing vertices");
     System.out.println("Found " + vertexMap.size() + " vertices.");
     AtomicInteger numberOfEdges = new AtomicInteger();
-    try (var fileOutputStream = new FileOutputStream(EDGECONTAINER_FILE_NAME)) {
+    try (var fileOutputStream = new FileOutputStream(outputPath)) {
       ObjectOutputStream oos = new ObjectOutputStream(fileOutputStream);
       try (var pathsStream = Files.walk(Paths.get(EDGE_PATH))) {
         pathsStream.filter(Files::isRegularFile)
@@ -80,7 +120,8 @@ public class VertexAndEdgesToOneEdgeContainerFileWriter {
                   oos.writeObject(ec);
                 }
 
-                System.out.println("Finished file '" + file.toString() + "'.");
+                System.out.print("Finished file '" + file.toString() + "'.\n");
+                System.out.flush();
                 numberOfEdges.addAndGet(i);
               } catch (IOException e) {
                 e.printStackTrace();
@@ -102,11 +143,6 @@ public class VertexAndEdgesToOneEdgeContainerFileWriter {
       e.printStackTrace();
     }
     System.out.println("Final number of edges: " + numberOfEdges.get());
-//
-//    var vertexMap = new HashMap<GradoopId, Vertex>();
-//    for
-//    var VertexMap = new VertexReader(vertexStream);
-
   }
 
 
