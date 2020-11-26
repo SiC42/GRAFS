@@ -9,20 +9,10 @@ import java.io.ObjectInputStream;
 
 public class SerializedEdgeContainerFileReader implements Closeable {
 
-  public static final String BASE_SIZE = "100";
-
-  private static final String EDGECONTAINER_FILE_NAME =
-      "/tmp/edgecontainer_" + BASE_SIZE + ".serialized";
-
   private final ObjectInputStream ois;
   private EdgeContainer nextEc;
 
   private boolean hasNext;
-
-
-  public SerializedEdgeContainerFileReader() throws IOException, ClassNotFoundException {
-    this(EDGECONTAINER_FILE_NAME);
-  }
 
   public SerializedEdgeContainerFileReader(String fileStr)
       throws IOException, ClassNotFoundException {
