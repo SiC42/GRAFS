@@ -1,21 +1,18 @@
 package edu.leipzig.grafs.benchmark;
 
-import edu.leipzig.grafs.benchmark.serialization.EdgeContainerDeserializer;
 import edu.leipzig.grafs.model.EdgeContainer;
-import java.time.Duration;
 import java.util.Collections;
 import java.util.Properties;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
-import org.apache.kafka.common.serialization.StringDeserializer;
 
 public class CitibikeConsumer {
 
   private final static String TOPIC = "citibike";
   private final static String BOOTSTRAP_SERVERS = "kafka:9092";
 
-  public static Properties createProperties(Properties properties){
+  public static Properties createProperties(Properties properties) {
     var props = properties;
     props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, BOOTSTRAP_SERVERS);
     props.put(ConsumerConfig.GROUP_ID_CONFIG, "CitibikeConsumer" + Math.random());
@@ -28,7 +25,8 @@ public class CitibikeConsumer {
   }
 
   public static Consumer<String, EdgeContainer> createConsumer() {
-    Consumer<String, EdgeContainer> consumer = new KafkaConsumer<>(createProperties(new Properties()));
+    Consumer<String, EdgeContainer> consumer = new KafkaConsumer<>(
+        createProperties(new Properties()));
     consumer.subscribe(Collections.singletonList(TOPIC));
     return consumer;
   }

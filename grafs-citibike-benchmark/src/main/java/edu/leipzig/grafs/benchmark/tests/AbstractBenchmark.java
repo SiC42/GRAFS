@@ -8,10 +8,8 @@ import edu.leipzig.grafs.model.EdgeStream;
 import edu.leipzig.grafs.serialization.EdgeContainerDeserializationSchema;
 import edu.leipzig.grafs.util.FlinkConfigBuilder;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
 import java.io.Writer;
 import java.util.Collections;
 import java.util.HashMap;
@@ -71,7 +69,8 @@ public abstract class AbstractBenchmark {
       return Map.of(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, host + ":" + port, TOPIC_KEY, topic);
     } else {
       throw new ParseException(
-          String.format("Error parsing 'kafka'. '%s' is not a valid kafka server address. Please provide a valid server address via hostname:port/topic",
+          String.format(
+              "Error parsing 'kafka'. '%s' is not a valid kafka server address. Please provide a valid server address via hostname:port/topic",
               kafkaAddress));
     }
   }

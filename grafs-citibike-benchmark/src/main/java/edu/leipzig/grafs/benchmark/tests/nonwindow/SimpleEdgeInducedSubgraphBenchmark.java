@@ -1,7 +1,6 @@
 package edu.leipzig.grafs.benchmark.tests.nonwindow;
 
 import edu.leipzig.grafs.benchmark.tests.AbstractBenchmark;
-import edu.leipzig.grafs.model.Edge;
 import edu.leipzig.grafs.model.EdgeStream;
 
 public class SimpleEdgeInducedSubgraphBenchmark extends AbstractBenchmark {
