@@ -21,14 +21,13 @@ public class CsvToKafkaProducer extends AbstractProducer {
 
   private static final String VERTICE_PATH = "/vertices.csv";
   private static final String EDGE_PATH = "/edges.csv";
-  private final String BASE_PATH;
 
-  public CsvToKafkaProducer(String path) {
-    BASE_PATH = path;
+  public CsvToKafkaProducer(String[] args) {
+    super(args);
   }
 
   public static void main(String... args) {
-    var producer = new CsvToKafkaProducer(args[0]);
+    var producer = new CsvToKafkaProducer(args);
     producer.run();
   }
 

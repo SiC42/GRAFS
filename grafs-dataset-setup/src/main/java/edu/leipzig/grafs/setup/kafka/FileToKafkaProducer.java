@@ -4,8 +4,13 @@ import edu.leipzig.grafs.setup.reader.SerializedEdgeContainerFileReader;
 
 public class FileToKafkaProducer extends AbstractProducer {
 
+
+  public FileToKafkaProducer(String[] args) {
+    super(args);
+  }
+
   public static void main(String... args) {
-    var producer = new FileToKafkaProducer();
+    var producer = new FileToKafkaProducer(args);
     producer.run();
   }
 
