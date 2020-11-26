@@ -6,7 +6,7 @@ import java.util.List;
 
 public class SmallQueue {
 
-  private LinkedList<EdgeContainer> queue;
+  private final LinkedList<EdgeContainer> queue;
 
   public SmallQueue() {
     queue = new LinkedList<>();
