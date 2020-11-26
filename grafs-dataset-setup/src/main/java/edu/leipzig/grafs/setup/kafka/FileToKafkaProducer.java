@@ -1,7 +1,6 @@
 package edu.leipzig.grafs.setup.kafka;
 
 import edu.leipzig.grafs.setup.reader.SerializedEdgeContainerFileReader;
-
 public class FileToKafkaProducer extends AbstractProducer {
 
 
@@ -15,7 +14,7 @@ public class FileToKafkaProducer extends AbstractProducer {
   }
 
   public void run() {
-    try (var reader = new SerializedEdgeContainerFileReader()) {
+    try (var reader = new SerializedEdgeContainerFileReader(BASE_PATH)) {
       double curLine = 0;
       System.out.println("Starting reading elements.");
       while (reader.hasNext()) {
