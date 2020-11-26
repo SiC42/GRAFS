@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import org.apache.kafka.common.serialization.Deserializer;
 
-public class EdgeContainerDeserializer implements Deserializer<EdgeContainer>{
+public class EdgeContainerDeserializer implements Deserializer<EdgeContainer> {
 
   @Override
   public EdgeContainer deserialize(String s, byte[] bytes) {
