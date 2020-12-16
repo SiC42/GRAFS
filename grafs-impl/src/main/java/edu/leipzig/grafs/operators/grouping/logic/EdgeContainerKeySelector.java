@@ -72,30 +72,56 @@ public class EdgeContainerKeySelector implements KeySelector<EdgeContainer, Stri
     }
   }
 
+  /**
+   * Constructs the key in GDL format
+   *
+   * @param source generated String for source vertex
+   * @param edge   generated String for edge
+   * @param target generated String for target vertex
+   * @return key for the whole edge container in GDL format
+   */
   private String generateKey(String source, String edge, String target) {
     return String.format("%s-%s->%s", source, edge, target);
   }
 
-  private String generateKeyForVertex(Vertex sourceVertex, GroupingInformation vertexGi) {
+  /**
+   * Generates the key component for the vertex based on the grouping information.
+   *
+   * @param vertex   vertex for which the key should be generated
+   * @param vertexGi grouping information for the vertex
+   * @return key for the given vertex in GDL format based on the grouping information
+   */
+  private String generateKeyForVertex(Vertex vertex, GroupingInformation vertexGi) {
     StringBuilder sb = new StringBuilder();
-
-    // Build Key based on vertex Information
     sb.append("(");
-    sb = keyStringBuilder(sb, sourceVertex, vertexGi);
+    sb = keyStringBuilder(sb, vertex, vertexGi);
     sb.append(")");
     return sb.toString();
   }
 
+  /**
+   * Generates the key component for the edge based on the grouping information.
+   *
+   * @param edge   edge for which the key should be generated
+   * @param edgeGi grouping information for the edge
+   * @return key for the given edge in GDL format based on the grouping information
+   */
   private String generateKeyForEdge(Edge edge, GroupingInformation edgeGi) {
     StringBuilder sb = new StringBuilder();
-
-    // Build Key based on vertex Information
     sb.append("[");
     sb = keyStringBuilder(sb, edge, edgeGi);
     sb.append("]");
     return sb.toString();
   }
 
+  /**
+   * Fills key builder based on the element and the grouping information
+   *
+   * @param sb        string builder with right bracket already appended
+   * @param element   element for which the key should be generated
+   * @param groupInfo grouping information for the element
+   * @return filled key builder with missing end bracket
+   */
   private StringBuilder keyStringBuilder(StringBuilder sb, Element
       element, GroupingInformation groupInfo) {
     if (groupInfo == null) {
@@ -117,6 +143,13 @@ public class EdgeContainerKeySelector implements KeySelector<EdgeContainer, Stri
     return sb;
   }
 
+  /**
+   * Builds a grouping information which contains all property keys and label of the element unique
+   * to this element and all elements that share the same values and labels.
+   *
+   * @param element element for which the unique grouping information should be generated
+   * @return unique grouping information for this element
+   */
   private GroupingInformation createUniqueGroupInfo(Element element) {
     var keys = element.getPropertyKeys();
     var sortedKeySet = new TreeSet<String>();
