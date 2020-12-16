@@ -5,6 +5,9 @@ import java.util.Objects;
 import org.gradoop.common.model.impl.properties.PropertyValue;
 import org.gradoop.common.model.impl.properties.PropertyValueUtils;
 
+/**
+ * Aggregate function that determines the maximal property value for all elements in a group.
+ */
 public class MaxProperty extends BaseAggregateFunction {
 
   /**
