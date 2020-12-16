@@ -13,13 +13,35 @@ import java.util.stream.Collectors;
 import org.apache.flink.streaming.api.windowing.windows.Window;
 import org.apache.flink.util.Collector;
 
+/**
+ * Applies a dual simulation algorithm (based on <a href="https://ieeexplore.ieee.org/abstract/document/6906821">"DualIso:
+ * An Algorithm for Subgraph Pattern Matching on Very Large Labeled Graphs"</a> by Saltz et al.)
+ *
+ * @param <W> type of window used
+ */
 public class DualSimulationProcess<W extends Window> extends
     AbstractMatchingProcess<W> {
 
+  /**
+   * Initialized proces with given query graph.
+   *
+   * @param queryGraph query graph which should be used for the dual simulation process.
+   */
   public DualSimulationProcess(QueryGraph queryGraph) {
     super(queryGraph);
   }
 
+  /**
+   * Algorithm based on the mentioned paper paper. Creates a map of dual simulation matches.
+   *
+   * @param graph         graph for which the matching patterns should be found
+   * @param queryGraph    query graph which is used as the pattern
+   * @param candidatesMap map of viable candidates (i.e. pruned subset of all vertices in the
+   *                      graph)
+   * @return a map of dual simulation matches
+   * @see <a href="https://ieeexplore.ieee.org/abstract/document/6906821">"DualIso: An Algorithm for
+   * Subgraph Pattern Matching on Very Large Labeled Graphs"</a> by Saltz et al.
+   */
   static CandidateMap<Vertex> runAlgorithm(Graph graph, QueryGraph queryGraph,
       CandidateMap<Vertex> candidatesMap) {
     EdgeQueryFilter edgeFilter = new EdgeQueryFilter(queryGraph);
@@ -72,25 +94,26 @@ public class DualSimulationProcess<W extends Window> extends
     return candidatesMap;
   }
 
+  /**
+   * Processes the given window graph and applies the algorithm.
+   *
+   * @param graph     Graph for which the process should find matches
+   * @param collector outputs the matched elements
+   */
   @Override
   void processQuery(Graph graph, Collector<EdgeContainer> collector) {
     var dualSimulationMatches = dualSimulationProcess(graph);
-    if(dualSimulationMatches.isEmpty()) {
+    if (dualSimulationMatches.isEmpty()) {
       return;
     }
-      var permutations = makeAllPermutations(dualSimulationMatches);
-      var edgeContainerSet = buildEdgeContainerSet(permutations, graph);
-      emitEdgeContainer(collector, edgeContainerSet);
+    var permutations = buildPermutations(dualSimulationMatches.asListOfCandidateSets());
+    var edgeContainerSet = buildEdgeContainerSet(permutations, graph);
+    emitEdgeContainer(collector, edgeContainerSet);
   }
 
-  // TODO: Add ability to handle queries with edge properties
   private CandidateMap<Vertex> dualSimulationProcess(Graph graph) {
     var candidatesMap = feasibleVertexMatches(graph);
     return runAlgorithm(graph, queryGraph, candidatesMap);
-  }
-
-  private Set<Set<Vertex>> makeAllPermutations(CandidateMap<Vertex> candidateMap) {
-    return buildPermutations(candidateMap.asListOfCandidateSets());
   }
 
 }

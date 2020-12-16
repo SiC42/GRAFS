@@ -10,31 +10,55 @@ import java.util.Set;
 import org.apache.flink.streaming.api.windowing.windows.Window;
 import org.apache.flink.util.Collector;
 
+/**
+ * Applies a isomorphism matching algorithm (based on <a href="https://ieeexplore.ieee.org/abstract/document/6906821">"DualIso:
+ * An Algorithm for Subgraph Pattern Matching on Very Large Labeled Graphs"</a> by Saltz et al.)
+ *
+ * @param <W> type of window used
+ */
 public class IsomorphismMatchingProcess<W extends Window> extends AbstractMatchingProcess<W> {
 
-
+  /**
+   * Initialized proces with given query graph.
+   *
+   * @param queryGraph query graph which should be used for the dual simulation process.
+   */
   public IsomorphismMatchingProcess(QueryGraph queryGraph) {
     super(queryGraph);
   }
 
+  /**
+   * Processes the given window graph and applies the algorithm.
+   *
+   * @param graph     Graph for which the process should find matches
+   * @param collector outputs the matched elements
+   */
   @Override
   void processQuery(Graph graph, Collector<EdgeContainer> collector) {
     var candidatesMap = feasibleVertexMatches(graph);
-    if(candidatesMap.isEmpty()) {
+    if (candidatesMap.isEmpty()) {
       return;
     }
-      var dualSimCandidates = DualSimulationProcess
-          .runAlgorithm(graph, queryGraph, candidatesMap);
-    if(dualSimCandidates.isEmpty()) {
+    var dualSimCandidates = DualSimulationProcess
+        .runAlgorithm(graph, queryGraph, candidatesMap);
+    if (dualSimCandidates.isEmpty()) {
       return;
     }
-    var permutations = search(graph, queryGraph, dualSimCandidates);
+    var permutations = search(graph, dualSimCandidates);
     var edgeContainerSet = buildEdgeContainerSet(permutations, graph);
     emitEdgeContainer(collector, edgeContainerSet);
   }
 
-
-  private Set<Set<Vertex>> search(Graph graph, QueryGraph queryGraph,
+  /**
+   * Algorithm based on the mentioned paper paper. Creates set of all isomorphism matches.
+   *
+   * @param graph        Graph for which the process should find matches
+   * @param candidateMap map of viable candidates (i.e. pruned subset of all vertices in the graph)
+   * @return set of all matches
+   * @see <a href="https://ieeexplore.ieee.org/abstract/document/6906821">"DualIso: An Algorithm for
+   * Subgraph Pattern Matching on Very Large Labeled Graphs"</a> by Saltz et al.
+   */
+  private Set<Set<Vertex>> search(Graph graph,
       CandidateMap<Vertex> candidateMap) {
     var qVertexArray = queryGraph.getVertices().toArray(new Vertex[0]);
     return search(graph, qVertexArray, candidateMap, 0);
