@@ -4,14 +4,31 @@ import edu.leipzig.grafs.model.EdgeContainer;
 import edu.leipzig.grafs.operators.matching.model.QueryGraph;
 import org.apache.flink.api.common.functions.FilterFunction;
 
+/**
+ * Filters vertices based on query graph.
+ */
 public class VertexQueryFilter implements FilterFunction<EdgeContainer> {
 
+  /**
+   * Query graph which is used to filter edges
+   */
   private final QueryGraph queryGraph;
 
+  /**
+   * Initializes the filter.
+   *
+   * @param queryGraph query graph which is used to filter edges
+   */
   public VertexQueryFilter(final QueryGraph queryGraph) {
     this.queryGraph = queryGraph;
   }
 
+  /**
+   * Returns <tt>true</tt> if for the given edge container there are matching vertices in the query graph.
+   *
+   * @param edgeContainer Edge container which is tested for filtering
+   * @return <tt>true</tt> if for the given edge container there are matching vertices in the query graph
+   */
   @Override
   public boolean filter(EdgeContainer edgeContainer) throws Exception {
     var source = edgeContainer.getSourceVertex();
