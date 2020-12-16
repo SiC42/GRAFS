@@ -24,10 +24,12 @@ public class VertexQueryFilter implements FilterFunction<EdgeContainer> {
   }
 
   /**
-   * Returns <tt>true</tt> if for the given edge container there are matching vertices in the query graph.
+   * Returns <tt>true</tt> if for the given edge container there are matching vertices in the query
+   * graph.
    *
    * @param edgeContainer Edge container which is tested for filtering
-   * @return <tt>true</tt> if for the given edge container there are matching vertices in the query graph
+   * @return <tt>true</tt> if for the given edge container there are matching vertices in the query
+   * graph
    */
   @Override
   public boolean filter(EdgeContainer edgeContainer) throws Exception {
