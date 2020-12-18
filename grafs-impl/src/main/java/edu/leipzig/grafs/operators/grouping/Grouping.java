@@ -27,7 +27,7 @@ import org.gradoop.common.model.impl.id.GradoopId;
  * and applies the given aggregation functions to the resulting element. This is done in a Window of
  * the stream.
  *
- * @param <W> type of window
+ * @param <W> type of window that is used in this operation
  */
 public class Grouping<W extends Window> implements GraphToGraphOperatorI {
 
