@@ -1,7 +1,7 @@
 package edu.leipzig.grafs.operators.matching.logic;
 
 import edu.leipzig.grafs.model.EdgeContainer;
-import edu.leipzig.grafs.operators.matching.model.QueryGraph;
+import edu.leipzig.grafs.model.Graph;
 import org.apache.flink.api.common.functions.FilterFunction;
 
 /**
@@ -12,14 +12,14 @@ public class VertexQueryFilter implements FilterFunction<EdgeContainer> {
   /**
    * Query graph which is used to filter edges
    */
-  private final QueryGraph queryGraph;
+  private final Graph queryGraph;
 
   /**
    * Initializes the filter.
    *
    * @param queryGraph query graph which is used to filter edges
    */
-  public VertexQueryFilter(final QueryGraph queryGraph) {
+  public VertexQueryFilter(final Graph queryGraph) {
     this.queryGraph = queryGraph;
   }
 

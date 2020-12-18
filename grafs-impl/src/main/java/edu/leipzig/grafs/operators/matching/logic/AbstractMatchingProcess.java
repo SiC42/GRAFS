@@ -7,7 +7,6 @@ import edu.leipzig.grafs.model.EdgeContainer;
 import edu.leipzig.grafs.model.Graph;
 import edu.leipzig.grafs.model.Vertex;
 import edu.leipzig.grafs.operators.matching.model.CandidateMap;
-import edu.leipzig.grafs.operators.matching.model.QueryGraph;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -29,14 +28,14 @@ import org.gradoop.common.model.impl.id.GradoopId;
 public abstract class AbstractMatchingProcess<W extends Window> extends
     ProcessAllWindowFunction<EdgeContainer, EdgeContainer, W> {
 
-  final QueryGraph queryGraph;
+  final Graph queryGraph;
 
   /**
    * Initializes the matching process with the given query graph
    *
    * @param queryGraph graph for which the operator should find patterns
    */
-  AbstractMatchingProcess(QueryGraph queryGraph) {
+  AbstractMatchingProcess(Graph queryGraph) {
     this.queryGraph = queryGraph;
   }
 
@@ -51,7 +50,7 @@ public abstract class AbstractMatchingProcess<W extends Window> extends
   public void process(Context notUsed, Iterable<EdgeContainer> ecIterable,
       Collector<EdgeContainer> collector) {
     var graph = Graph.fromEdgeContainers(ecIterable);
-    if (queryGraph.isVertexOnly()) {
+    if (queryGraph.getEdges().isEmpty()) {
       throw new RuntimeException(
           "Can't process query with only vertices, because only edge stream model is supported");
     } else {

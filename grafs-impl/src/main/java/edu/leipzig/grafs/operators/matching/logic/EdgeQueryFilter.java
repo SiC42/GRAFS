@@ -3,8 +3,8 @@ package edu.leipzig.grafs.operators.matching.logic;
 
 import edu.leipzig.grafs.model.Edge;
 import edu.leipzig.grafs.model.EdgeContainer;
+import edu.leipzig.grafs.model.Graph;
 import edu.leipzig.grafs.model.Vertex;
-import edu.leipzig.grafs.operators.matching.model.QueryGraph;
 import org.apache.flink.api.common.functions.FilterFunction;
 
 /**
@@ -15,14 +15,14 @@ public class EdgeQueryFilter implements FilterFunction<EdgeContainer> {
   /**
    * Query graph which is used to filter edges
    */
-  private final QueryGraph queryGraph;
+  private final Graph queryGraph;
 
   /**
    * Initializes the filter.
    *
    * @param queryGraph query graph which is used to filter edges
    */
-  public EdgeQueryFilter(final QueryGraph queryGraph) {
+  public EdgeQueryFilter(final Graph queryGraph) {
     this.queryGraph = queryGraph;
   }
 

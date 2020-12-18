@@ -107,7 +107,7 @@ public abstract class MatchingTestBase {
   protected AsciiGraphLoader graphLoader;
   protected Graph graph;
   protected AsciiGraphLoader queryLoader;
-  protected QueryGraph queryGraph;
+  protected Graph queryGraph;
   protected String queryPaperGraphGdlStr = ""
       // vertices
       + "(qa1:A)"
@@ -125,7 +125,7 @@ public abstract class MatchingTestBase {
     graphLoader = AsciiGraphLoader.fromString(paperGraphGdlStr);
     graph = graphLoader.createGraph();
     queryLoader = AsciiGraphLoader.fromString(queryPaperGraphGdlStr);
-    queryGraph = QueryGraph.fromGraph(queryLoader.createGraph());
+    queryGraph = queryLoader.createGraph();
   }
 
   Set<Vertex> filterBySelfAssignedId(Collection<Vertex> vertices, int... ids) {

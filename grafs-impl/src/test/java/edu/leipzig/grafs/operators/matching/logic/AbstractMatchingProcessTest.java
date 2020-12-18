@@ -225,7 +225,7 @@ class AbstractMatchingProcessTest extends MatchingTestBase {
 
   static class MockedMatchingProcess extends AbstractMatchingProcess<Window> {
 
-    public MockedMatchingProcess(QueryGraph query) {
+    public MockedMatchingProcess(Graph query) {
       super(query);
     }
 

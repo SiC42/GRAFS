@@ -4,7 +4,6 @@ import edu.leipzig.grafs.model.EdgeContainer;
 import edu.leipzig.grafs.model.Graph;
 import edu.leipzig.grafs.model.Vertex;
 import edu.leipzig.grafs.operators.matching.model.CandidateMap;
-import edu.leipzig.grafs.operators.matching.model.QueryGraph;
 import java.util.HashSet;
 import java.util.Set;
 import org.apache.flink.streaming.api.windowing.windows.Window;
@@ -23,7 +22,7 @@ public class IsomorphismMatchingProcess<W extends Window> extends AbstractMatchi
    *
    * @param queryGraph query graph which should be used for the dual simulation process.
    */
-  public IsomorphismMatchingProcess(QueryGraph queryGraph) {
+  public IsomorphismMatchingProcess(Graph queryGraph) {
     super(queryGraph);
   }
 

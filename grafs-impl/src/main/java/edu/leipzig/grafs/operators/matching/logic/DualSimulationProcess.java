@@ -4,7 +4,6 @@ import edu.leipzig.grafs.model.EdgeContainer;
 import edu.leipzig.grafs.model.Graph;
 import edu.leipzig.grafs.model.Vertex;
 import edu.leipzig.grafs.operators.matching.model.CandidateMap;
-import edu.leipzig.grafs.operators.matching.model.QueryGraph;
 import edu.leipzig.grafs.util.Sets;
 import java.util.HashSet;
 import java.util.Set;
@@ -27,7 +26,7 @@ public class DualSimulationProcess<W extends Window> extends
    *
    * @param queryGraph query graph which should be used for the dual simulation process.
    */
-  public DualSimulationProcess(QueryGraph queryGraph) {
+  public DualSimulationProcess(Graph queryGraph) {
     super(queryGraph);
   }
 
@@ -42,7 +41,7 @@ public class DualSimulationProcess<W extends Window> extends
    * @see <a href="https://ieeexplore.ieee.org/abstract/document/6906821">"DualIso: An Algorithm for
    * Subgraph Pattern Matching on Very Large Labeled Graphs"</a> by Saltz et al.
    */
-  static CandidateMap<Vertex> runAlgorithm(Graph graph, QueryGraph queryGraph,
+  static CandidateMap<Vertex> runAlgorithm(Graph graph, Graph queryGraph,
       CandidateMap<Vertex> candidatesMap) {
     EdgeQueryFilter edgeFilter = new EdgeQueryFilter(queryGraph);
 
