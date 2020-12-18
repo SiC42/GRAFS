@@ -7,7 +7,8 @@ import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.streaming.api.datastream.DataStream;
 
 /**
- * Represents an Edge Transformation Operator. The given transformation function is applied to all edges in the stream.
+ * Represents an Edge Transformation Operator. The given transformation function is applied to all
+ * edges in the stream.
  */
 public class EdgeTransformation implements GraphToGraphOperatorI {
 
@@ -18,6 +19,7 @@ public class EdgeTransformation implements GraphToGraphOperatorI {
 
   /**
    * Initializes this operator with the given transformation function.
+   *
    * @param mapper transformation function that is used on every edge of the stream
    */
   public EdgeTransformation(final MapFunction<Edge, Edge> mapper) {
@@ -29,6 +31,7 @@ public class EdgeTransformation implements GraphToGraphOperatorI {
 
   /**
    * Applies this operator on the stream and returns the stream with the operator applied.
+   *
    * @param stream stream on which the operator should be applied
    * @return the stream with the edge transformation operator applied
    */

@@ -7,7 +7,8 @@ import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.streaming.api.datastream.DataStream;
 
 /**
- * Represents a Vertex Transformation Operator. The given transformation function is applied to all vertices in the stream.
+ * Represents a Vertex Transformation Operator. The given transformation function is applied to all
+ * vertices in the stream.
  */
 public class VertexTransformation implements GraphToGraphOperatorI {
 
@@ -18,6 +19,7 @@ public class VertexTransformation implements GraphToGraphOperatorI {
 
   /**
    * Initializes this operator with the given transformation function.
+   *
    * @param mapper transformation function that is used on every vertice of the stream
    */
   public VertexTransformation(final MapFunction<Vertex, Vertex> mapper) {
@@ -30,6 +32,7 @@ public class VertexTransformation implements GraphToGraphOperatorI {
 
   /**
    * Applies this operator on the stream and returns the stream with the operator applied.
+   *
    * @param stream stream on which the operator should be applied
    * @return the stream with the vertex transformation operator applied
    */

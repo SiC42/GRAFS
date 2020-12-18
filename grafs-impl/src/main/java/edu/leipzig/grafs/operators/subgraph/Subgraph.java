@@ -11,7 +11,7 @@ import org.apache.flink.streaming.api.datastream.DataStream;
 /**
  * Represents a Subgraph Operator. A subgraph is a graph, whose vertices and edges are subsets of
  * the given graph.
- *
+ * <p>
  * The operator is able to:
  * <ol>
  *   <li>extract vertex-induced subgraph</li>
@@ -35,9 +35,10 @@ public class Subgraph implements GraphToGraphOperatorI {
 
   /**
    * Initializes this operator with the given parameters
+   *
    * @param vertexFilter filter applied to the vertices of the stream
-   * @param edgeFilter filter applied to the edges of the stream
-   * @param strategy strategy used for the subgraph-operation
+   * @param edgeFilter   filter applied to the edges of the stream
+   * @param strategy     strategy used for the subgraph-operation
    */
   public Subgraph(
       final FilterFunction<Vertex> vertexFilter,
@@ -74,9 +75,11 @@ public class Subgraph implements GraphToGraphOperatorI {
   }
 
   /**
-   * Creates a {@link FilterFunction} on EdgeContainer for the given vertex and edge filter. The returned filter is the one applied to the stream.
+   * Creates a {@link FilterFunction} on EdgeContainer for the given vertex and edge filter. The
+   * returned filter is the one applied to the stream.
+   *
    * @param vertexFilter filter applied to the vertices of the stream
-   * @param edgeFilter filter applied to the edges of the stream
+   * @param edgeFilter   filter applied to the edges of the stream
    * @return edge container filter ready to be applied to the stream
    */
   private FilterFunction<EdgeContainer> createSubGraphFilter(FilterFunction<Vertex> vertexFilter,
@@ -89,8 +92,9 @@ public class Subgraph implements GraphToGraphOperatorI {
   }
 
   /**
-   * Creates a {@link FilterFunction} on EdgeContainer for the given vertex filter that represents a vertex induced subgraph function.
-   * The returned filter is the one applied to the stream.
+   * Creates a {@link FilterFunction} on EdgeContainer for the given vertex filter that represents a
+   * vertex induced subgraph function. The returned filter is the one applied to the stream.
+   *
    * @param vertexFilter filter applied to the vertices of the stream
    * @return vertex induced subgraph filter ready to be applied to the stream
    */
@@ -103,8 +107,9 @@ public class Subgraph implements GraphToGraphOperatorI {
   }
 
   /**
-   * Creates a {@link FilterFunction} on EdgeContainer for the given edge filter that represents a edge induced subgraph function.
-   * The returned filter is the one applied to the stream.
+   * Creates a {@link FilterFunction} on EdgeContainer for the given edge filter that represents a
+   * edge induced subgraph function. The returned filter is the one applied to the stream.
+   *
    * @param edgeFilter filter applied to the vertices of the stream
    * @return edge induced subgraph filter ready to be applied to the stream
    */
@@ -116,6 +121,7 @@ public class Subgraph implements GraphToGraphOperatorI {
 
   /**
    * Applies this operator on the stream and returns the stream with the operator applied.
+   *
    * @param stream stream on which the operator should be applied
    * @return the stream with the subgraph operator applied
    */
