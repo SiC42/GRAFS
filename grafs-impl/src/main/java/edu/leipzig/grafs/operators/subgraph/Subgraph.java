@@ -115,7 +115,7 @@ public class Subgraph implements GraphToGraphOperatorI {
   }
 
   /**
-   * Applies this operator on the stream and returns the stream with the operator applied
+   * Applies this operator on the stream and returns the stream with the operator applied.
    * @param stream stream on which the operator should be applied
    * @return the stream with the subgraph operator applied
    */
