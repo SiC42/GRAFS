@@ -24,6 +24,7 @@ import org.apache.commons.cli.ParseException;
 import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.functions.sink.DiscardingSink;
+import org.apache.flink.streaming.api.functions.sink.filesystem.StreamingFileSink;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
@@ -41,6 +42,7 @@ public abstract class AbstractBenchmark {
   protected EdgeStream edgeStream;
   protected String operatorName;
   protected Writer outputWriter;
+  private String outputPath;
 
   public AbstractBenchmark(String[] args) {
     init();
@@ -77,11 +79,16 @@ public abstract class AbstractBenchmark {
 
   protected void init() {
     this.operatorName = getClass().getSimpleName();
+    this.outputPath = "";
   }
 
   public void execute() throws Exception {
     edgeStream = applyOperator(edgeStream);
-    edgeStream.addSink(new DiscardingSink<>());
+    if(outputPath.equals("")) {
+      edgeStream.addSink(new DiscardingSink<>());
+    } else {
+      edgeStream.getDataStream().writeAsText(outputPath);
+    }
     var result = env.execute(this.operatorName);
     var timeInMilliSeconds = result.getNetRuntime(TimeUnit.MILLISECONDS);
     outputWriter.write(getCsvLine(timeInMilliSeconds));
@@ -133,18 +140,22 @@ public abstract class AbstractBenchmark {
       }
 
       // Process OUTPUT
-      if (!cmd.hasOption("output")) {
-        throw new ParseException("Missing parameter: o");
+      if (cmd.hasOption("output")) {
+          outputPath = cmd.getOptionValue("output");
+      }
+
+      // Process LOG
+      if (!cmd.hasOption("log")) {
+        throw new ParseException("Missing parameter: log");
       } else {
         try {
-          var fileOutputStream = new FileOutputStream(cmd.getOptionValue("output"), true);
+          var fileOutputStream = new FileOutputStream(cmd.getOptionValue("log"), true);
           this.outputWriter = new OutputStreamWriter(fileOutputStream);
         } catch (IOException e) {
           e.printStackTrace();
           throw new ParseException("Unreadable output path");
         }
       }
-
 
     } catch (ParseException e) {
       formatter.printHelp("grafsbenchmark", header, options, "");
@@ -161,6 +172,7 @@ public abstract class AbstractBenchmark {
     options
         .addOption("l", RATE_LIMIT, true, "the rate limit for the intake of data into the system");
     options.addOption("o", "output", true, "location for the output file");
+    options.addOption("log", true, "location for the log file");
     return options;
   }
 
