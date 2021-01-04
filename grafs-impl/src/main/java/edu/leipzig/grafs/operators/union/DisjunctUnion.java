@@ -1,5 +1,6 @@
 package edu.leipzig.grafs.operators.union;
 
+import com.google.common.annotations.Beta;
 import edu.leipzig.grafs.model.EdgeContainer;
 import edu.leipzig.grafs.model.EdgeStream;
 import edu.leipzig.grafs.operators.interfaces.GraphToGraphCollectionOperatorI;
@@ -10,6 +11,7 @@ import org.apache.flink.streaming.api.datastream.DataStream;
  * This operator unifies multiple streams into the given one. It is implied, that the set of
  * elements in both streams are disjunct (or it is not of importance for the analysis.
  */
+@Beta
 public class DisjunctUnion implements GraphToGraphOperatorI, GraphToGraphCollectionOperatorI {
 
   /**

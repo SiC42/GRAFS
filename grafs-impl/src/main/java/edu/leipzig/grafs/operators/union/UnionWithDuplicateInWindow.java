@@ -1,5 +1,6 @@
 package edu.leipzig.grafs.operators.union;
 
+import com.google.common.annotations.Beta;
 import edu.leipzig.grafs.model.EdgeContainer;
 import edu.leipzig.grafs.model.EdgeStream;
 import edu.leipzig.grafs.operators.interfaces.GraphToGraphCollectionOperatorI;
@@ -15,6 +16,7 @@ import org.apache.flink.util.Collector;
  * This operator unifies multiple streams into the given one. Duplicate elements are detected in a
  * window and only one is returned. It is advised to only use Tumbling Windows.
  */
+@Beta
 public class UnionWithDuplicateInWindow<W extends Window> implements
     GraphToGraphOperatorI, GraphToGraphCollectionOperatorI {
 
