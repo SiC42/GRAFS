@@ -2,14 +2,14 @@ package edu.leipzig.grafs.benchmark.tests.window;
 
 import edu.leipzig.grafs.model.EdgeStream;
 
-public class SimpleIsomorphismMatchingBenchmark extends AbstractWindowBenchmark {
+public class IsomorphismMatchingBenchmark extends AbstractWindowBenchmark {
 
-  public SimpleIsomorphismMatchingBenchmark(String[] args) {
+  public IsomorphismMatchingBenchmark(String[] args) {
     super(args);
   }
 
   public static void main(String[] args) throws Exception {
-    var benchmark = new SimpleIsomorphismMatchingBenchmark(args);
+    var benchmark = new IsomorphismMatchingBenchmark(args);
     benchmark.execute();
   }
 

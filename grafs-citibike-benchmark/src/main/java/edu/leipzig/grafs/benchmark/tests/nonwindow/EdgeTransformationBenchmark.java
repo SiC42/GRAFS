@@ -4,14 +4,14 @@ import edu.leipzig.grafs.benchmark.tests.AbstractBenchmark;
 import edu.leipzig.grafs.model.EdgeStream;
 import org.gradoop.common.model.impl.properties.PropertyValue;
 
-public class SimpleEdgeTransformationBenchmark extends AbstractBenchmark {
+public class EdgeTransformationBenchmark extends AbstractBenchmark {
 
-  public SimpleEdgeTransformationBenchmark(String[] args) {
+  public EdgeTransformationBenchmark(String[] args) {
     super(args);
   }
 
   public static void main(String[] args) throws Exception {
-    var benchmark = new SimpleEdgeTransformationBenchmark(args);
+    var benchmark = new EdgeTransformationBenchmark(args);
     benchmark.execute();
   }
 

@@ -4,14 +4,14 @@ import edu.leipzig.grafs.model.EdgeStream;
 import edu.leipzig.grafs.operators.grouping.Grouping;
 import edu.leipzig.grafs.operators.grouping.functions.Count;
 
-public class SimpleGroupingBenchmark extends AbstractWindowBenchmark {
+public class GroupingBenchmark extends AbstractWindowBenchmark {
 
-  public SimpleGroupingBenchmark(String[] args) {
+  public GroupingBenchmark(String[] args) {
     super(args);
   }
 
   public static void main(String[] args) throws Exception {
-    var benchmark = new SimpleGroupingBenchmark(args);
+    var benchmark = new GroupingBenchmark(args);
     benchmark.execute();
   }
 

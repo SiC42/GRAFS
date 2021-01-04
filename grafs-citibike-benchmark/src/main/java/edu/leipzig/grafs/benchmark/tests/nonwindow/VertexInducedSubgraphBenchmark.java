@@ -3,14 +3,14 @@ package edu.leipzig.grafs.benchmark.tests.nonwindow;
 import edu.leipzig.grafs.benchmark.tests.AbstractBenchmark;
 import edu.leipzig.grafs.model.EdgeStream;
 
-public class SimpleVertexInducedSubgraphBenchmark extends AbstractBenchmark {
+public class VertexInducedSubgraphBenchmark extends AbstractBenchmark {
 
-  public SimpleVertexInducedSubgraphBenchmark(String[] args) {
+  public VertexInducedSubgraphBenchmark(String[] args) {
     super(args);
   }
 
   public static void main(String[] args) throws Exception {
-    var benchmark = new SimpleVertexInducedSubgraphBenchmark(args);
+    var benchmark = new VertexInducedSubgraphBenchmark(args);
     benchmark.execute();
   }
 
