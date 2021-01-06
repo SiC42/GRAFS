@@ -27,6 +27,10 @@ import org.s1ck.gdl.GDLHandler.Builder;
 import org.s1ck.gdl.model.Graph;
 import org.s1ck.gdl.model.GraphElement;
 
+/**
+ * This class is used to load GDL representations of graphs and return edge container
+ * representations of those graphs.
+ */
 public class AsciiGraphLoader {
 
   /**
@@ -69,6 +73,11 @@ public class AsciiGraphLoader {
    */
   private final Map<String, Edge> edgeCache;
 
+  /**
+   * Initializes the loader with the given GDL handler
+   *
+   * @param gdlHandler
+   */
   public AsciiGraphLoader(GDLHandler gdlHandler) {
     this.gdlHandler = gdlHandler;
     this.graphIds = new HashMap<>();
@@ -82,24 +91,46 @@ public class AsciiGraphLoader {
     init();
   }
 
-
+  /**
+   * Initializes a loader with the given gdl file location
+   *
+   * @param fileName name and location of the gdl file that should be used by the loader
+   * @return loader that is initialized with the given file
+   */
   public static AsciiGraphLoader fromFile(String fileName) throws IOException {
     GDLHandler gdlHandler = createDefaultGdlHandlerBuilder()
         .buildFromFile(fileName);
     return new AsciiGraphLoader(gdlHandler);
   }
 
+  /**
+   * Initializes a loader with the given input stream
+   *
+   * @param graphStream input stream that contains a graph (collection)
+   * @return loader that is initialized with the given input stream
+   */
   public static AsciiGraphLoader fromInputStream(InputStream graphStream) throws IOException {
     GDLHandler gdlHandler = createDefaultGdlHandlerBuilder()
         .buildFromStream(graphStream);
     return new AsciiGraphLoader(gdlHandler);
   }
 
+  /**
+   * Initializes a loader with the given input stream
+   *
+   * @param graphStr string that contains a graph (collection)
+   * @return loader that is initialized with the given string
+   */
   public static AsciiGraphLoader fromString(String graphStr) {
     GDLHandler gdlHandler = createDefaultGdlHandlerBuilder().buildFromString(graphStr);
     return new AsciiGraphLoader(gdlHandler);
   }
 
+  /**
+   * Initiales an empty loader.
+   *
+   * @return a loader with default labels set.
+   */
   private static Builder createDefaultGdlHandlerBuilder() {
     return new GDLHandler.Builder()
         .setDefaultGraphLabel(GradoopConstants.DEFAULT_GRAPH_LABEL)
@@ -124,10 +155,25 @@ public class AsciiGraphLoader {
   //  EdgeCollection and EdgeStream methods
   // ---------------------------------------------------------------------------
 
+  /**
+   * Creates an edge stream with the given config.
+   * <p>
+   * The expected parameter specifies which edges should be used. Other edges are omitted.
+   *
+   * @param config   config used to produce the stream
+   * @param expected graph variables that should be selected
+   * @return stream of selected edges
+   */
   public EdgeStream createEdgeStreamByGraphVariables(FlinkConfig config, String... expected) {
     return createEdgeStream(config, createEdgeContainersByGraphVariables(expected));
   }
 
+  /**
+   * Creates an edge stream with the given config.
+   *
+   * @param config config used to produce the stream
+   * @return stream of edges loaded
+   */
   public EdgeStream createEdgeStream(FlinkConfig config) {
     return createEdgeStream(config, createEdgeContainers());
   }
@@ -138,11 +184,24 @@ public class AsciiGraphLoader {
     return new EdgeStream(stream, config);
   }
 
+  /**
+   * Creates a collection of edge containers.
+   * <p>
+   * The expected parameter specifies which edges should be used. Other edges are omitted.
+   *
+   * @param expected graph variables that should be selected
+   * @return collection of selected edge containers
+   */
   public Collection<EdgeContainer> createEdgeContainersByGraphVariables(String... expected) {
     var edges = getEdgesByGraphVariables(expected);
     return createEdgeContainers(edges);
   }
 
+  /**
+   * Creates a collection of edge containers loaded in this object.
+   *
+   * @return collection of edge containers loaded
+   */
   public Collection<EdgeContainer> createEdgeContainers() {
     return createEdgeContainers(edges.values());
   }
@@ -163,12 +222,25 @@ public class AsciiGraphLoader {
   // ---------------------------------------------------------------------------
 
 
+  /**
+   * Creates a graph represetation of the loaded information.
+   * <p>
+   * The expected parameter specifies which information should be used.
+   *
+   * @param expected graph variables that should be selected
+   * @return graphs for the selected graph variables
+   */
   public edu.leipzig.grafs.model.Graph createGraphByGraphVariables(String... expected) {
     var vertices = getVerticesByGraphVariables(expected);
     var edges = getEdgesByGraphVariables(expected);
     return createGraph(vertices, edges);
   }
 
+  /**
+   * Creates a graph representation of the loaded information.
+   *
+   * @return graphs loaded by this object
+   */
   public edu.leipzig.grafs.model.Graph createGraph() {
     return createGraph(vertices.values(), edges.values());
   }

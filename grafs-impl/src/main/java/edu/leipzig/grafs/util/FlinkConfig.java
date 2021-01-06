@@ -29,6 +29,12 @@ public class FlinkConfig {
     this.watermarkStrategy = watermarkStrategy;
   }
 
+  /**
+   * Allows building a config via the Flink config builder
+   *
+   * @param executionEnvironment Flink execution environment
+   * @return flink config builder object used to build this config
+   */
   public static FlinkConfigBuilder buildNewConfig(StreamExecutionEnvironment executionEnvironment) {
     Objects.requireNonNull(executionEnvironment, "execution environment must not be null");
     return new FlinkConfigBuilder(executionEnvironment);
