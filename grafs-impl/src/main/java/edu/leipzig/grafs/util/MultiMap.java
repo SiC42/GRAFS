@@ -129,9 +129,8 @@ public class MultiMap<K, V> {
     var valueSet = map.get(key);
     if (valueSet != null) {
       size -= valueSet.size();
-      valueSet.clear();
     }
-    map.put(key, valueSet);
+    map.remove(key);
   }
 
   public int size() {

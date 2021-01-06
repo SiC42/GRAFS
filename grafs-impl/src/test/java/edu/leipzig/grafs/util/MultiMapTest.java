@@ -3,8 +3,10 @@ package edu.leipzig.grafs.util;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.aMapWithSize;
 import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 
 import java.util.Collections;
 import java.util.Set;
@@ -169,7 +171,7 @@ class MultiMapTest {
     assertThat(multiMap.size(), is(6));
     multiMap.removeAll(1);
     assertThat(multiMap.get(4), is(equalTo(Set.of(5, 6, 7))));
-    assertThat(multiMap.get(1), is(equalTo(Collections.EMPTY_SET)));
+    assertThat(multiMap.get(1), is(empty()));
     assertThat(multiMap.size(), is(3));
   }
 
