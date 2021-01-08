@@ -50,8 +50,8 @@ class TripletTest {
     var v2 = new Vertex();
 
     var e = EdgeFactory.createEdge(v1, v2);
-    var ec = new Triplet(e, v1, v2);
-    assertThat(ec.getEdge(), is(equalTo(e)));
+    var triplet = new Triplet(e, v1, v2);
+    assertThat(triplet.getEdge(), is(equalTo(e)));
   }
 
   @Test

@@ -135,8 +135,8 @@ public abstract class AbstractMatchingProcess<W extends Window> extends
    */
   void emitTriplet(Collector<Triplet> collector,
       Collection<Triplet> triplets) {
-    for (var ec : triplets) {
-      collector.collect(ec);
+    for (var triplet : triplets) {
+      collector.collect(triplet);
     }
   }
 
@@ -144,11 +144,11 @@ public abstract class AbstractMatchingProcess<W extends Window> extends
    * Returns <tt>true</tt> if the given vertex candidate was not used before, i.e. is not a
    * candidate for any query vertex in the array with an index smaller than the given depth.
    *
-   * @param candidate
-   * @param candidateMap
-   * @param qVertexArray
-   * @param depth
-   * @return
+   * @param candidate element to be tested if it was not a candidate before
+   * @param candidateMap candidate map to be looked at for element
+   * @param qVertexArray query elements of previous iterations used as key for map
+   * @param depth current depth, used to find out which query elements where used
+   * @return <tt>true</tt> if the given vertex candidate was not used before
    */
   boolean previouslyNotCandidate(Vertex candidate, CandidateMap<Vertex> candidateMap,
       Vertex[] qVertexArray, int depth) {

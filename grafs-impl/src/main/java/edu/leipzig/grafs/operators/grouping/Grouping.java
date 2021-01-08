@@ -125,9 +125,9 @@ public class Grouping<W extends Window> implements GraphToGraphOperatorI {
     var reducedStream = aggregatedOnVertexStream.filter(ec -> !ec.getEdge().isReverse());
     var aggregatedOnEdgeStream = aggregateOnEdge(reducedStream);
     var graphId = GradoopId.get();
-    return aggregatedOnEdgeStream.map(ec -> {
-      ec.addGraphId(graphId);
-      return ec;
+    return aggregatedOnEdgeStream.map(triplet -> {
+      triplet.addGraphId(graphId);
+      return triplet;
     });
   }
 

@@ -211,8 +211,8 @@ public class AsciiGraphLoader {
     for (var edge : edges) {
       var source = vertices.get(edge.getSourceId());
       var target = vertices.get(edge.getTargetId());
-      Triplet ec = new Triplet(edge, source, target);
-      triplets.add(ec);
+      var triplet = new Triplet(edge, source, target);
+      triplets.add(triplet);
     }
     return triplets;
   }

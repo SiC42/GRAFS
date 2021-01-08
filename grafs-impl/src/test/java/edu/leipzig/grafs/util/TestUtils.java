@@ -342,12 +342,12 @@ public class TestUtils {
     var it2 = list2.iterator();
 
     while (it1.hasNext()) {
-      var ec1 = it1.next();
-      var ec2 = it2.next();
+      var triplet1 = it1.next();
+      var triplet2 = it2.next();
 
-      validateElementWith(ec1.getEdge(), ec2.getEdge());
-      validateElementWith(ec1.getSourceVertex(), ec2.getSourceVertex());
-      validateElementWith(ec1.getTargetVertex(), ec2.getTargetVertex());
+      validateElementWith(triplet1.getEdge(), triplet2.getEdge());
+      validateElementWith(triplet1.getSourceVertex(), triplet2.getSourceVertex());
+      validateElementWith(triplet1.getTargetVertex(), triplet2.getTargetVertex());
     }
   }
 

@@ -183,7 +183,7 @@ class AbstractMatchingProcessTest extends MatchingTestBase {
     assertThat(tripletFactory.getTriplets(), hasSize(2));
 
     var tripletList = new ArrayList<>(tripletFactory.getTriplets());
-    tripletList.sort(Comparator.comparing(ec -> ec.getSourceVertex().getLabel()));
+    tripletList.sort(Comparator.comparing(triplet -> triplet.getSourceVertex().getLabel()));
 
     var triplet = tripletList.get(0);
     var actualE = triplet.getEdge();

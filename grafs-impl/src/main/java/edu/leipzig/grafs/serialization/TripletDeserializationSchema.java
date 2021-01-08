@@ -29,9 +29,9 @@ public class TripletDeserializationSchema implements DeserializationSchema<Tripl
     try {
       var bais = new ByteArrayInputStream(bytes);
       var ois = new ObjectInputStream(bais);
-      var ec = (Triplet) ois.readObject();
+      var triplet = (Triplet) ois.readObject();
       ois.close();
-      return ec;
+      return triplet;
     } catch (IOException | ClassNotFoundException e) {
       e.printStackTrace();
       return null;
