@@ -20,7 +20,7 @@ import org.apache.flink.streaming.api.windowing.triggers.Trigger;
 import org.apache.flink.streaming.api.windowing.windows.Window;
 
 /**
- * Defines the operators that are available on a {@link EdgeContainer}.
+ * Defines the operators that are available on a {@link Triplet}.
  */
 public interface EdgeStreamOperators {
 
@@ -251,7 +251,7 @@ public interface EdgeStreamOperators {
    * @return the unioned edge stream
    */
   default EdgeStream unionWithDuplicateInWindow(WindowAssigner<Object, Window> window,
-      Trigger<EdgeContainer, Window> trigger,
+      Trigger<Triplet, Window> trigger,
       EdgeStream... streams) {
     return callForStream(new UnionWithDuplicateInWindow<>(window, trigger, streams));
   }

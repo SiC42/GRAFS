@@ -1,13 +1,13 @@
 package edu.leipzig.grafs.operators.matching.logic;
 
-import edu.leipzig.grafs.model.EdgeContainer;
+import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.model.Graph;
 import org.apache.flink.api.common.functions.FilterFunction;
 
 /**
  * Filters vertices based on query graph.
  */
-public class VertexQueryFilter implements FilterFunction<EdgeContainer> {
+public class VertexQueryFilter implements FilterFunction<Triplet> {
 
   /**
    * Query graph which is used to filter edges
@@ -24,17 +24,17 @@ public class VertexQueryFilter implements FilterFunction<EdgeContainer> {
   }
 
   /**
-   * Returns <tt>true</tt> if for the given edge container there are matching vertices in the query
+   * Returns <tt>true</tt> if for the given triplet there are matching vertices in the query
    * graph.
    *
-   * @param edgeContainer Edge container which is tested for filtering
-   * @return <tt>true</tt> if for the given edge container there are matching vertices in the query
+   * @param triplet Triplet which is tested for filtering
+   * @return <tt>true</tt> if for the given triplet there are matching vertices in the query
    * graph
    */
   @Override
-  public boolean filter(EdgeContainer edgeContainer) throws Exception {
-    var source = edgeContainer.getSourceVertex();
-    var target = edgeContainer.getTargetVertex();
+  public boolean filter(Triplet triplet) throws Exception {
+    var source = triplet.getSourceVertex();
+    var target = triplet.getTargetVertex();
     boolean sourceInQuery = false;
     boolean targetInQuery = false;
     for (var queryVertex : queryGraph.getVertices()) {

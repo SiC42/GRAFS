@@ -269,11 +269,11 @@ class AsciiGraphLoaderTest {
     validateCollections(asciiGraphLoader, 1, 2, 1);
     validateCaches(asciiGraphLoader, 0, 0, 0);
 
-    for (var ec : asciiGraphLoader.createEdgeContainers()) {
-      assertEquals(GradoopConstants.DEFAULT_EDGE_LABEL, ec.getEdge().getLabel(),
+    for (var triplet : asciiGraphLoader.createTriplets()) {
+      assertEquals(GradoopConstants.DEFAULT_EDGE_LABEL, triplet.getEdge().getLabel(),
           "Edge has wrong label");
-      assertNotNull(ec.getEdge().getSourceId(), "Source ID was null");
-      assertNotNull(ec.getEdge().getTargetId(), "Target ID was null");
+      assertNotNull(triplet.getEdge().getSourceId(), "Source ID was null");
+      assertNotNull(triplet.getEdge().getTargetId(), "Target ID was null");
     }
   }
 

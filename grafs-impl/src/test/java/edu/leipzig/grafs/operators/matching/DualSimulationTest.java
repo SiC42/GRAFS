@@ -1,7 +1,7 @@
 package edu.leipzig.grafs.operators.matching;
 
 
-import edu.leipzig.grafs.model.EdgeContainer;
+import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.model.EdgeStream;
 import edu.leipzig.grafs.operators.matching.logic.MatchingTestBase;
 import edu.leipzig.grafs.util.FlinkConfig;
@@ -28,7 +28,7 @@ public class DualSimulationTest extends MatchingTestBase {
     env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
     config = new FlinkConfigBuilder(env)
         .withWaterMarkStrategy(WatermarkStrategy
-            .<EdgeContainer>forBoundedOutOfOrderness(Duration.ZERO)
+            .<Triplet>forBoundedOutOfOrderness(Duration.ZERO)
             .withTimestampAssigner((ec, timestamp) -> 0))
         .build();
   }
@@ -78,7 +78,7 @@ public class DualSimulationTest extends MatchingTestBase {
     var loader = graphLoader;
     EdgeStream edgeStream = loader.createEdgeStream(config);
     loader.appendFromString(appendDsGraph);
-    var expectedEcs = loader.createEdgeContainersByGraphVariables("ds");
+    var expectedEcs = loader.createTripletsByGraphVariables("ds");
 
     var resultStream = edgeStream
         .callForStream(new DualSimulation<>(queryPaperGraphGdlStr,
@@ -104,7 +104,7 @@ public class DualSimulationTest extends MatchingTestBase {
         + "(frank)-[fkd]->(dave)"
         + "]";
     loader.appendFromString(appendDsString);
-    var expectedEcs = loader.createEdgeContainersByGraphVariables("ds");
+    var expectedEcs = loader.createTripletsByGraphVariables("ds");
 
     var resultStream = edgeStream
         .callForStream(new DualSimulation<>(queryStr,
@@ -124,7 +124,7 @@ public class DualSimulationTest extends MatchingTestBase {
         + "(dave)-[dkc]->(carol)"
         + "]";
     loader.appendFromString(appendDsString);
-    var expectedEcs = loader.createEdgeContainersByGraphVariables("ds");
+    var expectedEcs = loader.createTripletsByGraphVariables("ds");
 
     var resultStream = edgeStream
         .callForStream(new DualSimulation<>(queryStr,
@@ -150,7 +150,7 @@ public class DualSimulationTest extends MatchingTestBase {
         + "(frank)-[fkd]->(dave)"
         + "]";
     loader.appendFromString(appendDsString);
-    var expectedEcs = loader.createEdgeContainersByGraphVariables("ds");
+    var expectedEcs = loader.createTripletsByGraphVariables("ds");
 
     var resultStream = edgeStream
         .callForStream(new DualSimulation<>(queryStr,
@@ -176,7 +176,7 @@ public class DualSimulationTest extends MatchingTestBase {
         + "(frank)-[fkd]->(dave)"
         + "]";
     loader.appendFromString(appendDsString);
-    var expectedEcs = loader.createEdgeContainersByGraphVariables("ds");
+    var expectedEcs = loader.createTripletsByGraphVariables("ds");
 
     var resultStream = edgeStream
         .callForStream(new DualSimulation<>(queryStr,
@@ -198,7 +198,7 @@ public class DualSimulationTest extends MatchingTestBase {
         + "(dave)-[dkc]->(carol)"
         + "]";
     loader.appendFromString(appendDsString);
-    var expectedEcs = loader.createEdgeContainersByGraphVariables("ds");
+    var expectedEcs = loader.createTripletsByGraphVariables("ds");
 
     var resultStream = edgeStream
         .callForStream(new DualSimulation<>(queryStr,
@@ -216,7 +216,7 @@ public class DualSimulationTest extends MatchingTestBase {
         + "(gdbs)-[gdbshmoa]->(alice)"
         + "]";
     loader.appendFromString(appendDsString);
-    var expectedEcs = loader.createEdgeContainersByGraphVariables("ds");
+    var expectedEcs = loader.createTripletsByGraphVariables("ds");
 
     var resultStream = edgeStream
         .callForStream(new DualSimulation<>(queryStr,

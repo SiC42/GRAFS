@@ -2,7 +2,7 @@ package edu.leipzig.grafs.operators.grouping.logic;
 
 import edu.leipzig.grafs.factory.EdgeFactory;
 import edu.leipzig.grafs.factory.VertexFactory;
-import edu.leipzig.grafs.model.EdgeContainer;
+import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.model.Vertex;
 import edu.leipzig.grafs.operators.grouping.functions.AggregateFunction;
 import edu.leipzig.grafs.operators.grouping.model.AggregateMode;
@@ -46,23 +46,23 @@ public class VertexAggregation<W extends Window> extends VertexAggregationProces
    *
    * @param obsoleteStr     the key selector string, which is not used in this process
    * @param obsoleteContext context, which is not used in this process
-   * @param ecIterable      iterable of the edge containers in this window
-   * @param out             the collector in which the aggregated edge container are collected
+   * @param tripletIt      iterable of the triplets in this window
+   * @param out             the collector in which the aggregated triplet are collected
    */
   @Override
   public void process(String obsoleteStr, Context obsoleteContext,
-      Iterable<EdgeContainer> ecIterable,
-      Collector<EdgeContainer> out) {
+      Iterable<Triplet> tripletIt,
+      Collector<Triplet> out) {
     var aggregatedVertex = new AggregatedVertex();
 
     // determine the aggregated vertice
     var isInitialAggregation = true;
-    for (EdgeContainer ec : ecIterable) {
+    for (Triplet triplet : tripletIt) {
       Vertex curVertex;
       if (aggregateMode.equals(AggregateMode.SOURCE)) {
-        curVertex = ec.getSourceVertex();
+        curVertex = triplet.getSourceVertex();
       } else {
-        curVertex = ec.getTargetVertex();
+        curVertex = triplet.getTargetVertex();
       }
       if (isInitialAggregation) {
         isInitialAggregation = false;
@@ -74,27 +74,27 @@ public class VertexAggregation<W extends Window> extends VertexAggregationProces
     aggregatedVertex = (AggregatedVertex) checkForMissingAggregationsAndApply(aggregateFunctions,
         aggregatedVertex);
 
-    // build new edge containers using the aggregated vertice
-    for (EdgeContainer ec : ecIterable) {
-      if (ec.getEdge().isReverse()) {
-        out.collect(ec); // No need to aggregate for reverse edges
+    // build new triplets using the aggregated vertice
+    for (Triplet triplet : tripletIt) {
+      if (triplet.getEdge().isReverse()) {
+        out.collect(triplet); // No need to aggregate for reverse edges
         continue;
       }
       Vertex finalVertex = VertexFactory.createVertex(aggregatedVertex);
-      EdgeContainer aggregatedEC;
-      var edge = ec.getEdge();
+      Triplet aggregatedEC;
+      var edge = triplet.getEdge();
       if (aggregateMode.equals(AggregateMode.SOURCE)) {
         var newEdge = EdgeFactory.createEdge(edge.getLabel(),
             finalVertex.getId(),
-            ec.getTargetVertex().getId(),
+            triplet.getTargetVertex().getId(),
             edge.getProperties());
-        aggregatedEC = new EdgeContainer(newEdge, finalVertex, ec.getTargetVertex());
+        aggregatedEC = new Triplet(newEdge, finalVertex, triplet.getTargetVertex());
       } else { // TARGET-mode
         var newEdge = EdgeFactory.createEdge(edge.getLabel(),
-            ec.getSourceVertex().getId(),
+            triplet.getSourceVertex().getId(),
             finalVertex.getId(),
             edge.getProperties());
-        aggregatedEC = new EdgeContainer(newEdge, ec.getSourceVertex(), finalVertex);
+        aggregatedEC = new Triplet(newEdge, triplet.getSourceVertex(), finalVertex);
       }
       out.collect(aggregatedEC);
 

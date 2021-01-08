@@ -2,7 +2,6 @@ package edu.leipzig.grafs.operators.matching.logic;
 
 import edu.leipzig.grafs.model.Graph;
 import edu.leipzig.grafs.model.Vertex;
-import edu.leipzig.grafs.operators.matching.model.QueryGraph;
 import edu.leipzig.grafs.util.AsciiGraphLoader;
 import java.util.Collection;
 import java.util.HashSet;

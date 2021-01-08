@@ -17,10 +17,10 @@ import org.junit.jupiter.api.Test;
 public class GraphTest {
 
   @Test
-  void testFromEdgeContainers() throws IOException {
+  void testFromTriplets() throws IOException {
     var loader = TestUtils.getSocialNetworkLoader();
-    var ec = loader.createEdgeContainers();
-    var actualGraph = Graph.fromEdgeContainers(ec);
+    var triplets = loader.createTriplets();
+    var actualGraph = Graph.fromTriplets(triplets);
     var expectedGraph = loader.createGraph();
     TestUtils.validateElementCollections(actualGraph.getVertices(), expectedGraph.getVertices());
     TestUtils.validateElementCollections(actualGraph.getEdges(), expectedGraph.getEdges());

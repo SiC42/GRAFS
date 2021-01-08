@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import com.google.common.collect.Maps;
-import edu.leipzig.grafs.model.EdgeContainer;
+import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.model.EdgeStream;
 import edu.leipzig.grafs.model.Element;
 import edu.leipzig.grafs.model.GraphElement;
@@ -116,23 +116,23 @@ public class TestUtils {
       return element.getPropertyValue(key);
     }
   };
-  private static final Comparator<EdgeContainer> edgeContainerComparator = (ec1, ec2) -> {
+  private static final Comparator<Triplet> tripletComparator = (t1, t2) -> {
     int difference;
 
     // compare edges
-    difference = compareGraphElementsViaProperties(ec1.getEdge(), ec2.getEdge());
+    difference = compareGraphElementsViaProperties(t1.getEdge(), t2.getEdge());
     if (difference != 0) {
       return difference;
     }
 
     // compare source vertex
-    difference = compareGraphElementsViaProperties(ec1.getSourceVertex(), ec2.getSourceVertex());
+    difference = compareGraphElementsViaProperties(t1.getSourceVertex(), t2.getSourceVertex());
     if (difference != 0) {
       return difference;
     }
 
     // compare target vertex
-    difference = compareGraphElementsViaProperties(ec1.getTargetVertex(), ec2.getTargetVertex());
+    difference = compareGraphElementsViaProperties(t1.getTargetVertex(), t2.getTargetVertex());
     return difference;
   };
   /**
@@ -317,15 +317,15 @@ public class TestUtils {
   }
 
   /**
-   * Sorts the given collections by edge id and checks pairwise if the edge containers are contained
+   * Sorts the given collections by edge id and checks pairwise if the triplets are contained
    * in the same graphs.
    *
    * @param expectedCollection first collection
    * @param actualCollection   second collection
    */
-  public static void validateEdgeContainerCollections(
-      Collection<EdgeContainer> expectedCollection,
-      Collection<EdgeContainer> actualCollection) {
+  public static void validateTripletCollections(
+      Collection<Triplet> expectedCollection,
+      Collection<Triplet> actualCollection) {
     assertNotNull(expectedCollection, "first collection was null");
     assertNotNull(expectedCollection, "second collection was null");
     assertEquals(expectedCollection.size(), actualCollection.size(), String.format(
@@ -335,8 +335,8 @@ public class TestUtils {
     var list1 = new ArrayList<>(expectedCollection);
     var list2 = new ArrayList<>(actualCollection);
 
-    list1.sort(edgeContainerComparator);
-    list2.sort(edgeContainerComparator);
+    list1.sort(tripletComparator);
+    list2.sort(tripletComparator);
 
     var it1 = list1.iterator();
     var it2 = list2.iterator();
@@ -528,12 +528,12 @@ public class TestUtils {
   }
 
   public static void assertThatStreamContains(EdgeStream actualResultStream,
-      Collection<EdgeContainer> expectedResult)
+      Collection<Triplet> expectedResult)
       throws IOException {
-    var ecIt = actualResultStream.collect();
-    var actualEcs = new ArrayList<EdgeContainer>();
-    ecIt.forEachRemaining(actualEcs::add);
-    assertThat(actualEcs, containsInAnyOrder(expectedResult.toArray()));
+    var tripletIt = actualResultStream.collect();
+    var actualTriplets = new ArrayList<Triplet>();
+    tripletIt.forEachRemaining(actualTriplets::add);
+    assertThat(actualTriplets, containsInAnyOrder(expectedResult.toArray()));
   }
 }
 

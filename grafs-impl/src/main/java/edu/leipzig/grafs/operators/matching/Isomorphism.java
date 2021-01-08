@@ -1,6 +1,6 @@
 package edu.leipzig.grafs.operators.matching;
 
-import edu.leipzig.grafs.model.EdgeContainer;
+import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.operators.matching.logic.IsomorphismMatchingProcess;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.windowing.assigners.WindowAssigner;
@@ -34,7 +34,7 @@ public class Isomorphism<W extends Window> extends AbstractMatchingOperator<W> {
    * @param trigger optional window trigger that is used for this operation
    */
   public Isomorphism(String query, WindowAssigner<Object, W> window,
-      Trigger<EdgeContainer, W> trigger) {
+      Trigger<Triplet, W> trigger) {
     super(query, window, trigger);
   }
 
@@ -45,7 +45,7 @@ public class Isomorphism<W extends Window> extends AbstractMatchingOperator<W> {
    * @return the stream with this matching operator applied
    */
   @Override
-  public DataStream<EdgeContainer> execute(DataStream<EdgeContainer> stream) {
+  public DataStream<Triplet> execute(DataStream<Triplet> stream) {
     var preProcessedStream = preProcessAndApplyWindow(stream);
     return preProcessedStream.process(new IsomorphismMatchingProcess<>(queryGraph));
   }

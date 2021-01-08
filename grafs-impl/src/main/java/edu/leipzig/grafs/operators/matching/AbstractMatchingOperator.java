@@ -1,6 +1,6 @@
 package edu.leipzig.grafs.operators.matching;
 
-import edu.leipzig.grafs.model.EdgeContainer;
+import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.model.Graph;
 import edu.leipzig.grafs.operators.interfaces.GraphToGraphCollectionOperatorI;
 import edu.leipzig.grafs.operators.matching.logic.EdgeQueryFilter;
@@ -32,7 +32,7 @@ public abstract class AbstractMatchingOperator<W extends Window> implements
   /**
    * Trigger that is applied to the window.
    */
-  final Trigger<EdgeContainer, W> trigger;
+  final Trigger<Triplet, W> trigger;
 
   /**
    * Initializes the operator with the given parameter
@@ -42,7 +42,7 @@ public abstract class AbstractMatchingOperator<W extends Window> implements
    * @param trigger optional window trigger that is used for this operation
    */
   public AbstractMatchingOperator(String query, WindowAssigner<Object, W> window,
-      Trigger<EdgeContainer, W> trigger) {
+      Trigger<Triplet, W> trigger) {
     queryGraph = AsciiGraphLoader.fromString(query).createGraph();
     this.window = window;
     this.trigger = trigger;
@@ -55,7 +55,7 @@ public abstract class AbstractMatchingOperator<W extends Window> implements
    * @param stream stream that should be used to pre process
    * @return pre-processed stream ready for applying the pattern matching process
    */
-  AllWindowedStream<EdgeContainer, W> preProcessAndApplyWindow(DataStream<EdgeContainer> stream) {
+  AllWindowedStream<Triplet, W> preProcessAndApplyWindow(DataStream<Triplet> stream) {
     var filteredStream = queryGraph.getEdges().isEmpty() ? // Only vertices?
         stream.filter(new VertexQueryFilter(queryGraph)) :
         stream.filter(new EdgeQueryFilter(queryGraph));

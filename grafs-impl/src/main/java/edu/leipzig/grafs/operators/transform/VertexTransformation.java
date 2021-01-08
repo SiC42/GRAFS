@@ -1,6 +1,6 @@
 package edu.leipzig.grafs.operators.transform;
 
-import edu.leipzig.grafs.model.EdgeContainer;
+import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.model.Vertex;
 import edu.leipzig.grafs.operators.interfaces.GraphToGraphOperatorI;
 import org.apache.flink.api.common.functions.MapFunction;
@@ -15,7 +15,7 @@ public class VertexTransformation implements GraphToGraphOperatorI {
   /**
    * Function that is applied to the stream
    */
-  protected MapFunction<EdgeContainer, EdgeContainer> ecMapper;
+  protected MapFunction<Triplet, Triplet> tripletMapper;
 
   /**
    * Initializes this operator with the given transformation function.
@@ -23,10 +23,10 @@ public class VertexTransformation implements GraphToGraphOperatorI {
    * @param mapper transformation function that is used on every vertice of the stream
    */
   public VertexTransformation(final MapFunction<Vertex, Vertex> mapper) {
-    this.ecMapper = ec -> {
-      Vertex source = mapper.map(ec.getSourceVertex());
-      Vertex target = mapper.map(ec.getTargetVertex());
-      return new EdgeContainer(ec.getEdge(), source, target);
+    this.tripletMapper = triplet -> {
+      Vertex source = mapper.map(triplet.getSourceVertex());
+      Vertex target = mapper.map(triplet.getTargetVertex());
+      return new Triplet(triplet.getEdge(), source, target);
     };
   }
 
@@ -37,7 +37,7 @@ public class VertexTransformation implements GraphToGraphOperatorI {
    * @return the stream with the vertex transformation operator applied
    */
   @Override
-  public DataStream<EdgeContainer> execute(DataStream<EdgeContainer> stream) {
-    return stream.map(ecMapper);
+  public DataStream<Triplet> execute(DataStream<Triplet> stream) {
+    return stream.map(tripletMapper);
   }
 }

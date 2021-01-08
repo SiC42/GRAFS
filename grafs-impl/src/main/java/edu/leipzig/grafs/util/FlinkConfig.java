@@ -1,6 +1,6 @@
 package edu.leipzig.grafs.util;
 
-import edu.leipzig.grafs.model.EdgeContainer;
+import edu.leipzig.grafs.model.Triplet;
 import java.util.Objects;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
@@ -15,7 +15,7 @@ public class FlinkConfig {
   /**
    * Strategy used to determine the timestamp of elements in the Flink stream
    */
-  private final WatermarkStrategy<EdgeContainer> watermarkStrategy;
+  private final WatermarkStrategy<Triplet> watermarkStrategy;
 
   /**
    * Creates a new Configuration.
@@ -23,7 +23,7 @@ public class FlinkConfig {
    * @param executionEnvironment Flink execution environment
    */
   protected FlinkConfig(StreamExecutionEnvironment executionEnvironment,
-      WatermarkStrategy<EdgeContainer> watermarkStrategy) {
+      WatermarkStrategy<Triplet> watermarkStrategy) {
     this.executionEnvironment = Objects.requireNonNull(executionEnvironment,
         "execution environment must not be null");
     this.watermarkStrategy = watermarkStrategy;
@@ -53,7 +53,7 @@ public class FlinkConfig {
   /**
    * Returns strategy used to determine the timestamp of elements in the Flink stream
    */
-  public WatermarkStrategy<EdgeContainer> getWatermarkStrategy() {
+  public WatermarkStrategy<Triplet> getWatermarkStrategy() {
     return watermarkStrategy;
   }
 }

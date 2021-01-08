@@ -1,7 +1,7 @@
 package edu.leipzig.grafs.operators.grouping.logic;
 
 import edu.leipzig.grafs.model.Edge;
-import edu.leipzig.grafs.model.EdgeContainer;
+import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.model.Element;
 import edu.leipzig.grafs.model.Vertex;
 import edu.leipzig.grafs.operators.grouping.model.AggregateMode;
@@ -11,10 +11,10 @@ import java.util.TreeSet;
 import org.apache.flink.api.java.functions.KeySelector;
 
 /**
- * Key selector used for grouping that returns a string representation of an {@link EdgeContainer}
+ * Key selector used for grouping that returns a string representation of an {@link Triplet}
  * using the grouping information.
  */
-public class EdgeContainerKeySelector implements KeySelector<EdgeContainer, String> {
+public class TripletKeySelector implements KeySelector<Triplet, String> {
 
   private final GroupingInformation vertexGi;
   private final GroupingInformation edgeGi;
@@ -28,7 +28,7 @@ public class EdgeContainerKeySelector implements KeySelector<EdgeContainer, Stri
    * @param makeKeyFor determines if the key should be made for the source vertex, target vertex or
    *                   edge
    */
-  public EdgeContainerKeySelector(GroupingInformation vertexGi, GroupingInformation edgeGi,
+  public TripletKeySelector(GroupingInformation vertexGi, GroupingInformation edgeGi,
       AggregateMode makeKeyFor) {
     this.vertexGi = Objects.requireNonNull(vertexGi, "grouping information for vertex was null");
     this.edgeGi = edgeGi;
@@ -36,35 +36,35 @@ public class EdgeContainerKeySelector implements KeySelector<EdgeContainer, Stri
   }
 
   /**
-   * Constructs the key for the given edge container using the information provided in the
+   * Constructs the key for the given triplet using the information provided in the
    * constructor.
    * <p>
-   * Two edge container generate the same key, if the selected element (i.e. the element for which
+   * Two triplet generate the same key, if the selected element (i.e. the element for which
    * the key is made for via {@link AggregateMode}) are in the same group using the grouping
    * information.
    * <p>
    * The default toString methods of the elements are used for this to ease debugging.
    *
-   * @param ec edge container for which the key should be made
-   * @return key for the edge container that represents the group of the selected element
+   * @param triplet triplet for which the key should be made
+   * @return key for the triplet that represents the group of the selected element
    */
   @Override
-  public String getKey(EdgeContainer ec) {
+  public String getKey(Triplet triplet) {
     final String EMPTY_VERTEX = "()";
     final String EMPTY_EDGE = "[]";
     switch (makeKeyFor) {
       case SOURCE: {
-        String vertex = generateKeyForVertex(ec.getSourceVertex(), vertexGi);
+        String vertex = generateKeyForVertex(triplet.getSourceVertex(), vertexGi);
         return generateKey(vertex, EMPTY_EDGE, EMPTY_VERTEX);
       }
       case TARGET: {
-        String vertex = generateKeyForVertex(ec.getTargetVertex(), vertexGi);
+        String vertex = generateKeyForVertex(triplet.getTargetVertex(), vertexGi);
         return generateKey(EMPTY_VERTEX, EMPTY_EDGE, vertex);
       }
       case EDGE: {
-        String source = generateKeyForVertex(ec.getSourceVertex(), vertexGi);
-        String target = generateKeyForVertex(ec.getTargetVertex(), vertexGi);
-        String edge = generateKeyForEdge(ec.getEdge(), edgeGi);
+        String source = generateKeyForVertex(triplet.getSourceVertex(), vertexGi);
+        String target = generateKeyForVertex(triplet.getTargetVertex(), vertexGi);
+        String edge = generateKeyForEdge(triplet.getEdge(), edgeGi);
         return generateKey(source, edge, target);
       }
       default:
@@ -78,7 +78,7 @@ public class EdgeContainerKeySelector implements KeySelector<EdgeContainer, Stri
    * @param source generated String for source vertex
    * @param edge   generated String for edge
    * @param target generated String for target vertex
-   * @return key for the whole edge container in GDL format
+   * @return key for the whole triplet in GDL format
    */
   private String generateKey(String source, String edge, String target) {
     return String.format("%s-%s->%s", source, edge, target);

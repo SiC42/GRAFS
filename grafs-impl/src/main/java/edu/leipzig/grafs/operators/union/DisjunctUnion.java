@@ -1,7 +1,7 @@
 package edu.leipzig.grafs.operators.union;
 
 import com.google.common.annotations.Beta;
-import edu.leipzig.grafs.model.EdgeContainer;
+import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.model.EdgeStream;
 import edu.leipzig.grafs.operators.interfaces.GraphToGraphCollectionOperatorI;
 import edu.leipzig.grafs.operators.interfaces.GraphToGraphOperatorI;
@@ -35,13 +35,13 @@ public class DisjunctUnion implements GraphToGraphOperatorI, GraphToGraphCollect
    * @return unified stream
    */
   @Override
-  public DataStream<EdgeContainer> execute(DataStream<EdgeContainer> stream) {
+  public DataStream<Triplet> execute(DataStream<Triplet> stream) {
     var dataStreams = new DataStream[streams.length];
     for (int i = 0; i < streams.length; i++) {
       dataStreams[i] = streams[i].getDataStream();
     }
     @SuppressWarnings("unchecked")
-    DataStream<EdgeContainer> mergedStream = stream.union(dataStreams);
+    DataStream<Triplet> mergedStream = stream.union(dataStreams);
     return mergedStream;
   }
 }

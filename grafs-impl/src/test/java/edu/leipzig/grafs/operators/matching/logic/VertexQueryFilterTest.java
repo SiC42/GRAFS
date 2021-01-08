@@ -5,9 +5,9 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.core.IsEqual.equalTo;
 
 import edu.leipzig.grafs.factory.EdgeFactory;
-import edu.leipzig.grafs.model.EdgeContainer;
+import edu.leipzig.grafs.model.Graph;
+import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.model.Vertex;
-import edu.leipzig.grafs.operators.matching.model.QueryGraph;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -17,7 +17,7 @@ class VertexQueryFilterTest {
 
   @BeforeAll
   static void init() {
-    var queryGraph = new QueryGraph();
+    var queryGraph = new Graph();
     var vertexA = new Vertex();
     vertexA.setLabel("A");
     var vertexB = new Vertex();
@@ -34,8 +34,8 @@ class VertexQueryFilterTest {
     var target = new Vertex();
     target.setLabel("B");
     var edge = EdgeFactory.createEdge(source, target);
-    var ec = new EdgeContainer(edge, source, target);
-    assertThat(vertexFilter.filter(ec), is(equalTo(false)));
+    var triplet = new Triplet(edge, source, target);
+    assertThat(vertexFilter.filter(triplet), is(equalTo(false)));
   }
 
   @Test
@@ -45,8 +45,8 @@ class VertexQueryFilterTest {
     var target = new Vertex();
     target.setLabel("NotB");
     var edge = EdgeFactory.createEdge(source, target);
-    var ec = new EdgeContainer(edge, source, target);
-    assertThat(vertexFilter.filter(ec), is(equalTo(false)));
+    var triplet = new Triplet(edge, source, target);
+    assertThat(vertexFilter.filter(triplet), is(equalTo(false)));
   }
 
   @Test
@@ -56,8 +56,8 @@ class VertexQueryFilterTest {
     var target = new Vertex();
     target.setLabel("B");
     var edge = EdgeFactory.createEdge(source, target);
-    var ec = new EdgeContainer(edge, source, target);
-    assertThat(vertexFilter.filter(ec), is(equalTo(true)));
+    var triplet = new Triplet(edge, source, target);
+    assertThat(vertexFilter.filter(triplet), is(equalTo(true)));
   }
 
 }

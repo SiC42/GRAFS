@@ -44,13 +44,13 @@ public class EdgeTransformationTest extends TransformationBaseTest {
         .collect(Collectors.toCollection(ArrayList::new));
 
     var inputStream = loader.createEdgeStreamByGraphVariables(getConfig(), "g0");
-    var ecResultIterator = inputStream
+    var tripletResultIt = inputStream
         .transformEdges(EdgeTransformationTest::transformEdge)
         .collect();
     List<GradoopId> resultEdgeIds = new ArrayList<>();
-    while (ecResultIterator.hasNext()) {
-      var ec = ecResultIterator.next();
-      resultEdgeIds.add(ec.getEdge().getId());
+    while (tripletResultIt.hasNext()) {
+      var triplet = tripletResultIt.next();
+      resultEdgeIds.add(triplet.getEdge().getId());
     }
 
     validateIdEquality(expectedEdgeIds, resultEdgeIds);
@@ -63,15 +63,15 @@ public class EdgeTransformationTest extends TransformationBaseTest {
     Collection<Edge> referenceEdges = loader.getEdgesByGraphVariables("g01");
 
     var inputStream = loader.createEdgeStreamByGraphVariables(getConfig(), "g0");
-    var ecResultIterator = inputStream
+    var tripletResultIt = inputStream
         .transformEdges(EdgeTransformationTest::transformEdge)
         .collect();
 
     List<Edge> resultEdgeIds = new ArrayList<>();
 
-    while (ecResultIterator.hasNext()) {
-      var ec = ecResultIterator.next();
-      resultEdgeIds.add(ec.getEdge());
+    while (tripletResultIt.hasNext()) {
+      var triplet = tripletResultIt.next();
+      resultEdgeIds.add(triplet.getEdge());
     }
 
     validateDataInequality(referenceEdges, resultEdgeIds);
@@ -91,15 +91,15 @@ public class EdgeTransformationTest extends TransformationBaseTest {
 
     EdgeStream original = loader.createEdgeStreamByGraphVariables(getConfig(), "g0");
 
-    var result = original.transformEdges(EdgeTransformationTest::transformEdge).collect();
+    var tripletResultIt = original.transformEdges(EdgeTransformationTest::transformEdge).collect();
 
     Set<Edge> actualEdgeResult = new HashSet<>();
     Set<Vertex> actualVertexResult = new HashSet<>();
-    while (result.hasNext()) {
-      var ec = result.next();
-      actualEdgeResult.add(ec.getEdge());
-      actualVertexResult.add(ec.getSourceVertex());
-      actualVertexResult.add(ec.getTargetVertex());
+    while (tripletResultIt.hasNext()) {
+      var triplet = tripletResultIt.next();
+      actualEdgeResult.add(triplet.getEdge());
+      actualVertexResult.add(triplet.getSourceVertex());
+      actualVertexResult.add(triplet.getTargetVertex());
     }
 
     validateElementCollections(expectedEdges, actualEdgeResult);

@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import edu.leipzig.grafs.model.Edge;
-import edu.leipzig.grafs.model.EdgeContainer;
+import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.model.EdgeStream;
 import edu.leipzig.grafs.model.Vertex;
 import edu.leipzig.grafs.operators.OperatorTestBase;
@@ -33,15 +33,15 @@ public class SubgraphTest extends OperatorTestBase {
 
     EdgeStream input = loader.createEdgeStream(getConfig());
 
-    Collection<EdgeContainer> expected =
-        loader.createEdgeContainersByGraphVariables("expected");
+    Collection<Triplet> expected =
+        loader.createTripletsByGraphVariables("expected");
 
-    Iterator<EdgeContainer> output = input
+    Iterator<Triplet> output = input
         .subgraph(
             v -> v.getLabel().equals("Person"),
             e -> e.getLabel().equals("knows"))
         .collect();
-    Collection<EdgeContainer> actual = new HashSet<>();
+    Collection<Triplet> actual = new HashSet<>();
     output.forEachRemaining(actual::add);
     assertEquals(expected, actual);
   }
@@ -59,15 +59,15 @@ public class SubgraphTest extends OperatorTestBase {
 
     EdgeStream input = loader.createEdgeStream(getConfig());
 
-    Collection<EdgeContainer> expected =
-        loader.createEdgeContainersByGraphVariables("expected");
+    Collection<Triplet> expected =
+        loader.createTripletsByGraphVariables("expected");
 
-    Iterator<EdgeContainer> output = input
+    Iterator<Triplet> output = input
         .subgraph(
             v -> v.getLabel().equals("Person"),
             e -> e.getLabel().equals("friendOf")).collect();
 
-    Collection<EdgeContainer> actual = new HashSet<>();
+    Collection<Triplet> actual = new HashSet<>();
     while (output.hasNext()) {
       actual.add(output.next());
     }
@@ -87,14 +87,14 @@ public class SubgraphTest extends OperatorTestBase {
 
     EdgeStream input = loader.createEdgeStream(getConfig());
 
-    Collection<EdgeContainer> expected =
-        loader.createEdgeContainersByGraphVariables("expected");
+    Collection<Triplet> expected =
+        loader.createTripletsByGraphVariables("expected");
 
-    Iterator<EdgeContainer> output = input.subgraph(
+    Iterator<Triplet> output = input.subgraph(
         v -> v.getLabel().equals("User"),
         e -> e.getLabel().equals("friendOf")).collect();
 
-    Collection<EdgeContainer> actual = new HashSet<>();
+    Collection<Triplet> actual = new HashSet<>();
     while (output.hasNext()) {
       actual.add(output.next());
     }
@@ -112,13 +112,13 @@ public class SubgraphTest extends OperatorTestBase {
 
     EdgeStream input = loader.createEdgeStream(getConfig());
 
-    Collection<EdgeContainer> expected =
-        loader.createEdgeContainersByGraphVariables("expected");
+    Collection<Triplet> expected =
+        loader.createTripletsByGraphVariables("expected");
 
-    Iterator<EdgeContainer> output = input.vertexInducedSubgraph(
+    Iterator<Triplet> output = input.vertexInducedSubgraph(
         v -> v.getLabel().equals("Forum") || v.getLabel().equals("Tag")).collect();
 
-    Collection<EdgeContainer> actual = new HashSet<>();
+    Collection<Triplet> actual = new HashSet<>();
     while (output.hasNext()) {
       actual.add(output.next());
     }
@@ -136,12 +136,12 @@ public class SubgraphTest extends OperatorTestBase {
 
     EdgeStream input = loader.createEdgeStream(getConfig());
 
-    Collection<EdgeContainer> expected =
-        loader.createEdgeContainersByGraphVariables("expected");
+    Collection<Triplet> expected =
+        loader.createTripletsByGraphVariables("expected");
 
-    Iterator<EdgeContainer> output = input.edgeInducedSubgraph(
+    Iterator<Triplet> output = input.edgeInducedSubgraph(
         e -> e.getLabel().equals("hasTag")).collect();
-    Collection<EdgeContainer> actual = new HashSet<>();
+    Collection<Triplet> actual = new HashSet<>();
     while (output.hasNext()) {
       actual.add(output.next());
     }

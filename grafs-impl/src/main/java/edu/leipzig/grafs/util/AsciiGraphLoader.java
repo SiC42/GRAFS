@@ -6,7 +6,7 @@ import com.google.common.collect.Sets;
 import edu.leipzig.grafs.factory.EdgeFactory;
 import edu.leipzig.grafs.factory.VertexFactory;
 import edu.leipzig.grafs.model.Edge;
-import edu.leipzig.grafs.model.EdgeContainer;
+import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.model.EdgeStream;
 import edu.leipzig.grafs.model.Vertex;
 import java.io.IOException;
@@ -28,7 +28,7 @@ import org.s1ck.gdl.model.Graph;
 import org.s1ck.gdl.model.GraphElement;
 
 /**
- * This class is used to load GDL representations of graphs and return edge container
+ * This class is used to load GDL representations of graphs and return triplet
  * representations of those graphs.
  */
 public class AsciiGraphLoader {
@@ -152,7 +152,7 @@ public class AsciiGraphLoader {
   }
 
   // ---------------------------------------------------------------------------
-  //  EdgeCollection and EdgeStream methods
+  //  Triplet Collections and EdgeStream methods
   // ---------------------------------------------------------------------------
 
   /**
@@ -165,7 +165,7 @@ public class AsciiGraphLoader {
    * @return stream of selected edges
    */
   public EdgeStream createEdgeStreamByGraphVariables(FlinkConfig config, String... expected) {
-    return createEdgeStream(config, createEdgeContainersByGraphVariables(expected));
+    return createEdgeStream(config, createTripletsByGraphVariables(expected));
   }
 
   /**
@@ -175,46 +175,46 @@ public class AsciiGraphLoader {
    * @return stream of edges loaded
    */
   public EdgeStream createEdgeStream(FlinkConfig config) {
-    return createEdgeStream(config, createEdgeContainers());
+    return createEdgeStream(config, createTriplets());
   }
 
-  private EdgeStream createEdgeStream(FlinkConfig config, Collection<EdgeContainer> edgeContainer) {
+  private EdgeStream createEdgeStream(FlinkConfig config, Collection<Triplet> triplet) {
     StreamExecutionEnvironment env = config.getExecutionEnvironment();
-    DataStream<EdgeContainer> stream = env.fromCollection(edgeContainer);
+    DataStream<Triplet> stream = env.fromCollection(triplet);
     return new EdgeStream(stream, config);
   }
 
   /**
-   * Creates a collection of edge containers.
+   * Creates a collection of triplets.
    * <p>
    * The expected parameter specifies which edges should be used. Other edges are omitted.
    *
    * @param expected graph variables that should be selected
-   * @return collection of selected edge containers
+   * @return collection of selected triplets
    */
-  public Collection<EdgeContainer> createEdgeContainersByGraphVariables(String... expected) {
+  public Collection<Triplet> createTripletsByGraphVariables(String... expected) {
     var edges = getEdgesByGraphVariables(expected);
-    return createEdgeContainers(edges);
+    return createTriplets(edges);
   }
 
   /**
-   * Creates a collection of edge containers loaded in this object.
+   * Creates a collection of triplets loaded in this object.
    *
-   * @return collection of edge containers loaded
+   * @return collection of triplets loaded
    */
-  public Collection<EdgeContainer> createEdgeContainers() {
-    return createEdgeContainers(edges.values());
+  public Collection<Triplet> createTriplets() {
+    return createTriplets(edges.values());
   }
 
-  private Collection<EdgeContainer> createEdgeContainers(Collection<Edge> edges) {
-    Set<EdgeContainer> edgeContainers = new HashSet<>();
+  private Collection<Triplet> createTriplets(Collection<Edge> edges) {
+    Set<Triplet> triplets = new HashSet<>();
     for (var edge : edges) {
       var source = vertices.get(edge.getSourceId());
       var target = vertices.get(edge.getTargetId());
-      EdgeContainer ec = new EdgeContainer(edge, source, target);
-      edgeContainers.add(ec);
+      Triplet ec = new Triplet(edge, source, target);
+      triplets.add(ec);
     }
-    return edgeContainers;
+    return triplets;
   }
 
   // ---------------------------------------------------------------------------

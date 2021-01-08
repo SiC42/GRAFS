@@ -33,7 +33,7 @@ class EdgeStreamTest {
     );
     FlinkConfig config = new FlinkConfigBuilder(env)
         .withWaterMarkStrategy(WatermarkStrategy
-            .<EdgeContainer>forBoundedOutOfOrderness(Duration.ZERO)
+            .<Triplet>forBoundedOutOfOrderness(Duration.ZERO)
             .withTimestampAssigner((ec, timestamp) -> 0))
         .build();
     edgeStream = loader.createEdgeStream(config);
