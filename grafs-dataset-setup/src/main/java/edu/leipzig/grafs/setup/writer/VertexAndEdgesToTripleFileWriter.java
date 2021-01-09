@@ -3,9 +3,9 @@ package edu.leipzig.grafs.setup.writer;
 
 import edu.leipzig.grafs.factory.EdgeFactory;
 import edu.leipzig.grafs.model.Edge;
-import edu.leipzig.grafs.model.EdgeContainer;
+import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.model.Vertex;
-import edu.leipzig.grafs.serialization.EdgeContainerDeserializationSchema;
+import edu.leipzig.grafs.serialization.TripletDeserializationSchema;
 import edu.leipzig.grafs.setup.AbstractCmdBase;
 import edu.leipzig.grafs.setup.reader.EdgeReader;
 import edu.leipzig.grafs.setup.reader.VertexReader;
@@ -25,9 +25,9 @@ import org.gradoop.common.model.impl.id.GradoopId;
 
 
 /**
- * Combines the csv-files of a graph into one file with serialized ECs.
+ * Combines the csv-files of a graph into one file with serialized triplets.
  */
-public class VertexAndEdgesToOneEdgeContainerFileWriter extends AbstractCmdBase {
+public class VertexAndEdgesToTripleFileWriter extends AbstractCmdBase {
 
 
   private final String VERTEX_PATH = BASE_PATH + "/vertices.csv";
@@ -35,13 +35,13 @@ public class VertexAndEdgesToOneEdgeContainerFileWriter extends AbstractCmdBase 
   private final String OUTPUT = "output";
   private String outputPath;
 
-  public VertexAndEdgesToOneEdgeContainerFileWriter(String[] args) {
+  public VertexAndEdgesToTripleFileWriter(String[] args) {
     super(args);
     checkArgs(args);
   }
 
   public static void main(String[] args) {
-    var writer = new VertexAndEdgesToOneEdgeContainerFileWriter(args);
+    var writer = new VertexAndEdgesToTripleFileWriter(args);
     writer.run();
   }
 
@@ -116,8 +116,8 @@ public class VertexAndEdgesToOneEdgeContainerFileWriter extends AbstractCmdBase 
                   }
                   var source = vertexMap.get(edge.getSourceId());
                   var target = vertexMap.get(edge.getTargetId());
-                  var ec = new EdgeContainer(edge, source, target);
-                  oos.writeObject(ec);
+                  var triplet = new Triplet(edge, source, target);
+                  oos.writeObject(triplet);
                 }
 
                 System.out.print("Finished file '" + file.toString() + "'.\n");
@@ -129,13 +129,13 @@ public class VertexAndEdgesToOneEdgeContainerFileWriter extends AbstractCmdBase 
             });
         // send a last object that is not part of the analysis, but marks end of stream
         var source = new Vertex();
-        var END_OF_STREAM_LABEL = EdgeContainerDeserializationSchema.END_OF_STREAM_LABEL;
+        var END_OF_STREAM_LABEL = TripletDeserializationSchema.END_OF_STREAM_LABEL;
         source.setLabel(END_OF_STREAM_LABEL);
         var target = new Vertex();
         target.setLabel(END_OF_STREAM_LABEL);
         var edge = EdgeFactory.createEdge(source, target);
         edge.setLabel(END_OF_STREAM_LABEL);
-        oos.writeObject(new EdgeContainer(edge, source, target));
+        oos.writeObject(new Triplet(edge, source, target));
       } catch (IOException e) {
         e.printStackTrace();
       }

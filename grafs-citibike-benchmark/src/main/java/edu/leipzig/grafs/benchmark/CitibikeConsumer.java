@@ -1,6 +1,6 @@
 package edu.leipzig.grafs.benchmark;
 
-import edu.leipzig.grafs.model.EdgeContainer;
+import edu.leipzig.grafs.model.Triplet;
 import java.util.Collections;
 import java.util.Properties;
 import org.apache.kafka.clients.consumer.Consumer;
@@ -17,15 +17,15 @@ public class CitibikeConsumer {
     props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, BOOTSTRAP_SERVERS);
     props.put(ConsumerConfig.GROUP_ID_CONFIG, "CitibikeConsumer" + Math.random());
     //props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
-    //props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, EdgeContainerDeserializer.class.getName());
+    //props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, TripletDeserializer.class.getName());
     props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false");
     props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
     props.put(ConsumerConfig.CONNECTIONS_MAX_IDLE_MS_CONFIG, 30_000);
     return props;
   }
 
-  public static Consumer<String, EdgeContainer> createConsumer() {
-    Consumer<String, EdgeContainer> consumer = new KafkaConsumer<>(
+  public static Consumer<String, Triplet> createConsumer() {
+    Consumer<String, Triplet> consumer = new KafkaConsumer<>(
         createProperties(new Properties()));
     consumer.subscribe(Collections.singletonList(TOPIC));
     return consumer;

@@ -1,11 +1,11 @@
 package edu.leipzig.grafs.benchmark.tests;
 
 import edu.leipzig.grafs.benchmark.CitibikeConsumer;
-import edu.leipzig.grafs.benchmark.serialization.EdgeContainerDeserializer;
+import edu.leipzig.grafs.benchmark.serialization.TripletDeserializer;
 import edu.leipzig.grafs.connectors.RateLimitingKafkaConsumer;
-import edu.leipzig.grafs.model.EdgeContainer;
+import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.model.EdgeStream;
-import edu.leipzig.grafs.serialization.EdgeContainerDeserializationSchema;
+import edu.leipzig.grafs.serialization.TripletDeserializationSchema;
 import edu.leipzig.grafs.util.FlinkConfigBuilder;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -24,7 +24,6 @@ import org.apache.commons.cli.ParseException;
 import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.functions.sink.DiscardingSink;
-import org.apache.flink.streaming.api.functions.sink.filesystem.StreamingFileSink;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
@@ -178,10 +177,10 @@ public abstract class AbstractBenchmark {
 
   private void buildStreamWithKafkaConsumer(Map<String, String> map, int rateLimit) {
     var properties = createProperties(map.get(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG));
-    var schema = new EdgeContainerDeserializationSchema();
+    var schema = new TripletDeserializationSchema();
     var kafkaConsumer = new RateLimitingKafkaConsumer<>("citibike", schema, CitibikeConsumer
         .createProperties(new Properties()), rateLimit);
-    Consumer<String, EdgeContainer> consumer = new KafkaConsumer<>(properties);
+    Consumer<String, Triplet> consumer = new KafkaConsumer<>(properties);
     consumer.subscribe(Collections.singletonList(map.get(TOPIC_KEY)));
     kafkaConsumer.setStartFromEarliest();
 
@@ -198,7 +197,7 @@ public abstract class AbstractBenchmark {
     props.setProperty(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG,
         StringDeserializer.class.getName());
     props.setProperty(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG,
-        EdgeContainerDeserializer.class.getName());
+        TripletDeserializer.class.getName());
     props.setProperty(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false");
     props.setProperty(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
     props.put(ConsumerConfig.CONNECTIONS_MAX_IDLE_MS_CONFIG, 30_000);

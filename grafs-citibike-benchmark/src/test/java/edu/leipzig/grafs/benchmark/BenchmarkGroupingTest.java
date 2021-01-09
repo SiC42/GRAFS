@@ -2,10 +2,10 @@ package edu.leipzig.grafs.benchmark;
 
 
 import static grafs.TestUtils.getSocialNetworkLoader;
-import static grafs.TestUtils.validateEdgeContainerCollections;
+import static grafs.TestUtils.validateTripletCollections;
 
 import edu.leipzig.grafs.benchmark.operators.grouping.BenchmarkGrouping;
-import edu.leipzig.grafs.model.EdgeContainer;
+import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.operators.grouping.functions.Count;
 import edu.leipzig.grafs.operators.grouping.model.GroupingInformation;
 import edu.leipzig.grafs.util.AsciiGraphLoader;
@@ -33,7 +33,7 @@ public class BenchmarkGroupingTest {
         StreamExecutionEnvironment.getExecutionEnvironment();
     config = new FlinkConfigBuilder(env)
         .withWaterMarkStrategy(WatermarkStrategy
-            .<EdgeContainer>forBoundedOutOfOrderness(Duration.ZERO)
+            .<Triplet>forBoundedOutOfOrderness(Duration.ZERO)
             .withTimestampAssigner((ec, timestamp) -> 0))
         .build();
   }
@@ -44,7 +44,7 @@ public class BenchmarkGroupingTest {
     env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
     FlinkConfig config = new FlinkConfigBuilder(env)
         .withWaterMarkStrategy(WatermarkStrategy
-            .<EdgeContainer>forBoundedOutOfOrderness(Duration.ZERO)
+            .<Triplet>forBoundedOutOfOrderness(Duration.ZERO)
             .withTimestampAssigner((ec, timestamp) -> 0))
         .build();
   }
@@ -67,7 +67,7 @@ public class BenchmarkGroupingTest {
             )
         );
     var ecIt = finalStream.collect();
-    var actualEcCol = new ArrayList<EdgeContainer>();
+    var actualEcCol = new ArrayList<Triplet>();
     while (ecIt.hasNext()) {
       actualEcCol.add(ecIt.next());
     }
@@ -82,9 +82,9 @@ public class BenchmarkGroupingTest {
         "(pL)-[:knows {since : 2013, count : 1L}]->(pD)" +
         "(pB)-[:knows {since : 2015, count : 2L}]->(pD)" +
         "]");
-    var expectedEcCol = loader.createEdgeContainersByGraphVariables("expected");
+    var expectedEcCol = loader.createTripletsByGraphVariables("expected");
 
-    validateEdgeContainerCollections(expectedEcCol, actualEcCol);
+    validateTripletCollections(expectedEcCol, actualEcCol);
   }
 
 }

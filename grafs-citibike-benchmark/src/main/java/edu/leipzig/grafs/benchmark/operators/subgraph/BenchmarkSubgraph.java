@@ -2,7 +2,7 @@ package edu.leipzig.grafs.benchmark.operators.subgraph;
 
 import edu.leipzig.grafs.benchmark.operators.functions.FilterFunctionWithMeter;
 import edu.leipzig.grafs.model.Edge;
-import edu.leipzig.grafs.model.EdgeContainer;
+import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.model.Vertex;
 import edu.leipzig.grafs.operators.subgraph.Subgraph;
 import java.io.IOException;
@@ -28,22 +28,22 @@ public class BenchmarkSubgraph extends Subgraph implements Serializable {
       Strategy strategy,
       String meterName) {
     super(vertexFilter, edgeFilter, strategy);
-    var tempFilter = ecFilter;
-    ecFilter = new FilterFunctionWithMeter<>(meterName) {
+    var tempFilter = tripletFilter;
+    tripletFilter = new FilterFunctionWithMeter<>(meterName) {
       @Override
-      public boolean plainFilter(EdgeContainer edgeContainer) throws Exception {
-        return tempFilter.filter(edgeContainer);
+      public boolean plainFilter(Triplet Triplet) throws Exception {
+        return tempFilter.filter(Triplet);
       }
     };
   }
 
   private void writeObject(java.io.ObjectOutputStream out)
       throws IOException {
-    out.writeObject(ecFilter);
+    out.writeObject(tripletFilter);
   }
 
   @SuppressWarnings("unchecked")
   private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
-    this.ecFilter = (FilterFunction<EdgeContainer>) in.readObject();
+    this.tripletFilter = (FilterFunction<Triplet>) in.readObject();
   }
 }

@@ -3,7 +3,7 @@ package edu.leipzig.grafs.benchmark;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import edu.leipzig.grafs.benchmark.operators.subgraph.BenchmarkSubgraph;
-import edu.leipzig.grafs.model.EdgeContainer;
+import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.model.EdgeStream;
 import edu.leipzig.grafs.operators.subgraph.Subgraph.Strategy;
 import edu.leipzig.grafs.util.AsciiGraphLoader;
@@ -29,16 +29,16 @@ public class BenchmarkSubgraphTest extends OperatorTestBase {
 
     EdgeStream input = loader.createEdgeStream(getConfig());
 
-    Collection<EdgeContainer> expected =
-        loader.createEdgeContainersByGraphVariables("expected");
+    Collection<Triplet> expected =
+        loader.createTripletsByGraphVariables("expected");
 
-    Iterator<EdgeContainer> output = input
+    Iterator<Triplet> output = input
         .callForStream(new BenchmarkSubgraph(
             v -> v.getLabel().equals("Person"),
             e -> e.getLabel().equals("knows"),
             Strategy.BOTH))
         .collect();
-    Collection<EdgeContainer> actual = new HashSet<>();
+    Collection<Triplet> actual = new HashSet<>();
     output.forEachRemaining(actual::add);
     assertEquals(expected, actual);
   }

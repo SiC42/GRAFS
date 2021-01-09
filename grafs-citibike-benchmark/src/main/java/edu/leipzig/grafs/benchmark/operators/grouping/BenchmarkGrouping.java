@@ -1,7 +1,7 @@
 package edu.leipzig.grafs.benchmark.operators.grouping;
 
 import edu.leipzig.grafs.benchmark.operators.functions.SimpleMeter;
-import edu.leipzig.grafs.model.EdgeContainer;
+import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.operators.grouping.Grouping;
 import edu.leipzig.grafs.operators.grouping.functions.AggregateFunction;
 import edu.leipzig.grafs.operators.grouping.model.GroupingInformation;
@@ -63,7 +63,7 @@ public class BenchmarkGrouping<W extends Window> extends Grouping<W> {
 
   // TODO: Test if simple identity function will meter correctly
   @Override
-  public DataStream<EdgeContainer> execute(DataStream<EdgeContainer> stream) {
+  public DataStream<Triplet> execute(DataStream<Triplet> stream) {
     return super.execute(stream).map(new SimpleMeter<>(meterName));
   }
 

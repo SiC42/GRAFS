@@ -1,7 +1,7 @@
 package edu.leipzig.grafs.setup.test;
 
-import edu.leipzig.grafs.model.EdgeContainer;
-import edu.leipzig.grafs.setup.serialization.EdgeContainerDeserializer;
+import edu.leipzig.grafs.model.Triplet;
+import edu.leipzig.grafs.setup.serialization.TripletDeserializer;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.Properties;
@@ -24,15 +24,15 @@ public class KafkaConsumer {
     props.put(ConsumerConfig.GROUP_ID_CONFIG, "CitibikeConsumer" + Math.random());
     props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
     props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG,
-        EdgeContainerDeserializer.class.getName());
+        TripletDeserializer.class.getName());
     props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false");
     props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
     props.put(ConsumerConfig.CONNECTIONS_MAX_IDLE_MS_CONFIG, 30_000);
     return props;
   }
 
-  public static Consumer<String, EdgeContainer> createConsumer() {
-    Consumer<String, EdgeContainer> consumer = new org.apache.kafka.clients.consumer.KafkaConsumer<>(
+  public static Consumer<String, Triplet> createConsumer() {
+    Consumer<String, Triplet> consumer = new org.apache.kafka.clients.consumer.KafkaConsumer<>(
         createProperties(new Properties()));
     consumer.subscribe(Collections.singletonList(TOPIC));
     return consumer;
@@ -41,7 +41,7 @@ public class KafkaConsumer {
   static void runConsumer() {
     var consumer = createConsumer();
     int noMessageFound = 0;
-    var ecQueue = new SmallQueue();
+    var tripletQueue = new SmallQueue();
     int parsed = 0;
     while (true) {
       var consumerRecords = consumer.poll(Duration.ofMillis(1000));
@@ -63,14 +63,14 @@ public class KafkaConsumer {
           System.out.print(parsed + "\r");
           System.out.flush();
         }
-        ecQueue.add(record.value());
+        tripletQueue.add(record.value());
       }
       // commits the offset of record to broker.
       consumer.commitAsync();
     }
     consumer.close();
     System.out.println("Parsed: " + parsed);
-    ecQueue.asColl().forEach(System.out::println);
+    tripletQueue.asColl().forEach(System.out::println);
   }
 
   public static void main(String[] args) {
