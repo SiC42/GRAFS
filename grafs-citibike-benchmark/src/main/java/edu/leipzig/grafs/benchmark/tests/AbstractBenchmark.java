@@ -157,6 +157,7 @@ public abstract class AbstractBenchmark {
       }
 
     } catch (ParseException e) {
+      System.out.println(e.getMessage());
       formatter.printHelp("grafsbenchmark", header, options, "");
 
       System.exit(1);
