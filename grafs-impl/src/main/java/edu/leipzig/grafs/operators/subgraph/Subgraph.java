@@ -4,6 +4,7 @@ import edu.leipzig.grafs.model.Edge;
 import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.model.Vertex;
 import edu.leipzig.grafs.operators.interfaces.GraphToGraphOperatorI;
+import java.util.Locale;
 import java.util.Objects;
 import org.apache.flink.api.common.functions.FilterFunction;
 import org.apache.flink.streaming.api.datastream.DataStream;
@@ -26,6 +27,7 @@ public class Subgraph implements GraphToGraphOperatorI {
    */
   protected FilterFunction<Triplet> tripletFilter;
 
+  private Strategy strategy;
   /**
    * Empty constructor for serialization.
    */
@@ -45,6 +47,7 @@ public class Subgraph implements GraphToGraphOperatorI {
       final FilterFunction<Edge> edgeFilter,
       final Strategy strategy) {
     Objects.requireNonNull(strategy);
+    this.strategy = strategy;
     if (strategy == Strategy.BOTH &&
         (vertexFilter == null || edgeFilter == null)) {
       throw new IllegalArgumentException("No vertex or no edge filter function was given.");
@@ -127,7 +130,7 @@ public class Subgraph implements GraphToGraphOperatorI {
    */
   @Override
   public DataStream<Triplet> execute(DataStream<Triplet> stream) {
-    return stream.filter(tripletFilter);
+    return stream.filter(tripletFilter).name(strategy.name().toLowerCase() + " subgraph" );
   }
 
   /**

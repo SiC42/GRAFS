@@ -59,6 +59,7 @@ public abstract class AbstractMatchingOperator<W extends Window> implements
     var filteredStream = queryGraph.getEdges().isEmpty() ? // Only vertices?
         stream.filter(new VertexQueryFilter(queryGraph)) :
         stream.filter(new EdgeQueryFilter(queryGraph));
+    filteredStream = filteredStream.name("Filter relevant graph elements");
     var windowedStream = filteredStream.windowAll(window);
     if (trigger != null) {
       windowedStream = windowedStream.trigger(trigger);

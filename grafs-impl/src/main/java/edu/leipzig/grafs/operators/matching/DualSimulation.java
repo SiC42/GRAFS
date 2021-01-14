@@ -47,6 +47,7 @@ public class DualSimulation<W extends Window> extends AbstractMatchingOperator<W
   @Override
   public DataStream<Triplet> execute(DataStream<Triplet> stream) {
     var preProcessedStream = preProcessAndApplyWindow(stream);
-    return preProcessedStream.process(new DualSimulationProcess<>(queryGraph));
+    return preProcessedStream.process(new DualSimulationProcess<>(queryGraph))
+        .name("Dual Simulation Pattern Matching");
   }
 }

@@ -146,7 +146,7 @@ public class Grouping<W extends Window> implements GraphToGraphOperatorI {
             out.collect(value.createReverseTriplet());
             out.collect(value);
           }
-        });
+        }).name("Create Reverse Edges");
   }
 
   /**
@@ -162,7 +162,8 @@ public class Grouping<W extends Window> implements GraphToGraphOperatorI {
       AggregateMode mode) {
     var windowedStream = createKeyedWindowedStream(stream, mode);
     return windowedStream.process(
-        new VertexAggregation<>(vertexGi, vertexAggregateFunctions, mode));
+        new VertexAggregation<>(vertexGi, vertexAggregateFunctions, mode))
+        .name("Aggregate " + mode.name() + " VERTICES");
   }
 
   /**
@@ -173,7 +174,8 @@ public class Grouping<W extends Window> implements GraphToGraphOperatorI {
    */
   private DataStream<Triplet> aggregateOnEdge(DataStream<Triplet> stream) {
     var windowedStream = createKeyedWindowedStream(stream, AggregateMode.EDGE);
-    return windowedStream.process(new EdgeAggregation<W>(edgeGi, edgeAggregateFunctions));
+    return windowedStream.process(new EdgeAggregation<W>(edgeGi, edgeAggregateFunctions))
+        .name("Aggregate EDGES");
   }
 
   /**

@@ -38,6 +38,6 @@ public class VertexTransformation implements GraphToGraphOperatorI {
    */
   @Override
   public DataStream<Triplet> execute(DataStream<Triplet> stream) {
-    return stream.map(tripletMapper);
+    return stream.map(tripletMapper).name("Vertex Transformation");
   }
 }

@@ -37,6 +37,6 @@ public class EdgeTransformation implements GraphToGraphOperatorI {
    */
   @Override
   public DataStream<Triplet> execute(DataStream<Triplet> stream) {
-    return stream.map(tripletMapper);
+    return stream.map(tripletMapper).name("Edge Transformation");
   }
 }

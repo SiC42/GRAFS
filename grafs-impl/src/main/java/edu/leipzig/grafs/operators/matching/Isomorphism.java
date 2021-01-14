@@ -47,6 +47,7 @@ public class Isomorphism<W extends Window> extends AbstractMatchingOperator<W> {
   @Override
   public DataStream<Triplet> execute(DataStream<Triplet> stream) {
     var preProcessedStream = preProcessAndApplyWindow(stream);
-    return preProcessedStream.process(new IsomorphismMatchingProcess<>(queryGraph));
+    return preProcessedStream.process(new IsomorphismMatchingProcess<>(queryGraph))
+        .name("Isomorphism Pattern Matching");
   }
 }
