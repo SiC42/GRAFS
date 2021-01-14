@@ -94,9 +94,9 @@ class DualSimulationProcessTest extends MatchingTestBase {
     var ds = new DualSimulationProcess<>(queryGraph);
     var collector = new DummyCollector();
     ds.processQuery(graph, collector);
-    var actualEcs = collector.getCollected();
-    var expectedEcs = graphLoader.createEdgeContainersByGraphVariables("ds");
-    assertThat(actualEcs, containsInAnyOrder(expectedEcs.toArray()));
+    var actualTriplets = collector.getCollected();
+    var expectedTriplets = graphLoader.createTripletsByGraphVariables("ds");
+    assertThat(actualTriplets, containsInAnyOrder(expectedTriplets.toArray()));
   }
 
 

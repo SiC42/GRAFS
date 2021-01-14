@@ -3,7 +3,7 @@ package edu.leipzig.grafs.operators.matching.logic;
 import static edu.leipzig.grafs.operators.matching.logic.ElementMatcher.matchesQueryElem;
 
 import edu.leipzig.grafs.model.Edge;
-import edu.leipzig.grafs.model.EdgeContainer;
+import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.model.Graph;
 import edu.leipzig.grafs.model.Vertex;
 import edu.leipzig.grafs.operators.matching.model.CandidateMap;
@@ -26,7 +26,7 @@ import org.gradoop.common.model.impl.id.GradoopId;
  * @param <W> type of window used
  */
 public abstract class AbstractMatchingProcess<W extends Window> extends
-    ProcessAllWindowFunction<EdgeContainer, EdgeContainer, W> {
+    ProcessAllWindowFunction<Triplet, Triplet, W> {
 
   final Graph queryGraph;
 
@@ -43,13 +43,13 @@ public abstract class AbstractMatchingProcess<W extends Window> extends
    * Applies the pattern matching process onto the elements in the window.
    *
    * @param notUsed    not used
-   * @param ecIterable all edge container in the window
+   * @param tripletIt all triplet in the window
    * @param collector  outputs the matched elements
    */
   @Override
-  public void process(Context notUsed, Iterable<EdgeContainer> ecIterable,
-      Collector<EdgeContainer> collector) {
-    var graph = Graph.fromEdgeContainers(ecIterable);
+  public void process(Context notUsed, Iterable<Triplet> tripletIt,
+      Collector<Triplet> collector) {
+    var graph = Graph.fromTriplets(tripletIt);
     if (queryGraph.getEdges().isEmpty()) {
       throw new RuntimeException(
           "Can't process query with only vertices, because only edge stream model is supported");
@@ -65,7 +65,7 @@ public abstract class AbstractMatchingProcess<W extends Window> extends
    * @param graph     Graph for which the process should find matches
    * @param collector outputs the matched elements
    */
-  abstract void processQuery(Graph graph, Collector<EdgeContainer> collector);
+  abstract void processQuery(Graph graph, Collector<Triplet> collector);
 
   /**
    * Returns all feasible vertex matches in the window, i.e. all vertices for which there is a
@@ -88,29 +88,29 @@ public abstract class AbstractMatchingProcess<W extends Window> extends
 
   /**
    * Given a set of sets of vertices (the inner set represents one match), the method constructs the
-   * resulting edge container.
+   * resulting triplet.
    * <p>
-   * In this process an {@link EdgeContainerFactory} is used to ensure that the edge container are
-   * only emitted ones and the elements in the containers have new graph ids applied to represent
+   * In this process an {@link TripletFactory} is used to ensure that the triplets are
+   * only emitted ones and the elements in the triplet have new graph ids applied to represent
    * the new graph.
    *
    * @param setOfMatches a set of sets of vertices (the inner set represents one match)
    * @param graph        original graph used to get the vertex induced subgraphs
-   * @return collection of edge containers which match the pattern
+   * @return collection of triplets which match the pattern
    */
-  Collection<EdgeContainer> buildEdgeContainerSet(Set<Set<Vertex>> setOfMatches, Graph graph) {
-    var ecFactory = new EdgeContainerFactory();
+  Collection<Triplet> buildTripletSet(Set<Set<Vertex>> setOfMatches, Graph graph) {
+    var tripletFactory = new TripletFactory();
     for (var vertexSet : setOfMatches) {
       var inducedGraph = graph.getVertexInducedSubGraph(vertexSet);
       for (var edge : inducedGraph.getEdges()) {
         if (matchesAnyQueryEdge(edge, graph)) {
           var source = graph.getSourceForEdge(edge);
           var target = graph.getTargetForEdge(edge);
-          ecFactory.add(edge, source, target, inducedGraph.getId());
+          tripletFactory.add(edge, source, target, inducedGraph.getId());
         }
       }
     }
-    return ecFactory.getEdgeContainers();
+    return tripletFactory.getTriplets();
   }
 
   /**
@@ -128,15 +128,15 @@ public abstract class AbstractMatchingProcess<W extends Window> extends
   }
 
   /**
-   * Emits the given edge containers via the collector.
+   * Emits the given triplets via the collector.
    *
-   * @param collector      used to emit the edge container
-   * @param edgeContainers edge containers which should be emitted
+   * @param collector      used to emit the triplet
+   * @param triplets triplets which should be emitted
    */
-  void emitEdgeContainer(Collector<EdgeContainer> collector,
-      Collection<EdgeContainer> edgeContainers) {
-    for (var ec : edgeContainers) {
-      collector.collect(ec);
+  void emitTriplet(Collector<Triplet> collector,
+      Collection<Triplet> triplets) {
+    for (var triplet : triplets) {
+      collector.collect(triplet);
     }
   }
 
@@ -144,11 +144,11 @@ public abstract class AbstractMatchingProcess<W extends Window> extends
    * Returns <tt>true</tt> if the given vertex candidate was not used before, i.e. is not a
    * candidate for any query vertex in the array with an index smaller than the given depth.
    *
-   * @param candidate
-   * @param candidateMap
-   * @param qVertexArray
-   * @param depth
-   * @return
+   * @param candidate element to be tested if it was not a candidate before
+   * @param candidateMap candidate map to be looked at for element
+   * @param qVertexArray query elements of previous iterations used as key for map
+   * @param depth current depth, used to find out which query elements where used
+   * @return <tt>true</tt> if the given vertex candidate was not used before
    */
   boolean previouslyNotCandidate(Vertex candidate, CandidateMap<Vertex> candidateMap,
       Vertex[] qVertexArray, int depth) {
@@ -205,18 +205,18 @@ public abstract class AbstractMatchingProcess<W extends Window> extends
   /**
    * Builds the new graph.
    */
-  static class EdgeContainerFactory {
+  static class TripletFactory {
 
     private final Map<GradoopId, Edge> edgeMap;
     private final Map<GradoopId, Vertex> vertexMap;
 
-    public EdgeContainerFactory() {
+    public TripletFactory() {
       edgeMap = new HashMap<>();
       vertexMap = new HashMap<>();
     }
 
-    public boolean contains(EdgeContainer ec) {
-      return edgeMap.containsKey(ec.getEdge().getId());
+    public boolean contains(Triplet triplet) {
+      return edgeMap.containsKey(triplet.getEdge().getId());
     }
 
     public void add(Edge edge, Vertex source, Vertex target, GradoopId graphId) {
@@ -233,11 +233,11 @@ public abstract class AbstractMatchingProcess<W extends Window> extends
       vertexMap.put(target.getId(), target);
     }
 
-    public Collection<EdgeContainer> getEdgeContainers() {
-      Function<Edge, EdgeContainer> createEdgeFactory = e ->
-          new EdgeContainer(e, vertexMap.get(e.getSourceId()), vertexMap.get(e.getTargetId()));
+    public Collection<Triplet> getTriplets() {
+      Function<Edge, Triplet> createTriplet = e ->
+          new Triplet(e, vertexMap.get(e.getSourceId()), vertexMap.get(e.getTargetId()));
       return edgeMap.values().stream()
-          .map(createEdgeFactory)
+          .map(createTriplet)
           .collect(Collectors.toCollection(HashSet::new));
     }
 

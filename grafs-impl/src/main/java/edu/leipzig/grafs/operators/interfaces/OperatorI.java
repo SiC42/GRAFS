@@ -1,6 +1,6 @@
 package edu.leipzig.grafs.operators.interfaces;
 
-import edu.leipzig.grafs.model.EdgeContainer;
+import edu.leipzig.grafs.model.Triplet;
 import org.apache.flink.streaming.api.datastream.DataStream;
 
 /**
@@ -13,6 +13,6 @@ public interface OperatorI {
    * @param stream stream on which the operator should be applied
    * @return the stream with the applied operator
    */
-  DataStream<EdgeContainer> execute(DataStream<EdgeContainer> stream);
+  DataStream<Triplet> execute(DataStream<Triplet> stream);
 
 }

@@ -1,10 +1,10 @@
 package edu.leipzig.grafs.operators.grouping;
 
 import com.google.common.annotations.Beta;
-import edu.leipzig.grafs.model.EdgeContainer;
+import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.operators.grouping.functions.AggregateFunction;
 import edu.leipzig.grafs.operators.grouping.logic.EdgeAggregation;
-import edu.leipzig.grafs.operators.grouping.logic.EdgeContainerKeySelector;
+import edu.leipzig.grafs.operators.grouping.logic.TripletKeySelector;
 import edu.leipzig.grafs.operators.grouping.logic.VertexAggregation;
 import edu.leipzig.grafs.operators.grouping.model.AggregateMode;
 import edu.leipzig.grafs.operators.grouping.model.GroupingInformation;
@@ -105,7 +105,7 @@ public class Grouping<W extends Window> implements GraphToGraphOperatorI {
    * @return the stream with the grouping operator applied
    */
   @Override
-  public DataStream<EdgeContainer> execute(DataStream<EdgeContainer> stream) {
+  public DataStream<Triplet> execute(DataStream<Triplet> stream) {
     return groupBy(stream);
   }
 
@@ -115,7 +115,7 @@ public class Grouping<W extends Window> implements GraphToGraphOperatorI {
    * @param stream stream on which the operator should be applied
    * @return the stream with the grouping operator applied
    */
-  public DataStream<EdgeContainer> groupBy(DataStream<EdgeContainer> stream) {
+  public DataStream<Triplet> groupBy(DataStream<Triplet> stream) {
     // Enrich stream with reverse edges
     var expandedStream = createStreamWithReverseEdges(stream);
 
@@ -125,9 +125,9 @@ public class Grouping<W extends Window> implements GraphToGraphOperatorI {
     var reducedStream = aggregatedOnVertexStream.filter(ec -> !ec.getEdge().isReverse());
     var aggregatedOnEdgeStream = aggregateOnEdge(reducedStream);
     var graphId = GradoopId.get();
-    return aggregatedOnEdgeStream.map(ec -> {
-      ec.addGraphId(graphId);
-      return ec;
+    return aggregatedOnEdgeStream.map(triplet -> {
+      triplet.addGraphId(graphId);
+      return triplet;
     });
   }
 
@@ -137,16 +137,16 @@ public class Grouping<W extends Window> implements GraphToGraphOperatorI {
    * @param stream stream which should be enriched by reverse edges
    * @return stream with reverse edges
    */
-  private SingleOutputStreamOperator<EdgeContainer> createStreamWithReverseEdges(
-      DataStream<EdgeContainer> stream) {
+  private SingleOutputStreamOperator<Triplet> createStreamWithReverseEdges(
+      DataStream<Triplet> stream) {
     return stream
-        .flatMap(new FlatMapFunction<EdgeContainer, EdgeContainer>() {
+        .flatMap(new FlatMapFunction<Triplet, Triplet>() {
           @Override
-          public void flatMap(EdgeContainer value, Collector<EdgeContainer> out) {
-            out.collect(value.createReverseEdgeContainer());
+          public void flatMap(Triplet value, Collector<Triplet> out) {
+            out.collect(value.createReverseTriplet());
             out.collect(value);
           }
-        });
+        }).name("Create Reverse Edges");
   }
 
   /**
@@ -158,11 +158,12 @@ public class Grouping<W extends Window> implements GraphToGraphOperatorI {
    *               the grouping key is generated)
    * @return stream on which the indicated vertices are grouped
    */
-  private DataStream<EdgeContainer> aggregateOnVertex(DataStream<EdgeContainer> stream,
+  private DataStream<Triplet> aggregateOnVertex(DataStream<Triplet> stream,
       AggregateMode mode) {
     var windowedStream = createKeyedWindowedStream(stream, mode);
     return windowedStream.process(
-        new VertexAggregation<>(vertexGi, vertexAggregateFunctions, mode));
+        new VertexAggregation<>(vertexGi, vertexAggregateFunctions, mode))
+        .name("Aggregate " + mode.name() + " VERTICES");
   }
 
   /**
@@ -171,9 +172,10 @@ public class Grouping<W extends Window> implements GraphToGraphOperatorI {
    * @param stream stream on which the edges should be aggregated
    * @return stream on which the edges are grouped
    */
-  private DataStream<EdgeContainer> aggregateOnEdge(DataStream<EdgeContainer> stream) {
+  private DataStream<Triplet> aggregateOnEdge(DataStream<Triplet> stream) {
     var windowedStream = createKeyedWindowedStream(stream, AggregateMode.EDGE);
-    return windowedStream.process(new EdgeAggregation<W>(edgeGi, edgeAggregateFunctions));
+    return windowedStream.process(new EdgeAggregation<W>(edgeGi, edgeAggregateFunctions))
+        .name("Aggregate EDGES");
   }
 
   /**
@@ -184,10 +186,10 @@ public class Grouping<W extends Window> implements GraphToGraphOperatorI {
    *             be keyed upon
    * @return stream that is keyed based on the given mode and windowed
    */
-  private WindowedStream<EdgeContainer, String, W> createKeyedWindowedStream(
-      DataStream<EdgeContainer> es, AggregateMode mode) {
+  private WindowedStream<Triplet, String, W> createKeyedWindowedStream(
+      DataStream<Triplet> es, AggregateMode mode) {
     var windowedStream = es
-        .keyBy(new EdgeContainerKeySelector(vertexGi, edgeGi, mode))
+        .keyBy(new TripletKeySelector(vertexGi, edgeGi, mode))
         .window(window);
     if (trigger != null) {
       windowedStream = windowedStream.trigger(trigger);

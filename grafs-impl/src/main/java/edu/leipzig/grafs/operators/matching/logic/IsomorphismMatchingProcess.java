@@ -1,6 +1,6 @@
 package edu.leipzig.grafs.operators.matching.logic;
 
-import edu.leipzig.grafs.model.EdgeContainer;
+import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.model.Graph;
 import edu.leipzig.grafs.model.Vertex;
 import edu.leipzig.grafs.operators.matching.model.CandidateMap;
@@ -33,7 +33,7 @@ public class IsomorphismMatchingProcess<W extends Window> extends AbstractMatchi
    * @param collector outputs the matched elements
    */
   @Override
-  void processQuery(Graph graph, Collector<EdgeContainer> collector) {
+  void processQuery(Graph graph, Collector<Triplet> collector) {
     var candidatesMap = feasibleVertexMatches(graph);
     if (candidatesMap.isEmpty()) {
       return;
@@ -44,8 +44,8 @@ public class IsomorphismMatchingProcess<W extends Window> extends AbstractMatchi
       return;
     }
     var permutations = search(graph, dualSimCandidates);
-    var edgeContainerSet = buildEdgeContainerSet(permutations, graph);
-    emitEdgeContainer(collector, edgeContainerSet);
+    var tripletSet = buildTripletSet(permutations, graph);
+    emitTriplet(collector, tripletSet);
   }
 
   /**

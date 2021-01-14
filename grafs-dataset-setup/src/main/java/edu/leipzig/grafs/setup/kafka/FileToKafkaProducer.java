@@ -1,6 +1,6 @@
 package edu.leipzig.grafs.setup.kafka;
 
-import edu.leipzig.grafs.setup.reader.SerializedEdgeContainerFileReader;
+import edu.leipzig.grafs.setup.reader.SerializedTripletFileReader;
 public class FileToKafkaProducer extends AbstractProducer {
 
 
@@ -14,7 +14,7 @@ public class FileToKafkaProducer extends AbstractProducer {
   }
 
   public void run() {
-    try (var reader = new SerializedEdgeContainerFileReader(BASE_PATH)) {
+    try (var reader = new SerializedTripletFileReader(BASE_PATH)) {
       double curLine = 0;
       System.out.println("Starting reading elements.");
       while (reader.hasNext()) {
@@ -22,8 +22,8 @@ public class FileToKafkaProducer extends AbstractProducer {
         if (curLine % 10000 == 0) {
           System.out.println(curLine + " lines processed.");
         }
-        var ec = reader.getNext();
-        sendEdgeContainer(ec);
+        var triplet = reader.getNext();
+        sendTriplet(triplet);
       }
     } catch (Exception e) {
       e.printStackTrace();

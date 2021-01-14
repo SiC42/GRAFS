@@ -5,7 +5,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 
 import edu.leipzig.grafs.benchmark.operators.matching.BenchmarkDualSimulation;
-import edu.leipzig.grafs.model.EdgeContainer;
+import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.model.EdgeStream;
 import edu.leipzig.grafs.util.FlinkConfig;
 import edu.leipzig.grafs.util.FlinkConfigBuilder;
@@ -33,7 +33,7 @@ public class BenchmarkDualSimulationTest extends MatchingTestBase {
         StreamExecutionEnvironment.getExecutionEnvironment();
     config = new FlinkConfigBuilder(env)
         .withWaterMarkStrategy(WatermarkStrategy
-            .<EdgeContainer>forBoundedOutOfOrderness(Duration.ZERO)
+            .<Triplet>forBoundedOutOfOrderness(Duration.ZERO)
             .withTimestampAssigner((ec, timestamp) -> 0))
         .build();
   }
@@ -44,7 +44,7 @@ public class BenchmarkDualSimulationTest extends MatchingTestBase {
     env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
     FlinkConfig config = new FlinkConfigBuilder(env)
         .withWaterMarkStrategy(WatermarkStrategy
-            .<EdgeContainer>forBoundedOutOfOrderness(Duration.ZERO)
+            .<Triplet>forBoundedOutOfOrderness(Duration.ZERO)
             .withTimestampAssigner((ec, timestamp) -> 0))
         .build();
     edgeStream = graphLoader.createEdgeStream(config);
@@ -93,13 +93,13 @@ public class BenchmarkDualSimulationTest extends MatchingTestBase {
         + "(v29)-[e36]->(v30)"
         + "(v30)-[e37]->(v23)]";
     graphLoader.appendFromString(appendDsGraph);
-    var expectedEcs = graphLoader.createEdgeContainersByGraphVariables("ds");
+    var expectedEcs = graphLoader.createTripletsByGraphVariables("ds");
 
-    Iterator<EdgeContainer> matchedEcIt = edgeStream
+    Iterator<Triplet> matchedEcIt = edgeStream
         .callForStream(new BenchmarkDualSimulation<>(queryPaperGraphGdlStr,
             TumblingEventTimeWindows.of(Time.milliseconds(10))))
         .collect();
-    var actualEcs = new ArrayList<EdgeContainer>();
+    var actualEcs = new ArrayList<Triplet>();
     matchedEcIt.forEachRemaining(actualEcs::add);
     assertThat(actualEcs, containsInAnyOrder(expectedEcs.toArray()));
   }

@@ -1,8 +1,8 @@
 package edu.leipzig.grafs.operators.grouping.logic;
 
-import static edu.leipzig.grafs.util.TestUtils.validateEdgeContainerCollections;
+import static edu.leipzig.grafs.util.TestUtils.validateTripletCollections;
 
-import edu.leipzig.grafs.model.EdgeContainer;
+import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.operators.DummyCollector;
 import edu.leipzig.grafs.operators.grouping.functions.AggregateFunction;
 import edu.leipzig.grafs.operators.grouping.model.AggregateMode;
@@ -38,9 +38,9 @@ class VertexAggregationTest {
             "(a20)-[]->(b19),"
     );
 
-    var edgeList = new ArrayList<>(loader.createEdgeContainers());
+    var tripletList = new ArrayList<>(loader.createTriplets());
 
-    vertexAggregation.process("", null, edgeList, collector);
+    vertexAggregation.process("", null, tripletList, collector);
 
     // create expected output
     AsciiGraphLoader expectedOutputLoader = AsciiGraphLoader.fromString(
@@ -53,10 +53,10 @@ class VertexAggregationTest {
             "(a38)-[]->(b19),"
     );
 
-    var expectedEcCol = expectedOutputLoader.createEdgeContainers();
+    var expectedTripletCol = expectedOutputLoader.createTriplets();
 
     //verify collector was called with the right output
-    validateEdgeContainerCollections(expectedEcCol, collector.getCollected());
+    validateTripletCollections(expectedTripletCol, collector.getCollected());
   }
 
   @Test
@@ -81,9 +81,9 @@ class VertexAggregationTest {
             "(a20)-[]->(b19),"
     );
 
-    var edgeList = new ArrayList<>(loader.createEdgeContainers());
+    var tripletList = new ArrayList<>(loader.createTriplets());
 
-    vertexAggregation.process("", null, edgeList, collector);
+    vertexAggregation.process("", null, tripletList, collector);
 
     // create expected output
     AsciiGraphLoader expectedOutputLoader = AsciiGraphLoader.fromString(
@@ -96,10 +96,10 @@ class VertexAggregationTest {
             "(a20)-[]->(b36),"
     );
 
-    var expectedEcCol = expectedOutputLoader.createEdgeContainers();
+    var expectedTripletCol = expectedOutputLoader.createTriplets();
 
     //verify collector was called with the right output
-    validateEdgeContainerCollections(expectedEcCol, collector.getCollected());
+    validateTripletCollections(expectedTripletCol, collector.getCollected());
   }
 
   @Test
@@ -124,19 +124,19 @@ class VertexAggregationTest {
             "(a20)-[]->(b19),"
     );
 
-    var edgeList = new ArrayList<>(loader.createEdgeContainers());
+    var tripletList = new ArrayList<>(loader.createTriplets());
     loader = AsciiGraphLoader.fromString(
         "(a25 {n : \"A\", a : 25})," +
             "(c20 {n : \"C\", a : 20})," +
             "(c20)-[]->(a25),"
     );
 
-    var invertedEdgeList = new ArrayList<>(loader.createEdgeContainers());
-    EdgeContainer invertedEc = invertedEdgeList.get(0);
-    invertedEc = invertedEc.createReverseEdgeContainer();
-    edgeList.add(invertedEc);
+    var invertedTripletList = new ArrayList<>(loader.createTriplets());
+    Triplet invertedTriplet = invertedTripletList.get(0);
+    invertedTriplet = invertedTriplet.createReverseTriplet();
+    tripletList.add(invertedTriplet);
 
-    vertexAggregation.process("", null, edgeList, collector);
+    vertexAggregation.process("", null, tripletList, collector);
 
     // create expected output
     AsciiGraphLoader expectedOutputLoader = AsciiGraphLoader.fromString(
@@ -149,7 +149,7 @@ class VertexAggregationTest {
             "(a63)-[]->(b19)"
     );
 
-    var expectedEcCol = expectedOutputLoader.createEdgeContainers();
+    var expectedTripletCol = expectedOutputLoader.createTriplets();
 
     loader = AsciiGraphLoader.fromString(
         "(a25 {n : \"A\", a : 25})," +
@@ -157,13 +157,13 @@ class VertexAggregationTest {
             "(c20)-[]->(a25)"
     );
 
-    var expectedInvertedEdgeList = new ArrayList<>(loader.createEdgeContainers());
-    EdgeContainer expectedInvertedEc = expectedInvertedEdgeList.get(0);
-    expectedInvertedEc = expectedInvertedEc.createReverseEdgeContainer();
-    expectedEcCol.add(expectedInvertedEc);
+    var expectedInvertedTripletList = new ArrayList<>(loader.createTriplets());
+    Triplet expectedInvertedTriplet = expectedInvertedTripletList.get(0);
+    expectedInvertedTriplet = expectedInvertedTriplet.createReverseTriplet();
+    expectedTripletCol.add(expectedInvertedTriplet);
 
     //verify collector was called with the right output
-    validateEdgeContainerCollections(expectedEcCol, collector.getCollected());
+    validateTripletCollections(expectedTripletCol, collector.getCollected());
   }
 
 }

@@ -1,7 +1,7 @@
 package edu.leipzig.grafs.operators.union;
 
 import com.google.common.annotations.Beta;
-import edu.leipzig.grafs.model.EdgeContainer;
+import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.model.EdgeStream;
 import edu.leipzig.grafs.operators.interfaces.GraphToGraphCollectionOperatorI;
 import edu.leipzig.grafs.operators.interfaces.GraphToGraphOperatorI;
@@ -33,7 +33,7 @@ public class UnionWithDuplicateInWindow<W extends Window> implements
   /**
    * Optional trigger
    */
-  private final Trigger<EdgeContainer, W> trigger;
+  private final Trigger<Triplet, W> trigger;
 
   /**
    * Initializes the operator with the given parameters.
@@ -53,7 +53,7 @@ public class UnionWithDuplicateInWindow<W extends Window> implements
    * @param trigger optional window trigger that is used for this operation
    */
   public UnionWithDuplicateInWindow(WindowAssigner<Object, W> window,
-      Trigger<EdgeContainer, W> trigger, EdgeStream... streams) {
+      Trigger<Triplet, W> trigger, EdgeStream... streams) {
     this.streams = streams;
     this.trigger = trigger;
     this.window = window;
@@ -67,18 +67,18 @@ public class UnionWithDuplicateInWindow<W extends Window> implements
    * @return unified stream
    */
   @Override
-  public DataStream<EdgeContainer> execute(DataStream<EdgeContainer> stream) {
+  public DataStream<Triplet> execute(DataStream<Triplet> stream) {
     var unionedStream = new DisjunctUnion(streams).execute(stream);
     var filterDuplicateInWindowFunction =
-        new ProcessWindowFunction<EdgeContainer, EdgeContainer, String, W>() {
+        new ProcessWindowFunction<Triplet, Triplet, String, W>() {
           @Override
-          public void process(String s, Context context, Iterable<EdgeContainer> iterable,
-              Collector<EdgeContainer> collector) throws Exception {
+          public void process(String s, Context context, Iterable<Triplet> iterable,
+              Collector<Triplet> collector) throws Exception {
             collector.collect(iterable.iterator().next());
           }
         };
     return unionedStream
-        .keyBy(ec -> ec.getEdge().getId().toString())
+        .keyBy(triplet -> triplet.getEdge().getId().toString())
         .window(window)
         .trigger(trigger)
         .process(filterDuplicateInWindowFunction);

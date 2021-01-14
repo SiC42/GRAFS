@@ -2,7 +2,7 @@ package edu.leipzig.grafs.operators.matching.logic;
 
 
 import edu.leipzig.grafs.model.Edge;
-import edu.leipzig.grafs.model.EdgeContainer;
+import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.model.Graph;
 import edu.leipzig.grafs.model.Vertex;
 import org.apache.flink.api.common.functions.FilterFunction;
@@ -10,7 +10,7 @@ import org.apache.flink.api.common.functions.FilterFunction;
 /**
  * Filters edges based on query graph.
  */
-public class EdgeQueryFilter implements FilterFunction<EdgeContainer> {
+public class EdgeQueryFilter implements FilterFunction<Triplet> {
 
   /**
    * Query graph which is used to filter edges
@@ -27,18 +27,18 @@ public class EdgeQueryFilter implements FilterFunction<EdgeContainer> {
   }
 
   /**
-   * Returns <tt>true</tt> if for the given edge container there are matching source and target
+   * Returns <tt>true</tt> if for the given triplet there are matching source and target
    * vertex in the query graph and the corresponding edge also matches the given edge.
    *
-   * @param edgeContainer Edge container which is tested for filtering
-   * @return <tt>true</tt> if for the given edge container there are matching source and target
+   * @param triplet Triplet which is tested for filtering
+   * @return <tt>true</tt> if for the given triplet there are matching source and target
    * vertex in the query graph and the corresponding edge also matches the given edge
    */
   @Override
-  public boolean filter(EdgeContainer edgeContainer) {
-    var edge = edgeContainer.getEdge();
-    var source = edgeContainer.getSourceVertex();
-    var target = edgeContainer.getTargetVertex();
+  public boolean filter(Triplet triplet) {
+    var edge = triplet.getEdge();
+    var source = triplet.getSourceVertex();
+    var target = triplet.getTargetVertex();
     return filter(edge, source, target);
   }
 
@@ -49,7 +49,7 @@ public class EdgeQueryFilter implements FilterFunction<EdgeContainer> {
    * @param edge   edge which is tested for filtering
    * @param source source for given edge
    * @param target target for given edge
-   * @return <tt>true</tt> if for the given edge container there are matching source and target
+   * @return <tt>true</tt> if for the given triplet there are matching source and target
    * * vertex in the query graph and the corresponding edge also matches the given edge
    */
   public boolean filter(Edge edge, Vertex source, Vertex target) {

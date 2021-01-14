@@ -1,6 +1,6 @@
 package edu.leipzig.grafs.operators.matching;
 
-import edu.leipzig.grafs.model.EdgeContainer;
+import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.model.EdgeStream;
 import edu.leipzig.grafs.operators.matching.logic.MatchingTestBase;
 import edu.leipzig.grafs.util.FlinkConfig;
@@ -26,7 +26,7 @@ public class IsomorphismTest extends MatchingTestBase {
     env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
     config = new FlinkConfigBuilder(env)
         .withWaterMarkStrategy(WatermarkStrategy
-            .<EdgeContainer>forBoundedOutOfOrderness(Duration.ZERO)
+            .<Triplet>forBoundedOutOfOrderness(Duration.ZERO)
             .withTimestampAssigner((ec, timestamp) -> 0))
         .build();
   }
@@ -34,7 +34,7 @@ public class IsomorphismTest extends MatchingTestBase {
   @Test
   void testWithPaperGraph() throws Exception {
     var loader = graphLoader;
-    EdgeStream edgeStream = loader.createEdgeStream(config);
+    var edgeStream = loader.createEdgeStream(config);
     var appendDsGraph = "iso {}["
         // iso-edges
         // from blue
@@ -44,11 +44,11 @@ public class IsomorphismTest extends MatchingTestBase {
         + "(v2)-[e4]->(v4)"
         + "(v2)-[e5]->(v5)]";
     loader.appendFromString(appendDsGraph);
-    var expectedEcs = loader.createEdgeContainersByGraphVariables("iso");
+    var expectedTriplets = loader.createTripletsByGraphVariables("iso");
     var resultStream = edgeStream
         .callForStream(new Isomorphism<>(queryPaperGraphGdlStr,
             TumblingEventTimeWindows.of(Time.milliseconds(10))));
-    TestUtils.assertThatStreamContains(resultStream, expectedEcs);
+    TestUtils.assertThatStreamContains(resultStream, expectedTriplets);
   }
 
   @Test
@@ -69,12 +69,12 @@ public class IsomorphismTest extends MatchingTestBase {
         + "(frank)-[fkd]->(dave)"
         + "]";
     loader.appendFromString(appendIsoString);
-    var expectedEcs = loader.createEdgeContainersByGraphVariables("iso");
+    var expectedTriplets = loader.createTripletsByGraphVariables("iso");
 
     var resultStream = edgeStream
         .callForStream(new Isomorphism<>(queryStr,
             TumblingEventTimeWindows.of(Time.milliseconds(10))));
-    TestUtils.assertThatStreamContains(resultStream, expectedEcs);
+    TestUtils.assertThatStreamContains(resultStream, expectedTriplets);
   }
 
   @Test
@@ -89,12 +89,12 @@ public class IsomorphismTest extends MatchingTestBase {
         + "(dave)-[dkc]->(carol)"
         + "]";
     loader.appendFromString(appendIsoString);
-    var expectedEcs = loader.createEdgeContainersByGraphVariables("iso");
+    var expectedTriplets = loader.createTripletsByGraphVariables("iso");
 
     var resultStream = edgeStream
         .callForStream(new Isomorphism<>(queryStr,
             TumblingEventTimeWindows.of(Time.milliseconds(10))));
-    TestUtils.assertThatStreamContains(resultStream, expectedEcs);
+    TestUtils.assertThatStreamContains(resultStream, expectedTriplets);
   }
 
   @Test
@@ -115,12 +115,12 @@ public class IsomorphismTest extends MatchingTestBase {
         + "(frank)-[fkd]->(dave)"
         + "]";
     loader.appendFromString(appendIsoString);
-    var expectedEcs = loader.createEdgeContainersByGraphVariables("iso");
+    var expectedTriplets = loader.createTripletsByGraphVariables("iso");
 
     var resultStream = edgeStream
         .callForStream(new Isomorphism<>(queryStr,
             TumblingEventTimeWindows.of(Time.milliseconds(10))));
-    TestUtils.assertThatStreamContains(resultStream, expectedEcs);
+    TestUtils.assertThatStreamContains(resultStream, expectedTriplets);
   }
 
   @Test
@@ -141,12 +141,12 @@ public class IsomorphismTest extends MatchingTestBase {
         + "(frank)-[fkd]->(dave)"
         + "]";
     loader.appendFromString(appendIsoString);
-    var expectedEcs = loader.createEdgeContainersByGraphVariables("iso");
+    var expectedTriplets = loader.createTripletsByGraphVariables("iso");
 
     var resultStream = edgeStream
         .callForStream(new Isomorphism<>(queryStr,
             TumblingEventTimeWindows.of(Time.milliseconds(10))));
-    TestUtils.assertThatStreamContains(resultStream, expectedEcs);
+    TestUtils.assertThatStreamContains(resultStream, expectedTriplets);
   }
 
   @Test
@@ -163,12 +163,12 @@ public class IsomorphismTest extends MatchingTestBase {
         + "(dave)-[dkc]->(carol)"
         + "]";
     loader.appendFromString(appendIsoString);
-    var expectedEcs = loader.createEdgeContainersByGraphVariables("iso");
+    var expectedTriplets = loader.createTripletsByGraphVariables("iso");
 
     var resultStream = edgeStream
         .callForStream(new Isomorphism<>(queryStr,
             TumblingEventTimeWindows.of(Time.milliseconds(10))));
-    TestUtils.assertThatStreamContains(resultStream, expectedEcs);
+    TestUtils.assertThatStreamContains(resultStream, expectedTriplets);
   }
 
   @Test
@@ -181,12 +181,12 @@ public class IsomorphismTest extends MatchingTestBase {
         + "(gdbs)-[gdbshmoa]->(alice)"
         + "]";
     loader.appendFromString(appendIsoString);
-    var expectedEcs = loader.createEdgeContainersByGraphVariables("iso");
+    var expectedTriplets = loader.createTripletsByGraphVariables("iso");
 
     var resultStream = edgeStream
         .callForStream(new Isomorphism<>(queryStr,
             TumblingEventTimeWindows.of(Time.milliseconds(10))));
-    TestUtils.assertThatStreamContains(resultStream, expectedEcs);
+    TestUtils.assertThatStreamContains(resultStream, expectedTriplets);
   }
 
 }

@@ -1,7 +1,7 @@
 package edu.leipzig.grafs.operators.grouping.logic;
 
 import edu.leipzig.grafs.exceptions.KeyOverlapException;
-import edu.leipzig.grafs.model.EdgeContainer;
+import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.model.Element;
 import edu.leipzig.grafs.operators.grouping.functions.AggregateFunction;
 import edu.leipzig.grafs.operators.grouping.model.GroupingInformation;
@@ -17,7 +17,7 @@ import org.gradoop.common.model.impl.properties.PropertyValue;
  * @param <W> the type of window to be used for the grouping
  */
 public abstract class ElementAggregationProcess<W extends Window> extends
-    ProcessWindowFunction<EdgeContainer, EdgeContainer, String, W> {
+    ProcessWindowFunction<Triplet, Triplet, String, W> {
 
   /**
    * Checks if there is an overlap between the used property keys of the aggregate functions and the

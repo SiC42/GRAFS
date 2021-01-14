@@ -23,9 +23,9 @@ class IsomorphismMatchingProcessTest extends MatchingTestBase {
     var isoMatching = new IsomorphismMatchingProcess<>(queryGraph);
     var collector = new DummyCollector();
     isoMatching.processQuery(graph, collector);
-    var actualEcs = collector.getCollected();
-    var expectedEcs = graphLoader.createEdgeContainersByGraphVariables("iso");
-    assertThat(actualEcs, containsInAnyOrder(expectedEcs.toArray()));
+    var actualTriplets = collector.getCollected();
+    var expectedTriplets = graphLoader.createTripletsByGraphVariables("iso");
+    assertThat(actualTriplets, containsInAnyOrder(expectedTriplets.toArray()));
   }
 
 }

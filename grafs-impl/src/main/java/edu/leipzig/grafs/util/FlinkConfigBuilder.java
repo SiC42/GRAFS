@@ -1,6 +1,6 @@
 package edu.leipzig.grafs.util;
 
-import edu.leipzig.grafs.model.EdgeContainer;
+import edu.leipzig.grafs.model.Triplet;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
@@ -18,7 +18,7 @@ public class FlinkConfigBuilder {
   /**
    * Strategy used to determine the timestamp of elements in the Flink stream
    */
-  private WatermarkStrategy<EdgeContainer> watermarkStrategy;
+  private WatermarkStrategy<Triplet> watermarkStrategy;
 
   /**
    * Constructs a flink config builder using the given execution environment.
@@ -37,7 +37,7 @@ public class FlinkConfigBuilder {
    * @return this object with the water mark strategy set
    */
   public FlinkConfigBuilder withWaterMarkStrategy(
-      WatermarkStrategy<EdgeContainer> watermarkStrategy) {
+      WatermarkStrategy<Triplet> watermarkStrategy) {
     this.watermarkStrategy = watermarkStrategy;
     return this;
   }

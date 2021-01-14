@@ -1,10 +1,10 @@
 package edu.leipzig.grafs.operators.grouping;
 
 import static edu.leipzig.grafs.util.TestUtils.getSocialNetworkLoader;
-import static edu.leipzig.grafs.util.TestUtils.validateEdgeContainerCollections;
+import static edu.leipzig.grafs.util.TestUtils.validateTripletCollections;
 import static org.gradoop.common.util.GradoopConstants.NULL_STRING;
 
-import edu.leipzig.grafs.model.EdgeContainer;
+import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.operators.grouping.functions.Count;
 import edu.leipzig.grafs.operators.grouping.functions.MaxProperty;
 import edu.leipzig.grafs.operators.grouping.functions.MinProperty;
@@ -35,7 +35,7 @@ public class GroupingTest {
         StreamExecutionEnvironment.getExecutionEnvironment();
     config = new FlinkConfigBuilder(env)
         .withWaterMarkStrategy(WatermarkStrategy
-            .<EdgeContainer>forBoundedOutOfOrderness(Duration.ZERO)
+            .<Triplet>forBoundedOutOfOrderness(Duration.ZERO)
             .withTimestampAssigner((ec, timestamp) -> 0))
         .build();
   }
@@ -46,7 +46,7 @@ public class GroupingTest {
     env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
     FlinkConfig config = new FlinkConfigBuilder(env)
         .withWaterMarkStrategy(WatermarkStrategy
-            .<EdgeContainer>forBoundedOutOfOrderness(Duration.ZERO)
+            .<Triplet>forBoundedOutOfOrderness(Duration.ZERO)
             .withTimestampAssigner((ec, timestamp) -> 0))
         .build();
   }
@@ -66,10 +66,10 @@ public class GroupingTest {
                 .addEdgeAggregateFunction(new Count("count"))
                 .buildWithWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
         );
-    var ecIt = finalStream.collect();
-    var actualEcCol = new ArrayList<EdgeContainer>();
-    while (ecIt.hasNext()) {
-      actualEcCol.add(ecIt.next());
+    var tripletIt = finalStream.collect();
+    var actualTripletCol = new ArrayList<Triplet>();
+    while (tripletIt.hasNext()) {
+      actualTripletCol.add(tripletIt.next());
     }
     loader.appendFromString("expected[" +
         "(pL:Person {city : \"Leipzig\", count : 2L})" +
@@ -82,9 +82,9 @@ public class GroupingTest {
         "(pL)-[:knows {since : 2013, count : 1L}]->(pD)" +
         "(pB)-[:knows {since : 2015, count : 2L}]->(pD)" +
         "]");
-    var expectedEcCol = loader.createEdgeContainersByGraphVariables("expected");
+    var expectedTripletCol = loader.createTripletsByGraphVariables("expected");
 
-    validateEdgeContainerCollections(expectedEcCol, actualEcCol);
+    validateTripletCollections(expectedTripletCol, actualTripletCol);
   }
 
   @Test
@@ -101,10 +101,10 @@ public class GroupingTest {
                 .buildWithWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
         );
 
-    var ecIt = finalStream.collect();
-    var actualEcCol = new ArrayList<EdgeContainer>();
-    while (ecIt.hasNext()) {
-      actualEcCol.add(ecIt.next());
+    var tripletIt = finalStream.collect();
+    var actualTripletCol = new ArrayList<Triplet>();
+    while (tripletIt.hasNext()) {
+      actualTripletCol.add(tripletIt.next());
     }
 
     loader.appendFromString("expected[" +
@@ -116,9 +116,9 @@ public class GroupingTest {
         "(dresden)-[{count : 1L}]->(leipzig)" +
         "]");
 
-    var expectedEcCol = loader.createEdgeContainersByGraphVariables("expected");
+    var expectedTripletCol = loader.createTripletsByGraphVariables("expected");
 
-    validateEdgeContainerCollections(expectedEcCol, actualEcCol);
+    validateTripletCollections(expectedTripletCol, actualTripletCol);
   }
 
   @Test
@@ -148,15 +148,15 @@ public class GroupingTest {
                 .buildWithWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
         );
 
-    var ecIt = finalStream.collect();
-    var actualEcCol = new ArrayList<EdgeContainer>();
-    while (ecIt.hasNext()) {
-      actualEcCol.add(ecIt.next());
+    var tripletIt = finalStream.collect();
+    var actualTripletCol = new ArrayList<Triplet>();
+    while (tripletIt.hasNext()) {
+      actualTripletCol.add(tripletIt.next());
     }
 
-    var expectedEcCol = loader.createEdgeContainersByGraphVariables("expected");
+    var expectedTripletCol = loader.createTripletsByGraphVariables("expected");
 
-    validateEdgeContainerCollections(expectedEcCol, actualEcCol);
+    validateTripletCollections(expectedTripletCol, actualTripletCol);
   }
 
   @Test
@@ -193,15 +193,15 @@ public class GroupingTest {
                 .buildWithWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
         );
 
-    var ecIt = finalStream.collect();
-    var actualEcCol = new ArrayList<EdgeContainer>();
-    while (ecIt.hasNext()) {
-      actualEcCol.add(ecIt.next());
+    var tripletIt = finalStream.collect();
+    var actualTripletCol = new ArrayList<Triplet>();
+    while (tripletIt.hasNext()) {
+      actualTripletCol.add(tripletIt.next());
     }
 
-    var expectedEcCol = loader.createEdgeContainersByGraphVariables("expected");
+    var expectedTripletCol = loader.createTripletsByGraphVariables("expected");
 
-    validateEdgeContainerCollections(expectedEcCol, actualEcCol);
+    validateTripletCollections(expectedTripletCol, actualTripletCol);
   }
 
   @Test
@@ -226,15 +226,15 @@ public class GroupingTest {
                 .buildWithWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
         );
 
-    var ecIt = finalStream.collect();
-    var actualEcCol = new ArrayList<EdgeContainer>();
-    while (ecIt.hasNext()) {
-      actualEcCol.add(ecIt.next());
+    var tripletIt = finalStream.collect();
+    var actualTripletCol = new ArrayList<Triplet>();
+    while (tripletIt.hasNext()) {
+      actualTripletCol.add(tripletIt.next());
     }
 
-    var expectedEcCol = loader.createEdgeContainersByGraphVariables("expected");
+    var expectedTripletCol = loader.createTripletsByGraphVariables("expected");
 
-    validateEdgeContainerCollections(expectedEcCol, actualEcCol);
+    validateTripletCollections(expectedTripletCol, actualTripletCol);
   }
 
   @Test
@@ -262,15 +262,15 @@ public class GroupingTest {
                 .buildWithWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
         );
 
-    var ecIt = finalStream.collect();
-    var actualEcCol = new ArrayList<EdgeContainer>();
-    while (ecIt.hasNext()) {
-      actualEcCol.add(ecIt.next());
+    var tripletIt = finalStream.collect();
+    var actualTripletCol = new ArrayList<Triplet>();
+    while (tripletIt.hasNext()) {
+      actualTripletCol.add(tripletIt.next());
     }
 
-    var expectedEcCol = loader.createEdgeContainersByGraphVariables("expected");
+    var expectedTripletCol = loader.createTripletsByGraphVariables("expected");
 
-    validateEdgeContainerCollections(expectedEcCol, actualEcCol);
+    validateTripletCollections(expectedTripletCol, actualTripletCol);
   }
 
   @Test
@@ -301,15 +301,15 @@ public class GroupingTest {
                 .addEdgeAggregateFunction(new Count("count"))
                 .buildWithWindow(TumblingEventTimeWindows.of(Time.milliseconds(10))));
 
-    var ecIt = finalStream.collect();
-    var actualEcCol = new ArrayList<EdgeContainer>();
-    while (ecIt.hasNext()) {
-      actualEcCol.add(ecIt.next());
+    var tripletIt = finalStream.collect();
+    var actualTripletCol = new ArrayList<Triplet>();
+    while (tripletIt.hasNext()) {
+      actualTripletCol.add(tripletIt.next());
     }
 
-    var expectedEcCol = loader.createEdgeContainersByGraphVariables("expected");
+    var expectedTripletCol = loader.createTripletsByGraphVariables("expected");
 
-    validateEdgeContainerCollections(expectedEcCol, actualEcCol);
+    validateTripletCollections(expectedTripletCol, actualTripletCol);
   }
 
   @Test
@@ -362,15 +362,15 @@ public class GroupingTest {
                 .addEdgeAggregateFunction(new Count("count"))
                 .buildWithWindow(TumblingEventTimeWindows.of(Time.milliseconds(10))));
 
-    var ecIt = finalStream.collect();
-    var actualEcCol = new ArrayList<EdgeContainer>();
-    while (ecIt.hasNext()) {
-      actualEcCol.add(ecIt.next());
+    var tripletIt = finalStream.collect();
+    var actualTripletCol = new ArrayList<Triplet>();
+    while (tripletIt.hasNext()) {
+      actualTripletCol.add(tripletIt.next());
     }
 
-    var expectedEcCol = loader.createEdgeContainersByGraphVariables("expected");
+    var expectedTripletCol = loader.createTripletsByGraphVariables("expected");
 
-    validateEdgeContainerCollections(expectedEcCol, actualEcCol);
+    validateTripletCollections(expectedTripletCol, actualTripletCol);
   }
 
   @Test
@@ -425,15 +425,15 @@ public class GroupingTest {
                 .addEdgeAggregateFunction(new Count("count"))
                 .buildWithWindow(TumblingEventTimeWindows.of(Time.milliseconds(10))));
 
-    var ecIt = finalStream.collect();
-    var actualEcCol = new ArrayList<EdgeContainer>();
-    while (ecIt.hasNext()) {
-      actualEcCol.add(ecIt.next());
+    var tripletIt = finalStream.collect();
+    var actualTripletCol = new ArrayList<Triplet>();
+    while (tripletIt.hasNext()) {
+      actualTripletCol.add(tripletIt.next());
     }
 
-    var expectedEcCol = loader.createEdgeContainersByGraphVariables("expected");
+    var expectedTripletCol = loader.createTripletsByGraphVariables("expected");
 
-    validateEdgeContainerCollections(expectedEcCol, actualEcCol);
+    validateTripletCollections(expectedTripletCol, actualTripletCol);
   }
 
   @Test
@@ -461,15 +461,15 @@ public class GroupingTest {
                     .buildWithWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
             );
 
-    var ecIt = finalStream.collect();
-    var actualEcCol = new ArrayList<EdgeContainer>();
-    while (ecIt.hasNext()) {
-      actualEcCol.add(ecIt.next());
+    var tripletIt = finalStream.collect();
+    var actualTripletCol = new ArrayList<Triplet>();
+    while (tripletIt.hasNext()) {
+      actualTripletCol.add(tripletIt.next());
     }
 
-    var expectedEcCol = loader.createEdgeContainersByGraphVariables("expected");
+    var expectedTripletCol = loader.createTripletsByGraphVariables("expected");
 
-    validateEdgeContainerCollections(expectedEcCol, actualEcCol);
+    validateTripletCollections(expectedTripletCol, actualTripletCol);
   }
 
   @Test
@@ -497,15 +497,15 @@ public class GroupingTest {
                 .buildWithWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
         );
 
-    var ecIt = finalStream.collect();
-    var actualEcCol = new ArrayList<EdgeContainer>();
-    while (ecIt.hasNext()) {
-      actualEcCol.add(ecIt.next());
+    var tripletIt = finalStream.collect();
+    var actualTripletCol = new ArrayList<Triplet>();
+    while (tripletIt.hasNext()) {
+      actualTripletCol.add(tripletIt.next());
     }
 
-    var expectedEcCol = loader.createEdgeContainersByGraphVariables("expected");
+    var expectedTripletCol = loader.createTripletsByGraphVariables("expected");
 
-    validateEdgeContainerCollections(expectedEcCol, actualEcCol);
+    validateTripletCollections(expectedTripletCol, actualTripletCol);
   }
 
   @Test
@@ -536,15 +536,15 @@ public class GroupingTest {
                 .buildWithWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
         );
 
-    var ecIt = finalStream.collect();
-    var actualEcCol = new ArrayList<EdgeContainer>();
-    while (ecIt.hasNext()) {
-      actualEcCol.add(ecIt.next());
+    var tripletIt = finalStream.collect();
+    var actualTripletCol = new ArrayList<Triplet>();
+    while (tripletIt.hasNext()) {
+      actualTripletCol.add(tripletIt.next());
     }
 
-    var expectedEcCol = loader.createEdgeContainersByGraphVariables("expected");
+    var expectedTripletCol = loader.createTripletsByGraphVariables("expected");
 
-    validateEdgeContainerCollections(expectedEcCol, actualEcCol);
+    validateTripletCollections(expectedTripletCol, actualTripletCol);
   }
 
   @Test
@@ -582,15 +582,15 @@ public class GroupingTest {
                 .buildWithWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
         );
 
-    var ecIt = finalStream.collect();
-    var actualEcCol = new ArrayList<EdgeContainer>();
-    while (ecIt.hasNext()) {
-      actualEcCol.add(ecIt.next());
+    var tripletIt = finalStream.collect();
+    var actualTripletCol = new ArrayList<Triplet>();
+    while (tripletIt.hasNext()) {
+      actualTripletCol.add(tripletIt.next());
     }
 
-    var expectedEcCol = loader.createEdgeContainersByGraphVariables("expected");
+    var expectedTripletCol = loader.createTripletsByGraphVariables("expected");
 
-    validateEdgeContainerCollections(expectedEcCol, actualEcCol);
+    validateTripletCollections(expectedTripletCol, actualTripletCol);
   }
 
   @Test
@@ -617,15 +617,15 @@ public class GroupingTest {
                 .buildWithWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
         );
 
-    var ecIt = finalStream.collect();
-    var actualEcCol = new ArrayList<EdgeContainer>();
-    while (ecIt.hasNext()) {
-      actualEcCol.add(ecIt.next());
+    var tripletIt = finalStream.collect();
+    var actualTripletCol = new ArrayList<Triplet>();
+    while (tripletIt.hasNext()) {
+      actualTripletCol.add(tripletIt.next());
     }
 
-    var expectedEcCol = loader.createEdgeContainersByGraphVariables("expected");
+    var expectedTripletCol = loader.createTripletsByGraphVariables("expected");
 
-    validateEdgeContainerCollections(expectedEcCol, actualEcCol);
+    validateTripletCollections(expectedTripletCol, actualTripletCol);
   }
 
   @Test
@@ -657,15 +657,15 @@ public class GroupingTest {
                 .buildWithWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
         );
 
-    var ecIt = finalStream.collect();
-    var actualEcCol = new ArrayList<EdgeContainer>();
-    while (ecIt.hasNext()) {
-      actualEcCol.add(ecIt.next());
+    var tripletIt = finalStream.collect();
+    var actualTripletCol = new ArrayList<Triplet>();
+    while (tripletIt.hasNext()) {
+      actualTripletCol.add(tripletIt.next());
     }
 
-    var expectedEcCol = loader.createEdgeContainersByGraphVariables("expected");
+    var expectedTripletCol = loader.createTripletsByGraphVariables("expected");
 
-    validateEdgeContainerCollections(expectedEcCol, actualEcCol);
+    validateTripletCollections(expectedTripletCol, actualTripletCol);
   }
 
   @Test
@@ -698,15 +698,15 @@ public class GroupingTest {
                 .buildWithWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
         );
 
-    var ecIt = finalStream.collect();
-    var actualEcCol = new ArrayList<EdgeContainer>();
-    while (ecIt.hasNext()) {
-      actualEcCol.add(ecIt.next());
+    var tripletIt = finalStream.collect();
+    var actualTripletCol = new ArrayList<Triplet>();
+    while (tripletIt.hasNext()) {
+      actualTripletCol.add(tripletIt.next());
     }
 
-    var expectedEcCol = loader.createEdgeContainersByGraphVariables("expected");
+    var expectedTripletCol = loader.createTripletsByGraphVariables("expected");
 
-    validateEdgeContainerCollections(expectedEcCol, actualEcCol);
+    validateTripletCollections(expectedTripletCol, actualTripletCol);
 
   }
 
@@ -738,15 +738,15 @@ public class GroupingTest {
                 .buildWithWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
         );
 
-    var ecIt = finalStream.collect();
-    var actualEcCol = new ArrayList<EdgeContainer>();
-    while (ecIt.hasNext()) {
-      actualEcCol.add(ecIt.next());
+    var tripletIt = finalStream.collect();
+    var actualTripletCol = new ArrayList<Triplet>();
+    while (tripletIt.hasNext()) {
+      actualTripletCol.add(tripletIt.next());
     }
 
-    var expectedEcCol = loader.createEdgeContainersByGraphVariables("expected");
+    var expectedTripletCol = loader.createTripletsByGraphVariables("expected");
 
-    validateEdgeContainerCollections(expectedEcCol, actualEcCol);
+    validateTripletCollections(expectedTripletCol, actualTripletCol);
   }
 
   @Test
@@ -778,15 +778,15 @@ public class GroupingTest {
                 .buildWithWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
         );
 
-    var ecIt = finalStream.collect();
-    var actualEcCol = new ArrayList<EdgeContainer>();
-    while (ecIt.hasNext()) {
-      actualEcCol.add(ecIt.next());
+    var tripletIt = finalStream.collect();
+    var actualTripletCol = new ArrayList<Triplet>();
+    while (tripletIt.hasNext()) {
+      actualTripletCol.add(tripletIt.next());
     }
 
-    var expectedEcCol = loader.createEdgeContainersByGraphVariables("expected");
+    var expectedTripletCol = loader.createTripletsByGraphVariables("expected");
 
-    validateEdgeContainerCollections(expectedEcCol, actualEcCol);
+    validateTripletCollections(expectedTripletCol, actualTripletCol);
   }
 
   @Test
@@ -819,15 +819,15 @@ public class GroupingTest {
                 .addEdgeAggregateFunction(new Count("count"))
                 .buildWithWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
         );
-    var ecIt = finalStream.collect();
-    var actualEcCol = new ArrayList<EdgeContainer>();
-    while (ecIt.hasNext()) {
-      actualEcCol.add(ecIt.next());
+    var tripletIt = finalStream.collect();
+    var actualTripletCol = new ArrayList<Triplet>();
+    while (tripletIt.hasNext()) {
+      actualTripletCol.add(tripletIt.next());
     }
 
-    var expectedEcCol = loader.createEdgeContainersByGraphVariables("expected");
+    var expectedTripletCol = loader.createTripletsByGraphVariables("expected");
 
-    validateEdgeContainerCollections(expectedEcCol, actualEcCol);
+    validateTripletCollections(expectedTripletCol, actualTripletCol);
   }
 
   @Test
@@ -868,15 +868,15 @@ public class GroupingTest {
                 .buildWithWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
         );
 
-    var ecIt = finalStream.collect();
-    var actualEcCol = new ArrayList<EdgeContainer>();
-    while (ecIt.hasNext()) {
-      actualEcCol.add(ecIt.next());
+    var tripletIt = finalStream.collect();
+    var actualTripletCol = new ArrayList<Triplet>();
+    while (tripletIt.hasNext()) {
+      actualTripletCol.add(tripletIt.next());
     }
 
-    var expectedEcCol = loader.createEdgeContainersByGraphVariables("expected");
+    var expectedTripletCol = loader.createTripletsByGraphVariables("expected");
 
-    validateEdgeContainerCollections(expectedEcCol, actualEcCol);
+    validateTripletCollections(expectedTripletCol, actualTripletCol);
   }
 
   @Test
@@ -904,15 +904,15 @@ public class GroupingTest {
                 .buildWithWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
         );
 
-    var ecIt = finalStream.collect();
-    var actualEcCol = new ArrayList<EdgeContainer>();
-    while (ecIt.hasNext()) {
-      actualEcCol.add(ecIt.next());
+    var tripletIt = finalStream.collect();
+    var actualTripletCol = new ArrayList<Triplet>();
+    while (tripletIt.hasNext()) {
+      actualTripletCol.add(tripletIt.next());
     }
 
-    var expectedEcCol = loader.createEdgeContainersByGraphVariables("expected");
+    var expectedTripletCol = loader.createTripletsByGraphVariables("expected");
 
-    validateEdgeContainerCollections(expectedEcCol, actualEcCol);
+    validateTripletCollections(expectedTripletCol, actualTripletCol);
   }
 
   @Test
@@ -948,15 +948,15 @@ public class GroupingTest {
                 .buildWithWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
         );
 
-    var ecIt = finalStream.collect();
-    var actualEcCol = new ArrayList<EdgeContainer>();
-    while (ecIt.hasNext()) {
-      actualEcCol.add(ecIt.next());
+    var tripletIt = finalStream.collect();
+    var actualTripletCol = new ArrayList<Triplet>();
+    while (tripletIt.hasNext()) {
+      actualTripletCol.add(tripletIt.next());
     }
 
-    var expectedEcCol = loader.createEdgeContainersByGraphVariables("expected");
+    var expectedTripletCol = loader.createTripletsByGraphVariables("expected");
 
-    validateEdgeContainerCollections(expectedEcCol, actualEcCol);
+    validateTripletCollections(expectedTripletCol, actualTripletCol);
   }
 
   @Test
@@ -1002,15 +1002,15 @@ public class GroupingTest {
                     .buildWithWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
             );
 
-    var ecIt = finalStream.collect();
-    var actualEcCol = new ArrayList<EdgeContainer>();
-    while (ecIt.hasNext()) {
-      actualEcCol.add(ecIt.next());
+    var tripletIt = finalStream.collect();
+    var actualTripletCol = new ArrayList<Triplet>();
+    while (tripletIt.hasNext()) {
+      actualTripletCol.add(tripletIt.next());
     }
 
-    var expectedEcCol = loader.createEdgeContainersByGraphVariables("expected");
+    var expectedTripletCol = loader.createTripletsByGraphVariables("expected");
 
-    validateEdgeContainerCollections(expectedEcCol, actualEcCol);
+    validateTripletCollections(expectedTripletCol, actualTripletCol);
   }
 
   //----------------------------------------------------------------------------
@@ -1054,15 +1054,15 @@ public class GroupingTest {
                     .buildWithWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
             );
 
-    var ecIt = finalStream.collect();
-    var actualEcCol = new ArrayList<EdgeContainer>();
-    while (ecIt.hasNext()) {
-      actualEcCol.add(ecIt.next());
+    var tripletIt = finalStream.collect();
+    var actualTripletCol = new ArrayList<Triplet>();
+    while (tripletIt.hasNext()) {
+      actualTripletCol.add(tripletIt.next());
     }
 
-    var expectedEcCol = loader.createEdgeContainersByGraphVariables("expected");
+    var expectedTripletCol = loader.createTripletsByGraphVariables("expected");
 
-    validateEdgeContainerCollections(expectedEcCol, actualEcCol);
+    validateTripletCollections(expectedTripletCol, actualTripletCol);
   }
 
   @Test
@@ -1105,15 +1105,15 @@ public class GroupingTest {
                     .buildWithWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
             );
 
-    var ecIt = finalStream.collect();
-    var actualEcCol = new ArrayList<EdgeContainer>();
-    while (ecIt.hasNext()) {
-      actualEcCol.add(ecIt.next());
+    var tripletIt = finalStream.collect();
+    var actualTripletCol = new ArrayList<Triplet>();
+    while (tripletIt.hasNext()) {
+      actualTripletCol.add(tripletIt.next());
     }
 
-    var expectedEcCol = loader.createEdgeContainersByGraphVariables("expected");
+    var expectedTripletCol = loader.createTripletsByGraphVariables("expected");
 
-    validateEdgeContainerCollections(expectedEcCol, actualEcCol);
+    validateTripletCollections(expectedTripletCol, actualTripletCol);
   }
 
   @Test
@@ -1156,15 +1156,15 @@ public class GroupingTest {
                     .buildWithWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
             );
 
-    var ecIt = finalStream.collect();
-    var actualEcCol = new ArrayList<EdgeContainer>();
-    while (ecIt.hasNext()) {
-      actualEcCol.add(ecIt.next());
+    var tripletIt = finalStream.collect();
+    var actualTripletCol = new ArrayList<Triplet>();
+    while (tripletIt.hasNext()) {
+      actualTripletCol.add(tripletIt.next());
     }
 
-    var expectedEcCol = loader.createEdgeContainersByGraphVariables("expected");
+    var expectedTripletCol = loader.createTripletsByGraphVariables("expected");
 
-    validateEdgeContainerCollections(expectedEcCol, actualEcCol);
+    validateTripletCollections(expectedTripletCol, actualTripletCol);
   }
 
   @Test
@@ -1207,15 +1207,15 @@ public class GroupingTest {
                     .buildWithWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
             );
 
-    var ecIt = finalStream.collect();
-    var actualEcCol = new ArrayList<EdgeContainer>();
-    while (ecIt.hasNext()) {
-      actualEcCol.add(ecIt.next());
+    var tripletIt = finalStream.collect();
+    var actualTripletCol = new ArrayList<Triplet>();
+    while (tripletIt.hasNext()) {
+      actualTripletCol.add(tripletIt.next());
     }
 
-    var expectedEcCol = loader.createEdgeContainersByGraphVariables("expected");
+    var expectedTripletCol = loader.createTripletsByGraphVariables("expected");
 
-    validateEdgeContainerCollections(expectedEcCol, actualEcCol);
+    validateTripletCollections(expectedTripletCol, actualTripletCol);
   }
 
   @Test
@@ -1258,15 +1258,15 @@ public class GroupingTest {
                     .buildWithWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
             );
 
-    var ecIt = finalStream.collect();
-    var actualEcCol = new ArrayList<EdgeContainer>();
-    while (ecIt.hasNext()) {
-      actualEcCol.add(ecIt.next());
+    var tripletIt = finalStream.collect();
+    var actualTripletCol = new ArrayList<Triplet>();
+    while (tripletIt.hasNext()) {
+      actualTripletCol.add(tripletIt.next());
     }
 
-    var expectedEcCol = loader.createEdgeContainersByGraphVariables("expected");
+    var expectedTripletCol = loader.createTripletsByGraphVariables("expected");
 
-    validateEdgeContainerCollections(expectedEcCol, actualEcCol);
+    validateTripletCollections(expectedTripletCol, actualTripletCol);
   }
 
   @Test
@@ -1309,15 +1309,15 @@ public class GroupingTest {
                     .buildWithWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
             );
 
-    var ecIt = finalStream.collect();
-    var actualEcCol = new ArrayList<EdgeContainer>();
-    while (ecIt.hasNext()) {
-      actualEcCol.add(ecIt.next());
+    var tripletIt = finalStream.collect();
+    var actualTripletCol = new ArrayList<Triplet>();
+    while (tripletIt.hasNext()) {
+      actualTripletCol.add(tripletIt.next());
     }
 
-    var expectedEcCol = loader.createEdgeContainersByGraphVariables("expected");
+    var expectedTripletCol = loader.createTripletsByGraphVariables("expected");
 
-    validateEdgeContainerCollections(expectedEcCol, actualEcCol);
+    validateTripletCollections(expectedTripletCol, actualTripletCol);
   }
 
   @Test
@@ -1360,15 +1360,15 @@ public class GroupingTest {
                     .buildWithWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
             );
 
-    var ecIt = finalStream.collect();
-    var actualEcCol = new ArrayList<EdgeContainer>();
-    while (ecIt.hasNext()) {
-      actualEcCol.add(ecIt.next());
+    var tripletIt = finalStream.collect();
+    var actualTripletCol = new ArrayList<Triplet>();
+    while (tripletIt.hasNext()) {
+      actualTripletCol.add(tripletIt.next());
     }
 
-    var expectedEcCol = loader.createEdgeContainersByGraphVariables("expected");
+    var expectedTripletCol = loader.createTripletsByGraphVariables("expected");
 
-    validateEdgeContainerCollections(expectedEcCol, actualEcCol);
+    validateTripletCollections(expectedTripletCol, actualTripletCol);
   }
 
   @Test
@@ -1410,15 +1410,15 @@ public class GroupingTest {
                     .buildWithWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
             );
 
-    var ecIt = finalStream.collect();
-    var actualEcCol = new ArrayList<EdgeContainer>();
-    while (ecIt.hasNext()) {
-      actualEcCol.add(ecIt.next());
+    var tripletIt = finalStream.collect();
+    var actualTripletCol = new ArrayList<Triplet>();
+    while (tripletIt.hasNext()) {
+      actualTripletCol.add(tripletIt.next());
     }
 
-    var expectedEcCol = loader.createEdgeContainersByGraphVariables("expected");
+    var expectedTripletCol = loader.createTripletsByGraphVariables("expected");
 
-    validateEdgeContainerCollections(expectedEcCol, actualEcCol);
+    validateTripletCollections(expectedTripletCol, actualTripletCol);
   }
 
   @Test
@@ -1460,15 +1460,15 @@ public class GroupingTest {
                     .buildWithWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
             );
 
-    var ecIt = finalStream.collect();
-    var actualEcCol = new ArrayList<EdgeContainer>();
-    while (ecIt.hasNext()) {
-      actualEcCol.add(ecIt.next());
+    var tripletIt = finalStream.collect();
+    var actualTripletCol = new ArrayList<Triplet>();
+    while (tripletIt.hasNext()) {
+      actualTripletCol.add(tripletIt.next());
     }
 
-    var expectedEcCol = loader.createEdgeContainersByGraphVariables("expected");
+    var expectedTripletCol = loader.createTripletsByGraphVariables("expected");
 
-    validateEdgeContainerCollections(expectedEcCol, actualEcCol);
+    validateTripletCollections(expectedTripletCol, actualTripletCol);
   }
 
   @Test
@@ -1510,15 +1510,15 @@ public class GroupingTest {
                     .buildWithWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
             );
 
-    var ecIt = finalStream.collect();
-    var actualEcCol = new ArrayList<EdgeContainer>();
-    while (ecIt.hasNext()) {
-      actualEcCol.add(ecIt.next());
+    var tripletIt = finalStream.collect();
+    var actualTripletCol = new ArrayList<Triplet>();
+    while (tripletIt.hasNext()) {
+      actualTripletCol.add(tripletIt.next());
     }
 
-    var expectedEcCol = loader.createEdgeContainersByGraphVariables("expected");
+    var expectedTripletCol = loader.createTripletsByGraphVariables("expected");
 
-    validateEdgeContainerCollections(expectedEcCol, actualEcCol);
+    validateTripletCollections(expectedTripletCol, actualTripletCol);
   }
 
   @Test
@@ -1560,15 +1560,15 @@ public class GroupingTest {
                     .buildWithWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
             );
 
-    var ecIt = finalStream.collect();
-    var actualEcCol = new ArrayList<EdgeContainer>();
-    while (ecIt.hasNext()) {
-      actualEcCol.add(ecIt.next());
+    var tripletIt = finalStream.collect();
+    var actualTripletCol = new ArrayList<Triplet>();
+    while (tripletIt.hasNext()) {
+      actualTripletCol.add(tripletIt.next());
     }
 
-    var expectedEcCol = loader.createEdgeContainersByGraphVariables("expected");
+    var expectedTripletCol = loader.createTripletsByGraphVariables("expected");
 
-    validateEdgeContainerCollections(expectedEcCol, actualEcCol);
+    validateTripletCollections(expectedTripletCol, actualTripletCol);
   }
 
   @Test
@@ -1615,15 +1615,15 @@ public class GroupingTest {
                     .buildWithWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
             );
 
-    var ecIt = finalStream.collect();
-    var actualEcCol = new ArrayList<EdgeContainer>();
-    while (ecIt.hasNext()) {
-      actualEcCol.add(ecIt.next());
+    var tripletIt = finalStream.collect();
+    var actualTripletCol = new ArrayList<Triplet>();
+    while (tripletIt.hasNext()) {
+      actualTripletCol.add(tripletIt.next());
     }
 
-    var expectedEcCol = loader.createEdgeContainersByGraphVariables("expected");
+    var expectedTripletCol = loader.createTripletsByGraphVariables("expected");
 
-    validateEdgeContainerCollections(expectedEcCol, actualEcCol);
+    validateTripletCollections(expectedTripletCol, actualTripletCol);
   }
 
 }

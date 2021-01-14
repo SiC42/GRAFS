@@ -1,7 +1,7 @@
 package edu.leipzig.grafs.benchmark.operators.union;
 
 import edu.leipzig.grafs.benchmark.operators.functions.SimpleMeter;
-import edu.leipzig.grafs.model.EdgeContainer;
+import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.model.EdgeStream;
 import edu.leipzig.grafs.operators.union.DisjunctUnion;
 import org.apache.flink.streaming.api.datastream.DataStream;
@@ -21,7 +21,7 @@ public class BenchmarkDisjunctUnion extends DisjunctUnion {
   }
 
   @Override
-  public DataStream<EdgeContainer> execute(DataStream<EdgeContainer> stream) {
+  public DataStream<Triplet> execute(DataStream<Triplet> stream) {
     return super.execute(stream).map(new SimpleMeter<>(meterName));
   }
 }

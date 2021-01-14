@@ -1,6 +1,6 @@
 package edu.leipzig.grafs.operators.matching.logic;
 
-import edu.leipzig.grafs.model.EdgeContainer;
+import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.model.Graph;
 import edu.leipzig.grafs.model.Vertex;
 import edu.leipzig.grafs.operators.matching.model.CandidateMap;
@@ -100,14 +100,14 @@ public class DualSimulationProcess<W extends Window> extends
    * @param collector outputs the matched elements
    */
   @Override
-  void processQuery(Graph graph, Collector<EdgeContainer> collector) {
+  void processQuery(Graph graph, Collector<Triplet> collector) {
     var dualSimulationMatches = dualSimulationProcess(graph);
     if (dualSimulationMatches.isEmpty()) {
       return;
     }
     var permutations = buildPermutations(dualSimulationMatches.asListOfCandidateSets());
-    var edgeContainerSet = buildEdgeContainerSet(permutations, graph);
-    emitEdgeContainer(collector, edgeContainerSet);
+    var tripletSet = buildTripletSet(permutations, graph);
+    emitTriplet(collector, tripletSet);
   }
 
   private CandidateMap<Vertex> dualSimulationProcess(Graph graph) {

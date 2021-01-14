@@ -2,9 +2,9 @@ package edu.leipzig.grafs.setup.kafka;
 
 import edu.leipzig.grafs.factory.EdgeFactory;
 import edu.leipzig.grafs.model.Edge;
-import edu.leipzig.grafs.model.EdgeContainer;
+import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.model.Vertex;
-import edu.leipzig.grafs.serialization.EdgeContainerDeserializationSchema;
+import edu.leipzig.grafs.serialization.TripletDeserializationSchema;
 import edu.leipzig.grafs.setup.reader.EdgeReader;
 import edu.leipzig.grafs.setup.reader.VertexReader;
 import java.io.IOException;
@@ -73,8 +73,8 @@ public class CsvToKafkaProducer extends AbstractProducer {
                 }
                 var source = vertexMap.get(edge.getSourceId());
                 var target = vertexMap.get(edge.getTargetId());
-                var ec = new EdgeContainer(edge, source, target);
-                sendEdgeContainer(ec);
+                var ec = new Triplet(edge, source, target);
+                sendTriplet(ec);
               }
 
               System.out.println("Finished file '" + file.toString() + "'.");
@@ -85,13 +85,13 @@ public class CsvToKafkaProducer extends AbstractProducer {
           });
       // send a last object that is not part of the analysis, but marks end of stream
       var source = new Vertex();
-      var END_OF_STREAM_LABEL = EdgeContainerDeserializationSchema.END_OF_STREAM_LABEL;
+      var END_OF_STREAM_LABEL = TripletDeserializationSchema.END_OF_STREAM_LABEL;
       source.setLabel(END_OF_STREAM_LABEL);
       var target = new Vertex();
       target.setLabel(END_OF_STREAM_LABEL);
       var edge = EdgeFactory.createEdge(source, target);
       edge.setLabel(END_OF_STREAM_LABEL);
-      sendEdgeContainer(new EdgeContainer(edge, source, target));
+      sendTriplet(new Triplet(edge, source, target));
     } catch (IOException | InterruptedException | ExecutionException e) {
       e.printStackTrace();
     } finally {

@@ -1,8 +1,7 @@
 package edu.leipzig.grafs.setup.test;
 
-
-import edu.leipzig.grafs.model.EdgeContainer;
-import edu.leipzig.grafs.serialization.EdgeContainerDeserializationSchema;
+import edu.leipzig.grafs.model.Triplet;
+import edu.leipzig.grafs.serialization.TripletDeserializationSchema;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -13,22 +12,22 @@ import java.io.ObjectInputStream;
 public class FileConsumer {
 
   public static void main(String[] args) throws IOException, ClassNotFoundException {
-    var fileOutputStream = new FileInputStream("resources/edgecontainer_10.serialized");
+    var fileOutputStream = new FileInputStream("resources/Triplet_10.serialized");
     var ois = new ObjectInputStream(fileOutputStream);
-    var ec = (EdgeContainer) ois.readObject();
+    var triplet = (Triplet) ois.readObject();
     int counter = 1;
     var queue = new SmallQueue();
-    while (!ec.getEdge().getLabel()
-        .equals(EdgeContainerDeserializationSchema.END_OF_STREAM_LABEL)) {
-      queue.add(ec);
+    while (!triplet.getEdge().getLabel()
+        .equals(TripletDeserializationSchema.END_OF_STREAM_LABEL)) {
+      queue.add(triplet);
       counter++;
       if (counter % 10000 == 0) {
         System.out.print(counter + "\r");
         System.out.flush();
       }
-      ec = (EdgeContainer) ois.readObject();
+      triplet = (Triplet) ois.readObject();
     }
-    queue.add(ec);
+    queue.add(triplet);
     queue.asColl().forEach(System.out::println);
   }
 

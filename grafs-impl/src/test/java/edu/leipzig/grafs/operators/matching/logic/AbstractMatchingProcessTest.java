@@ -6,12 +6,11 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasSize;
 
-import edu.leipzig.grafs.model.EdgeContainer;
+import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.model.Graph;
 import edu.leipzig.grafs.model.Vertex;
-import edu.leipzig.grafs.operators.matching.logic.AbstractMatchingProcess.EdgeContainerFactory;
+import edu.leipzig.grafs.operators.matching.logic.AbstractMatchingProcess.TripletFactory;
 import edu.leipzig.grafs.operators.matching.model.CandidateMap;
-import edu.leipzig.grafs.operators.matching.model.QueryGraph;
 import edu.leipzig.grafs.util.TestUtils;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -63,11 +62,11 @@ class AbstractMatchingProcessTest extends MatchingTestBase {
     Set<Vertex> g2Set = new HashSet<>(graphLoader.getVerticesByVariables("v1", "v2", "v3", "v5"));
     Set<Vertex> g3Set = new HashSet<>(graphLoader.getVerticesByVariables("v1", "v2", "v4", "v5"));
     var setOfSets = Set.of(g1Set, g2Set, g3Set);
-    var actualEcCol = matching.buildEdgeContainerSet(setOfSets, graph);
+    var actualTripletCol = matching.buildTripletSet(setOfSets, graph);
     // TODO: build graph for every single on of them
     // think about the newly generated IDs (1 for each found pattern)
-    var expectedEcSet = graphLoader.createEdgeContainersByGraphVariables("g1", "g2", "g3");
-    TestUtils.validateEdgeContainerCollections(expectedEcSet, actualEcCol);
+    var expectedTripletCol = graphLoader.createTripletsByGraphVariables("g1", "g2", "g3");
+    TestUtils.validateTripletCollections(expectedTripletCol, actualTripletCol);
   }
 
   @Test
@@ -127,19 +126,19 @@ class AbstractMatchingProcessTest extends MatchingTestBase {
 
   @Test
   void testEdgeContainerFactory_testContains() {
-    var uecSet = new EdgeContainerFactory();
+    var tripletFactory = new TripletFactory();
     var v1 = graphLoader.getVertexByVariable("v1");
     var v2 = graphLoader.getVertexByVariable("v2");
 
     var e1 = graphLoader.getEdgeByVariable("e1");
 
-    uecSet.add(e1, v1, v2, GradoopId.get());
-    assertThat(uecSet.contains(new EdgeContainer(e1, v1, v2)), is(true));
+    tripletFactory.add(e1, v1, v2, GradoopId.get());
+    assertThat(tripletFactory.contains(new Triplet(e1, v1, v2)), is(true));
   }
 
   @Test
   void testEdgeContainerFactory_sameEdgeUpdate() {
-    var uecSet = new EdgeContainerFactory();
+    var tripletFactory = new TripletFactory();
     var v1 = graphLoader.getVertexByVariable("v1");
     var v2 = graphLoader.getVertexByVariable("v2");
 
@@ -148,27 +147,27 @@ class AbstractMatchingProcessTest extends MatchingTestBase {
     var gId1 = GradoopId.get();
     var gId2 = GradoopId.get();
 
-    uecSet.add(e1, v1, v2, gId1);
-    uecSet.add(e1, v1, v2, gId2);
-    assertThat(uecSet.getEdgeContainers(), hasSize(1));
+    tripletFactory.add(e1, v1, v2, gId1);
+    tripletFactory.add(e1, v1, v2, gId2);
+    assertThat(tripletFactory.getTriplets(), hasSize(1));
 
-    var ec = uecSet.getEdgeContainers().iterator().next();
-    var actualE = ec.getEdge();
+    var triplet = tripletFactory.getTriplets().iterator().next();
+    var actualE = triplet.getEdge();
     assertThat(actualE.getGraphIds().contains(gId1), is(true));
     assertThat(actualE.getGraphIds().contains(gId2), is(true));
 
-    var actualSource = ec.getSourceVertex();
+    var actualSource = triplet.getSourceVertex();
     assertThat(actualSource.getGraphIds().contains(gId1), is(true));
     assertThat(actualSource.getGraphIds().contains(gId2), is(true));
 
-    var actualTarget = ec.getTargetVertex();
+    var actualTarget = triplet.getTargetVertex();
     assertThat(actualTarget.getGraphIds().contains(gId1), is(true));
     assertThat(actualTarget.getGraphIds().contains(gId2), is(true));
   }
 
   @Test
   void testEdgeContainerFactory_differentEdgeUpdate() {
-    var uecSet = new EdgeContainerFactory();
+    var tripletFactory = new TripletFactory();
     var v1 = graphLoader.getVertexByVariable("v1");
     var v2 = graphLoader.getVertexByVariable("v2");
     var v3 = graphLoader.getVertexByVariable("v3");
@@ -179,34 +178,34 @@ class AbstractMatchingProcessTest extends MatchingTestBase {
     var gId1 = GradoopId.get();
     var gId2 = GradoopId.get();
 
-    uecSet.add(e1, v1, v2, gId1);
-    uecSet.add(e3, v2, v3, gId2);
-    assertThat(uecSet.getEdgeContainers(), hasSize(2));
+    tripletFactory.add(e1, v1, v2, gId1);
+    tripletFactory.add(e3, v2, v3, gId2);
+    assertThat(tripletFactory.getTriplets(), hasSize(2));
 
-    var ecList = new ArrayList<>(uecSet.getEdgeContainers());
-    ecList.sort(Comparator.comparing(ec -> ec.getSourceVertex().getLabel()));
+    var tripletList = new ArrayList<>(tripletFactory.getTriplets());
+    tripletList.sort(Comparator.comparing(triplet -> triplet.getSourceVertex().getLabel()));
 
-    var ec = ecList.get(0);
-    var actualE = ec.getEdge();
+    var triplet = tripletList.get(0);
+    var actualE = triplet.getEdge();
     assertThat(actualE.getGraphIds().contains(gId1), is(true));
 
-    var actualSource = ec.getSourceVertex();
+    var actualSource = triplet.getSourceVertex();
     assertThat(actualSource.getGraphIds().contains(gId1), is(true));
 
-    var actualTarget = ec.getTargetVertex();
+    var actualTarget = triplet.getTargetVertex();
     assertThat(actualTarget.getGraphIds().contains(gId1), is(true));
 
-    ec = ecList.get(1);
-    actualE = ec.getEdge();
+    triplet = tripletList.get(1);
+    actualE = triplet.getEdge();
     assertThat(actualE.getGraphIds().contains(gId2), is(true));
 
-    actualSource = ec.getSourceVertex();
+    actualSource = triplet.getSourceVertex();
     assertThat(actualSource.getGraphIds().contains(gId2), is(true));
 
-    actualTarget = ec.getTargetVertex();
+    actualTarget = triplet.getTargetVertex();
     assertThat(actualTarget.getGraphIds().contains(gId2), is(true));
 
-    assertThat(ecList.get(0).getTargetVertex(), is(equalTo(ecList.get(1).getSourceVertex())));
+    assertThat(tripletList.get(0).getTargetVertex(), is(equalTo(tripletList.get(1).getSourceVertex())));
   }
 
   private Set<Vertex> filterByLabel(Collection<Vertex> vertices, String... labels) {
@@ -230,7 +229,7 @@ class AbstractMatchingProcessTest extends MatchingTestBase {
     }
 
     @Override
-    void processQuery(Graph graph, Collector<EdgeContainer> collector) {
+    void processQuery(Graph graph, Collector<Triplet> collector) {
 
     }
   }

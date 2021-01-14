@@ -2,7 +2,7 @@ package edu.leipzig.grafs.operators.grouping.logic;
 
 import edu.leipzig.grafs.factory.EdgeFactory;
 import edu.leipzig.grafs.model.Edge;
-import edu.leipzig.grafs.model.EdgeContainer;
+import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.operators.grouping.functions.AggregateFunction;
 import edu.leipzig.grafs.operators.grouping.model.GroupingInformation;
 import java.util.Set;
@@ -42,26 +42,26 @@ public class EdgeAggregation<W extends Window> extends ElementAggregationProcess
    *
    * @param obsoleteStr   the key selector string, which is not used in this process
    * @param obsoleteContext context, which is not used in this process
-   * @param ecIterable iterable of the edge containers in this window
-   * @param out the collector in which the aggregated edge container are collected
+   * @param tripletIt iterable of the triplets in this window
+   * @param out the collector in which the aggregated triplet are collected
    */
   @Override
   public void process(String obsoleteStr, Context obsoleteContext,
-      Iterable<EdgeContainer> ecIterable,
-      Collector<EdgeContainer> out) {
+      Iterable<Triplet> tripletIt,
+      Collector<Triplet> out) {
     var aggregatedEdge = EdgeFactory.createEdge();
 
-    EdgeContainer lastEc = null;
+    Triplet lastEc = null;
 
-    for (var ec : ecIterable) {
-      aggregatedEdge = (Edge) aggregateElement(aggregatedEdge, ec.getEdge(),
+    for (var triplet : tripletIt) {
+      aggregatedEdge = (Edge) aggregateElement(aggregatedEdge, triplet.getEdge(),
           edgeAggregateFunctions
       );
-      lastEc = ec;
+      lastEc = triplet;
     }
     aggregatedEdge = (Edge) checkForMissingAggregationsAndApply(edgeAggregateFunctions,
         aggregatedEdge);
-    EdgeContainer aggregatedEContainer;
+    Triplet aggregatedEContainer;
 
     // we have not set the grouped properties yet
     assert lastEc != null;
@@ -72,7 +72,7 @@ public class EdgeAggregation<W extends Window> extends ElementAggregationProcess
     var target = lastEc.getTargetVertex();
     aggregatedEdge.setSourceId(source.getId());
     aggregatedEdge.setTargetId(target.getId());
-    aggregatedEContainer = new EdgeContainer(aggregatedEdge, source,
+    aggregatedEContainer = new Triplet(aggregatedEdge, source,
         target);
 
     out.collect(aggregatedEContainer);

@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import edu.leipzig.grafs.factory.EdgeFactory;
 import org.junit.jupiter.api.Test;
 
-class EdgeContainerTest {
+class TripletTest {
 
   @Test
   void testEdgeContainer_RightExecution() {
@@ -18,7 +18,7 @@ class EdgeContainerTest {
 
     var e = EdgeFactory.createEdge(v1, v2);
 
-    assertDoesNotThrow(() -> new EdgeContainer(e, v1, v2));
+    assertDoesNotThrow(() -> new Triplet(e, v1, v2));
   }
 
   @Test
@@ -29,7 +29,7 @@ class EdgeContainerTest {
 
     var e = EdgeFactory.createEdge(v1, v2);
 
-    assertThrows(RuntimeException.class, () -> new EdgeContainer(e, v1, v3));
+    assertThrows(RuntimeException.class, () -> new Triplet(e, v1, v3));
   }
 
   @Test
@@ -40,7 +40,7 @@ class EdgeContainerTest {
 
     var e = EdgeFactory.createEdge(v1, v2);
 
-    assertThrows(RuntimeException.class, () -> new EdgeContainer(e, v3, v2));
+    assertThrows(RuntimeException.class, () -> new Triplet(e, v3, v2));
   }
 
 
@@ -50,8 +50,8 @@ class EdgeContainerTest {
     var v2 = new Vertex();
 
     var e = EdgeFactory.createEdge(v1, v2);
-    var ec = new EdgeContainer(e, v1, v2);
-    assertThat(ec.getEdge(), is(equalTo(e)));
+    var triplet = new Triplet(e, v1, v2);
+    assertThat(triplet.getEdge(), is(equalTo(e)));
   }
 
   @Test
@@ -60,8 +60,8 @@ class EdgeContainerTest {
     var v2 = new Vertex();
 
     var e = EdgeFactory.createEdge(v1, v2);
-    var ec = new EdgeContainer(e, v1, v2);
-    assertThat(ec.getSourceVertex(), is(equalTo(v1)));
+    var triplet = new Triplet(e, v1, v2);
+    assertThat(triplet.getSourceVertex(), is(equalTo(v1)));
   }
 
 
@@ -71,8 +71,8 @@ class EdgeContainerTest {
     var v2 = new Vertex();
 
     var e = EdgeFactory.createEdge(v1, v2);
-    var ec = new EdgeContainer(e, v1, v2);
-    assertThat(ec.getTargetVertex(), is(equalTo(v2)));
+    var triplet = new Triplet(e, v1, v2);
+    assertThat(triplet.getTargetVertex(), is(equalTo(v2)));
   }
 
 
@@ -83,8 +83,8 @@ class EdgeContainerTest {
 
     var e = EdgeFactory.createEdge(v1, v2);
     var reverseE = e.createReverseEdge();
-    var ec = new EdgeContainer(e, v1, v2);
-    ec = ec.createReverseEdgeContainer();
-    assertThat(ec.getEdge(), is(equalTo(reverseE)));
+    var triplet = new Triplet(e, v1, v2);
+    triplet = triplet.createReverseTriplet();
+    assertThat(triplet.getEdge(), is(equalTo(reverseE)));
   }
 }

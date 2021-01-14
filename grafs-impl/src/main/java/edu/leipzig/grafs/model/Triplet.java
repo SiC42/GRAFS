@@ -11,12 +11,8 @@ import org.gradoop.common.model.impl.id.GradoopId;
  * Data model that encapsulates {@link Edge} and its {@link Vertex}. Used for separation purposes
  * (e.g. an edge shouldn't be modified in vertex transformations and vice versa).
  */
-public class EdgeContainer implements Serializable {
+public class Triplet implements Serializable {
 
-  /**
-   * Serial UID. Number represents the position of the letters of this class name (EdgeContainer)
-   */
-  private static final long serialVersionUID = 547531514201914518L;
   private Edge edge;
   private Vertex sourceVertex;
   private Vertex targetVertex;
@@ -24,12 +20,12 @@ public class EdgeContainer implements Serializable {
   /**
    * Empty constructor used for serialization.
    */
-  protected EdgeContainer() {
+  protected Triplet() {
 
   }
 
   /**
-   * Constructs an <tt>EdgeContainer</tt> with the given information.
+   * Constructs an <tt>Triplet</tt> with the given information.
    *
    * @param edge         edge information
    * @param sourceVertex source vertex of the given edge
@@ -37,7 +33,7 @@ public class EdgeContainer implements Serializable {
    * @throws RuntimeException when the IDs of the given vertices do not match with the corresponding
    *                          IDs in the edge
    */
-  public EdgeContainer(Edge edge, Vertex sourceVertex, Vertex targetVertex)
+  public Triplet(Edge edge, Vertex sourceVertex, Vertex targetVertex)
       throws RuntimeException {
     if (!sourceVertex.getId().equals(edge.getSourceId())) {
       throw new RuntimeException(
@@ -53,14 +49,14 @@ public class EdgeContainer implements Serializable {
   }
 
   /**
-   * Constructs an <tt>EdgeContainer</tt> with the given information. Here, the edge is constructed
+   * Constructs a <tt>Triplet</tt> with the given information. Here, the edge is constructed
    * using the ids in <tt>sourceVertex</tt> and <tt>targetVertex</tt> parameter
    *
    * @param prevEdge     edge information
    * @param sourceVertex source vertex of the given edge
    * @param targetVertex target vertex of the given edge
    */
-  public EdgeContainer(GraphElement prevEdge, GraphElement sourceVertex,
+  public Triplet(GraphElement prevEdge, GraphElement sourceVertex,
       GraphElement targetVertex) {
     this.sourceVertex = VertexFactory.createVertex(
         sourceVertex.getLabel(),
@@ -79,27 +75,27 @@ public class EdgeContainer implements Serializable {
   }
 
   /**
-   * Returns edge of this container.
+   * Returns edge of this triplet.
    *
-   * @return edge of this container
+   * @return edge of this triplet
    */
   public Edge getEdge() {
     return edge;
   }
 
   /**
-   * Returns source vertex of this container.
+   * Returns source vertex of this triplet.
    *
-   * @return source vertex of this container
+   * @return source vertex of this triplet
    */
   public Vertex getSourceVertex() {
     return sourceVertex;
   }
 
   /**
-   * Returns target vertex of this container.
+   * Returns target vertex of this triplet.
    *
-   * @return target vertex of this container
+   * @return target vertex of this triplet
    */
   public Vertex getTargetVertex() {
     return targetVertex;
@@ -117,12 +113,12 @@ public class EdgeContainer implements Serializable {
   }
 
   /**
-   * Creates a copy of this <tt>EdgeContainer</tt>, but with source and target vertex reversed and
+   * Creates a copy of this <tt>Triplet</tt>, but with source and target vertex reversed and
    * the appropriate flags in edge set.
    */
-  public EdgeContainer createReverseEdgeContainer() {
+  public Triplet createReverseTriplet() {
     Edge reverseEdge = this.edge.createReverseEdge();
-    return new EdgeContainer(reverseEdge, targetVertex, sourceVertex);
+    return new Triplet(reverseEdge, targetVertex, sourceVertex);
   }
 
   @Override
@@ -138,7 +134,7 @@ public class EdgeContainer implements Serializable {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    EdgeContainer that = (EdgeContainer) o;
+    Triplet that = (Triplet) o;
     return Objects.equals(edge, that.edge) &&
         Objects.equals(sourceVertex, that.sourceVertex) &&
         Objects.equals(targetVertex, that.targetVertex);

@@ -1,8 +1,8 @@
 package edu.leipzig.grafs.setup.kafka;
 
-import edu.leipzig.grafs.model.EdgeContainer;
+import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.setup.AbstractCmdBase;
-import edu.leipzig.grafs.setup.serialization.EdgeContainerSerializer;
+import edu.leipzig.grafs.setup.serialization.TripletSerializer;
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 import java.util.regex.Pattern;
@@ -22,7 +22,7 @@ public abstract class AbstractProducer extends AbstractCmdBase {
 
   protected String TOPIC;
   protected String BOOTSTRAP_SERVERS;
-  protected Producer<String, EdgeContainer> producer;
+  protected Producer<String, Triplet> producer;
 
   public AbstractProducer(String[] args) {
     super(args);
@@ -57,12 +57,12 @@ public abstract class AbstractProducer extends AbstractCmdBase {
     props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG,
         StringSerializer.class.getName());
     props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG,
-        EdgeContainerSerializer.class.getName());
+        TripletSerializer.class.getName());
     producer = new org.apache.kafka.clients.producer.KafkaProducer<>(props);
   }
 
 
-  protected void sendEdgeContainer(EdgeContainer ec)
+  protected void sendTriplet(Triplet ec)
       throws ExecutionException, InterruptedException {
     final var record = new ProducerRecord<>(TOPIC, ec.getEdge().getId().toString(), ec);
     RecordMetadata metadata = producer.send(record).get();

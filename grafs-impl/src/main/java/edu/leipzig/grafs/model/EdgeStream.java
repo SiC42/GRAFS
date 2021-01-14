@@ -14,16 +14,16 @@ import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer;
  */
 public class EdgeStream implements EdgeStreamOperators {
 
-  private final DataStream<EdgeContainer> edgeStream;
+  private final DataStream<Triplet> edgeStream;
   private final FlinkConfig config;
 
   /**
    * Constructs an edge stream with the given data stream and config.
    *
-   * @param edgeStream data stream that holds <tt>EdgeContainer</tt>
+   * @param edgeStream data stream that holds <tt>Triplet</tt>
    * @param config     config used for the stream
    */
-  public EdgeStream(DataStream<EdgeContainer> edgeStream, FlinkConfig config) {
+  public EdgeStream(DataStream<Triplet> edgeStream, FlinkConfig config) {
     this.edgeStream = edgeStream.assignTimestampsAndWatermarks(config.getWatermarkStrategy());
     this.config = config;
   }
@@ -35,7 +35,7 @@ public class EdgeStream implements EdgeStreamOperators {
    * @param config     config used for the stream
    * @return
    */
-  public static EdgeStream fromSource(FlinkKafkaConsumer<EdgeContainer> fkConsumer,
+  public static EdgeStream fromSource(FlinkKafkaConsumer<Triplet> fkConsumer,
       FlinkConfig config) {
     var stream = config.getExecutionEnvironment().addSource(fkConsumer);
     return new EdgeStream(stream, config);
@@ -48,7 +48,7 @@ public class EdgeStream implements EdgeStreamOperators {
    *
    * @param sinkFunction The object containing the sink's invoke function.
    */
-  public void addSink(SinkFunction<EdgeContainer> sinkFunction){
+  public void addSink(SinkFunction<Triplet> sinkFunction){
     edgeStream.addSink(sinkFunction);
   }
 
@@ -59,7 +59,7 @@ public class EdgeStream implements EdgeStreamOperators {
    * @return result of given operator
    */
   public EdgeStream callForStream(OperatorI operator) {
-    DataStream<EdgeContainer> result = operator.execute(edgeStream);
+    DataStream<Triplet> result = operator.execute(edgeStream);
     return new EdgeStream(result, config);
   }
 
@@ -68,7 +68,7 @@ public class EdgeStream implements EdgeStreamOperators {
    *
    * @return the underlying data stream
    */
-  public DataStream<EdgeContainer> getDataStream() {
+  public DataStream<Triplet> getDataStream() {
     return edgeStream;
   }
 
@@ -85,7 +85,7 @@ public class EdgeStream implements EdgeStreamOperators {
    * @return iterator of the stream content
    * @throws IOException
    */
-  public Iterator<EdgeContainer> collect() throws IOException {
+  public Iterator<Triplet> collect() throws IOException {
     return DataStreamUtils.collect(edgeStream);
   }
 }

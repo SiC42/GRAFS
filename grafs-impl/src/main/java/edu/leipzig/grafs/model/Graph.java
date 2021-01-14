@@ -58,17 +58,17 @@ public class Graph implements Serializable {
   }
 
   /**
-   * Constructs a graph from an edge container iterable and returns it.
+   * Constructs a graph from an triplet iterable and returns it.
    *
-   * @param ecIterable iterable of edge containers to be used for the contruction of the graph
+   * @param tripletIt iterable of triplets to be used for the construction of the graph
    * @return the constructed graph
    */
-  public static Graph fromEdgeContainers(Iterable<EdgeContainer> ecIterable) {
+  public static Graph fromTriplets(Iterable<Triplet> tripletIt) {
     var graph = new Graph();
-    for (var ec : ecIterable) {
-      graph.addVertex(ec.getSourceVertex());
-      graph.addVertex(ec.getTargetVertex());
-      graph.addEdge(ec.getEdge());
+    for (var triplet : tripletIt) {
+      graph.addVertex(triplet.getSourceVertex());
+      graph.addVertex(triplet.getTargetVertex());
+      graph.addEdge(triplet.getEdge());
     }
     return graph;
   }
