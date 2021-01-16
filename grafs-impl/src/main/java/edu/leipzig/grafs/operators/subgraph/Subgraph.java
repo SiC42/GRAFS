@@ -4,7 +4,6 @@ import edu.leipzig.grafs.model.Edge;
 import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.model.Vertex;
 import edu.leipzig.grafs.operators.interfaces.GraphToGraphOperatorI;
-import java.util.Locale;
 import java.util.Objects;
 import org.apache.flink.api.common.functions.FilterFunction;
 import org.apache.flink.streaming.api.datastream.DataStream;
@@ -28,6 +27,7 @@ public class Subgraph implements GraphToGraphOperatorI {
   protected FilterFunction<Triplet> tripletFilter;
 
   private Strategy strategy;
+
   /**
    * Empty constructor for serialization.
    */
@@ -78,8 +78,8 @@ public class Subgraph implements GraphToGraphOperatorI {
   }
 
   /**
-   * Creates a {@link FilterFunction} on Triplets for the given vertex and edge filter. The
-   * returned filter is the one applied to the stream.
+   * Creates a {@link FilterFunction} on Triplets for the given vertex and edge filter. The returned
+   * filter is the one applied to the stream.
    *
    * @param vertexFilter filter applied to the vertices of the stream
    * @param edgeFilter   filter applied to the edges of the stream
@@ -110,8 +110,8 @@ public class Subgraph implements GraphToGraphOperatorI {
   }
 
   /**
-   * Creates a {@link FilterFunction} on Triplets for the given edge filter that represents a
-   * edge induced subgraph function. The returned filter is the one applied to the stream.
+   * Creates a {@link FilterFunction} on Triplets for the given edge filter that represents a edge
+   * induced subgraph function. The returned filter is the one applied to the stream.
    *
    * @param edgeFilter filter applied to the vertices of the stream
    * @return edge induced subgraph filter ready to be applied to the stream
@@ -130,7 +130,7 @@ public class Subgraph implements GraphToGraphOperatorI {
    */
   @Override
   public DataStream<Triplet> execute(DataStream<Triplet> stream) {
-    return stream.filter(tripletFilter).name(strategy.name().toLowerCase() + " subgraph" );
+    return stream.filter(tripletFilter).name(strategy.name().toLowerCase() + " subgraph");
   }
 
   /**

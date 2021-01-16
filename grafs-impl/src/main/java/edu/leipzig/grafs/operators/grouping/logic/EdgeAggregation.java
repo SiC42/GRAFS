@@ -27,10 +27,10 @@ public class EdgeAggregation<W extends Window> extends ElementAggregationProcess
   /**
    * Constructs the edge aggregation with the given information.
    *
-   * @param edgeGroupInfo    grouping information used to determine which edges are in a group
-   * @param aggregateFunctions aggregate functions that are used to calculate the aggregates and set them in the aggregated edge
-   * @param newGraphId graph id used for the aggregated graph
-   *
+   * @param edgeGroupInfo      grouping information used to determine which edges are in a group
+   * @param aggregateFunctions aggregate functions that are used to calculate the aggregates and set
+   *                           them in the aggregated edge
+   * @param newGraphId         graph id used for the aggregated graph
    */
   public EdgeAggregation(GroupingInformation edgeGroupInfo,
       Set<AggregateFunction> aggregateFunctions, GradoopId newGraphId) {
@@ -45,10 +45,10 @@ public class EdgeAggregation<W extends Window> extends ElementAggregationProcess
   /**
    * Aggregates all edges in the provided window using the given information in the constructor.
    *
-   * @param obsoleteStr   the key selector string, which is not used in this process
+   * @param obsoleteStr     the key selector string, which is not used in this process
    * @param obsoleteContext context, which is not used in this process
-   * @param tripletIt iterable of the triplets in this window
-   * @param out the collector in which the aggregated triplet are collected
+   * @param tripletIt       iterable of the triplets in this window
+   * @param out             the collector in which the aggregated triplet are collected
    */
   @Override
   public void process(String obsoleteStr, Context obsoleteContext,

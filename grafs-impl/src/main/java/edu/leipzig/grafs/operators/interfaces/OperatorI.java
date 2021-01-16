@@ -10,6 +10,7 @@ public interface OperatorI {
 
   /**
    * Applies the given operator to the stream.
+   *
    * @param stream stream on which the operator should be applied
    * @return the stream with the applied operator
    */

@@ -2,8 +2,8 @@ package edu.leipzig.grafs.operators.matching.logic;
 
 
 import edu.leipzig.grafs.model.Edge;
-import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.model.Graph;
+import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.model.Vertex;
 import org.apache.flink.api.common.functions.FilterFunction;
 
@@ -27,8 +27,8 @@ public class EdgeQueryFilter implements FilterFunction<Triplet> {
   }
 
   /**
-   * Returns <tt>true</tt> if for the given triplet there are matching source and target
-   * vertex in the query graph and the corresponding edge also matches the given edge.
+   * Returns <tt>true</tt> if for the given triplet there are matching source and target vertex in
+   * the query graph and the corresponding edge also matches the given edge.
    *
    * @param triplet Triplet which is tested for filtering
    * @return <tt>true</tt> if for the given triplet there are matching source and target

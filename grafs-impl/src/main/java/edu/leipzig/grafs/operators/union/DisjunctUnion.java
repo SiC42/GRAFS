@@ -4,7 +4,6 @@ import com.google.common.annotations.Beta;
 import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.model.streaming.GraphStream;
 import edu.leipzig.grafs.operators.interfaces.GraphCollectionToGraphCollectionOperatorI;
-import edu.leipzig.grafs.operators.interfaces.GraphToGraphCollectionOperatorI;
 import edu.leipzig.grafs.operators.interfaces.GraphToGraphOperatorI;
 import org.apache.flink.streaming.api.datastream.DataStream;
 

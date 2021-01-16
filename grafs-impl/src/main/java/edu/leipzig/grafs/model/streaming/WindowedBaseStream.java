@@ -23,28 +23,28 @@ public abstract class WindowedBaseStream<W extends Window> {
     this.wi = new WindowInformation<>(window);
   }
 
-  public <WS extends WindowedBaseStream<W>> WS trigger(Trigger<Triplet, W> trigger){
+  public <WS extends WindowedBaseStream<W>> WS trigger(Trigger<Triplet, W> trigger) {
     wi.addTrigger(trigger);
-    return (WS)this;
+    return (WS) this;
   }
 
-  public <WS extends WindowedBaseStream<W>> WS evictor(Evictor<Triplet, W> evictor){
+  public <WS extends WindowedBaseStream<W>> WS evictor(Evictor<Triplet, W> evictor) {
     wi.addEvictor(evictor);
-    return (WS)this;
+    return (WS) this;
   }
 
-  public <WS extends WindowedBaseStream<W>> WS allowedLateness(Time lateness){
+  public <WS extends WindowedBaseStream<W>> WS allowedLateness(Time lateness) {
     wi.addAllowedLateness(lateness);
-    return (WS)this;
+    return (WS) this;
   }
 
-  public <WS extends WindowedBaseStream<W>> WS sideOutputLateData(OutputTag<Triplet> outputTag){
+  public <WS extends WindowedBaseStream<W>> WS sideOutputLateData(OutputTag<Triplet> outputTag) {
     wi.addLateDataOutputTag(outputTag);
-    return (WS)this;
+    return (WS) this;
   }
 
 
-  public static class WindowInformation<W extends Window>{
+  public static class WindowInformation<W extends Window> {
 
     private final WindowAssigner<Object, W> window;
     private Trigger<Triplet, W> trigger;
@@ -60,19 +60,19 @@ public abstract class WindowedBaseStream<W extends Window> {
       outputTag = null;
     }
 
-    public void addTrigger(Trigger<Triplet, W> trigger){
+    public void addTrigger(Trigger<Triplet, W> trigger) {
       this.trigger = trigger;
     }
 
-    public void addEvictor(Evictor<Triplet, W> evictor){
+    public void addEvictor(Evictor<Triplet, W> evictor) {
       this.evictor = evictor;
     }
 
-    public void addAllowedLateness(Time lateness){
+    public void addAllowedLateness(Time lateness) {
       this.lateness = lateness;
     }
 
-    public void addLateDataOutputTag(OutputTag<Triplet> outputTag){
+    public void addLateDataOutputTag(OutputTag<Triplet> outputTag) {
       this.outputTag = outputTag;
     }
 

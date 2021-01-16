@@ -4,14 +4,10 @@ import com.google.common.annotations.Beta;
 import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.model.streaming.GraphStream;
 import edu.leipzig.grafs.model.streaming.WindowedBaseStream.WindowInformation;
-import edu.leipzig.grafs.operators.interfaces.GraphToGraphCollectionOperatorI;
-import edu.leipzig.grafs.operators.interfaces.GraphToGraphOperatorI;
 import edu.leipzig.grafs.operators.interfaces.windowed.WindowedGraphCollectionToGraphCollectionOperatorI;
 import edu.leipzig.grafs.operators.interfaces.windowed.WindowedGraphToGraphOperatorI;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.functions.windowing.ProcessWindowFunction;
-import org.apache.flink.streaming.api.windowing.assigners.WindowAssigner;
-import org.apache.flink.streaming.api.windowing.triggers.Trigger;
 import org.apache.flink.streaming.api.windowing.windows.Window;
 import org.apache.flink.util.Collector;
 
@@ -45,7 +41,8 @@ public class UnionWithDuplicateInWindow implements
    * @return unified stream
    */
   @Override
-  public <W extends Window> DataStream<Triplet> execute(DataStream<Triplet> stream, WindowInformation<W> wi) {
+  public <W extends Window> DataStream<Triplet> execute(DataStream<Triplet> stream,
+      WindowInformation<W> wi) {
     var unionedStream = new DisjunctUnion(streams).execute(stream);
     var filterDuplicateInWindowFunction =
         new ProcessWindowFunction<Triplet, Triplet, String, W>() {

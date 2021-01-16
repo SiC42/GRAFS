@@ -40,13 +40,14 @@ public abstract class BaseStream {
   }
 
   /**
-   * Adds a sink function to the stream, which determines what should happen with the stream at the end.
-   *
+   * Adds a sink function to the stream, which determines what should happen with the stream at the
+   * end.
+   * <p>
    * Only works once!
    *
    * @param sinkFunction The object containing the sink's invoke function.
    */
-  public void addSink(SinkFunction<Triplet> sinkFunction){
+  public void addSink(SinkFunction<Triplet> sinkFunction) {
     edgeStream.addSink(sinkFunction);
   }
 

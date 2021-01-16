@@ -7,8 +7,8 @@ import edu.leipzig.grafs.factory.EdgeFactory;
 import edu.leipzig.grafs.factory.VertexFactory;
 import edu.leipzig.grafs.model.Edge;
 import edu.leipzig.grafs.model.Triplet;
-import edu.leipzig.grafs.model.streaming.GraphStream;
 import edu.leipzig.grafs.model.Vertex;
+import edu.leipzig.grafs.model.streaming.GraphStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
@@ -28,8 +28,8 @@ import org.s1ck.gdl.model.Graph;
 import org.s1ck.gdl.model.GraphElement;
 
 /**
- * This class is used to load GDL representations of graphs and return triplet
- * representations of those graphs.
+ * This class is used to load GDL representations of graphs and return triplet representations of
+ * those graphs.
  */
 public class AsciiGraphLoader {
 

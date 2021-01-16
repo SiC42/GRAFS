@@ -1,7 +1,6 @@
 package edu.leipzig.grafs.operators.grouping.functions;
 
 import java.util.Objects;
-import org.gradoop.common.model.impl.properties.PropertyValue;
 
 /**
  * Abstract class used as a base for aggregate functions. Extendable by using lambdas.

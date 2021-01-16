@@ -6,8 +6,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasSize;
 
-import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.model.Graph;
+import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.model.Vertex;
 import edu.leipzig.grafs.operators.matching.logic.AbstractMatchingProcess.TripletFactory;
 import edu.leipzig.grafs.operators.matching.model.CandidateMap;
@@ -205,7 +205,8 @@ class AbstractMatchingProcessTest extends MatchingTestBase {
     actualTarget = triplet.getTargetVertex();
     assertThat(actualTarget.getGraphIds().contains(gId2), is(true));
 
-    assertThat(tripletList.get(0).getTargetVertex(), is(equalTo(tripletList.get(1).getSourceVertex())));
+    assertThat(tripletList.get(0).getTargetVertex(),
+        is(equalTo(tripletList.get(1).getSourceVertex())));
   }
 
   private Set<Vertex> filterByLabel(Collection<Vertex> vertices, String... labels) {

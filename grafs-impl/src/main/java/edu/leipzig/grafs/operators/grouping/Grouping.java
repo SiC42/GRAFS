@@ -1,6 +1,5 @@
 package edu.leipzig.grafs.operators.grouping;
 
-import com.google.common.annotations.Beta;
 import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.model.streaming.WindowedBaseStream.WindowInformation;
 import edu.leipzig.grafs.operators.grouping.functions.AggregateFunction;
@@ -9,7 +8,6 @@ import edu.leipzig.grafs.operators.grouping.logic.TripletKeySelector;
 import edu.leipzig.grafs.operators.grouping.logic.VertexAggregation;
 import edu.leipzig.grafs.operators.grouping.model.AggregateMode;
 import edu.leipzig.grafs.operators.grouping.model.GroupingInformation;
-import edu.leipzig.grafs.operators.interfaces.GraphToGraphOperatorI;
 import edu.leipzig.grafs.operators.interfaces.windowed.WindowedGraphToGraphOperatorI;
 import java.util.HashSet;
 import java.util.Objects;
@@ -18,8 +16,6 @@ import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.datastream.WindowedStream;
-import org.apache.flink.streaming.api.windowing.assigners.WindowAssigner;
-import org.apache.flink.streaming.api.windowing.triggers.Trigger;
 import org.apache.flink.streaming.api.windowing.windows.Window;
 import org.apache.flink.util.Collector;
 import org.gradoop.common.model.impl.id.GradoopId;
@@ -91,7 +87,8 @@ public class Grouping implements WindowedGraphToGraphOperatorI {
    * @return the stream with the grouping operator applied
    */
   @Override
-  public <W extends Window> DataStream<Triplet> execute(DataStream<Triplet> stream, WindowInformation<W> wi) {
+  public <W extends Window> DataStream<Triplet> execute(DataStream<Triplet> stream,
+      WindowInformation<W> wi) {
     return groupBy(stream, wi);
   }
 
@@ -101,7 +98,8 @@ public class Grouping implements WindowedGraphToGraphOperatorI {
    * @param stream stream on which the operator should be applied
    * @return the stream with the grouping operator applied
    */
-  public <W extends Window> DataStream<Triplet> groupBy(DataStream<Triplet> stream, WindowInformation<W> wi) {
+  public <W extends Window> DataStream<Triplet> groupBy(DataStream<Triplet> stream,
+      WindowInformation<W> wi) {
     // Enrich stream with reverse edges
     var expandedStream = createStreamWithReverseEdges(stream);
 
@@ -158,9 +156,11 @@ public class Grouping implements WindowedGraphToGraphOperatorI {
    * @param stream stream on which the edges should be aggregated
    * @return stream on which the edges are grouped
    */
-  private <W extends Window> DataStream<Triplet> aggregateOnEdge(DataStream<Triplet> stream, WindowInformation<W> wi) {
+  private <W extends Window> DataStream<Triplet> aggregateOnEdge(DataStream<Triplet> stream,
+      WindowInformation<W> wi) {
     var windowedStream = createKeyedWindowedStream(stream, AggregateMode.EDGE, wi);
-    return windowedStream.process(new EdgeAggregation<>(edgeGi, edgeAggregateFunctions, GradoopId.get()))
+    return windowedStream
+        .process(new EdgeAggregation<>(edgeGi, edgeAggregateFunctions, GradoopId.get()))
         .name("Aggregate EDGES");
   }
 

@@ -1,7 +1,7 @@
 package edu.leipzig.grafs.operators.matching.logic;
 
-import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.model.Graph;
+import edu.leipzig.grafs.model.Triplet;
 import org.apache.flink.api.common.functions.FilterFunction;
 
 /**
@@ -24,8 +24,7 @@ public class VertexQueryFilter implements FilterFunction<Triplet> {
   }
 
   /**
-   * Returns <tt>true</tt> if for the given triplet there are matching vertices in the query
-   * graph.
+   * Returns <tt>true</tt> if for the given triplet there are matching vertices in the query graph.
    *
    * @param triplet Triplet which is tested for filtering
    * @return <tt>true</tt> if for the given triplet there are matching vertices in the query

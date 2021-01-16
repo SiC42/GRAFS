@@ -4,9 +4,9 @@ import static edu.leipzig.grafs.util.TestUtils.validateElementCollections;
 import static edu.leipzig.grafs.util.TestUtils.validateIdEquality;
 
 import edu.leipzig.grafs.model.Edge;
-import edu.leipzig.grafs.model.streaming.GraphStream;
 import edu.leipzig.grafs.model.Element;
 import edu.leipzig.grafs.model.Vertex;
+import edu.leipzig.grafs.model.streaming.GraphStream;
 import edu.leipzig.grafs.util.AsciiGraphLoader;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -94,7 +94,8 @@ public class VertexTransformationTest extends TransformationBaseTest {
 
     GraphStream original = loader.createEdgeStreamByGraphVariables(getConfig(), "g0");
 
-    var tripletResultIt = original.transformVertices(VertexTransformationTest::transformVertex).collect();
+    var tripletResultIt = original.transformVertices(VertexTransformationTest::transformVertex)
+        .collect();
 
     Set<Edge> actualEdgeResult = new HashSet<>();
     Set<Vertex> actualVertexResult = new HashSet<>();

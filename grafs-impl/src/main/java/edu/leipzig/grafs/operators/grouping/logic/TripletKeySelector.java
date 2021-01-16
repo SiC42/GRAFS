@@ -1,8 +1,8 @@
 package edu.leipzig.grafs.operators.grouping.logic;
 
 import edu.leipzig.grafs.model.Edge;
-import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.model.Element;
+import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.model.Vertex;
 import edu.leipzig.grafs.operators.grouping.model.AggregateMode;
 import edu.leipzig.grafs.operators.grouping.model.GroupingInformation;
@@ -11,8 +11,8 @@ import java.util.TreeSet;
 import org.apache.flink.api.java.functions.KeySelector;
 
 /**
- * Key selector used for grouping that returns a string representation of an {@link Triplet}
- * using the grouping information.
+ * Key selector used for grouping that returns a string representation of an {@link Triplet} using
+ * the grouping information.
  */
 public class TripletKeySelector implements KeySelector<Triplet, String> {
 
@@ -36,12 +36,10 @@ public class TripletKeySelector implements KeySelector<Triplet, String> {
   }
 
   /**
-   * Constructs the key for the given triplet using the information provided in the
-   * constructor.
+   * Constructs the key for the given triplet using the information provided in the constructor.
    * <p>
-   * Two triplet generate the same key, if the selected element (i.e. the element for which
-   * the key is made for via {@link AggregateMode}) are in the same group using the grouping
-   * information.
+   * Two triplet generate the same key, if the selected element (i.e. the element for which the key
+   * is made for via {@link AggregateMode}) are in the same group using the grouping information.
    * <p>
    * The default toString methods of the elements are used for this to ease debugging.
    *

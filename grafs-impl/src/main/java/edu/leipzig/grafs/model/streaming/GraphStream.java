@@ -40,7 +40,7 @@ public class GraphStream extends BaseStream implements GraphStreamOperators {
     return new GCStream(result, config);
   }
 
-  public <W extends Window> WindowedGraphStream<W> window(WindowAssigner<Object, W> window){
+  public <W extends Window> WindowedGraphStream<W> window(WindowAssigner<Object, W> window) {
     return new WindowedGraphStream<>(edgeStream, config, window);
   }
 }

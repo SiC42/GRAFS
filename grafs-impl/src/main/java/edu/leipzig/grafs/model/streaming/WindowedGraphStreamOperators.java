@@ -9,8 +9,6 @@ import edu.leipzig.grafs.operators.matching.DualSimulation;
 import edu.leipzig.grafs.operators.matching.Isomorphism;
 import edu.leipzig.grafs.operators.union.UnionWithDuplicateInWindow;
 import java.util.Set;
-import org.apache.flink.streaming.api.windowing.assigners.WindowAssigner;
-import org.apache.flink.streaming.api.windowing.windows.Window;
 
 public interface WindowedGraphStreamOperators {
 

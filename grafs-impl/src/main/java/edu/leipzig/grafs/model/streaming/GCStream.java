@@ -23,8 +23,8 @@ public class GCStream extends BaseStream implements GCStreamOperators {
 
   @Override
   public GraphStream callForGraph(GraphCollectionToGraphOperatorI operator) {
-      DataStream<Triplet> result = operator.execute(edgeStream);
-      return new GraphStream(result, config);
+    DataStream<Triplet> result = operator.execute(edgeStream);
+    return new GraphStream(result, config);
   }
 
   @Override
@@ -33,7 +33,7 @@ public class GCStream extends BaseStream implements GCStreamOperators {
     return new GCStream(result, config);
   }
 
-  public <W extends Window> WindowedGCStream<W> window(WindowAssigner<Object, W> window){
+  public <W extends Window> WindowedGCStream<W> window(WindowAssigner<Object, W> window) {
     return new WindowedGCStream<>(edgeStream, config, window);
   }
 }

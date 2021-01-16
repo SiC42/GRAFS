@@ -4,17 +4,14 @@ import static edu.leipzig.grafs.util.TestUtils.GRADOOP_ID_VAL_8;
 import static edu.leipzig.grafs.util.TestUtils.validateTripletCollections;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
-import static org.junit.jupiter.api.Assertions.*;
 
 import edu.leipzig.grafs.operators.DummyCollector;
 import edu.leipzig.grafs.operators.grouping.functions.AggregateFunction;
-import edu.leipzig.grafs.operators.grouping.model.AggregateMode;
 import edu.leipzig.grafs.operators.grouping.model.GroupingInformation;
 import edu.leipzig.grafs.util.AsciiGraphLoader;
 import edu.leipzig.grafs.util.TestUtils;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Set;
 import org.junit.jupiter.api.Test;
 
 class EdgeAggregationTest {
@@ -54,7 +51,7 @@ class EdgeAggregationTest {
 
     //verify collector was called with the right output
     validateTripletCollections(expectedTripletCol, actualTripletCol);
-    for(var triplet : actualTripletCol){
+    for (var triplet : actualTripletCol) {
       assertThat(triplet.getEdge().getGraphIds(), contains(GRADOOP_ID_VAL_8));
       assertThat(triplet.getSourceVertex().getGraphIds(), contains(GRADOOP_ID_VAL_8));
       assertThat(triplet.getTargetVertex().getGraphIds(), contains(GRADOOP_ID_VAL_8));

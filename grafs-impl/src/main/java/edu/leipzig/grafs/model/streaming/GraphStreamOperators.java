@@ -10,12 +10,8 @@ import edu.leipzig.grafs.operators.subgraph.Subgraph.Strategy;
 import edu.leipzig.grafs.operators.transform.EdgeTransformation;
 import edu.leipzig.grafs.operators.transform.VertexTransformation;
 import edu.leipzig.grafs.operators.union.DisjunctUnion;
-import edu.leipzig.grafs.operators.union.UnionWithDuplicateInWindow;
 import org.apache.flink.api.common.functions.FilterFunction;
 import org.apache.flink.api.common.functions.MapFunction;
-import org.apache.flink.streaming.api.windowing.assigners.WindowAssigner;
-import org.apache.flink.streaming.api.windowing.triggers.Trigger;
-import org.apache.flink.streaming.api.windowing.windows.Window;
 
 /**
  * Defines the operators that are available on a {@link Triplet}.

@@ -5,9 +5,9 @@ import static edu.leipzig.grafs.util.TestUtils.validateElementCollections;
 import static edu.leipzig.grafs.util.TestUtils.validateIdEquality;
 
 import edu.leipzig.grafs.model.Edge;
-import edu.leipzig.grafs.model.streaming.GraphStream;
 import edu.leipzig.grafs.model.Element;
 import edu.leipzig.grafs.model.Vertex;
+import edu.leipzig.grafs.model.streaming.GraphStream;
 import edu.leipzig.grafs.util.AsciiGraphLoader;
 import java.util.ArrayList;
 import java.util.Collection;

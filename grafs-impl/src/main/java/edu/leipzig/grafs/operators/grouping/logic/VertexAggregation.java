@@ -46,7 +46,7 @@ public class VertexAggregation<W extends Window> extends VertexAggregationProces
    *
    * @param obsoleteStr     the key selector string, which is not used in this process
    * @param obsoleteContext context, which is not used in this process
-   * @param tripletIt      iterable of the triplets in this window
+   * @param tripletIt       iterable of the triplets in this window
    * @param out             the collector in which the aggregated triplet are collected
    */
   @Override

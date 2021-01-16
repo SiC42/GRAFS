@@ -1,8 +1,8 @@
 package edu.leipzig.grafs.operators.grouping.logic;
 
 import edu.leipzig.grafs.exceptions.KeyOverlapException;
-import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.model.Element;
+import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.operators.grouping.functions.AggregateFunction;
 import edu.leipzig.grafs.operators.grouping.model.GroupingInformation;
 import java.util.Set;

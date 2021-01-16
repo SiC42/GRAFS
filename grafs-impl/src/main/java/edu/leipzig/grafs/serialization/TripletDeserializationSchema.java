@@ -42,8 +42,8 @@ public class TripletDeserializationSchema implements DeserializationSchema<Tripl
    * Returns <tt>true</tt> if a end of stream element is found and thus ends the stream.
    * <p>
    * The edge in the triplet needs to have the END_OF_STREAM_LABEL.
-   * @param triplet triplet which should be checked if it is an end of stream element
    *
+   * @param triplet triplet which should be checked if it is an end of stream element
    * @return <tt>true</tt> if the given triplet contains the END_OF_STREAM_LABEL, <tt>false</tt>
    * otherwise
    */

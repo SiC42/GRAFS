@@ -4,8 +4,6 @@ import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.model.streaming.WindowedBaseStream.WindowInformation;
 import edu.leipzig.grafs.operators.matching.logic.DualSimulationProcess;
 import org.apache.flink.streaming.api.datastream.DataStream;
-import org.apache.flink.streaming.api.windowing.assigners.WindowAssigner;
-import org.apache.flink.streaming.api.windowing.triggers.Trigger;
 import org.apache.flink.streaming.api.windowing.windows.Window;
 
 /**
@@ -18,7 +16,7 @@ public class DualSimulation extends AbstractMatchingOperator {
   /**
    * Initializes the operator with the given parameters.
    *
-   * @param query   query string that is used to make the query graph
+   * @param query query string that is used to make the query graph
    */
   public DualSimulation(String query) {
     super(query);
@@ -31,7 +29,8 @@ public class DualSimulation extends AbstractMatchingOperator {
    * @return the stream with this matching operator applied
    */
   @Override
-  public <W extends Window> DataStream<Triplet> execute(DataStream<Triplet> stream, WindowInformation<W> wi) {
+  public <W extends Window> DataStream<Triplet> execute(DataStream<Triplet> stream,
+      WindowInformation<W> wi) {
     var preProcessedStream = preProcessAndApplyWindow(stream, wi);
     return preProcessedStream.process(new DualSimulationProcess<>(queryGraph))
         .name("Dual Simulation Pattern Matching");

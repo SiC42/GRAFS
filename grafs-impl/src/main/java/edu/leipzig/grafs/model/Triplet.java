@@ -49,8 +49,8 @@ public class Triplet implements Serializable {
   }
 
   /**
-   * Constructs a <tt>Triplet</tt> with the given information. Here, the edge is constructed
-   * using the ids in <tt>sourceVertex</tt> and <tt>targetVertex</tt> parameter
+   * Constructs a <tt>Triplet</tt> with the given information. Here, the edge is constructed using
+   * the ids in <tt>sourceVertex</tt> and <tt>targetVertex</tt> parameter
    *
    * @param prevEdge     edge information
    * @param sourceVertex source vertex of the given edge
@@ -113,8 +113,8 @@ public class Triplet implements Serializable {
   }
 
   /**
-   * Creates a copy of this <tt>Triplet</tt>, but with source and target vertex reversed and
-   * the appropriate flags in edge set.
+   * Creates a copy of this <tt>Triplet</tt>, but with source and target vertex reversed and the
+   * appropriate flags in edge set.
    */
   public Triplet createReverseTriplet() {
     Edge reverseEdge = this.edge.createReverseEdge();
