@@ -3,6 +3,7 @@ package edu.leipzig.grafs.model.streaming;
 import edu.leipzig.grafs.operators.interfaces.GraphCollectionToGraphCollectionOperatorI;
 import edu.leipzig.grafs.operators.interfaces.GraphCollectionToGraphOperatorI;
 import edu.leipzig.grafs.operators.reduce.Reduce;
+import edu.leipzig.grafs.operators.union.DisjunctUnion;
 import org.apache.flink.api.common.functions.FilterFunction;
 import org.gradoop.common.model.impl.id.GradoopIdSet;
 
@@ -33,6 +34,21 @@ public interface GCStreamOperators {
    */
   default GraphStream reduce(FilterFunction<GradoopIdSet> idSetFilter) {
     return callForGraph(new Reduce(idSetFilter));
+  }
+
+  /**
+   * Creates an edge stream with the {@link DisjunctUnion} operator applied. Represents a union of
+   * two or more edge streams creating a new stream containing all the elements from all the
+   * streams.
+   * <p>
+   * Note: This operator assumes that the streams are disjunct, i.e. no element in both streams is
+   * present in the other stream.
+   *
+   * @param streams the edge streams to union output with
+   * @return the unioned edge stream
+   */
+  default GCStream disjunctUnion(GraphStream... streams) {
+    return this.callForGC(new DisjunctUnion(streams));
   }
 
 }

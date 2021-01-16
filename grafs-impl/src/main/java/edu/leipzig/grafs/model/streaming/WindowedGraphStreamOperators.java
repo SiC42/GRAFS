@@ -7,7 +7,10 @@ import edu.leipzig.grafs.operators.interfaces.windowed.WindowedGraphToGraphColle
 import edu.leipzig.grafs.operators.interfaces.windowed.WindowedGraphToGraphOperatorI;
 import edu.leipzig.grafs.operators.matching.DualSimulation;
 import edu.leipzig.grafs.operators.matching.Isomorphism;
+import edu.leipzig.grafs.operators.union.UnionWithDuplicateInWindow;
 import java.util.Set;
+import org.apache.flink.streaming.api.windowing.assigners.WindowAssigner;
+import org.apache.flink.streaming.api.windowing.windows.Window;
 
 public interface WindowedGraphStreamOperators {
 
@@ -72,6 +75,18 @@ public interface WindowedGraphStreamOperators {
    */
   default GCStream isomorphismMatching(String gdlQueryStr) {
     return callForGC(new Isomorphism(gdlQueryStr));
+  }
+
+  /**
+   * Creates an edge stream with the {@link UnionWithDuplicateInWindow} operator applied. Union of
+   * two or more edge streams creating a new stream containing all the elements from all the streams
+   * with duplicates in a given window filtered out. No trigger is applied.
+   *
+   * @param streams the edge streams to union output with
+   * @return the unioned edge stream
+   */
+  default GraphStream unionWithDuplicateInWindow(GraphStream... streams) {
+    return this.callForGraph(new UnionWithDuplicateInWindow(streams));
   }
 
 }

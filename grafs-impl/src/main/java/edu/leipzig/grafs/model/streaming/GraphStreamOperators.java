@@ -134,34 +134,5 @@ public interface GraphStreamOperators {
     return this.callForGraph(new DisjunctUnion(streams));
   }
 
-  /**
-   * Creates an edge stream with the {@link UnionWithDuplicateInWindow} operator applied. Union of
-   * two or more edge streams creating a new stream containing all the elements from all the streams
-   * with duplicates in a given window filtered out. No trigger is applied.
-   *
-   * @param window  windowed used in the union operator
-   * @param streams the edge streams to union output with
-   * @return the unioned edge stream
-   */
-  default GraphStream unionWithDuplicateInWindow(WindowAssigner<Object, Window> window,
-      GraphStream... streams) {
-    return this.callForGraph(new UnionWithDuplicateInWindow<>(window, streams));
-  }
-
-  /**
-   * Creates an edge stream with the {@link UnionWithDuplicateInWindow} operator applied. Union of
-   * two or more edge streams creating a new stream containing all the elements from all the streams
-   * with duplicates in a given window filtered out.
-   *
-   * @param window  windowed used in the union operator
-   * @param streams the edge streams to union output with
-   * @param trigger trigger which should be applied to end the window for the operation
-   * @return the unioned edge stream
-   */
-  default GraphStream unionWithDuplicateInWindow(WindowAssigner<Object, Window> window,
-      Trigger<Triplet, Window> trigger,
-      GraphStream... streams) {
-    return this.callForGraph(new UnionWithDuplicateInWindow<>(window, trigger, streams));
-  }
 
 }

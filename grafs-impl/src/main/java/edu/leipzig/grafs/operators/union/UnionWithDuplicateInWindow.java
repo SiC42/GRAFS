@@ -3,8 +3,11 @@ package edu.leipzig.grafs.operators.union;
 import com.google.common.annotations.Beta;
 import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.model.streaming.GraphStream;
+import edu.leipzig.grafs.model.streaming.WindowedBaseStream.WindowInformation;
 import edu.leipzig.grafs.operators.interfaces.GraphToGraphCollectionOperatorI;
 import edu.leipzig.grafs.operators.interfaces.GraphToGraphOperatorI;
+import edu.leipzig.grafs.operators.interfaces.windowed.WindowedGraphCollectionToGraphCollectionOperatorI;
+import edu.leipzig.grafs.operators.interfaces.windowed.WindowedGraphToGraphOperatorI;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.functions.windowing.ProcessWindowFunction;
 import org.apache.flink.streaming.api.windowing.assigners.WindowAssigner;
@@ -17,8 +20,8 @@ import org.apache.flink.util.Collector;
  * window and only one is returned. It is advised to only use Tumbling Windows.
  */
 @Beta
-public class UnionWithDuplicateInWindow<W extends Window> implements
-    GraphToGraphOperatorI, GraphToGraphCollectionOperatorI {
+public class UnionWithDuplicateInWindow implements
+    WindowedGraphToGraphOperatorI, WindowedGraphCollectionToGraphCollectionOperatorI {
 
   /**
    * Streams that should be unified via the union operation.
@@ -26,37 +29,12 @@ public class UnionWithDuplicateInWindow<W extends Window> implements
   private final GraphStream[] streams;
 
   /**
-   * Window in which only distinct elements should exist
-   */
-  private final WindowAssigner<Object, W> window;
-
-  /**
-   * Optional trigger
-   */
-  private final Trigger<Triplet, W> trigger;
-
-  /**
    * Initializes the operator with the given parameters.
    *
-   * @param window  window in which only distinct elements should exist
    * @param streams streams that should be unified by applying the union operator onto a stream
    */
-  public UnionWithDuplicateInWindow(WindowAssigner<Object, W> window, GraphStream... streams) {
-    this(window, null, streams);
-  }
-
-  /**
-   * Initializes the operator with the given parameters.
-   *
-   * @param window  window in which only distinct elements should exist
-   * @param streams streams that should be unified by applying the union operator onto a stream
-   * @param trigger optional window trigger that is used for this operation
-   */
-  public UnionWithDuplicateInWindow(WindowAssigner<Object, W> window,
-      Trigger<Triplet, W> trigger, GraphStream... streams) {
+  public UnionWithDuplicateInWindow(GraphStream... streams) {
     this.streams = streams;
-    this.trigger = trigger;
-    this.window = window;
   }
 
   /**
@@ -67,7 +45,7 @@ public class UnionWithDuplicateInWindow<W extends Window> implements
    * @return unified stream
    */
   @Override
-  public DataStream<Triplet> execute(DataStream<Triplet> stream) {
+  public <W extends Window> DataStream<Triplet> execute(DataStream<Triplet> stream, WindowInformation<W> wi) {
     var unionedStream = new DisjunctUnion(streams).execute(stream);
     var filterDuplicateInWindowFunction =
         new ProcessWindowFunction<Triplet, Triplet, String, W>() {
@@ -77,11 +55,11 @@ public class UnionWithDuplicateInWindow<W extends Window> implements
             collector.collect(iterable.iterator().next());
           }
         };
-    return unionedStream
+    var unionedWindowStream = unionedStream
         .keyBy(triplet -> triplet.getEdge().getId().toString())
-        .window(window)
-        .trigger(trigger)
-        .process(filterDuplicateInWindowFunction);
+        .window(wi.getWindow());
+    unionedWindowStream = applyOtherWindowInformation(unionedWindowStream, wi);
+    return unionedWindowStream.process(filterDuplicateInWindowFunction);
 
   }
 }
