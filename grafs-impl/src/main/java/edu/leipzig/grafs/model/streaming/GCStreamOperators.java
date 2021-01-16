@@ -25,6 +25,10 @@ public interface GCStreamOperators {
    */
   GCStream callForGC(GraphCollectionToGraphCollectionOperatorI operator);
 
+  // ---------------------------------------------------------------------------
+  //  Operators
+  // ---------------------------------------------------------------------------
+
   /**
    * Applies the Reduce Operator onto the graph collection stream, creating a graph stream
    *

@@ -31,7 +31,7 @@ public interface WindowedGraphStreamOperators {
   GCStream callForGC(WindowedGraphToGraphCollectionOperatorI operator);
 
 //   ---------------------------------------------------------------------------
-//    Grouping operators
+//    Operators
 //   ---------------------------------------------------------------------------
 
   /**
@@ -53,9 +53,6 @@ public interface WindowedGraphStreamOperators {
         new Grouping(vertexGi, vertexAggregateFunctions, edgeGi, edgeAggregateFunctions));
   }
 
-  // ---------------------------------------------------------------------------
-  //  Matching operators
-  // ---------------------------------------------------------------------------
 
   /**
    * Creates an edge stream with the {@link DualSimulation} operator applied.

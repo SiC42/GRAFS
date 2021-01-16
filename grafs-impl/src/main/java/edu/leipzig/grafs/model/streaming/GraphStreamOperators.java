@@ -40,7 +40,7 @@ public interface GraphStreamOperators {
   GCStream callForGC(GraphToGraphCollectionOperatorI operator);
 
   // ---------------------------------------------------------------------------
-  //  Subgraph operators
+  //  Operators
   // ---------------------------------------------------------------------------
 
   /**
@@ -91,10 +91,6 @@ public interface GraphStreamOperators {
     return this.callForGraph(new Subgraph(vertexPredicate, edgePredicate, strategy));
   }
 
-  // ---------------------------------------------------------------------------
-  //  Transformation operators
-  // ---------------------------------------------------------------------------
-
   /**
    * Creates an edge stream with the {@link EdgeTransformation} operator applied.
    *
@@ -114,10 +110,6 @@ public interface GraphStreamOperators {
   default GraphStream transformVertices(MapFunction<Vertex, Vertex> mapper) {
     return this.callForGraph(new VertexTransformation(mapper));
   }
-
-  // ---------------------------------------------------------------------------
-  //  Union operators
-  // ---------------------------------------------------------------------------
 
   /**
    * Creates an edge stream with the {@link DisjunctUnion} operator applied. Represents a union of

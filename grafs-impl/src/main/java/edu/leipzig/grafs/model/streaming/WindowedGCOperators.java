@@ -22,6 +22,9 @@ public interface WindowedGCOperators {
    */
   GCStream callForGC(WindowedGraphCollectionToGraphCollectionOperatorI operator);
 
+  // ---------------------------------------------------------------------------
+  //  Operators
+  // ---------------------------------------------------------------------------
 
   /**
    * Creates an edge stream with the {@link UnionWithDuplicateInWindow} operator applied. Union of
