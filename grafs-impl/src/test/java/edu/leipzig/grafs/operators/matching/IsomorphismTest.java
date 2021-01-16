@@ -1,7 +1,7 @@
 package edu.leipzig.grafs.operators.matching;
 
 import edu.leipzig.grafs.model.Triplet;
-import edu.leipzig.grafs.model.EdgeStream;
+import edu.leipzig.grafs.model.streaming.GraphStream;
 import edu.leipzig.grafs.operators.matching.logic.MatchingTestBase;
 import edu.leipzig.grafs.util.FlinkConfig;
 import edu.leipzig.grafs.util.FlinkConfigBuilder;
@@ -46,8 +46,9 @@ public class IsomorphismTest extends MatchingTestBase {
     loader.appendFromString(appendDsGraph);
     var expectedTriplets = loader.createTripletsByGraphVariables("iso");
     var resultStream = edgeStream
-        .callForStream(new Isomorphism<>(queryPaperGraphGdlStr,
-            TumblingEventTimeWindows.of(Time.milliseconds(10))));
+        .window(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        .callForGC(new Isomorphism(queryPaperGraphGdlStr));
+
     TestUtils.assertThatStreamContains(resultStream, expectedTriplets);
   }
 
@@ -55,7 +56,7 @@ public class IsomorphismTest extends MatchingTestBase {
   void testWithSocialGraph_personKnowsPerson() throws Exception {
     var loader = TestUtils.getSocialNetworkLoader();
     var queryStr = "(:Person)-[:knows]->(:Person)";
-    EdgeStream edgeStream = loader.createEdgeStream(config);
+    GraphStream graphStream = loader.createEdgeStream(config);
     var appendIsoString = "iso {}["
         + "(alice)-[akb]->(bob)"
         + "(bob)-[bka]->(alice)"
@@ -71,9 +72,10 @@ public class IsomorphismTest extends MatchingTestBase {
     loader.appendFromString(appendIsoString);
     var expectedTriplets = loader.createTripletsByGraphVariables("iso");
 
-    var resultStream = edgeStream
-        .callForStream(new Isomorphism<>(queryStr,
-            TumblingEventTimeWindows.of(Time.milliseconds(10))));
+    var resultStream = graphStream
+        .window(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        .callForGC(new Isomorphism(queryStr));
+
     TestUtils.assertThatStreamContains(resultStream, expectedTriplets);
   }
 
@@ -81,7 +83,7 @@ public class IsomorphismTest extends MatchingTestBase {
   void testWithSocialGraph_personKnowsPersonSince2014() throws Exception {
     var loader = TestUtils.getSocialNetworkLoader();
     var queryStr = "(:Person)-[:knows {since: 2014}]->(:Person)";
-    EdgeStream edgeStream = loader.createEdgeStream(config);
+    GraphStream graphStream = loader.createEdgeStream(config);
     var appendIsoString = "iso {}["
         + "(alice)-[akb]->(bob)"
         + "(bob)-[bka]->(alice)"
@@ -91,9 +93,10 @@ public class IsomorphismTest extends MatchingTestBase {
     loader.appendFromString(appendIsoString);
     var expectedTriplets = loader.createTripletsByGraphVariables("iso");
 
-    var resultStream = edgeStream
-        .callForStream(new Isomorphism<>(queryStr,
-            TumblingEventTimeWindows.of(Time.milliseconds(10))));
+    var resultStream = graphStream
+        .window(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        .callForGC(new Isomorphism(queryStr));
+
     TestUtils.assertThatStreamContains(resultStream, expectedTriplets);
   }
 
@@ -101,7 +104,7 @@ public class IsomorphismTest extends MatchingTestBase {
   void testWithSocialGraph_TripleWithPersonVertices() throws Exception {
     var loader = TestUtils.getSocialNetworkLoader();
     var queryStr = "(:Person)-[]->(:Person)";
-    EdgeStream edgeStream = loader.createEdgeStream(config);
+    GraphStream graphStream = loader.createEdgeStream(config);
     var appendIsoString = "iso {}["
         + "(alice)-[akb]->(bob)"
         + "(bob)-[bka]->(alice)"
@@ -117,9 +120,10 @@ public class IsomorphismTest extends MatchingTestBase {
     loader.appendFromString(appendIsoString);
     var expectedTriplets = loader.createTripletsByGraphVariables("iso");
 
-    var resultStream = edgeStream
-        .callForStream(new Isomorphism<>(queryStr,
-            TumblingEventTimeWindows.of(Time.milliseconds(10))));
+    var resultStream = graphStream
+        .window(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        .callForGC(new Isomorphism(queryStr));
+
     TestUtils.assertThatStreamContains(resultStream, expectedTriplets);
   }
 
@@ -127,7 +131,7 @@ public class IsomorphismTest extends MatchingTestBase {
   void testWithSocialGraph_TripleWithKnowsEdge() throws Exception {
     var loader = TestUtils.getSocialNetworkLoader();
     var queryStr = "()-[:knows]->()";
-    EdgeStream edgeStream = loader.createEdgeStream(config);
+    GraphStream graphStream = loader.createEdgeStream(config);
     var appendIsoString = "iso {}["
         + "(alice)-[akb]->(bob)"
         + "(bob)-[bka]->(alice)"
@@ -143,9 +147,10 @@ public class IsomorphismTest extends MatchingTestBase {
     loader.appendFromString(appendIsoString);
     var expectedTriplets = loader.createTripletsByGraphVariables("iso");
 
-    var resultStream = edgeStream
-        .callForStream(new Isomorphism<>(queryStr,
-            TumblingEventTimeWindows.of(Time.milliseconds(10))));
+    var resultStream = graphStream
+        .window(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        .callForGC(new Isomorphism(queryStr));
+
     TestUtils.assertThatStreamContains(resultStream, expectedTriplets);
   }
 
@@ -153,7 +158,7 @@ public class IsomorphismTest extends MatchingTestBase {
   void testWithSocialGraph_PersonsKnowEachOther() throws Exception {
     var loader = TestUtils.getSocialNetworkLoader();
     var queryStr = "(a)-[:knows]->(b)-[:knows]->(a)";
-    EdgeStream edgeStream = loader.createEdgeStream(config);
+    GraphStream graphStream = loader.createEdgeStream(config);
     var appendIsoString = "iso {}["
         + "(alice)-[akb]->(bob)"
         + "(bob)-[bka]->(alice)"
@@ -165,9 +170,10 @@ public class IsomorphismTest extends MatchingTestBase {
     loader.appendFromString(appendIsoString);
     var expectedTriplets = loader.createTripletsByGraphVariables("iso");
 
-    var resultStream = edgeStream
-        .callForStream(new Isomorphism<>(queryStr,
-            TumblingEventTimeWindows.of(Time.milliseconds(10))));
+    var resultStream = graphStream
+        .window(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        .callForGC(new Isomorphism(queryStr));
+
     TestUtils.assertThatStreamContains(resultStream, expectedTriplets);
   }
 
@@ -175,7 +181,7 @@ public class IsomorphismTest extends MatchingTestBase {
   void testWithSocialGraph_forumHasModerator() throws Exception {
     var loader = TestUtils.getSocialNetworkLoader();
     var queryStr = "(:Forum)-[:hasModerator]->()";
-    EdgeStream edgeStream = loader.createEdgeStream(config);
+    GraphStream graphStream = loader.createEdgeStream(config);
     var appendIsoString = "iso {}["
         + "(gps)-[gpshmod]->(dave)"
         + "(gdbs)-[gdbshmoa]->(alice)"
@@ -183,9 +189,10 @@ public class IsomorphismTest extends MatchingTestBase {
     loader.appendFromString(appendIsoString);
     var expectedTriplets = loader.createTripletsByGraphVariables("iso");
 
-    var resultStream = edgeStream
-        .callForStream(new Isomorphism<>(queryStr,
-            TumblingEventTimeWindows.of(Time.milliseconds(10))));
+    var resultStream = graphStream
+        .window(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        .callForGC(new Isomorphism(queryStr));
+
     TestUtils.assertThatStreamContains(resultStream, expectedTriplets);
   }
 

@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import edu.leipzig.grafs.model.Edge;
 import edu.leipzig.grafs.model.Triplet;
-import edu.leipzig.grafs.model.EdgeStream;
+import edu.leipzig.grafs.model.streaming.GraphStream;
 import edu.leipzig.grafs.model.Vertex;
 import edu.leipzig.grafs.operators.OperatorTestBase;
 import edu.leipzig.grafs.operators.subgraph.Subgraph.Strategy;
@@ -31,7 +31,7 @@ public class SubgraphTest extends OperatorTestBase {
         "(frank)-[fkd]->(dave)" +
         "]");
 
-    EdgeStream input = loader.createEdgeStream(getConfig());
+    GraphStream input = loader.createEdgeStream(getConfig());
 
     Collection<Triplet> expected =
         loader.createTripletsByGraphVariables("expected");
@@ -57,7 +57,7 @@ public class SubgraphTest extends OperatorTestBase {
         "(alice),(bob),(carol),(dave),(eve),(frank)" +
         "]");
 
-    EdgeStream input = loader.createEdgeStream(getConfig());
+    GraphStream input = loader.createEdgeStream(getConfig());
 
     Collection<Triplet> expected =
         loader.createTripletsByGraphVariables("expected");
@@ -85,7 +85,7 @@ public class SubgraphTest extends OperatorTestBase {
 
     loader.appendFromString("expected:_DB[]");
 
-    EdgeStream input = loader.createEdgeStream(getConfig());
+    GraphStream input = loader.createEdgeStream(getConfig());
 
     Collection<Triplet> expected =
         loader.createTripletsByGraphVariables("expected");
@@ -110,7 +110,7 @@ public class SubgraphTest extends OperatorTestBase {
         "(graphs)<-[ghtg2]-(gps)-[ghth]->(hadoop)" +
         "]");
 
-    EdgeStream input = loader.createEdgeStream(getConfig());
+    GraphStream input = loader.createEdgeStream(getConfig());
 
     Collection<Triplet> expected =
         loader.createTripletsByGraphVariables("expected");
@@ -134,7 +134,7 @@ public class SubgraphTest extends OperatorTestBase {
         "(graphs)<-[ghtg2]-(gps)-[ghth]->(hadoop)" +
         "]");
 
-    EdgeStream input = loader.createEdgeStream(getConfig());
+    GraphStream input = loader.createEdgeStream(getConfig());
 
     Collection<Triplet> expected =
         loader.createTripletsByGraphVariables("expected");

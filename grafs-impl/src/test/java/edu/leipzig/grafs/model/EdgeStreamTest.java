@@ -1,5 +1,6 @@
 package edu.leipzig.grafs.model;
 
+import edu.leipzig.grafs.model.streaming.GraphStream;
 import edu.leipzig.grafs.util.AsciiGraphLoader;
 import edu.leipzig.grafs.util.FlinkConfig;
 import edu.leipzig.grafs.util.FlinkConfigBuilder;
@@ -12,7 +13,7 @@ class EdgeStreamTest {
 
   final StreamExecutionEnvironment env =
       StreamExecutionEnvironment.getExecutionEnvironment();
-  EdgeStream edgeStream;
+  GraphStream graphStream;
 
 
   public EdgeStreamTest() {
@@ -36,6 +37,6 @@ class EdgeStreamTest {
             .<Triplet>forBoundedOutOfOrderness(Duration.ZERO)
             .withTimestampAssigner((ec, timestamp) -> 0))
         .build();
-    edgeStream = loader.createEdgeStream(config);
+    graphStream = loader.createEdgeStream(config);
   }
 }

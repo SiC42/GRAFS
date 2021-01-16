@@ -1,6 +1,7 @@
 package edu.leipzig.grafs.operators.matching;
 
 import edu.leipzig.grafs.model.Triplet;
+import edu.leipzig.grafs.model.streaming.WindowedBaseStream.WindowInformation;
 import edu.leipzig.grafs.operators.matching.logic.IsomorphismMatchingProcess;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.windowing.assigners.WindowAssigner;
@@ -12,30 +13,17 @@ import org.apache.flink.streaming.api.windowing.windows.Window;
  * algorithm in <a href="https://ieeexplore.ieee.org/abstract/document/6906821">"DualIso: An
  * Algorithm for Subgraph Pattern Matching on Very Large Labeled Graphs"</a> by Saltz et al.
  *
- * @param <W> type of window that is used in this operation
  */
-public class Isomorphism<W extends Window> extends AbstractMatchingOperator<W> {
+public class Isomorphism extends AbstractMatchingOperator {
 
-  /**
-   * Initializes the operator with the given parameters (without trigger).
-   *
-   * @param query  query string that is used to make the query graph
-   * @param window window that for this operation
-   */
-  public Isomorphism(String query, WindowAssigner<Object, W> window) {
-    this(query, window, null);
-  }
 
   /**
    * Initializes the operator with the given parameters.
    *
    * @param query   query string that is used to make the query graph
-   * @param window  window that for this operation
-   * @param trigger optional window trigger that is used for this operation
    */
-  public Isomorphism(String query, WindowAssigner<Object, W> window,
-      Trigger<Triplet, W> trigger) {
-    super(query, window, trigger);
+  public Isomorphism(String query) {
+    super(query);
   }
 
   /**
@@ -45,8 +33,8 @@ public class Isomorphism<W extends Window> extends AbstractMatchingOperator<W> {
    * @return the stream with this matching operator applied
    */
   @Override
-  public DataStream<Triplet> execute(DataStream<Triplet> stream) {
-    var preProcessedStream = preProcessAndApplyWindow(stream);
+  public <W extends Window> DataStream<Triplet> execute(DataStream<Triplet> stream, WindowInformation<W> wi) {
+    var preProcessedStream = preProcessAndApplyWindow(stream, wi);
     return preProcessedStream.process(new IsomorphismMatchingProcess<>(queryGraph))
         .name("Isomorphism Pattern Matching");
   }

@@ -2,7 +2,7 @@ package edu.leipzig.grafs.operators.union;
 
 import com.google.common.annotations.Beta;
 import edu.leipzig.grafs.model.Triplet;
-import edu.leipzig.grafs.model.EdgeStream;
+import edu.leipzig.grafs.model.streaming.GraphStream;
 import edu.leipzig.grafs.operators.interfaces.GraphToGraphCollectionOperatorI;
 import edu.leipzig.grafs.operators.interfaces.GraphToGraphOperatorI;
 import org.apache.flink.streaming.api.datastream.DataStream;
@@ -23,7 +23,7 @@ public class UnionWithDuplicateInWindow<W extends Window> implements
   /**
    * Streams that should be unified via the union operation.
    */
-  private final EdgeStream[] streams;
+  private final GraphStream[] streams;
 
   /**
    * Window in which only distinct elements should exist
@@ -41,7 +41,7 @@ public class UnionWithDuplicateInWindow<W extends Window> implements
    * @param window  window in which only distinct elements should exist
    * @param streams streams that should be unified by applying the union operator onto a stream
    */
-  public UnionWithDuplicateInWindow(WindowAssigner<Object, W> window, EdgeStream... streams) {
+  public UnionWithDuplicateInWindow(WindowAssigner<Object, W> window, GraphStream... streams) {
     this(window, null, streams);
   }
 
@@ -53,7 +53,7 @@ public class UnionWithDuplicateInWindow<W extends Window> implements
    * @param trigger optional window trigger that is used for this operation
    */
   public UnionWithDuplicateInWindow(WindowAssigner<Object, W> window,
-      Trigger<Triplet, W> trigger, EdgeStream... streams) {
+      Trigger<Triplet, W> trigger, GraphStream... streams) {
     this.streams = streams;
     this.trigger = trigger;
     this.window = window;

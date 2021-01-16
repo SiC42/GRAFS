@@ -2,6 +2,7 @@ package edu.leipzig.grafs.operators.grouping;
 
 import com.google.common.annotations.Beta;
 import edu.leipzig.grafs.model.Triplet;
+import edu.leipzig.grafs.model.streaming.WindowedBaseStream.WindowInformation;
 import edu.leipzig.grafs.operators.grouping.functions.AggregateFunction;
 import edu.leipzig.grafs.operators.grouping.logic.EdgeAggregation;
 import edu.leipzig.grafs.operators.grouping.logic.TripletKeySelector;
@@ -9,6 +10,7 @@ import edu.leipzig.grafs.operators.grouping.logic.VertexAggregation;
 import edu.leipzig.grafs.operators.grouping.model.AggregateMode;
 import edu.leipzig.grafs.operators.grouping.model.GroupingInformation;
 import edu.leipzig.grafs.operators.interfaces.GraphToGraphOperatorI;
+import edu.leipzig.grafs.operators.interfaces.windowed.WindowedGraphToGraphOperatorI;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -26,18 +28,14 @@ import org.gradoop.common.model.impl.id.GradoopId;
  * This operator groups the graph elements based on the given grouping information into one element
  * and applies the given aggregation functions to the resulting element. This is done in a Window of
  * the stream.
- *
- * @param <W> type of window that is used in this operation
  */
-public class Grouping<W extends Window> implements GraphToGraphOperatorI {
+public class Grouping implements WindowedGraphToGraphOperatorI {
 
   private final GroupingInformation vertexGi;
   private final Set<AggregateFunction> vertexAggregateFunctions;
   private final GroupingInformation edgeGi;
   private final Set<AggregateFunction> edgeAggregateFunctions;
 
-  private final WindowAssigner<Object, W> window;
-  private final Trigger<Object, W> trigger;
 
   /**
    * Constructs the operator with the given grouping information, aggregation functions and the
@@ -47,19 +45,13 @@ public class Grouping<W extends Window> implements GraphToGraphOperatorI {
    * @param vertexAggregateFunctions Aggregation functions for the grouped vertices
    * @param edgeGi                   Grouping information for the edges
    * @param edgeAggregateFunctions   Aggregation functions for the grouped edges
-   * @param window                   window onto which this operator should be applied upon
-   * @param trigger                  optional trigger
    */
   public Grouping(GroupingInformation vertexGi, Set<AggregateFunction> vertexAggregateFunctions,
-      GroupingInformation edgeGi, Set<AggregateFunction> edgeAggregateFunctions,
-      WindowAssigner<Object, W> window,
-      Trigger<Object, W> trigger) {
+      GroupingInformation edgeGi, Set<AggregateFunction> edgeAggregateFunctions) {
     this.vertexGi = vertexGi;
     this.vertexAggregateFunctions = vertexAggregateFunctions;
     this.edgeGi = edgeGi;
     this.edgeAggregateFunctions = edgeAggregateFunctions;
-    this.window = window;
-    this.trigger = trigger;
   }
 
   /**
@@ -74,19 +66,13 @@ public class Grouping<W extends Window> implements GraphToGraphOperatorI {
    *                                 the element should be grouping should be applied on the label}
    *                                 for the edges
    * @param edgeAggregateFunctions   Aggregation functions for the grouped edges
-   * @param window                   window onto which this operator should be applied upon
-   * @param trigger                  optional trigger
    */
   public Grouping(Set<String> vertexGiSet, Set<AggregateFunction> vertexAggregateFunctions,
-      Set<String> edgeGiSet, Set<AggregateFunction> edgeAggregateFunctions,
-      WindowAssigner<Object, W> window,
-      Trigger<Object, W> trigger) {
+      Set<String> edgeGiSet, Set<AggregateFunction> edgeAggregateFunctions) {
     this(new GroupingInformation(vertexGiSet),
         vertexAggregateFunctions,
         new GroupingInformation(edgeGiSet),
-        edgeAggregateFunctions,
-        window,
-        trigger);
+        edgeAggregateFunctions);
   }
 
   /**
@@ -105,8 +91,8 @@ public class Grouping<W extends Window> implements GraphToGraphOperatorI {
    * @return the stream with the grouping operator applied
    */
   @Override
-  public DataStream<Triplet> execute(DataStream<Triplet> stream) {
-    return groupBy(stream);
+  public <W extends Window> DataStream<Triplet> execute(DataStream<Triplet> stream, WindowInformation<W> wi) {
+    return groupBy(stream, wi);
   }
 
   /**
@@ -115,15 +101,15 @@ public class Grouping<W extends Window> implements GraphToGraphOperatorI {
    * @param stream stream on which the operator should be applied
    * @return the stream with the grouping operator applied
    */
-  public DataStream<Triplet> groupBy(DataStream<Triplet> stream) {
+  public <W extends Window> DataStream<Triplet> groupBy(DataStream<Triplet> stream, WindowInformation<W> wi) {
     // Enrich stream with reverse edges
     var expandedStream = createStreamWithReverseEdges(stream);
 
-    var aggregatedOnSourceStream = aggregateOnVertex(expandedStream, AggregateMode.SOURCE);
+    var aggregatedOnSourceStream = aggregateOnVertex(expandedStream, AggregateMode.SOURCE, wi);
     var aggregatedOnVertexStream = aggregateOnVertex(aggregatedOnSourceStream,
-        AggregateMode.TARGET);
+        AggregateMode.TARGET, wi);
     var reducedStream = aggregatedOnVertexStream.filter(ec -> !ec.getEdge().isReverse());
-    var aggregatedOnEdgeStream = aggregateOnEdge(reducedStream);
+    var aggregatedOnEdgeStream = aggregateOnEdge(reducedStream, wi);
     var graphId = GradoopId.get();
     return aggregatedOnEdgeStream.map(triplet -> {
       triplet.addGraphId(graphId);
@@ -158,9 +144,9 @@ public class Grouping<W extends Window> implements GraphToGraphOperatorI {
    *               the grouping key is generated)
    * @return stream on which the indicated vertices are grouped
    */
-  private DataStream<Triplet> aggregateOnVertex(DataStream<Triplet> stream,
-      AggregateMode mode) {
-    var windowedStream = createKeyedWindowedStream(stream, mode);
+  private <W extends Window> DataStream<Triplet> aggregateOnVertex(DataStream<Triplet> stream,
+      AggregateMode mode, WindowInformation<W> wi) {
+    var windowedStream = createKeyedWindowedStream(stream, mode, wi);
     return windowedStream.process(
         new VertexAggregation<>(vertexGi, vertexAggregateFunctions, mode))
         .name("Aggregate " + mode.name() + " VERTICES");
@@ -172,9 +158,9 @@ public class Grouping<W extends Window> implements GraphToGraphOperatorI {
    * @param stream stream on which the edges should be aggregated
    * @return stream on which the edges are grouped
    */
-  private DataStream<Triplet> aggregateOnEdge(DataStream<Triplet> stream) {
-    var windowedStream = createKeyedWindowedStream(stream, AggregateMode.EDGE);
     return windowedStream.process(new EdgeAggregation<W>(edgeGi, edgeAggregateFunctions))
+  private <W extends Window> DataStream<Triplet> aggregateOnEdge(DataStream<Triplet> stream, WindowInformation<W> wi) {
+    var windowedStream = createKeyedWindowedStream(stream, AggregateMode.EDGE, wi);
         .name("Aggregate EDGES");
   }
 
@@ -186,14 +172,12 @@ public class Grouping<W extends Window> implements GraphToGraphOperatorI {
    *             be keyed upon
    * @return stream that is keyed based on the given mode and windowed
    */
-  private WindowedStream<Triplet, String, W> createKeyedWindowedStream(
-      DataStream<Triplet> es, AggregateMode mode) {
+  private <W extends Window> WindowedStream<Triplet, String, W> createKeyedWindowedStream(
+      DataStream<Triplet> es, AggregateMode mode, WindowInformation<W> wi) {
     var windowedStream = es
         .keyBy(new TripletKeySelector(vertexGi, edgeGi, mode))
-        .window(window);
-    if (trigger != null) {
-      windowedStream = windowedStream.trigger(trigger);
-    }
+        .window(wi.getWindow());
+    windowedStream = applyOtherWindowInformation(windowedStream, wi);
     return windowedStream;
   }
 
@@ -263,35 +247,12 @@ public class Grouping<W extends Window> implements GraphToGraphOperatorI {
     }
 
     /**
-     * Builds the grouping with the given window.
+     * Builds the grouping.
      *
-     * @param window window used for the grouping
-     * @param <W>    type of window
-     * @return grouping operator with the already provided grouping information and functions and
-     * the given window
+     * @return grouping operator with the already provided grouping information and functions
      */
-    public <W extends Window> Grouping<W> buildWithWindow(WindowAssigner<Object, W> window) {
-      return new Grouping<>(vertexGi, vertexAggFunctions, edgeGi, aggregateFunctions, window, null);
-    }
-
-    /**
-     * Builds the grouping with the given window and trigger.
-     * <p>
-     * This method is experimental, as it was not tested and was originally intended for closing the
-     * window after a specific amount of elements.
-     *
-     * @param window  window used for the grouping
-     * @param trigger trigger that should be used
-     * @param <W>     type of window
-     * @return grouping operator with the already provided grouping information and functions and
-     * the given window and trigger
-     */
-    @Beta
-    public <W extends Window> Grouping<W> buildWithWindowAndTrigger(
-        WindowAssigner<Object, W> window,
-        Trigger<Object, W> trigger) {
-      return new Grouping<>(vertexGi, vertexAggFunctions, edgeGi, aggregateFunctions, window,
-          trigger);
+    public <W extends Window> Grouping build() {
+      return new Grouping(vertexGi, vertexAggFunctions, edgeGi, aggregateFunctions);
     }
 
     /**

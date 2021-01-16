@@ -5,7 +5,7 @@ import static edu.leipzig.grafs.util.TestUtils.validateElementCollections;
 import static edu.leipzig.grafs.util.TestUtils.validateIdEquality;
 
 import edu.leipzig.grafs.model.Edge;
-import edu.leipzig.grafs.model.EdgeStream;
+import edu.leipzig.grafs.model.streaming.GraphStream;
 import edu.leipzig.grafs.model.Element;
 import edu.leipzig.grafs.model.Vertex;
 import edu.leipzig.grafs.util.AsciiGraphLoader;
@@ -89,7 +89,7 @@ public class EdgeTransformationTest extends TransformationBaseTest {
     Collection<Edge> expectedEdges = loader.getEdgesByGraphVariables("g01");
     Collection<Vertex> expectedVertices = loader.getVerticesByGraphVariables("g01");
 
-    EdgeStream original = loader.createEdgeStreamByGraphVariables(getConfig(), "g0");
+    GraphStream original = loader.createEdgeStreamByGraphVariables(getConfig(), "g0");
 
     var tripletResultIt = original.transformEdges(EdgeTransformationTest::transformEdge).collect();
 

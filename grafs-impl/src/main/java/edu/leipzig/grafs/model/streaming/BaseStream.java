@@ -1,6 +1,6 @@
-package edu.leipzig.grafs.model;
+package edu.leipzig.grafs.model.streaming;
 
-import edu.leipzig.grafs.operators.interfaces.OperatorI;
+import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.util.FlinkConfig;
 import java.io.IOException;
 import java.util.Iterator;
@@ -9,13 +9,11 @@ import org.apache.flink.streaming.api.datastream.DataStreamUtils;
 import org.apache.flink.streaming.api.functions.sink.SinkFunction;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer;
 
-/**
- * Model that abstracts the data stream to a edge(container)-stream.
- */
-public class EdgeStream implements EdgeStreamOperators {
+public abstract class BaseStream {
 
-  private final DataStream<Triplet> edgeStream;
-  private final FlinkConfig config;
+
+  protected final DataStream<Triplet> edgeStream;
+  protected final FlinkConfig config;
 
   /**
    * Constructs an edge stream with the given data stream and config.
@@ -23,7 +21,7 @@ public class EdgeStream implements EdgeStreamOperators {
    * @param edgeStream data stream that holds <tt>Triplet</tt>
    * @param config     config used for the stream
    */
-  public EdgeStream(DataStream<Triplet> edgeStream, FlinkConfig config) {
+  public BaseStream(DataStream<Triplet> edgeStream, FlinkConfig config) {
     this.edgeStream = edgeStream.assignTimestampsAndWatermarks(config.getWatermarkStrategy());
     this.config = config;
   }
@@ -35,10 +33,10 @@ public class EdgeStream implements EdgeStreamOperators {
    * @param config     config used for the stream
    * @return
    */
-  public static EdgeStream fromSource(FlinkKafkaConsumer<Triplet> fkConsumer,
+  public static GraphStream fromSource(FlinkKafkaConsumer<Triplet> fkConsumer,
       FlinkConfig config) {
     var stream = config.getExecutionEnvironment().addSource(fkConsumer);
-    return new EdgeStream(stream, config);
+    return new GraphStream(stream, config);
   }
 
   /**
@@ -50,17 +48,6 @@ public class EdgeStream implements EdgeStreamOperators {
    */
   public void addSink(SinkFunction<Triplet> sinkFunction){
     edgeStream.addSink(sinkFunction);
-  }
-
-  /**
-   * Creates an edge stream from this stream using the given operator.
-   *
-   * @param operator operator that should be used on this stream
-   * @return result of given operator
-   */
-  public EdgeStream callForStream(OperatorI operator) {
-    DataStream<Triplet> result = operator.execute(edgeStream);
-    return new EdgeStream(result, config);
   }
 
   /**
@@ -88,4 +75,5 @@ public class EdgeStream implements EdgeStreamOperators {
   public Iterator<Triplet> collect() throws IOException {
     return DataStreamUtils.collect(edgeStream);
   }
+
 }

@@ -7,7 +7,7 @@ import edu.leipzig.grafs.factory.EdgeFactory;
 import edu.leipzig.grafs.factory.VertexFactory;
 import edu.leipzig.grafs.model.Edge;
 import edu.leipzig.grafs.model.Triplet;
-import edu.leipzig.grafs.model.EdgeStream;
+import edu.leipzig.grafs.model.streaming.GraphStream;
 import edu.leipzig.grafs.model.Vertex;
 import java.io.IOException;
 import java.io.InputStream;
@@ -164,7 +164,7 @@ public class AsciiGraphLoader {
    * @param expected graph variables that should be selected
    * @return stream of selected edges
    */
-  public EdgeStream createEdgeStreamByGraphVariables(FlinkConfig config, String... expected) {
+  public GraphStream createEdgeStreamByGraphVariables(FlinkConfig config, String... expected) {
     return createEdgeStream(config, createTripletsByGraphVariables(expected));
   }
 
@@ -174,14 +174,14 @@ public class AsciiGraphLoader {
    * @param config config used to produce the stream
    * @return stream of edges loaded
    */
-  public EdgeStream createEdgeStream(FlinkConfig config) {
+  public GraphStream createEdgeStream(FlinkConfig config) {
     return createEdgeStream(config, createTriplets());
   }
 
-  private EdgeStream createEdgeStream(FlinkConfig config, Collection<Triplet> triplet) {
+  private GraphStream createEdgeStream(FlinkConfig config, Collection<Triplet> triplet) {
     StreamExecutionEnvironment env = config.getExecutionEnvironment();
     DataStream<Triplet> stream = env.fromCollection(triplet);
-    return new EdgeStream(stream, config);
+    return new GraphStream(stream, config);
   }
 
   /**

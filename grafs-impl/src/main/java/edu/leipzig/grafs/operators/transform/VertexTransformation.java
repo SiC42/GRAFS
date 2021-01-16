@@ -2,6 +2,7 @@ package edu.leipzig.grafs.operators.transform;
 
 import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.model.Vertex;
+import edu.leipzig.grafs.operators.interfaces.GraphCollectionToGraphCollectionOperatorI;
 import edu.leipzig.grafs.operators.interfaces.GraphToGraphOperatorI;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.streaming.api.datastream.DataStream;
@@ -10,7 +11,8 @@ import org.apache.flink.streaming.api.datastream.DataStream;
  * Represents a Vertex Transformation Operator. The given transformation function is applied to all
  * vertices in the stream.
  */
-public class VertexTransformation implements GraphToGraphOperatorI {
+public class VertexTransformation implements GraphToGraphOperatorI,
+    GraphCollectionToGraphCollectionOperatorI {
 
   /**
    * Function that is applied to the stream

@@ -10,7 +10,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import com.google.common.collect.Maps;
 import edu.leipzig.grafs.model.Triplet;
-import edu.leipzig.grafs.model.EdgeStream;
+import edu.leipzig.grafs.model.streaming.BaseStream;
+import edu.leipzig.grafs.model.streaming.GraphStream;
 import edu.leipzig.grafs.model.Element;
 import edu.leipzig.grafs.model.GraphElement;
 import edu.leipzig.grafs.operators.grouping.functions.AggregateFunction;
@@ -527,7 +528,7 @@ public class TestUtils {
     return cl.cast(o);
   }
 
-  public static void assertThatStreamContains(EdgeStream actualResultStream,
+  public static void assertThatStreamContains(BaseStream actualResultStream,
       Collection<Triplet> expectedResult)
       throws IOException {
     var tripletIt = actualResultStream.collect();
