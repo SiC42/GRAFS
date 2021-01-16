@@ -30,12 +30,12 @@ class VertexAggregationTest {
         "(a18 {n : \"A\", a : 18})," +
             "(a20 {n : \"A\", a : 20})," +
             "(a25 {n : \"A\", a : 25})," +
-            "(a17 {n : \"B\", a : 17})," +
-            "(a19 {n : \"B\", a : 19})," +
-            "(a20 {n : \"C\", a : 20})," +
-            "(a18)-[]->(a17)," +
-            "(a18)-[]->(a20)," +
-            "(a20)-[]->(a19),"
+            "(b17 {n : \"B\", a : 17})," +
+            "(b19 {n : \"B\", a : 19})," +
+            "(c20 {n : \"C\", a : 20})," +
+            "(a18)-[]->(b17)," +
+            "(a18)-[]->(c20)," +
+            "(a20)-[]->(b19),"
     );
 
     var tripletList = new ArrayList<>(loader.createTriplets());
@@ -45,12 +45,12 @@ class VertexAggregationTest {
     // create expected output
     AsciiGraphLoader expectedOutputLoader = AsciiGraphLoader.fromString(
         "(a38 {n : \"A\", a : 38})," +
-            "(a17 {n : \"B\", a : 17})," +
-            "(a19 {n : \"B\", a : 19})," +
-            "(a20 {n : \"C\", a : 20})," +
-            "(a38)-[]->(a17)," +
-            "(a38)-[]->(a20)," +
-            "(a38)-[]->(a19),"
+            "(b17 {n : \"B\", a : 17})," +
+            "(b19 {n : \"B\", a : 19})," +
+            "(c20 {n : \"C\", a : 20})," +
+            "(a38)-[]->(b17)," +
+            "(a38)-[]->(c20)," +
+            "(a38)-[]->(b19),"
     );
 
     var expectedTripletCol = expectedOutputLoader.createTriplets();
