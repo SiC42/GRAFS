@@ -1,6 +1,7 @@
 package edu.leipzig.grafs.operators.transform;
 
 import edu.leipzig.grafs.model.Edge;
+import edu.leipzig.grafs.model.Element;
 import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.operators.interfaces.GraphCollectionToGraphCollectionOperatorI;
 import edu.leipzig.grafs.operators.interfaces.GraphToGraphOperatorI;
@@ -24,9 +25,9 @@ public class EdgeTransformation implements GraphToGraphOperatorI,
    *
    * @param mapper transformation function that is used on every edge of the stream
    */
-  public EdgeTransformation(final MapFunction<Edge, Edge> mapper) {
+  public EdgeTransformation(final MapFunction<Element, Element> mapper) {
     this.tripletMapper = triplet -> {
-      var transformedEdge = mapper.map(triplet.getEdge());
+      var transformedEdge = (Edge) mapper.map(triplet.getEdge());
       return new Triplet(transformedEdge, triplet.getSourceVertex(), triplet.getTargetVertex());
     };
   }

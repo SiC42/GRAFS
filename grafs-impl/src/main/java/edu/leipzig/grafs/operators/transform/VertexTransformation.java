@@ -1,5 +1,6 @@
 package edu.leipzig.grafs.operators.transform;
 
+import edu.leipzig.grafs.model.Element;
 import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.model.Vertex;
 import edu.leipzig.grafs.operators.interfaces.GraphCollectionToGraphCollectionOperatorI;
@@ -22,12 +23,12 @@ public class VertexTransformation implements GraphToGraphOperatorI,
   /**
    * Initializes this operator with the given transformation function.
    *
-   * @param mapper transformation function that is used on every vertice of the stream
+   * @param mapper transformation function that is used on every vertex of the stream
    */
-  public VertexTransformation(final MapFunction<Vertex, Vertex> mapper) {
+  public VertexTransformation(final MapFunction<Element, Element> mapper) {
     this.tripletMapper = triplet -> {
-      Vertex source = mapper.map(triplet.getSourceVertex());
-      Vertex target = mapper.map(triplet.getTargetVertex());
+      Vertex source = (Vertex) mapper.map(triplet.getSourceVertex());
+      Vertex target = (Vertex) mapper.map(triplet.getTargetVertex());
       return new Triplet(triplet.getEdge(), source, target);
     };
   }

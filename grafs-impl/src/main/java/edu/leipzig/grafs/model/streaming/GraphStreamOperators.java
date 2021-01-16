@@ -1,6 +1,7 @@
 package edu.leipzig.grafs.model.streaming;
 
 import edu.leipzig.grafs.model.Edge;
+import edu.leipzig.grafs.model.Element;
 import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.model.Vertex;
 import edu.leipzig.grafs.operators.interfaces.GraphToGraphCollectionOperatorI;
@@ -93,7 +94,7 @@ public interface GraphStreamOperators {
    * @param mapper edge mapping used in the transformation operator
    * @return result stream of the transformation operator
    */
-  default GraphStream transformEdges(MapFunction<Edge, Edge> mapper) {
+  default GraphStream transformEdges(MapFunction<Element, Element> mapper) {
     return this.callForGraph(new EdgeTransformation(mapper));
   }
 
@@ -103,7 +104,7 @@ public interface GraphStreamOperators {
    * @param mapper vertex mapping used in the transformation operator
    * @return result stream of the transformation operator
    */
-  default GraphStream transformVertices(MapFunction<Vertex, Vertex> mapper) {
+  default GraphStream transformVertices(MapFunction<Element, Element> mapper) {
     return this.callForGraph(new VertexTransformation(mapper));
   }
 

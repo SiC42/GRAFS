@@ -27,7 +27,7 @@ public class VertexTransformationTest extends TransformationBaseTest {
       "g11:B  { a : 2 } [(:A { a : 3, b : 5 })-[:a { a : 3, b : 4 }]->(:B { c : 2, d : 2 })]";
 
 
-  static Vertex transformVertex(Vertex current) {
+  static Element transformVertex(Element current) {
     current.setLabel(current.getLabel());
     if (current.getLabel().equals("A")) {
       current.setProperty("a", current.getPropertyValue("a").getInt() + 1);
