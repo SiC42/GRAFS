@@ -3,20 +3,14 @@ package edu.leipzig.grafs.model.streaming;
 import edu.leipzig.grafs.model.Edge;
 import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.model.Vertex;
-import edu.leipzig.grafs.operators.grouping.Grouping;
-import edu.leipzig.grafs.operators.grouping.functions.AggregateFunction;
-import edu.leipzig.grafs.operators.grouping.model.GroupingInformation;
 import edu.leipzig.grafs.operators.interfaces.GraphToGraphCollectionOperatorI;
 import edu.leipzig.grafs.operators.interfaces.GraphToGraphOperatorI;
-import edu.leipzig.grafs.operators.matching.DualSimulation;
-import edu.leipzig.grafs.operators.matching.Isomorphism;
 import edu.leipzig.grafs.operators.subgraph.Subgraph;
 import edu.leipzig.grafs.operators.subgraph.Subgraph.Strategy;
 import edu.leipzig.grafs.operators.transform.EdgeTransformation;
 import edu.leipzig.grafs.operators.transform.VertexTransformation;
 import edu.leipzig.grafs.operators.union.DisjunctUnion;
 import edu.leipzig.grafs.operators.union.UnionWithDuplicateInWindow;
-import java.util.Set;
 import org.apache.flink.api.common.functions.FilterFunction;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.streaming.api.windowing.assigners.WindowAssigner;
@@ -26,15 +20,23 @@ import org.apache.flink.streaming.api.windowing.windows.Window;
 /**
  * Defines the operators that are available on a {@link Triplet}.
  */
-public interface GraphStreamOperators{
+public interface GraphStreamOperators {
+
   /**
-   * Creates an edge stream using the given operator.
+   * Creates a graph stream using the given operator.
    *
-   * @param operator operator that should be used on this stream
-   * @return result of given operator
+   * @param operator operator that should be used on this graph stream
+   * @return result of given operator as graph stream
    */
   GraphStream callForGraph(GraphToGraphOperatorI operator);
 
+
+  /**
+   * Creates a graph collection stream using the given operator.
+   *
+   * @param operator operator that should be used on this graph stream
+   * @return result of given operator as graph collection stream
+   */
   GCStream callForGC(GraphToGraphCollectionOperatorI operator);
 
   // ---------------------------------------------------------------------------

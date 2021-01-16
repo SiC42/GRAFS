@@ -12,18 +12,18 @@ import java.util.Set;
 public interface WindowedGraphStreamOperators {
 
   /**
-   * Creates an edge stream using the given operator.
+   * Creates a graph stream using the given operator.
    *
-   * @param operator operator that should be used on this stream
-   * @return result of given operator
+   * @param operator operator that should be used on this windowed graph stream
+   * @return result of given operator as graph stream
    */
   GraphStream callForGraph(WindowedGraphToGraphOperatorI operator);
 
   /**
-   * Creates an edge stream using the given operator.
+   * Creates a graph collection stream using the given operator.
    *
-   * @param operator operator that should be used on this stream
-   * @return result of given operator
+   * @param operator operator that should be used on this windowed graph stream
+   * @return result of given operator as graph collection stream
    */
   GCStream callForGC(WindowedGraphToGraphCollectionOperatorI operator);
 
