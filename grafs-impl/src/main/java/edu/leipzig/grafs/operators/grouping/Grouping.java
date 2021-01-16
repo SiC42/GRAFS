@@ -158,9 +158,9 @@ public class Grouping implements WindowedGraphToGraphOperatorI {
    * @param stream stream on which the edges should be aggregated
    * @return stream on which the edges are grouped
    */
-    return windowedStream.process(new EdgeAggregation<W>(edgeGi, edgeAggregateFunctions))
   private <W extends Window> DataStream<Triplet> aggregateOnEdge(DataStream<Triplet> stream, WindowInformation<W> wi) {
     var windowedStream = createKeyedWindowedStream(stream, AggregateMode.EDGE, wi);
+    return windowedStream.process(new EdgeAggregation<>(edgeGi, edgeAggregateFunctions, GradoopId.get()))
         .name("Aggregate EDGES");
   }
 

@@ -8,6 +8,8 @@ import edu.leipzig.grafs.operators.grouping.model.GroupingInformation;
 import java.util.Set;
 import org.apache.flink.streaming.api.windowing.windows.Window;
 import org.apache.flink.util.Collector;
+import org.gradoop.common.model.impl.id.GradoopId;
+import org.gradoop.common.model.impl.id.GradoopIdSet;
 
 /**
  * Provides the ability to aggregate on edges of the streams by providing the {@link
@@ -20,21 +22,24 @@ public class EdgeAggregation<W extends Window> extends ElementAggregationProcess
 
   private final GroupingInformation edgeGroupInfo;
   private final Set<AggregateFunction> edgeAggregateFunctions;
+  private final GradoopId newGraphId;
 
   /**
    * Constructs the edge aggregation with the given information.
    *
    * @param edgeGroupInfo    grouping information used to determine which edges are in a group
-   * @param aggregateFunctions aggregate functions that are used to calculate the aggregates and set
-   *                           them in the aggregated edge
+   * @param aggregateFunctions aggregate functions that are used to calculate the aggregates and set them in the aggregated edge
+   * @param newGraphId graph id used for the aggregated graph
+   *
    */
   public EdgeAggregation(GroupingInformation edgeGroupInfo,
-      Set<AggregateFunction> aggregateFunctions) {
+      Set<AggregateFunction> aggregateFunctions, GradoopId newGraphId) {
     if (aggregateFunctions != null && edgeGroupInfo != null) {
       checkAggregationAndGroupingKeyIntersection(aggregateFunctions, edgeGroupInfo);
     }
     this.edgeGroupInfo = edgeGroupInfo;
     this.edgeAggregateFunctions = aggregateFunctions;
+    this.newGraphId = newGraphId;
   }
 
   /**
@@ -51,31 +56,34 @@ public class EdgeAggregation<W extends Window> extends ElementAggregationProcess
       Collector<Triplet> out) {
     var aggregatedEdge = EdgeFactory.createEdge();
 
-    Triplet lastEc = null;
+    Triplet lastTriplet = null;
 
     for (var triplet : tripletIt) {
       aggregatedEdge = (Edge) aggregateElement(aggregatedEdge, triplet.getEdge(),
           edgeAggregateFunctions
       );
-      lastEc = triplet;
+      lastTriplet = triplet;
     }
     aggregatedEdge = (Edge) checkForMissingAggregationsAndApply(edgeAggregateFunctions,
         aggregatedEdge);
-    Triplet aggregatedEContainer;
+    Triplet aggregatedTriplet;
 
     // we have not set the grouped properties yet
-    assert lastEc != null;
+    assert lastTriplet != null;
     aggregatedEdge = (Edge) setGroupedProperties(edgeGroupInfo,
         aggregatedEdge,
-        lastEc.getEdge());
-    var source = lastEc.getSourceVertex();
-    var target = lastEc.getTargetVertex();
+        lastTriplet.getEdge());
+    aggregatedEdge.setGraphIds(GradoopIdSet.fromExisting(newGraphId));
+    var source = lastTriplet.getSourceVertex();
+    source.setGraphIds(GradoopIdSet.fromExisting(newGraphId));
+    var target = lastTriplet.getTargetVertex();
+    target.setGraphIds(GradoopIdSet.fromExisting(newGraphId));
     aggregatedEdge.setSourceId(source.getId());
     aggregatedEdge.setTargetId(target.getId());
-    aggregatedEContainer = new Triplet(aggregatedEdge, source,
+    aggregatedTriplet = new Triplet(aggregatedEdge, source,
         target);
 
-    out.collect(aggregatedEContainer);
+    out.collect(aggregatedTriplet);
   }
 
 }
