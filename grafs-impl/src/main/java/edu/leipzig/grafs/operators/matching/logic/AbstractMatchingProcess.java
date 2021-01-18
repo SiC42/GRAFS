@@ -119,7 +119,7 @@ public abstract class AbstractMatchingProcess<W extends Window> extends
    * @param graph graph used to get the source and target of the given edge
    * @return <tt>true</tt> if the given edge matches and edge in the query graph
    */
-  private boolean matchesAnyQueryEdge(Edge edge, Graph graph) {
+  protected boolean matchesAnyQueryEdge(Edge edge, Graph graph) {
     EdgeQueryFilter edgeFilter = new EdgeQueryFilter(queryGraph);
     var source = graph.getSourceForEdge(edge);
     var target = graph.getTargetForEdge(edge);
