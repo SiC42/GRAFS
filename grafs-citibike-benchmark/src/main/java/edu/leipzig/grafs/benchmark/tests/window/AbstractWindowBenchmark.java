@@ -1,19 +1,21 @@
 package edu.leipzig.grafs.benchmark.tests.window;
 
 import edu.leipzig.grafs.benchmark.tests.AbstractBenchmark;
+import edu.leipzig.grafs.model.streaming.AbstractStream;
+import edu.leipzig.grafs.model.streaming.GraphStream;
+import edu.leipzig.grafs.model.streaming.WindowedGraphStream;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-import org.apache.flink.streaming.api.windowing.assigners.GlobalWindows;
 import org.apache.flink.streaming.api.windowing.assigners.TumblingProcessingTimeWindows;
 import org.apache.flink.streaming.api.windowing.assigners.WindowAssigner;
 import org.apache.flink.streaming.api.windowing.time.Time;
 import org.apache.flink.streaming.api.windowing.triggers.CountTrigger;
 import org.apache.flink.streaming.api.windowing.triggers.PurgingTrigger;
 import org.apache.flink.streaming.api.windowing.triggers.Trigger;
-import org.apache.flink.streaming.api.windowing.windows.GlobalWindow;
 import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
+import org.apache.flink.streaming.api.windowing.windows.Window;
 
 public abstract class AbstractWindowBenchmark extends AbstractBenchmark {
 
@@ -62,8 +64,10 @@ public abstract class AbstractWindowBenchmark extends AbstractBenchmark {
         }
         this.useTrigger = true;
         this.windowSize = Time.days(5); // obsolete, as the trigger will fire instead
-        this.window = TumblingProcessingTimeWindows.of(windowSize);
-        this.countTrigger = PurgingTrigger.of(CountTrigger.of(countTriggerSize));
+        var windowedStream = ((GraphStream) stream)
+            .window(TumblingProcessingTimeWindows.of(windowSize));
+        windowedStream.trigger(PurgingTrigger.of(CountTrigger.of(countTriggerSize)));
+        stream = windowedStream;
       }
     } catch (ParseException e) {
       e.printStackTrace();
@@ -85,4 +89,15 @@ public abstract class AbstractWindowBenchmark extends AbstractBenchmark {
     options.addOption("ts", "triggersize", true, "number of elements trigger closing window");
     return options;
   }
+
+  @Override
+  public AbstractStream applyOperator(GraphStream stream) {
+    var windowedStream = stream.window(window);
+    if (useTrigger) {
+      windowedStream = windowedStream.trigger(countTrigger);
+    }
+    return applyOperator(windowedStream);
+  }
+
+  public abstract <W extends Window> AbstractStream applyOperator(WindowedGraphStream<W> stream);
 }

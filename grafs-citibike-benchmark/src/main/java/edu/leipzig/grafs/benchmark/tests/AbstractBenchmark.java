@@ -4,7 +4,10 @@ import edu.leipzig.grafs.benchmark.CitibikeConsumer;
 import edu.leipzig.grafs.benchmark.serialization.TripletDeserializer;
 import edu.leipzig.grafs.connectors.RateLimitingKafkaConsumer;
 import edu.leipzig.grafs.model.Triplet;
-import edu.leipzig.grafs.model.EdgeStream;
+import edu.leipzig.grafs.model.streaming.AbstractStream;
+import edu.leipzig.grafs.model.streaming.BaseStream;
+import edu.leipzig.grafs.model.streaming.GraphStream;
+import edu.leipzig.grafs.model.streaming.StreamI;
 import edu.leipzig.grafs.serialization.TripletDeserializationSchema;
 import edu.leipzig.grafs.util.FlinkConfigBuilder;
 import java.io.FileOutputStream;
@@ -38,7 +41,7 @@ public abstract class AbstractBenchmark {
   private static final String RATE_LIMIT = "ratelimit";
 
   protected StreamExecutionEnvironment env;
-  protected EdgeStream edgeStream;
+  protected StreamI stream;
   protected String operatorName;
   protected Writer outputWriter;
   private String outputPath;
@@ -82,11 +85,11 @@ public abstract class AbstractBenchmark {
   }
 
   public void execute() throws Exception {
-    edgeStream = applyOperator(edgeStream);
-    if(outputPath.equals("")) {
-      edgeStream.addSink(new DiscardingSink<>());
+    var baseStream = applyOperator((GraphStream) stream);
+    if (outputPath.equals("")) {
+      baseStream.addSink(new DiscardingSink<>());
     } else {
-      edgeStream.getDataStream().writeAsText(outputPath);
+      baseStream.getDataStream().writeAsText(outputPath);
     }
     var result = env.execute(this.operatorName);
     var timeInMilliSeconds = result.getNetRuntime(TimeUnit.MILLISECONDS);
@@ -140,7 +143,7 @@ public abstract class AbstractBenchmark {
 
       // Process OUTPUT
       if (cmd.hasOption("output")) {
-          outputPath = cmd.getOptionValue("output");
+        outputPath = cmd.getOptionValue("output");
       }
 
       // Process LOG
@@ -188,7 +191,7 @@ public abstract class AbstractBenchmark {
     var config = new FlinkConfigBuilder(env).build();
     env.setStreamTimeCharacteristic(TimeCharacteristic.ProcessingTime);
     var props = CitibikeConsumer.createProperties(new Properties());
-    edgeStream = EdgeStream.fromSource(new FlinkKafkaConsumer<>("citibike", schema, props), config);
+    stream = GraphStream.fromSource(new FlinkKafkaConsumer<>("citibike", schema, props), config);
   }
 
   private Properties createProperties(String bootstrapServerConfig) {
@@ -205,5 +208,5 @@ public abstract class AbstractBenchmark {
     return props;
   }
 
-  public abstract EdgeStream applyOperator(EdgeStream edgeStream);
+  public abstract AbstractStream applyOperator(GraphStream stream);
 }

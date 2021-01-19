@@ -1,8 +1,10 @@
 package edu.leipzig.grafs.benchmark.tests.window;
 
-import edu.leipzig.grafs.model.EdgeStream;
+import edu.leipzig.grafs.model.streaming.AbstractStream;
+import edu.leipzig.grafs.model.streaming.WindowedGraphStream;
 import edu.leipzig.grafs.operators.grouping.Grouping;
 import edu.leipzig.grafs.operators.grouping.functions.Count;
+import org.apache.flink.streaming.api.windowing.windows.Window;
 
 public class GroupingBenchmark extends AbstractWindowBenchmark {
 
@@ -15,19 +17,13 @@ public class GroupingBenchmark extends AbstractWindowBenchmark {
     benchmark.execute();
   }
 
-  public EdgeStream applyOperator(EdgeStream edgeStream) {
+  public <W extends Window> AbstractStream applyOperator(WindowedGraphStream<W> stream) {
     var groupingBuilder = Grouping.createGrouping()
         .addVertexGroupingKey("id")
         .addVertexAggregateFunction(new Count("used"))
         .addEdgeGroupingKey("bike_id")
         .addVertexAggregateFunction(new Count("used"));
-    if (useTrigger) {
-      return edgeStream.callForStream(
-          groupingBuilder.buildWithWindowAndTrigger(window, countTrigger));
-    } else {
-      return edgeStream.callForStream(
-          groupingBuilder.buildWithWindow(window));
-    }
+    return stream.callForGraph(groupingBuilder.build());
   }
 
 }
