@@ -11,7 +11,7 @@ import org.apache.flink.streaming.api.windowing.windows.Window;
 public class GCStream extends AbstractStream implements GCStreamOperators {
 
   /**
-   * Constructs an edge stream with the given data stream and config.
+   * Constructs a triplet stream with the given data stream and config.
    *
    * @param edgeStream data stream that holds <tt>Triplet</tt>
    * @param config     config used for the stream

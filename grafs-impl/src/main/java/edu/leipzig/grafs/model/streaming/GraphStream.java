@@ -14,7 +14,7 @@ import org.apache.flink.streaming.api.windowing.windows.Window;
 public class GraphStream extends AbstractStream implements GraphStreamOperators {
 
   /**
-   * Constructs an edge stream with the given data stream and config.
+   * Constructs an triplet stream with the given data stream and config.
    *
    * @param edgeStream data stream that holds <tt>Triplet</tt>
    * @param config     config used for the stream
@@ -24,7 +24,7 @@ public class GraphStream extends AbstractStream implements GraphStreamOperators 
   }
 
   /**
-   * Creates an edge stream from this stream using the given operator.
+   * Creates an triplet stream from this stream using the given operator.
    *
    * @param operator operator that should be used on this stream
    * @return result of given operator

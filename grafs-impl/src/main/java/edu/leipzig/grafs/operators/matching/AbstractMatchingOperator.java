@@ -34,7 +34,7 @@ public abstract class AbstractMatchingOperator implements
   }
 
   /**
-   * Prepares edge stream to be used by the pattern matching process by filtering the elements to
+   * Prepares triplet stream to be used by the pattern matching process by filtering the elements to
    * only use elements that fit the pattern and applies window to the stream.
    *
    * @param stream stream that should be used to pre process

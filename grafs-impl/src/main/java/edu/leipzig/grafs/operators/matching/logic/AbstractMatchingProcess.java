@@ -52,7 +52,7 @@ public abstract class AbstractMatchingProcess<W extends Window> extends
     var graph = Graph.fromTriplets(tripletIt);
     if (queryGraph.getEdges().isEmpty()) {
       throw new RuntimeException(
-          "Can't process query with only vertices, because only edge stream model is supported");
+          "Can't process query with only vertices, because only triplet stream model is supported");
     } else {
       processQuery(graph, collector);
     }

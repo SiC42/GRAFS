@@ -33,7 +33,7 @@ public interface WindowedGraphStreamOperators {
 //   ---------------------------------------------------------------------------
 
   /**
-   * Creates an edge stream with the {@link Grouping) operator applied.
+   * Creates an triplet stream with the {@link Grouping) operator applied.
    *
    * @param vertexGi                 vertex grouping information used for the operation
    * @param vertexAggregateFunctions vertex aggregation functions used for the operation
@@ -53,7 +53,7 @@ public interface WindowedGraphStreamOperators {
 
 
   /**
-   * Creates an edge stream with the {@link DualSimulation} operator applied.
+   * Creates an triplet stream with the {@link DualSimulation} operator applied.
    *
    * @param gdlQueryStr query pattern with which the stream is matched
    * @return result stream of the matching operator
@@ -63,7 +63,7 @@ public interface WindowedGraphStreamOperators {
   }
 
   /**
-   * Creates an edge stream with the {@link Isomorphism} matching operator applied.
+   * Creates an triplet stream with the {@link Isomorphism} matching operator applied.
    *
    * @param gdlQueryStr query pattern with which the stream is matched
    * @return result stream of the matching operator
@@ -73,12 +73,12 @@ public interface WindowedGraphStreamOperators {
   }
 
   /**
-   * Creates an edge stream with the {@link UnionWithDuplicateInWindow} operator applied. Union of
-   * two or more edge streams creating a new stream containing all the elements from all the streams
+   * Creates an triplet stream with the {@link UnionWithDuplicateInWindow} operator applied. Union of
+   * two or more triplet streams creating a new stream containing all the elements from all the streams
    * with duplicates in a given window filtered out. No trigger is applied.
    *
-   * @param streams the edge streams to union output with
-   * @return the unioned edge stream
+   * @param streams the triplet streams to union output with
+   * @return the unioned triplet stream
    */
   default GraphStream unionWithDuplicateInWindow(GraphStream... streams) {
     return this.callForGraph(new UnionWithDuplicateInWindow(streams));

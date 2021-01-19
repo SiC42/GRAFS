@@ -41,15 +41,15 @@ public interface GCStreamOperators {
   }
 
   /**
-   * Creates an edge stream with the {@link DisjunctUnion} operator applied. Represents a union of
-   * two or more edge streams creating a new stream containing all the elements from all the
+   * Creates an triplet stream with the {@link DisjunctUnion} operator applied. Represents a union of
+   * two or more triplet streams creating a new stream containing all the elements from all the
    * streams.
    * <p>
    * Note: This operator assumes that the streams are disjunct, i.e. no element in both streams is
    * present in the other stream.
    *
-   * @param streams the edge streams to union output with
-   * @return the unioned edge stream
+   * @param streams the triplet streams to union output with
+   * @return the unioned triplet stream
    */
   default GCStream disjunctUnion(GraphStream... streams) {
     return this.callForGC(new DisjunctUnion(streams));

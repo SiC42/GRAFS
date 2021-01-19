@@ -30,7 +30,7 @@ public class VertexAggregation<W extends Window> extends VertexAggregationProces
    * @param vertexGroupInfo    grouping information used to determine which vertex are in a group
    * @param aggregateFunctions aggregate functions that are used to calculate the aggregates and set
    *                           them in the aggregated vertex
-   * @param aggregateMode      determines if the source or target vertex of the edge stream should
+   * @param aggregateMode      determines if the source or target vertex of the triplet stream should
    *                           be aggregated
    */
   public VertexAggregation(GroupingInformation vertexGroupInfo,

@@ -4,7 +4,7 @@ import edu.leipzig.grafs.model.Triplet;
 import org.apache.flink.streaming.api.datastream.DataStream;
 
 /**
- * Interface for all operators which should be applied to an edge stream.
+ * Interface for all operators which should be applied to an triplet stream.
  */
 public interface OperatorI {
 

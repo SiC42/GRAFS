@@ -27,12 +27,12 @@ public interface WindowedGCOperators {
   // ---------------------------------------------------------------------------
 
   /**
-   * Creates an edge stream with the {@link UnionWithDuplicateInWindow} operator applied. Union of
-   * two or more edge streams creating a new stream containing all the elements from all the streams
+   * Creates an triplet stream with the {@link UnionWithDuplicateInWindow} operator applied. Union of
+   * two or more triplet streams creating a new stream containing all the elements from all the streams
    * with duplicates in a given window filtered out. No trigger is applied.
    *
-   * @param streams the edge streams to union output with
-   * @return the unioned edge stream
+   * @param streams the triplet streams to union output with
+   * @return the unioned triplet stream
    */
   default GCStream unionWithDuplicateInWindow(GraphStream... streams) {
     return this.callForGC(new UnionWithDuplicateInWindow(streams));

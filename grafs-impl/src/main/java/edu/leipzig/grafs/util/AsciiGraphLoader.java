@@ -156,7 +156,7 @@ public class AsciiGraphLoader {
   // ---------------------------------------------------------------------------
 
   /**
-   * Creates an edge stream with the given config.
+   * Creates an triplet stream with the given config.
    * <p>
    * The expected parameter specifies which edges should be used. Other edges are omitted.
    *
@@ -169,7 +169,7 @@ public class AsciiGraphLoader {
   }
 
   /**
-   * Creates an edge stream with the given config.
+   * Creates an triplet stream with the given config.
    *
    * @param config config used to produce the stream
    * @return stream of edges loaded

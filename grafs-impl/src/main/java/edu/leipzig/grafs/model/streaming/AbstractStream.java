@@ -16,7 +16,7 @@ public abstract class AbstractStream implements StreamI{
   protected final FlinkConfig config;
 
   /**
-   * Constructs an edge stream with the given data stream and config.
+   * Constructs an triplet stream with the given data stream and config.
    *
    * @param edgeStream data stream that holds <tt>Triplet</tt>
    * @param config     config used for the stream
@@ -27,7 +27,7 @@ public abstract class AbstractStream implements StreamI{
   }
 
   /**
-   * Constructs an edge stream using the given kafka consumer and stream config.
+   * Constructs an triplet stream using the given kafka consumer and stream config.
    *
    * @param fkConsumer kafka consumer from which the information are fetched
    * @param config     config used for the stream
