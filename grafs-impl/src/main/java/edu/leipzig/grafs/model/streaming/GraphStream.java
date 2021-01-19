@@ -11,7 +11,7 @@ import org.apache.flink.streaming.api.windowing.windows.Window;
 /**
  * Model that abstracts the data stream to a edge(container)-stream.
  */
-public class GraphStream extends BaseStream implements GraphStreamOperators {
+public class GraphStream extends AbstractStream implements GraphStreamOperators {
 
   /**
    * Constructs an edge stream with the given data stream and config.
@@ -40,7 +40,7 @@ public class GraphStream extends BaseStream implements GraphStreamOperators {
     return new GCStream(result, config);
   }
 
-  public <W extends Window> WindowedGraphStream<W> window(WindowAssigner<Object, W> window) {
+  public <W extends Window> WindowedGraphStream<W> window(WindowAssigner<? super Triplet, W> window) {
     return new WindowedGraphStream<>(edgeStream, config, window);
   }
 }

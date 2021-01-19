@@ -8,12 +8,18 @@ import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.windowing.assigners.WindowAssigner;
 import org.apache.flink.streaming.api.windowing.windows.Window;
 
-public class WindowedGCStream<W extends Window> extends WindowedBaseStream<W> implements
+public class WindowedGCStream<W extends Window> extends
+    AbstractWindowedStream<W,WindowedGCStream<W>> implements
     WindowedGCOperators {
 
   public WindowedGCStream(DataStream<Triplet> gcStream, FlinkConfig config,
-      WindowAssigner<Object, W> window) {
+      WindowAssigner<? super Triplet, W> window) {
     super(gcStream, config, window);
+  }
+
+  @Override
+  protected WindowedGCStream<W> getThis() {
+    return this;
   }
 
   @Override

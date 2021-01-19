@@ -10,49 +10,58 @@ import org.apache.flink.streaming.api.windowing.triggers.Trigger;
 import org.apache.flink.streaming.api.windowing.windows.Window;
 import org.apache.flink.util.OutputTag;
 
-public abstract class WindowedBaseStream<W extends Window> {
+public abstract class AbstractWindowedStream<W extends Window,WS extends AbstractWindowedStream<W,?>> implements
+    StreamI {
+
 
   protected final DataStream<Triplet> gcStream;
   protected final FlinkConfig config;
   protected final WindowInformation<W> wi;
 
-  public WindowedBaseStream(DataStream<Triplet> gcStream, FlinkConfig config,
-      WindowAssigner<Object, W> window) {
+  public AbstractWindowedStream(DataStream<Triplet> gcStream, FlinkConfig config,
+      WindowAssigner<? super Triplet, W> window) {
     this.gcStream = gcStream.assignTimestampsAndWatermarks(config.getWatermarkStrategy());
     this.config = config;
     this.wi = new WindowInformation<>(window);
   }
 
-  public <WS extends WindowedBaseStream<W>> WS trigger(Trigger<Triplet, W> trigger) {
+  protected abstract WS getThis();
+
+  @Override
+  public DataStream<Triplet> getDataStream() {
+    return gcStream;
+  }
+
+  public WS trigger(Trigger<? super Triplet, ? super W> trigger) {
     wi.addTrigger(trigger);
-    return (WS) this;
+    return getThis();
   }
 
-  public <WS extends WindowedBaseStream<W>> WS evictor(Evictor<Triplet, W> evictor) {
+  public WS evictor(Evictor<? super Triplet, ? super W> evictor) {
     wi.addEvictor(evictor);
-    return (WS) this;
+    return getThis();
   }
 
-  public <WS extends WindowedBaseStream<W>> WS allowedLateness(Time lateness) {
+  public WS allowedLateness(Time lateness) {
     wi.addAllowedLateness(lateness);
-    return (WS) this;
+    return getThis();
   }
 
-  public <WS extends WindowedBaseStream<W>> WS sideOutputLateData(OutputTag<Triplet> outputTag) {
+  public WS sideOutputLateData(OutputTag<Triplet> outputTag) {
     wi.addLateDataOutputTag(outputTag);
-    return (WS) this;
+    return getThis();
   }
 
 
   public static class WindowInformation<W extends Window> {
 
-    private final WindowAssigner<Object, W> window;
-    private Trigger<Triplet, W> trigger;
-    private Evictor<Triplet, W> evictor;
+    private final WindowAssigner<? super Triplet, W> window;
+    private Trigger<? super Triplet, ? super W> trigger;
+    private Evictor<? super Triplet, ? super W> evictor;
     private Time lateness;
     private OutputTag<Triplet> outputTag;
 
-    public WindowInformation(WindowAssigner<Object, W> window) {
+    public WindowInformation(WindowAssigner<? super Triplet, W> window) {
       this.window = window;
       trigger = null;
       evictor = null;
@@ -60,11 +69,11 @@ public abstract class WindowedBaseStream<W extends Window> {
       outputTag = null;
     }
 
-    public void addTrigger(Trigger<Triplet, W> trigger) {
+    public void addTrigger(Trigger<? super Triplet, ? super W> trigger) {
       this.trigger = trigger;
     }
 
-    public void addEvictor(Evictor<Triplet, W> evictor) {
+    public void addEvictor(Evictor<? super Triplet, ? super W> evictor) {
       this.evictor = evictor;
     }
 
@@ -76,15 +85,15 @@ public abstract class WindowedBaseStream<W extends Window> {
       this.outputTag = outputTag;
     }
 
-    public WindowAssigner<Object, W> getWindow() {
+    public WindowAssigner<? super Triplet, W> getWindow() {
       return window;
     }
 
-    public Trigger<Triplet, W> getTrigger() {
+    public Trigger<? super Triplet, ? super W> getTrigger() {
       return trigger;
     }
 
-    public Evictor<Triplet, W> getEvictor() {
+    public Evictor<? super Triplet, ? super W> getEvictor() {
       return evictor;
     }
 

@@ -9,7 +9,7 @@ import org.apache.flink.streaming.api.datastream.DataStreamUtils;
 import org.apache.flink.streaming.api.functions.sink.SinkFunction;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer;
 
-public abstract class BaseStream {
+public abstract class AbstractStream implements StreamI{
 
 
   protected final DataStream<Triplet> edgeStream;
@@ -21,7 +21,7 @@ public abstract class BaseStream {
    * @param edgeStream data stream that holds <tt>Triplet</tt>
    * @param config     config used for the stream
    */
-  public BaseStream(DataStream<Triplet> edgeStream, FlinkConfig config) {
+  public AbstractStream(DataStream<Triplet> edgeStream, FlinkConfig config) {
     this.edgeStream = edgeStream.assignTimestampsAndWatermarks(config.getWatermarkStrategy());
     this.config = config;
   }

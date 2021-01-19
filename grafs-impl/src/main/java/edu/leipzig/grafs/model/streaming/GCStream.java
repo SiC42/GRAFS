@@ -8,7 +8,7 @@ import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.windowing.assigners.WindowAssigner;
 import org.apache.flink.streaming.api.windowing.windows.Window;
 
-public class GCStream extends BaseStream implements GCStreamOperators {
+public class GCStream extends AbstractStream implements GCStreamOperators {
 
   /**
    * Constructs an edge stream with the given data stream and config.
@@ -33,7 +33,7 @@ public class GCStream extends BaseStream implements GCStreamOperators {
     return new GCStream(result, config);
   }
 
-  public <W extends Window> WindowedGCStream<W> window(WindowAssigner<Object, W> window) {
+  public <W extends Window> WindowedGCStream<W> window(WindowAssigner<? super Triplet, W> window) {
     return new WindowedGCStream<>(edgeStream, config, window);
   }
 }

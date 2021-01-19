@@ -1,7 +1,7 @@
 package edu.leipzig.grafs.operators.grouping;
 
 import edu.leipzig.grafs.model.Triplet;
-import edu.leipzig.grafs.model.streaming.WindowedBaseStream.WindowInformation;
+import edu.leipzig.grafs.model.streaming.AbstractWindowedStream.WindowInformation;
 import edu.leipzig.grafs.operators.grouping.functions.AggregateFunction;
 import edu.leipzig.grafs.operators.grouping.logic.EdgeAggregation;
 import edu.leipzig.grafs.operators.grouping.logic.TripletKeySelector;

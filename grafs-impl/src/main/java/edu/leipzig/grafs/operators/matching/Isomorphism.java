@@ -1,7 +1,7 @@
 package edu.leipzig.grafs.operators.matching;
 
 import edu.leipzig.grafs.model.Triplet;
-import edu.leipzig.grafs.model.streaming.WindowedBaseStream.WindowInformation;
+import edu.leipzig.grafs.model.streaming.AbstractWindowedStream.WindowInformation;
 import edu.leipzig.grafs.operators.matching.logic.IsomorphismMatchingProcess;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.windowing.windows.Window;
