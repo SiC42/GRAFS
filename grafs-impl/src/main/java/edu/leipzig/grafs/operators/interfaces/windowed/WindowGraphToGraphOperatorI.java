@@ -8,6 +8,6 @@ package edu.leipzig.grafs.operators.interfaces.windowed;
  * with graph collections and handle them well internally, however that is not build in
  * automatically.
  */
-public interface WindowedGraphToGraphOperatorI extends WindowedOperatorI {
+public interface WindowGraphToGraphOperatorI extends WindowOperatorI {
 
 }

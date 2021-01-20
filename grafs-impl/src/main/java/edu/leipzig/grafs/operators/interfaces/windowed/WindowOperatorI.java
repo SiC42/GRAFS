@@ -7,7 +7,7 @@ import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.WindowedStream;
 import org.apache.flink.streaming.api.windowing.windows.Window;
 
-public interface WindowedOperatorI {
+public interface WindowOperatorI {
 
   /**
    * Applies the given operator to the stream.

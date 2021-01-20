@@ -4,8 +4,8 @@ import com.google.common.annotations.Beta;
 import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.model.streaming.GraphStream;
 import edu.leipzig.grafs.model.streaming.AbstractWindowedStream.WindowInformation;
-import edu.leipzig.grafs.operators.interfaces.windowed.WindowedGraphCollectionToGraphCollectionOperatorI;
-import edu.leipzig.grafs.operators.interfaces.windowed.WindowedGraphToGraphOperatorI;
+import edu.leipzig.grafs.operators.interfaces.windowed.WindowGraphCollectionToGraphCollectionOperatorI;
+import edu.leipzig.grafs.operators.interfaces.windowed.WindowGraphToGraphOperatorI;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.functions.windowing.ProcessWindowFunction;
 import org.apache.flink.streaming.api.windowing.windows.Window;
@@ -17,7 +17,7 @@ import org.apache.flink.util.Collector;
  */
 @Beta
 public class UnionWithDuplicateInWindow implements
-    WindowedGraphToGraphOperatorI, WindowedGraphCollectionToGraphCollectionOperatorI {
+    WindowGraphToGraphOperatorI, WindowGraphCollectionToGraphCollectionOperatorI {
 
   /**
    * Streams that should be unified via the union operation.
