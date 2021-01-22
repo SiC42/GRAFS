@@ -87,11 +87,10 @@ public class Subgraph implements GraphToGraphOperatorI {
    */
   private FilterFunction<Triplet> createSubGraphFilter(FilterFunction<Vertex> vertexFilter,
       FilterFunction<Edge> edgeFilter) {
-    FilterFunction<Triplet> tripletFilter = triplet ->
+    return triplet ->
         edgeFilter.filter(triplet.getEdge()) &&
             vertexFilter.filter(triplet.getSourceVertex()) &&
             vertexFilter.filter(triplet.getTargetVertex());
-    return tripletFilter;
   }
 
   /**
@@ -103,10 +102,9 @@ public class Subgraph implements GraphToGraphOperatorI {
    */
   private FilterFunction<Triplet> createVertexInducedSubgraphFilter(
       FilterFunction<Vertex> vertexFilter) {
-    FilterFunction<Triplet> tripletFilter = triplet ->
+    return triplet ->
         vertexFilter.filter(triplet.getSourceVertex()) && vertexFilter
             .filter(triplet.getTargetVertex());
-    return tripletFilter;
   }
 
   /**
@@ -118,8 +116,7 @@ public class Subgraph implements GraphToGraphOperatorI {
    */
   private FilterFunction<Triplet> createEdgeInducedSubgraphFilter(
       FilterFunction<Edge> edgeFilter) {
-    FilterFunction<Triplet> tripletFilter = triplet -> edgeFilter.filter(triplet.getEdge());
-    return tripletFilter;
+    return triplet -> edgeFilter.filter(triplet.getEdge());
   }
 
   /**
