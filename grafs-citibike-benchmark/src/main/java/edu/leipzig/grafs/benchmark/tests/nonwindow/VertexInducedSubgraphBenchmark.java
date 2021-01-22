@@ -3,10 +3,6 @@ package edu.leipzig.grafs.benchmark.tests.nonwindow;
 import edu.leipzig.grafs.benchmark.tests.AbstractBenchmark;
 import edu.leipzig.grafs.model.streaming.AbstractStream;
 import edu.leipzig.grafs.model.streaming.GraphStream;
-import edu.leipzig.grafs.model.streaming.StreamI;
-import java.io.Writer;
-import java.util.concurrent.ExecutionException;
-import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 
 public class VertexInducedSubgraphBenchmark extends AbstractBenchmark {
 
@@ -21,7 +17,7 @@ public class VertexInducedSubgraphBenchmark extends AbstractBenchmark {
 
   public AbstractStream applyOperator(GraphStream stream) {
     return stream
-        .vertexInducedSubgraph(v -> !v.getPropertyValue("name").getString().startsWith("P"));
+        .vertexInducedSubgraph(v -> !v.hasProperty("name"));
   }
 
 }
