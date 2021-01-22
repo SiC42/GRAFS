@@ -1,9 +1,7 @@
 package edu.leipzig.grafs.benchmark.tests;
 
-import edu.leipzig.grafs.benchmark.CitibikeConsumer;
 import edu.leipzig.grafs.benchmark.serialization.TripletDeserializer;
 import edu.leipzig.grafs.connectors.RateLimitingKafkaConsumer;
-import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.model.streaming.AbstractStream;
 import edu.leipzig.grafs.model.streaming.GraphStream;
 import edu.leipzig.grafs.model.streaming.StreamI;
@@ -13,7 +11,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
-import java.util.Collections;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -27,9 +25,7 @@ import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.functions.sink.DiscardingSink;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer;
-import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
-import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 
 public abstract class AbstractBenchmark {
@@ -38,11 +34,13 @@ public abstract class AbstractBenchmark {
   private static final String INPUT = "fileinput";
   private static final String KAFKA = "kafka";
   private static final String RATE_LIMIT = "ratelimit";
+  private static final String INPUT_PARALLELISM = "inputp";
 
   protected StreamExecutionEnvironment env;
   protected StreamI stream;
   protected String operatorName;
   protected Writer outputWriter;
+  protected int parallelism;
   private String outputPath;
 
   public AbstractBenchmark(String[] args) {
@@ -117,20 +115,29 @@ public abstract class AbstractBenchmark {
         throw new ParseException(
             "Two inputs declared, but only one allowed. Either remove 'fileinput' or the kafka server information");
       }
-      int rateLimit;
-      if (cmd.hasOption(RATE_LIMIT)) {
-        try {
-          rateLimit = Integer.parseInt(cmd.getOptionValue(RATE_LIMIT));
-        } catch (NumberFormatException e) {
-          throw new ParseException("Provided argument with 'ratelimit' is not a number.");
-        }
-      } else {
-        rateLimit = -1;
-      }
       if (cmd.hasOption(INPUT)) {
         // do fileinput
         throw new ParseException("Error. File input not supported yet.");
       } else if (cmd.hasOption(KAFKA)) {
+        if (cmd.hasOption(INPUT_PARALLELISM)) {
+          try {
+            parallelism = Integer.parseInt(cmd.getOptionValue(INPUT_PARALLELISM));
+          } catch (NumberFormatException e) {
+            throw new ParseException("Provided argument for input parallelism is not a number.");
+          }
+        } else {
+          parallelism = -1;
+        }
+        int rateLimit;
+        if (cmd.hasOption(RATE_LIMIT)) {
+          try {
+            rateLimit = Integer.parseInt(cmd.getOptionValue(RATE_LIMIT));
+          } catch (NumberFormatException e) {
+            throw new ParseException("Provided argument with 'ratelimit' is not a number.");
+          }
+        } else {
+          rateLimit = -1;
+        }
         // do kafka stuff
         var propsMap = new HashMap<>(
             extractKafkaInformation(cmd.getOptionValue(KAFKA)));
@@ -142,7 +149,8 @@ public abstract class AbstractBenchmark {
 
       // Process OUTPUT
       if (cmd.hasOption("output")) {
-        outputPath = cmd.getOptionValue("output");
+        outputPath =
+            cmd.getOptionValue("output") + "output_" + LocalDateTime.now().toString() + ".log";
       }
 
       // Process LOG
@@ -172,6 +180,8 @@ public abstract class AbstractBenchmark {
     options.addOption("i", INPUT, true, "input file path");
     options.addOption("kip", KAFKA, true, "the kafka server in the format hostname:port/topic");
     options
+        .addOption(INPUT_PARALLELISM, true, "maximum number of flink worker to read from source. Should not be larger than the number of kafka partitions");
+    options
         .addOption("l", RATE_LIMIT, true, "the rate limit for the intake of data into the system");
     options.addOption("o", "output", true, "location for the output file");
     options.addOption("log", true, "location for the log file");
@@ -181,16 +191,17 @@ public abstract class AbstractBenchmark {
   private void buildStreamWithKafkaConsumer(Map<String, String> map, int rateLimit) {
     var properties = createProperties(map.get(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG));
     var schema = new TripletDeserializationSchema();
-    var kafkaConsumer = new RateLimitingKafkaConsumer<>("citibike", schema, CitibikeConsumer
-        .createProperties(new Properties()), rateLimit);
-    Consumer<String, Triplet> consumer = new KafkaConsumer<>(properties);
-    consumer.subscribe(Collections.singletonList(map.get(TOPIC_KEY)));
-    kafkaConsumer.setStartFromEarliest();
-
     var config = new FlinkConfigBuilder(env).build();
     env.setStreamTimeCharacteristic(TimeCharacteristic.ProcessingTime);
-    var props = CitibikeConsumer.createProperties(new Properties());
-    stream = GraphStream.fromSource(new FlinkKafkaConsumer<>("citibike", schema, props), config, -1);
+    if (rateLimit > 0) {
+      var kafkaConsumer = new RateLimitingKafkaConsumer<>(map.get(TOPIC_KEY), schema, properties,
+          rateLimit);
+      stream = GraphStream.fromSource(kafkaConsumer, config, parallelism);
+    } else {
+      stream = GraphStream
+          .fromSource(new FlinkKafkaConsumer<>(map.get(TOPIC_KEY), schema, properties),
+              config, parallelism);
+    }
   }
 
   private Properties createProperties(String bootstrapServerConfig) {
