@@ -2,28 +2,29 @@ package edu.leipzig.grafs.benchmark.operators.matching;
 
 import edu.leipzig.grafs.benchmark.operators.functions.SimpleMeter;
 import edu.leipzig.grafs.model.Triplet;
+import edu.leipzig.grafs.model.streaming.AbstractWindowedStream.WindowInformation;
 import edu.leipzig.grafs.operators.matching.DualSimulation;
 import org.apache.flink.streaming.api.datastream.DataStream;
-import org.apache.flink.streaming.api.windowing.assigners.WindowAssigner;
 import org.apache.flink.streaming.api.windowing.windows.Window;
 
-public class BenchmarkDualSimulation<W extends Window> extends DualSimulation<W> {
+public class BenchmarkDualSimulation extends DualSimulation {
 
 
   private final String meterName;
 
-  public BenchmarkDualSimulation(String query, WindowAssigner<Object, W> window) {
-    this(query, window, "dualSimulationMeter");
+  public BenchmarkDualSimulation(String query) {
+    this(query, "dualSimulationMeter");
   }
 
-  public BenchmarkDualSimulation(String query, WindowAssigner<Object, W> window, String meterName) {
-    super(query, window);
+  public BenchmarkDualSimulation(String query, String meterName) {
+    super(query);
 
     this.meterName = meterName;
   }
 
   @Override
-  public DataStream<Triplet> execute(DataStream<Triplet> stream) {
-    return super.execute(stream).map(new SimpleMeter<>(meterName));
+  public <W extends Window> DataStream<Triplet> execute(DataStream<Triplet> stream,
+      WindowInformation<W> wi) {
+    return super.execute(stream, wi).map(new SimpleMeter<>(meterName));
   }
 }

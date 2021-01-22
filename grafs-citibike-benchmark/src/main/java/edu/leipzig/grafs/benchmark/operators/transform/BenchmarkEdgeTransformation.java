@@ -1,7 +1,7 @@
 package edu.leipzig.grafs.benchmark.operators.transform;
 
 import edu.leipzig.grafs.benchmark.operators.functions.MapFunctionWithMeter;
-import edu.leipzig.grafs.model.Edge;
+import edu.leipzig.grafs.model.Element;
 import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.operators.transform.EdgeTransformation;
 import java.io.IOException;
@@ -14,11 +14,11 @@ public class BenchmarkEdgeTransformation extends EdgeTransformation implements S
     super(null);
   }
 
-  public BenchmarkEdgeTransformation(MapFunction<Edge, Edge> mapper) {
+  public BenchmarkEdgeTransformation(MapFunction<Element, Element> mapper) {
     this(mapper, "edgeTransformationMeter");
   }
 
-  public BenchmarkEdgeTransformation(MapFunction<Edge, Edge> mapper, String meterName) {
+  public BenchmarkEdgeTransformation(MapFunction<Element, Element> mapper, String meterName) {
     super(mapper);
     var oldMapper = tripletMapper;
     this.tripletMapper = new MapFunctionWithMeter<>(meterName) {

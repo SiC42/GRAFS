@@ -5,7 +5,6 @@ import edu.leipzig.grafs.benchmark.serialization.TripletDeserializer;
 import edu.leipzig.grafs.connectors.RateLimitingKafkaConsumer;
 import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.model.streaming.AbstractStream;
-import edu.leipzig.grafs.model.streaming.BaseStream;
 import edu.leipzig.grafs.model.streaming.GraphStream;
 import edu.leipzig.grafs.model.streaming.StreamI;
 import edu.leipzig.grafs.serialization.TripletDeserializationSchema;
