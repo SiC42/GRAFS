@@ -150,7 +150,7 @@ public abstract class AbstractBenchmark {
       // Process OUTPUT
       if (cmd.hasOption("output")) {
         outputPath =
-            cmd.getOptionValue("output") + "output_" + LocalDateTime.now().toString() + ".log";
+            cmd.getOptionValue("output") + "output_" + System.currentTimeMillis();
       }
 
       // Process LOG
