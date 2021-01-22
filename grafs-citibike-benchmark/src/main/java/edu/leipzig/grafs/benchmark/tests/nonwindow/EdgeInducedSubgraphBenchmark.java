@@ -16,7 +16,7 @@ public class EdgeInducedSubgraphBenchmark extends AbstractBenchmark {
   }
 
   public AbstractStream applyOperator(GraphStream stream) {
-    return stream.edgeInducedSubgraph(e -> Math.random() >= 0.5);
+    return stream.edgeInducedSubgraph(e -> e.getPropertyValue("gender").getString().equals("1"));
   }
 
 }
