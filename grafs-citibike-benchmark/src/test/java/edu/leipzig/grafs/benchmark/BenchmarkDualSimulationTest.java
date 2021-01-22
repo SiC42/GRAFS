@@ -6,7 +6,7 @@ import static org.hamcrest.Matchers.containsInAnyOrder;
 
 import edu.leipzig.grafs.benchmark.operators.matching.BenchmarkDualSimulation;
 import edu.leipzig.grafs.model.Triplet;
-import edu.leipzig.grafs.model.EdgeStream;
+import edu.leipzig.grafs.model.streaming.GraphStream;
 import edu.leipzig.grafs.util.FlinkConfig;
 import edu.leipzig.grafs.util.FlinkConfigBuilder;
 import java.time.Duration;
@@ -25,7 +25,7 @@ public class BenchmarkDualSimulationTest extends MatchingTestBase {
 
 
   private static FlinkConfig config;
-  EdgeStream edgeStream;
+  GraphStream edgeStream;
 
   @BeforeAll
   static void initConfig() {
@@ -96,8 +96,8 @@ public class BenchmarkDualSimulationTest extends MatchingTestBase {
     var expectedEcs = graphLoader.createTripletsByGraphVariables("ds");
 
     Iterator<Triplet> matchedEcIt = edgeStream
-        .callForStream(new BenchmarkDualSimulation<>(queryPaperGraphGdlStr,
-            TumblingEventTimeWindows.of(Time.milliseconds(10))))
+        .window(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        .callForGC(new BenchmarkDualSimulation(queryPaperGraphGdlStr))
         .collect();
     var actualEcs = new ArrayList<Triplet>();
     matchedEcIt.forEachRemaining(actualEcs::add);

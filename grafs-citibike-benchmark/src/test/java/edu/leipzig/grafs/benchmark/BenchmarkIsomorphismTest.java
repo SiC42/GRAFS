@@ -5,7 +5,7 @@ import static org.hamcrest.Matchers.containsInAnyOrder;
 
 import edu.leipzig.grafs.benchmark.operators.matching.BenchmarkIsomorphism;
 import edu.leipzig.grafs.model.Triplet;
-import edu.leipzig.grafs.model.EdgeStream;
+import edu.leipzig.grafs.model.streaming.GraphStream;
 import edu.leipzig.grafs.util.FlinkConfig;
 import edu.leipzig.grafs.util.FlinkConfigBuilder;
 import java.time.Duration;
@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Test;
 public class BenchmarkIsomorphismTest extends MatchingTestBase {
 
   private static FlinkConfig config;
-  EdgeStream edgeStream;
+  GraphStream edgeStream;
 
   @BeforeAll
   static void initConfig() {
@@ -62,8 +62,8 @@ public class BenchmarkIsomorphismTest extends MatchingTestBase {
     var expectedEcs = graphLoader.createTripletsByGraphVariables("iso");
 
     Iterator<Triplet> matchedEcIt = edgeStream
-        .callForStream(new BenchmarkIsomorphism<>(queryPaperGraphGdlStr,
-            TumblingEventTimeWindows.of(Time.milliseconds(10))))
+        .window(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        .callForGC(new BenchmarkIsomorphism(queryPaperGraphGdlStr))
         .collect();
     var actualEcs = new ArrayList<Triplet>();
     matchedEcIt.forEachRemaining(actualEcs::add);
