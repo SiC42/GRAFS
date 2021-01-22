@@ -75,6 +75,7 @@
           <!-- Run shade goal on package phase -->
           <execution>
             <configuration>
+              <createDependencyReducedPom>false</createDependencyReducedPom>
               <artifactSet>
                 <excludes>
                   <exclude>org.apache.flink:force-shading</exclude>
