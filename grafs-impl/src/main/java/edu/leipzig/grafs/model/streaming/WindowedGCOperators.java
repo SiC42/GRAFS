@@ -1,7 +1,7 @@
 package edu.leipzig.grafs.model.streaming;
 
-import edu.leipzig.grafs.operators.interfaces.windowed.WindowedGraphCollectionToGraphCollectionOperatorI;
-import edu.leipzig.grafs.operators.interfaces.windowed.WindowedGraphCollectionToGraphOperatorI;
+import edu.leipzig.grafs.operators.interfaces.windowed.WindowGraphCollectionToGraphCollectionOperatorI;
+import edu.leipzig.grafs.operators.interfaces.windowed.WindowGraphCollectionToGraphOperatorI;
 import edu.leipzig.grafs.operators.union.UnionWithDuplicateInWindow;
 
 public interface WindowedGCOperators {
@@ -12,7 +12,7 @@ public interface WindowedGCOperators {
    * @param operator operator that should be used on this windowed graph collection stream
    * @return result of given operator as graph stream
    */
-  GraphStream callForGraph(WindowedGraphCollectionToGraphOperatorI operator);
+  GraphStream callForGraph(WindowGraphCollectionToGraphOperatorI operator);
 
   /**
    * Creates a graph collection stream using the given operator.
@@ -20,7 +20,7 @@ public interface WindowedGCOperators {
    * @param operator operator that should be used on this windowed graph collection stream
    * @return result of given operator as graph collection stream
    */
-  GCStream callForGC(WindowedGraphCollectionToGraphCollectionOperatorI operator);
+  GCStream callForGC(WindowGraphCollectionToGraphCollectionOperatorI operator);
 
   // ---------------------------------------------------------------------------
   //  Operators

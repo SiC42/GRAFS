@@ -1,8 +1,8 @@
 package edu.leipzig.grafs.model.streaming;
 
 import edu.leipzig.grafs.model.Triplet;
-import edu.leipzig.grafs.operators.interfaces.windowed.WindowedGraphCollectionToGraphCollectionOperatorI;
-import edu.leipzig.grafs.operators.interfaces.windowed.WindowedGraphCollectionToGraphOperatorI;
+import edu.leipzig.grafs.operators.interfaces.windowed.WindowGraphCollectionToGraphCollectionOperatorI;
+import edu.leipzig.grafs.operators.interfaces.windowed.WindowGraphCollectionToGraphOperatorI;
 import edu.leipzig.grafs.util.FlinkConfig;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.windowing.assigners.WindowAssigner;
@@ -23,13 +23,13 @@ public class WindowedGCStream<W extends Window> extends
   }
 
   @Override
-  public GraphStream callForGraph(WindowedGraphCollectionToGraphOperatorI operator) {
+  public GraphStream callForGraph(WindowGraphCollectionToGraphOperatorI operator) {
     var result = operator.execute(gcStream, wi);
     return new GraphStream(result, config);
   }
 
   @Override
-  public GCStream callForGC(WindowedGraphCollectionToGraphCollectionOperatorI operator) {
+  public GCStream callForGC(WindowGraphCollectionToGraphCollectionOperatorI operator) {
     var result = operator.execute(gcStream, wi);
     return new GCStream(result, config);
   }

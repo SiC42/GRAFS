@@ -3,8 +3,8 @@ package edu.leipzig.grafs.model.streaming;
 import edu.leipzig.grafs.operators.grouping.Grouping;
 import edu.leipzig.grafs.operators.grouping.functions.AggregateFunction;
 import edu.leipzig.grafs.operators.grouping.model.GroupingInformation;
-import edu.leipzig.grafs.operators.interfaces.windowed.WindowedGraphToGraphCollectionOperatorI;
-import edu.leipzig.grafs.operators.interfaces.windowed.WindowedGraphToGraphOperatorI;
+import edu.leipzig.grafs.operators.interfaces.windowed.WindowGraphToGraphCollectionOperatorI;
+import edu.leipzig.grafs.operators.interfaces.windowed.WindowGraphToGraphOperatorI;
 import edu.leipzig.grafs.operators.matching.DualSimulation;
 import edu.leipzig.grafs.operators.matching.Isomorphism;
 import edu.leipzig.grafs.operators.union.UnionWithDuplicateInWindow;
@@ -18,7 +18,7 @@ public interface WindowedGraphStreamOperators {
    * @param operator operator that should be used on this windowed graph stream
    * @return result of given operator as graph stream
    */
-  GraphStream callForGraph(WindowedGraphToGraphOperatorI operator);
+  GraphStream callForGraph(WindowGraphToGraphOperatorI operator);
 
   /**
    * Creates a graph collection stream using the given operator.
@@ -26,7 +26,7 @@ public interface WindowedGraphStreamOperators {
    * @param operator operator that should be used on this windowed graph stream
    * @return result of given operator as graph collection stream
    */
-  GCStream callForGC(WindowedGraphToGraphCollectionOperatorI operator);
+  GCStream callForGC(WindowGraphToGraphCollectionOperatorI operator);
 
 //   ---------------------------------------------------------------------------
 //    Operators
