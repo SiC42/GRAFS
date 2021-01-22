@@ -190,7 +190,7 @@ public abstract class AbstractBenchmark {
     var config = new FlinkConfigBuilder(env).build();
     env.setStreamTimeCharacteristic(TimeCharacteristic.ProcessingTime);
     var props = CitibikeConsumer.createProperties(new Properties());
-    stream = GraphStream.fromSource(new FlinkKafkaConsumer<>("citibike", schema, props), config);
+    stream = GraphStream.fromSource(new FlinkKafkaConsumer<>("citibike", schema, props), config, -1);
   }
 
   private Properties createProperties(String bootstrapServerConfig) {

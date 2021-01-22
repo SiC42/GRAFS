@@ -5,6 +5,7 @@ import edu.leipzig.grafs.util.FlinkConfig;
 import java.io.IOException;
 import java.util.Iterator;
 import org.apache.flink.streaming.api.datastream.DataStream;
+import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.datastream.DataStreamUtils;
 import org.apache.flink.streaming.api.functions.sink.SinkFunction;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer;
@@ -34,8 +35,14 @@ public abstract class AbstractStream implements StreamI{
    * @return
    */
   public static GraphStream fromSource(FlinkKafkaConsumer<Triplet> fkConsumer,
-      FlinkConfig config) {
-    var stream = config.getExecutionEnvironment().addSource(fkConsumer);
+      FlinkConfig config, int parallelism) {
+    DataStreamSource<Triplet> stream;
+    if(parallelism > 0) {
+      stream = config.getExecutionEnvironment().addSource(fkConsumer).setParallelism(parallelism);
+    } else{
+      stream = config.getExecutionEnvironment().addSource(fkConsumer);
+    }
+
     return new GraphStream(stream, config);
   }
 
