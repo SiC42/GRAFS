@@ -35,17 +35,24 @@ public class Triplet implements Serializable {
    */
   public Triplet(Edge edge, Vertex sourceVertex, Vertex targetVertex)
       throws RuntimeException {
-    if (!sourceVertex.getId().equals(edge.getSourceId())) {
-      throw new RuntimeException(
-          "ID of provided source vertex does not match with source id in provided edge.");
-    }
-    if (!targetVertex.getId().equals(edge.getTargetId())) {
-      throw new RuntimeException(
-          "ID of provided target vertex does not match with target id in provided edge.");
-    }
+    checkIfIdsMatch(edge, sourceVertex, targetVertex);
     this.edge = edge;
     this.sourceVertex = sourceVertex;
     this.targetVertex = targetVertex;
+  }
+
+  private void checkIfIdsMatch(Edge edge, Vertex sourceVertex, Vertex targetVertex) {
+    if(edge == null){
+      return;
+    }
+    if (sourceVertex != null && !sourceVertex.getId().equals(edge.getSourceId())) {
+      throw new RuntimeException(
+          "ID of provided source vertex does not match with source id in provided edge.");
+    }
+    if (targetVertex != null && !targetVertex.getId().equals(edge.getTargetId())) {
+      throw new RuntimeException(
+          "ID of provided target vertex does not match with target id in provided edge.");
+    }
   }
 
   /**
@@ -83,6 +90,12 @@ public class Triplet implements Serializable {
     return edge;
   }
 
+
+  protected void setEdge(Edge edge) {
+    checkIfIdsMatch(edge, sourceVertex, targetVertex);
+    this.edge = edge;
+  }
+
   /**
    * Returns source vertex of this triplet.
    *
@@ -92,6 +105,11 @@ public class Triplet implements Serializable {
     return sourceVertex;
   }
 
+  public void setSourceVertex(Vertex sourceVertex) {
+    checkIfIdsMatch(edge, sourceVertex, targetVertex);
+    this.sourceVertex = sourceVertex;
+  }
+
   /**
    * Returns target vertex of this triplet.
    *
@@ -99,6 +117,11 @@ public class Triplet implements Serializable {
    */
   public Vertex getTargetVertex() {
     return targetVertex;
+  }
+
+  public void setTargetVertex(Vertex targetVertex) {
+    checkIfIdsMatch(edge, sourceVertex, targetVertex);
+    this.targetVertex = targetVertex;
   }
 
   /**
