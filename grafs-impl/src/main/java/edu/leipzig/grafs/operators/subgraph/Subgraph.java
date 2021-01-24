@@ -48,28 +48,24 @@ public class Subgraph implements GraphToGraphOperatorI {
       final Strategy strategy) {
     Objects.requireNonNull(strategy);
     this.strategy = strategy;
-    if (strategy == Strategy.BOTH &&
-        (vertexFilter == null || edgeFilter == null)) {
-      throw new IllegalArgumentException("No vertex or no edge filter function was given.");
-    }
-
-    if (strategy == Strategy.VERTEX_INDUCED && vertexFilter == null) {
-      throw new IllegalArgumentException("No vertex filter functions was given.");
-    }
-
-    if ((strategy == Strategy.EDGE_INDUCED) &&
-        edgeFilter == null) {
-      throw new IllegalArgumentException("No vertex edge functions was given.");
-    }
 
     switch (strategy) {
       case BOTH:
+        if(vertexFilter == null || edgeFilter == null){
+          throw new IllegalArgumentException("No vertex or no edge filter function was given.");
+        }
         tripletFilter = createSubGraphFilter(vertexFilter, edgeFilter);
         break;
       case VERTEX_INDUCED:
+        if(vertexFilter == null){
+          throw new IllegalArgumentException("No vertex filter functions was given.");
+        }
         tripletFilter = createVertexInducedSubgraphFilter(vertexFilter);
         break;
       case EDGE_INDUCED:
+        if(edgeFilter == null){
+          throw new IllegalArgumentException("No vertex edge functions was given.");
+        }
         tripletFilter = createEdgeInducedSubgraphFilter(edgeFilter);
         break;
       default:
