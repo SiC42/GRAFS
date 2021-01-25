@@ -2,7 +2,7 @@ package edu.leipzig.grafs.operators.matching;
 
 import edu.leipzig.grafs.model.Graph;
 import edu.leipzig.grafs.model.Triplet;
-import edu.leipzig.grafs.model.streaming.window.AbstractWindowedStream.WindowInformation;
+import edu.leipzig.grafs.model.streaming.window.AbstractWindowedStream.WindowingInformation;
 import edu.leipzig.grafs.operators.interfaces.window.WindowGraphToGraphCollectionOperatorI;
 import edu.leipzig.grafs.operators.matching.logic.EdgeQueryFilter;
 import edu.leipzig.grafs.operators.matching.logic.VertexQueryFilter;
@@ -41,7 +41,7 @@ public abstract class AbstractMatchingOperator implements
    * @return pre-processed stream ready for applying the pattern matching process
    */
   <W extends Window> AllWindowedStream<Triplet, W> preProcessAndApplyWindow(
-      DataStream<Triplet> stream, WindowInformation<W> wi) {
+      DataStream<Triplet> stream, WindowingInformation<W> wi) {
     var filteredStream = queryGraph.getEdges().isEmpty() ? // Only vertices?
         stream.filter(new VertexQueryFilter(queryGraph)) :
         stream.filter(new EdgeQueryFilter(queryGraph));

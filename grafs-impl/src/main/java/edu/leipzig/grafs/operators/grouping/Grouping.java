@@ -1,7 +1,7 @@
 package edu.leipzig.grafs.operators.grouping;
 
 import edu.leipzig.grafs.model.Triplet;
-import edu.leipzig.grafs.model.streaming.window.AbstractWindowedStream.WindowInformation;
+import edu.leipzig.grafs.model.streaming.window.AbstractWindowedStream.WindowingInformation;
 import edu.leipzig.grafs.operators.grouping.functions.AggregateFunction;
 import edu.leipzig.grafs.operators.grouping.logic.EdgeAggregation;
 import edu.leipzig.grafs.operators.grouping.logic.TripletKeySelector;
@@ -88,7 +88,7 @@ public class Grouping implements WindowGraphToGraphOperatorI {
    */
   @Override
   public <W extends Window> DataStream<Triplet> execute(DataStream<Triplet> stream,
-      WindowInformation<W> wi) {
+      WindowingInformation<W> wi) {
     return groupBy(stream, wi);
   }
 
@@ -99,7 +99,7 @@ public class Grouping implements WindowGraphToGraphOperatorI {
    * @return the stream with the grouping operator applied
    */
   public <W extends Window> DataStream<Triplet> groupBy(DataStream<Triplet> stream,
-      WindowInformation<W> wi) {
+      WindowingInformation<W> wi) {
     // Enrich stream with reverse edges
     var expandedStream = createStreamWithReverseEdges(stream);
 
@@ -143,7 +143,7 @@ public class Grouping implements WindowGraphToGraphOperatorI {
    * @return stream on which the indicated vertices are grouped
    */
   private <W extends Window> DataStream<Triplet> aggregateOnVertex(DataStream<Triplet> stream,
-      AggregateMode mode, WindowInformation<W> wi) {
+      AggregateMode mode, WindowingInformation<W> wi) {
     var windowedStream = createKeyedWindowedStream(stream, mode, wi);
     return windowedStream.process(
         new VertexAggregation<>(vertexGi, vertexAggregateFunctions, mode))
@@ -157,7 +157,7 @@ public class Grouping implements WindowGraphToGraphOperatorI {
    * @return stream on which the edges are grouped
    */
   private <W extends Window> DataStream<Triplet> aggregateOnEdge(DataStream<Triplet> stream,
-      WindowInformation<W> wi) {
+      WindowingInformation<W> wi) {
     var windowedStream = createKeyedWindowedStream(stream, AggregateMode.EDGE, wi);
     return windowedStream
         .process(new EdgeAggregation<>(edgeGi, edgeAggregateFunctions, GradoopId.get()))
@@ -173,7 +173,7 @@ public class Grouping implements WindowGraphToGraphOperatorI {
    * @return stream that is keyed based on the given mode and windowed
    */
   private <W extends Window> WindowedStream<Triplet, String, W> createKeyedWindowedStream(
-      DataStream<Triplet> es, AggregateMode mode, WindowInformation<W> wi) {
+      DataStream<Triplet> es, AggregateMode mode, WindowingInformation<W> wi) {
     var windowedStream = es
         .keyBy(new TripletKeySelector(vertexGi, edgeGi, mode))
         .window(wi.getWindow());

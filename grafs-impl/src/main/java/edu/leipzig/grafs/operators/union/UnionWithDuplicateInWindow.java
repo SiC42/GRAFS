@@ -3,7 +3,7 @@ package edu.leipzig.grafs.operators.union;
 import com.google.common.annotations.Beta;
 import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.model.streaming.nonwindow.GraphStream;
-import edu.leipzig.grafs.model.streaming.window.AbstractWindowedStream.WindowInformation;
+import edu.leipzig.grafs.model.streaming.window.AbstractWindowedStream.WindowingInformation;
 import edu.leipzig.grafs.operators.interfaces.window.WindowGraphCollectionToGraphCollectionOperatorI;
 import edu.leipzig.grafs.operators.interfaces.window.WindowGraphToGraphOperatorI;
 import org.apache.flink.streaming.api.datastream.DataStream;
@@ -42,7 +42,7 @@ public class UnionWithDuplicateInWindow implements
    */
   @Override
   public <W extends Window> DataStream<Triplet> execute(DataStream<Triplet> stream,
-      WindowInformation<W> wi) {
+      WindowingInformation<W> wi) {
     var unionedStream = new DisjunctUnion(streams).execute(stream);
     var filterDuplicateInWindowFunction =
         new ProcessWindowFunction<Triplet, Triplet, String, W>() {
@@ -57,6 +57,5 @@ public class UnionWithDuplicateInWindow implements
         .window(wi.getWindow());
     unionedWindowStream = applyOtherWindowInformation(unionedWindowStream, wi);
     return unionedWindowStream.process(filterDuplicateInWindowFunction);
-
   }
 }

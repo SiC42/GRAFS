@@ -1,7 +1,7 @@
 package edu.leipzig.grafs.operators.interfaces.window;
 
 import edu.leipzig.grafs.model.Triplet;
-import edu.leipzig.grafs.model.streaming.window.AbstractWindowedStream.WindowInformation;
+import edu.leipzig.grafs.model.streaming.window.AbstractWindowedStream.WindowingInformation;
 import org.apache.flink.streaming.api.datastream.AllWindowedStream;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.WindowedStream;
@@ -16,10 +16,10 @@ public interface WindowOperatorI {
    * @return the stream with the applied operator
    */
   <W extends Window> DataStream<Triplet> execute(DataStream<Triplet> stream,
-      WindowInformation<W> wi);
+      WindowingInformation<W> wi);
 
   default <W extends Window> WindowedStream<Triplet, String, W> applyOtherWindowInformation(
-      WindowedStream<Triplet, String, W> windowedStream, WindowInformation<W> wi) {
+      WindowedStream<Triplet, String, W> windowedStream, WindowingInformation<W> wi) {
     if (wi.getTrigger() != null) {
       windowedStream = windowedStream.trigger(wi.getTrigger());
     }
@@ -36,7 +36,7 @@ public interface WindowOperatorI {
   }
 
   default <W extends Window> AllWindowedStream<Triplet, W> applyOtherWindowInformation(
-      AllWindowedStream<Triplet, W> windowedStream, WindowInformation<W> wi) {
+      AllWindowedStream<Triplet, W> windowedStream, WindowingInformation<W> wi) {
     if (wi.getTrigger() != null) {
       windowedStream = windowedStream.trigger(wi.getTrigger());
     }

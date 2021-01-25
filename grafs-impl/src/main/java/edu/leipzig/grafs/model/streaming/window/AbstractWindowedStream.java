@@ -15,12 +15,12 @@ public abstract class AbstractWindowedStream<W extends Window, WS extends Abstra
     AbstractStream {
 
 
-  protected final WindowInformation<W> wi;
+  protected final WindowingInformation<W> wi;
 
   public AbstractWindowedStream(DataStream<Triplet> stream, FlinkConfig config,
       WindowAssigner<? super Triplet, W> window) {
     super(stream, config);
-    this.wi = new WindowInformation<>(window);
+    this.wi = new WindowingInformation<>(window);
   }
 
   protected abstract WS getThis();
@@ -46,7 +46,7 @@ public abstract class AbstractWindowedStream<W extends Window, WS extends Abstra
   }
 
 
-  public static class WindowInformation<W extends Window> {
+  public static class WindowingInformation<W extends Window> {
 
     private final WindowAssigner<? super Triplet, W> window;
     private Trigger<? super Triplet, ? super W> trigger;
@@ -54,7 +54,7 @@ public abstract class AbstractWindowedStream<W extends Window, WS extends Abstra
     private Time lateness;
     private OutputTag<Triplet> outputTag;
 
-    public WindowInformation(WindowAssigner<? super Triplet, W> window) {
+    public WindowingInformation(WindowAssigner<? super Triplet, W> window) {
       this.window = window;
       trigger = null;
       evictor = null;
