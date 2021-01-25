@@ -10,7 +10,7 @@ import org.apache.flink.streaming.api.windowing.windows.Window;
 
 public class WindowedGCStream<W extends Window> extends
     AbstractWindowedStream<W,WindowedGCStream<W>> implements
-    WindowedGCOperators {
+    WindowedGCStreamOperators {
 
   public WindowedGCStream(DataStream<Triplet> gcStream, FlinkConfig config,
       WindowAssigner<? super Triplet, W> window) {

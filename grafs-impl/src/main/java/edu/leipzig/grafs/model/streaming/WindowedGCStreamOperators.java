@@ -4,7 +4,7 @@ import edu.leipzig.grafs.operators.interfaces.window.WindowGraphCollectionToGrap
 import edu.leipzig.grafs.operators.interfaces.window.WindowGraphCollectionToGraphOperatorI;
 import edu.leipzig.grafs.operators.union.UnionWithDuplicateInWindow;
 
-public interface WindowedGCOperators {
+public interface WindowedGCStreamOperators {
 
   /**
    * Creates a graph stream using the given operator.
