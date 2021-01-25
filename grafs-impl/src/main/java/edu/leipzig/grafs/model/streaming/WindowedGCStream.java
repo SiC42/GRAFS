@@ -12,9 +12,9 @@ public class WindowedGCStream<W extends Window> extends
     AbstractWindowedStream<W,WindowedGCStream<W>> implements
     WindowedGCStreamOperators {
 
-  public WindowedGCStream(DataStream<Triplet> gcStream, FlinkConfig config,
+  public WindowedGCStream(DataStream<Triplet> stream, FlinkConfig config,
       WindowAssigner<? super Triplet, W> window) {
-    super(gcStream, config, window);
+    super(stream, config, window);
   }
 
   @Override
@@ -24,13 +24,13 @@ public class WindowedGCStream<W extends Window> extends
 
   @Override
   public GraphStream callForGraph(WindowGraphCollectionToGraphOperatorI operator) {
-    var result = operator.execute(gcStream, wi);
+    var result = operator.execute(stream, wi);
     return new GraphStream(result, config);
   }
 
   @Override
   public GCStream callForGC(WindowGraphCollectionToGraphCollectionOperatorI operator) {
-    var result = operator.execute(gcStream, wi);
+    var result = operator.execute(stream, wi);
     return new GCStream(result, config);
   }
 }

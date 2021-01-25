@@ -44,14 +44,23 @@ public class VertexReader extends CSVElementReader<Vertex> {
   private Properties getProperties(String propertiesStr) {
     String[] propertyStrArray = propertiesStr.split("\\|");
     var properties = Properties.create();
-    if (propertyStrArray.length == 7) {
-      properties.set("capacity", Integer.parseInt(propertyStrArray[0]));
+    try {
+      if (!propertyStrArray[0].equals("")) {
+        properties.set("capacity", Integer.parseInt(propertyStrArray[0]));
+      }
       properties.set("id", propertyStrArray[1]);
       properties.set("lat", propertyStrArray[2]);
       properties.set("long", propertyStrArray[3]);
       properties.set("name", propertyStrArray[4]);
-      properties.set("regionId", Short.parseShort(propertyStrArray[5]));
-      properties.set("rentalURL", propertyStrArray[6]);
+      if (propertyStrArray.length > 5 && !propertyStrArray[5].equals("")) {
+        properties.set("regionId", Integer.parseInt(propertyStrArray[5]));
+      }
+      if (propertyStrArray.length > 6) {
+        properties.set("rentalURL", propertyStrArray[6]);
+      }
+    } catch (IndexOutOfBoundsException e){
+      System.out.println(propertiesStr);
+      throw e;
     }
     return properties;
   }

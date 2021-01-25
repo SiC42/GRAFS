@@ -30,8 +30,8 @@ public class VertexAggregation<W extends Window> extends VertexAggregationProces
    * @param vertexGroupInfo    grouping information used to determine which vertex are in a group
    * @param aggregateFunctions aggregate functions that are used to calculate the aggregates and set
    *                           them in the aggregated vertex
-   * @param aggregateMode      determines if the source or target vertex of the triplet stream should
-   *                           be aggregated
+   * @param aggregateMode      determines if the source or target vertex of the triplet stream
+   *                           should be aggregated
    */
   public VertexAggregation(GroupingInformation vertexGroupInfo,
       Set<AggregateFunction> aggregateFunctions, AggregateMode aggregateMode) {
@@ -58,12 +58,9 @@ public class VertexAggregation<W extends Window> extends VertexAggregationProces
     // determine the aggregated vertice
     var isInitialAggregation = true;
     for (Triplet triplet : tripletIt) {
-      Vertex curVertex;
-      if (aggregateMode.equals(AggregateMode.SOURCE)) {
-        curVertex = triplet.getSourceVertex();
-      } else {
-        curVertex = triplet.getTargetVertex();
-      }
+      Vertex curVertex = aggregateMode.equals(AggregateMode.SOURCE)
+          ? triplet.getSourceVertex()
+          : triplet.getTargetVertex();
       if (isInitialAggregation) {
         isInitialAggregation = false;
         aggregatedVertex = (AggregatedVertex) setGroupedProperties(vertexGroupInfo,

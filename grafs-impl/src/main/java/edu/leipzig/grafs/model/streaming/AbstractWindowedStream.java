@@ -10,27 +10,19 @@ import org.apache.flink.streaming.api.windowing.triggers.Trigger;
 import org.apache.flink.streaming.api.windowing.windows.Window;
 import org.apache.flink.util.OutputTag;
 
-public abstract class AbstractWindowedStream<W extends Window,WS extends AbstractWindowedStream<W,?>> implements
-    StreamI {
+public abstract class AbstractWindowedStream<W extends Window,WS extends AbstractWindowedStream<W,?>> extends AbstractStream {
 
 
-  protected final DataStream<Triplet> gcStream;
-  protected final FlinkConfig config;
+
   protected final WindowInformation<W> wi;
 
-  public AbstractWindowedStream(DataStream<Triplet> gcStream, FlinkConfig config,
+  public AbstractWindowedStream(DataStream<Triplet> stream, FlinkConfig config,
       WindowAssigner<? super Triplet, W> window) {
-    this.gcStream = gcStream.assignTimestampsAndWatermarks(config.getWatermarkStrategy());
-    this.config = config;
+    super(stream, config);
     this.wi = new WindowInformation<>(window);
   }
 
   protected abstract WS getThis();
-
-  @Override
-  public DataStream<Triplet> getDataStream() {
-    return gcStream;
-  }
 
   public WS trigger(Trigger<? super Triplet, ? super W> trigger) {
     wi.addTrigger(trigger);
