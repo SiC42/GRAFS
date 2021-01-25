@@ -19,7 +19,6 @@ public class GroupingBenchmark extends AbstractWindowBenchmark {
 
   public <W extends Window> AbstractNonWindowedStream applyOperator(WindowedGraphStream<W> stream) {
     var groupingBuilder = Grouping.createGrouping()
-        .addVertexGroupingKey("id")
         .addVertexAggregateFunction(new Count("used"))
         .addEdgeGroupingKey("bike_id")
         .addEdgeAggregateFunction(new Count("used"));
