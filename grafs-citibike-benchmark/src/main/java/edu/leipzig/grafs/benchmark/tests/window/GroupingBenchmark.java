@@ -22,7 +22,7 @@ public class GroupingBenchmark extends AbstractWindowBenchmark {
         .addVertexGroupingKey("id")
         .addVertexAggregateFunction(new Count("used"))
         .addEdgeGroupingKey("bike_id")
-        .addVertexAggregateFunction(new Count("used"));
+        .addEdgeAggregateFunction(new Count("used"));
     return stream.callForGraph(groupingBuilder.build());
   }
 
