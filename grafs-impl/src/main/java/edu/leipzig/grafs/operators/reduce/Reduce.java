@@ -2,7 +2,7 @@ package edu.leipzig.grafs.operators.reduce;
 
 import edu.leipzig.grafs.model.GraphElement;
 import edu.leipzig.grafs.model.Triplet;
-import edu.leipzig.grafs.operators.interfaces.GraphCollectionToGraphOperatorI;
+import edu.leipzig.grafs.operators.interfaces.nonwindow.GraphCollectionToGraphOperatorI;
 import java.util.function.Consumer;
 import org.apache.flink.api.common.functions.FilterFunction;
 import org.apache.flink.streaming.api.datastream.DataStream;

@@ -1,8 +1,8 @@
 package edu.leipzig.grafs.model.streaming;
 
 import edu.leipzig.grafs.model.Triplet;
-import edu.leipzig.grafs.operators.interfaces.GraphToGraphCollectionOperatorI;
-import edu.leipzig.grafs.operators.interfaces.GraphToGraphOperatorI;
+import edu.leipzig.grafs.operators.interfaces.nonwindow.GraphToGraphCollectionOperatorI;
+import edu.leipzig.grafs.operators.interfaces.nonwindow.GraphToGraphOperatorI;
 import edu.leipzig.grafs.util.FlinkConfig;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.windowing.assigners.WindowAssigner;

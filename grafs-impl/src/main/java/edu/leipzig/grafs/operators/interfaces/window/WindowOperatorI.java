@@ -1,4 +1,4 @@
-package edu.leipzig.grafs.operators.interfaces.windowed;
+package edu.leipzig.grafs.operators.interfaces.window;
 
 import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.model.streaming.AbstractWindowedStream.WindowInformation;

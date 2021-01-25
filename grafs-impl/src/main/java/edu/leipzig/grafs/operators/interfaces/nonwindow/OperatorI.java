@@ -1,4 +1,4 @@
-package edu.leipzig.grafs.operators.interfaces;
+package edu.leipzig.grafs.operators.interfaces.nonwindow;
 
 import edu.leipzig.grafs.model.Triplet;
 import org.apache.flink.streaming.api.datastream.DataStream;

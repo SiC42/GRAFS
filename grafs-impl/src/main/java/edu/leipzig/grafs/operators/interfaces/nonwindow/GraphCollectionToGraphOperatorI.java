@@ -1,4 +1,4 @@
-package edu.leipzig.grafs.operators.interfaces;
+package edu.leipzig.grafs.operators.interfaces.nonwindow;
 
 public interface GraphCollectionToGraphOperatorI extends OperatorI {
 

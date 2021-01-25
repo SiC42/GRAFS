@@ -1,4 +1,4 @@
-package edu.leipzig.grafs.operators.interfaces.windowed;
+package edu.leipzig.grafs.operators.interfaces.window;
 
 /**
  * Interface for operators which takes a graph and produces one graph.

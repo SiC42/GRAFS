@@ -8,7 +8,7 @@ import edu.leipzig.grafs.operators.grouping.logic.TripletKeySelector;
 import edu.leipzig.grafs.operators.grouping.logic.VertexAggregation;
 import edu.leipzig.grafs.operators.grouping.model.AggregateMode;
 import edu.leipzig.grafs.operators.grouping.model.GroupingInformation;
-import edu.leipzig.grafs.operators.interfaces.windowed.WindowGraphToGraphOperatorI;
+import edu.leipzig.grafs.operators.interfaces.window.WindowGraphToGraphOperatorI;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;

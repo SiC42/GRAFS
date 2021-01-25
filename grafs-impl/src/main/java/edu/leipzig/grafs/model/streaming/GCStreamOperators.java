@@ -1,7 +1,7 @@
 package edu.leipzig.grafs.model.streaming;
 
-import edu.leipzig.grafs.operators.interfaces.GraphCollectionToGraphCollectionOperatorI;
-import edu.leipzig.grafs.operators.interfaces.GraphCollectionToGraphOperatorI;
+import edu.leipzig.grafs.operators.interfaces.nonwindow.GraphCollectionToGraphCollectionOperatorI;
+import edu.leipzig.grafs.operators.interfaces.nonwindow.GraphCollectionToGraphOperatorI;
 import edu.leipzig.grafs.operators.reduce.Reduce;
 import edu.leipzig.grafs.operators.union.DisjunctUnion;
 import org.apache.flink.api.common.functions.FilterFunction;
@@ -35,7 +35,7 @@ public interface GCStreamOperators {
    * @param idSetFilter defines a filter to filter out elements that shouldn't be part of the graph
    *                    stream
    * @return result of given operator
-   */
+G   */
   default GraphStream reduce(FilterFunction<GradoopIdSet> idSetFilter) {
     return callForGraph(new Reduce(idSetFilter));
   }

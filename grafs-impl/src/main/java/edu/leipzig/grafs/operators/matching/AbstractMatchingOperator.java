@@ -3,7 +3,7 @@ package edu.leipzig.grafs.operators.matching;
 import edu.leipzig.grafs.model.Graph;
 import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.model.streaming.AbstractWindowedStream.WindowInformation;
-import edu.leipzig.grafs.operators.interfaces.windowed.WindowGraphToGraphCollectionOperatorI;
+import edu.leipzig.grafs.operators.interfaces.window.WindowGraphToGraphCollectionOperatorI;
 import edu.leipzig.grafs.operators.matching.logic.EdgeQueryFilter;
 import edu.leipzig.grafs.operators.matching.logic.VertexQueryFilter;
 import edu.leipzig.grafs.util.AsciiGraphLoader;
