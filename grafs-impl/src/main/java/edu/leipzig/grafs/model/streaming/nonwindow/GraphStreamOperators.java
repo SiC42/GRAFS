@@ -41,8 +41,8 @@ public interface GraphStreamOperators {
   // ---------------------------------------------------------------------------
 
   /**
-   * Creates an triplet stream with the {@link Subgraph} operator applied. The strategy to use vertex
-   * induced subgraphing is applied.
+   * Creates an triplet stream with the {@link Subgraph} operator applied. The strategy to use
+   * vertex induced subgraphing is applied.
    *
    * @param vertexPredicate vertex filter used for the subgraph operator
    * @return result stream of the subgraph operator
@@ -63,8 +63,8 @@ public interface GraphStreamOperators {
   }
 
   /**
-   * Creates an triplet stream with the {@link Subgraph} operator applied. Filters on both vertices and
-   * edges;
+   * Creates an triplet stream with the {@link Subgraph} operator applied. Filters on both vertices
+   * and edges;
    *
    * @param vertexPredicate vertex filter used for the subgraph operator
    * @param edgePredicate   edge filter used for the subgraph operator
@@ -109,8 +109,8 @@ public interface GraphStreamOperators {
   }
 
   /**
-   * Creates an triplet stream with the {@link DisjunctUnion} operator applied. Represents a union of
-   * two or more triplet streams creating a new stream containing all the elements from all the
+   * Creates an triplet stream with the {@link DisjunctUnion} operator applied. Represents a union
+   * of two or more triplet streams creating a new stream containing all the elements from all the
    * streams.
    * <p>
    * Note: This operator assumes that the streams are disjunct, i.e. no element in both streams is

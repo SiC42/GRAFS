@@ -34,15 +34,15 @@ public interface GCStreamOperators {
    *
    * @param idSetFilter defines a filter to filter out elements that shouldn't be part of the graph
    *                    stream
-   * @return result of given operator
-G   */
+   * @return result of given operator G
+   */
   default GraphStream reduce(FilterFunction<GradoopIdSet> idSetFilter) {
     return callForGraph(new Reduce(idSetFilter));
   }
 
   /**
-   * Creates an triplet stream with the {@link DisjunctUnion} operator applied. Represents a union of
-   * two or more triplet streams creating a new stream containing all the elements from all the
+   * Creates an triplet stream with the {@link DisjunctUnion} operator applied. Represents a union
+   * of two or more triplet streams creating a new stream containing all the elements from all the
    * streams.
    * <p>
    * Note: This operator assumes that the streams are disjunct, i.e. no element in both streams is

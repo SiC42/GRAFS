@@ -11,7 +11,7 @@ import org.apache.flink.streaming.api.windowing.assigners.WindowAssigner;
 import org.apache.flink.streaming.api.windowing.windows.Window;
 
 public class WindowedGCStream<W extends Window> extends
-    AbstractWindowedStream<W,WindowedGCStream<W>> implements
+    AbstractWindowedStream<W, WindowedGCStream<W>> implements
     WindowedGCStreamOperators {
 
   public WindowedGCStream(DataStream<Triplet> stream, FlinkConfig config,

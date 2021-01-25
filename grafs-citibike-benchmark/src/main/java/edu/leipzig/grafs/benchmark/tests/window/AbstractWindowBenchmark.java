@@ -1,9 +1,9 @@
 package edu.leipzig.grafs.benchmark.tests.window;
 
 import edu.leipzig.grafs.benchmark.tests.AbstractBenchmark;
-import edu.leipzig.grafs.model.streaming.AbstractStream;
-import edu.leipzig.grafs.model.streaming.GraphStream;
-import edu.leipzig.grafs.model.streaming.WindowedGraphStream;
+import edu.leipzig.grafs.model.streaming.nonwindow.AbstractNonWindowedStream;
+import edu.leipzig.grafs.model.streaming.nonwindow.GraphStream;
+import edu.leipzig.grafs.model.streaming.window.WindowedGraphStream;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
@@ -90,8 +90,8 @@ public abstract class AbstractWindowBenchmark extends AbstractBenchmark {
     return options;
   }
 
-  @Override
-  public AbstractStream applyOperator(GraphStream stream) {
+
+  public AbstractNonWindowedStream applyOperator(GraphStream stream) {
     var windowedStream = stream.window(window);
     if (useTrigger) {
       windowedStream = windowedStream.trigger(countTrigger);
@@ -99,5 +99,6 @@ public abstract class AbstractWindowBenchmark extends AbstractBenchmark {
     return applyOperator(windowedStream);
   }
 
-  public abstract <W extends Window> AbstractStream applyOperator(WindowedGraphStream<W> stream);
+  public abstract <W extends Window> AbstractNonWindowedStream applyOperator(
+      WindowedGraphStream<W> stream);
 }

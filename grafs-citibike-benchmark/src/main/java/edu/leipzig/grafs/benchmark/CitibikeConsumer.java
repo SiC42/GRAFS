@@ -46,9 +46,9 @@ public class CitibikeConsumer {
           System.out.println("No message received");
           // If no message found count is reached to threshold exit loop.
           break;
-        }
-        else
+        } else {
           continue;
+        }
       }
       //print each record.
       System.out.println((consumerRecords.count()));

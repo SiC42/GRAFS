@@ -75,9 +75,9 @@ public interface WindowedGraphStreamOperators {
   }
 
   /**
-   * Creates an triplet stream with the {@link UnionWithDuplicateInWindow} operator applied. Union of
-   * two or more triplet streams creating a new stream containing all the elements from all the streams
-   * with duplicates in a given window filtered out. No trigger is applied.
+   * Creates an triplet stream with the {@link UnionWithDuplicateInWindow} operator applied. Union
+   * of two or more triplet streams creating a new stream containing all the elements from all the
+   * streams with duplicates in a given window filtered out. No trigger is applied.
    *
    * @param streams the triplet streams to union output with
    * @return the unioned triplet stream

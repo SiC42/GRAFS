@@ -14,20 +14,20 @@ import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer;
 /**
  * Model that abstracts the data stream to a edge(container)-stream.
  */
-public class GraphStream extends AbstractNonWindowStream implements GraphStreamOperators {
+public class GraphStream extends AbstractNonWindowedStream implements GraphStreamOperators {
 
   /**
-   * Constructs an triplet stream with the given data stream and config.
+   * Constructs an graph stream with the given data stream and config.
    *
    * @param stream data stream that holds <tt>Triplet</tt>
-   * @param config     config used for the stream
+   * @param config config used for the stream
    */
   public GraphStream(DataStream<Triplet> stream, FlinkConfig config) {
     super(stream, config);
   }
 
   /**
-   * Constructs an triplet stream using the given kafka consumer and stream config.
+   * Constructs an graph stream using the given kafka consumer and stream config.
    *
    * @param fkConsumer kafka consumer from which the information are fetched
    * @param config     config used for the stream
@@ -36,9 +36,9 @@ public class GraphStream extends AbstractNonWindowStream implements GraphStreamO
   public static GraphStream fromSource(FlinkKafkaConsumer<Triplet> fkConsumer,
       FlinkConfig config, int parallelism) {
     DataStreamSource<Triplet> stream;
-    if(parallelism > 0) {
+    if (parallelism > 0) {
       stream = config.getExecutionEnvironment().addSource(fkConsumer).setParallelism(parallelism);
-    } else{
+    } else {
       stream = config.getExecutionEnvironment().addSource(fkConsumer);
     }
 
@@ -62,7 +62,8 @@ public class GraphStream extends AbstractNonWindowStream implements GraphStreamO
     return new GCStream(result, config);
   }
 
-  public <W extends Window> WindowedGraphStream<W> window(WindowAssigner<? super Triplet, W> window) {
+  public <W extends Window> WindowedGraphStream<W> window(
+      WindowAssigner<? super Triplet, W> window) {
     return new WindowedGraphStream<>(stream, config, window);
   }
 }

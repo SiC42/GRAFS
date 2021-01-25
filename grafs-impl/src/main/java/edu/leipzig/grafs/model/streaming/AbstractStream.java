@@ -14,7 +14,7 @@ public abstract class AbstractStream {
    * Constructs an triplet stream with the given data stream and config.
    *
    * @param stream data stream that holds <tt>Triplet</tt>
-   * @param config     config used for the stream
+   * @param config config used for the stream
    */
   public AbstractStream(DataStream<Triplet> stream, FlinkConfig config) {
     this.stream = stream.assignTimestampsAndWatermarks(config.getWatermarkStrategy());

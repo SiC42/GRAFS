@@ -11,7 +11,7 @@ import org.apache.flink.streaming.api.windowing.assigners.WindowAssigner;
 import org.apache.flink.streaming.api.windowing.windows.Window;
 
 public class WindowedGraphStream<W extends Window> extends
-    AbstractWindowedStream<W,WindowedGraphStream<W>> implements
+    AbstractWindowedStream<W, WindowedGraphStream<W>> implements
     WindowedGraphStreamOperators {
 
   public WindowedGraphStream(DataStream<Triplet> stream, FlinkConfig config,

@@ -2,7 +2,7 @@ package edu.leipzig.grafs.benchmark.operators.matching;
 
 import edu.leipzig.grafs.benchmark.operators.functions.SimpleMeter;
 import edu.leipzig.grafs.model.Triplet;
-import edu.leipzig.grafs.model.streaming.AbstractWindowedStream.WindowInformation;
+import edu.leipzig.grafs.model.streaming.window.AbstractWindowedStream.WindowInformation;
 import edu.leipzig.grafs.operators.matching.Isomorphism;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.windowing.windows.Window;

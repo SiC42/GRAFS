@@ -3,15 +3,14 @@ package edu.leipzig.grafs.benchmark.tests;
 import edu.leipzig.grafs.benchmark.serialization.TripletDeserializer;
 import edu.leipzig.grafs.connectors.RateLimitingKafkaConsumer;
 import edu.leipzig.grafs.model.streaming.AbstractStream;
-import edu.leipzig.grafs.model.streaming.GraphStream;
-import edu.leipzig.grafs.model.streaming.StreamI;
+import edu.leipzig.grafs.model.streaming.nonwindow.AbstractNonWindowedStream;
+import edu.leipzig.grafs.model.streaming.nonwindow.GraphStream;
 import edu.leipzig.grafs.serialization.TripletDeserializationSchema;
 import edu.leipzig.grafs.util.FlinkConfigBuilder;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -37,7 +36,7 @@ public abstract class AbstractBenchmark {
   private static final String INPUT_PARALLELISM = "inputp";
 
   protected StreamExecutionEnvironment env;
-  protected StreamI stream;
+  protected AbstractStream stream;
   protected String operatorName;
   protected Writer outputWriter;
   protected int parallelism;
@@ -180,7 +179,8 @@ public abstract class AbstractBenchmark {
     options.addOption("i", INPUT, true, "input file path");
     options.addOption("kip", KAFKA, true, "the kafka server in the format hostname:port/topic");
     options
-        .addOption(INPUT_PARALLELISM, true, "maximum number of flink worker to read from source. Should not be larger than the number of kafka partitions");
+        .addOption(INPUT_PARALLELISM, true,
+            "maximum number of flink worker to read from source. Should not be larger than the number of kafka partitions");
     options
         .addOption("l", RATE_LIMIT, true, "the rate limit for the intake of data into the system");
     options.addOption("o", "output", true, "location for the output file");
@@ -218,5 +218,5 @@ public abstract class AbstractBenchmark {
     return props;
   }
 
-  public abstract AbstractStream applyOperator(GraphStream stream);
+  public abstract AbstractNonWindowedStream applyOperator(GraphStream stream);
 }

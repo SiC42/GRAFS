@@ -6,20 +6,18 @@ import edu.leipzig.grafs.util.FlinkConfig;
 import java.io.IOException;
 import java.util.Iterator;
 import org.apache.flink.streaming.api.datastream.DataStream;
-import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.datastream.DataStreamUtils;
 import org.apache.flink.streaming.api.functions.sink.SinkFunction;
-import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer;
 
-public abstract class AbstractNonWindowStream extends AbstractStream {
+public abstract class AbstractNonWindowedStream extends AbstractStream {
 
   /**
    * Constructs an triplet stream with the given data stream and config.
    *
    * @param stream data stream that holds <tt>Triplet</tt>
-   * @param config     config used for the stream
+   * @param config config used for the stream
    */
-  public AbstractNonWindowStream(DataStream<Triplet> stream, FlinkConfig config) {
+  public AbstractNonWindowedStream(DataStream<Triplet> stream, FlinkConfig config) {
     super(stream, config);
   }
 

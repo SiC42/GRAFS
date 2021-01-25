@@ -11,9 +11,8 @@ import org.apache.flink.streaming.api.windowing.triggers.Trigger;
 import org.apache.flink.streaming.api.windowing.windows.Window;
 import org.apache.flink.util.OutputTag;
 
-public abstract class AbstractWindowedStream<W extends Window,WS extends AbstractWindowedStream<W,?>> extends
+public abstract class AbstractWindowedStream<W extends Window, WS extends AbstractWindowedStream<W, ?>> extends
     AbstractStream {
-
 
 
   protected final WindowInformation<W> wi;

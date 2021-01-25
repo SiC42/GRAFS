@@ -2,8 +2,8 @@ package edu.leipzig.grafs.benchmark.operators.union;
 
 import edu.leipzig.grafs.benchmark.operators.functions.SimpleMeter;
 import edu.leipzig.grafs.model.Triplet;
-import edu.leipzig.grafs.model.streaming.AbstractWindowedStream.WindowInformation;
-import edu.leipzig.grafs.model.streaming.GraphStream;
+import edu.leipzig.grafs.model.streaming.nonwindow.GraphStream;
+import edu.leipzig.grafs.model.streaming.window.AbstractWindowedStream.WindowInformation;
 import edu.leipzig.grafs.operators.union.UnionWithDuplicateInWindow;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.windowing.windows.Window;

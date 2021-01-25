@@ -5,7 +5,7 @@ import static org.hamcrest.Matchers.containsInAnyOrder;
 
 import edu.leipzig.grafs.benchmark.operators.matching.BenchmarkIsomorphism;
 import edu.leipzig.grafs.model.Triplet;
-import edu.leipzig.grafs.model.streaming.GraphStream;
+import edu.leipzig.grafs.model.streaming.nonwindow.GraphStream;
 import edu.leipzig.grafs.util.FlinkConfig;
 import edu.leipzig.grafs.util.FlinkConfigBuilder;
 import java.time.Duration;
