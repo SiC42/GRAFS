@@ -1,5 +1,7 @@
-package edu.leipzig.grafs.model.streaming;
+package edu.leipzig.grafs.model.streaming.window;
 
+import edu.leipzig.grafs.model.streaming.nonwindow.GCStream;
+import edu.leipzig.grafs.model.streaming.nonwindow.GraphStream;
 import edu.leipzig.grafs.operators.grouping.Grouping;
 import edu.leipzig.grafs.operators.grouping.functions.AggregateFunction;
 import edu.leipzig.grafs.operators.grouping.model.GroupingInformation;

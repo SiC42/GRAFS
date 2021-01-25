@@ -1,6 +1,8 @@
-package edu.leipzig.grafs.model.streaming;
+package edu.leipzig.grafs.model.streaming.window;
 
 import edu.leipzig.grafs.model.Triplet;
+import edu.leipzig.grafs.model.streaming.nonwindow.GCStream;
+import edu.leipzig.grafs.model.streaming.nonwindow.GraphStream;
 import edu.leipzig.grafs.operators.interfaces.window.WindowGraphCollectionToGraphCollectionOperatorI;
 import edu.leipzig.grafs.operators.interfaces.window.WindowGraphCollectionToGraphOperatorI;
 import edu.leipzig.grafs.util.FlinkConfig;

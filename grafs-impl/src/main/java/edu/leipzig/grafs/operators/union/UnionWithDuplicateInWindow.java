@@ -2,8 +2,8 @@ package edu.leipzig.grafs.operators.union;
 
 import com.google.common.annotations.Beta;
 import edu.leipzig.grafs.model.Triplet;
-import edu.leipzig.grafs.model.streaming.GraphStream;
-import edu.leipzig.grafs.model.streaming.AbstractWindowedStream.WindowInformation;
+import edu.leipzig.grafs.model.streaming.nonwindow.GraphStream;
+import edu.leipzig.grafs.model.streaming.window.AbstractWindowedStream.WindowInformation;
 import edu.leipzig.grafs.operators.interfaces.window.WindowGraphCollectionToGraphCollectionOperatorI;
 import edu.leipzig.grafs.operators.interfaces.window.WindowGraphToGraphOperatorI;
 import org.apache.flink.streaming.api.datastream.DataStream;

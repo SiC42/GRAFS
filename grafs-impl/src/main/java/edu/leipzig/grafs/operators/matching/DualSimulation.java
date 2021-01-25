@@ -1,7 +1,7 @@
 package edu.leipzig.grafs.operators.matching;
 
 import edu.leipzig.grafs.model.Triplet;
-import edu.leipzig.grafs.model.streaming.AbstractWindowedStream.WindowInformation;
+import edu.leipzig.grafs.model.streaming.window.AbstractWindowedStream.WindowInformation;
 import edu.leipzig.grafs.operators.matching.logic.DualSimulationProcess;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.windowing.windows.Window;

@@ -1,6 +1,7 @@
-package edu.leipzig.grafs.model.streaming;
+package edu.leipzig.grafs.model.streaming.window;
 
 import edu.leipzig.grafs.model.Triplet;
+import edu.leipzig.grafs.model.streaming.AbstractStream;
 import edu.leipzig.grafs.util.FlinkConfig;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.windowing.assigners.WindowAssigner;
@@ -10,7 +11,8 @@ import org.apache.flink.streaming.api.windowing.triggers.Trigger;
 import org.apache.flink.streaming.api.windowing.windows.Window;
 import org.apache.flink.util.OutputTag;
 
-public abstract class AbstractWindowedStream<W extends Window,WS extends AbstractWindowedStream<W,?>> extends AbstractStream {
+public abstract class AbstractWindowedStream<W extends Window,WS extends AbstractWindowedStream<W,?>> extends
+    AbstractStream {
 
 
 

@@ -1,4 +1,4 @@
-package edu.leipzig.grafs.model.streaming;
+package edu.leipzig.grafs.model.streaming.nonwindow;
 
 import edu.leipzig.grafs.operators.interfaces.nonwindow.GraphCollectionToGraphCollectionOperatorI;
 import edu.leipzig.grafs.operators.interfaces.nonwindow.GraphCollectionToGraphOperatorI;

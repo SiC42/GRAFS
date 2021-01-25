@@ -1,6 +1,7 @@
-package edu.leipzig.grafs.model.streaming;
+package edu.leipzig.grafs.model.streaming.nonwindow;
 
 import edu.leipzig.grafs.model.Triplet;
+import edu.leipzig.grafs.model.streaming.AbstractStream;
 import edu.leipzig.grafs.util.FlinkConfig;
 import java.io.IOException;
 import java.util.Iterator;

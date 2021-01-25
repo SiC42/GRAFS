@@ -1,7 +1,7 @@
 package edu.leipzig.grafs.operators.matching;
 
 import edu.leipzig.grafs.model.Triplet;
-import edu.leipzig.grafs.model.streaming.GraphStream;
+import edu.leipzig.grafs.model.streaming.nonwindow.GraphStream;
 import edu.leipzig.grafs.operators.matching.logic.MatchingTestBase;
 import edu.leipzig.grafs.util.FlinkConfig;
 import edu.leipzig.grafs.util.FlinkConfigBuilder;

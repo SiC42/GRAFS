@@ -12,7 +12,7 @@ import com.google.common.collect.Maps;
 import edu.leipzig.grafs.model.Element;
 import edu.leipzig.grafs.model.GraphElement;
 import edu.leipzig.grafs.model.Triplet;
-import edu.leipzig.grafs.model.streaming.AbstractNonWindowStream;
+import edu.leipzig.grafs.model.streaming.nonwindow.AbstractNonWindowStream;
 import edu.leipzig.grafs.operators.grouping.functions.AggregateFunction;
 import edu.leipzig.grafs.operators.grouping.functions.BaseAggregateFunction;
 import java.io.ByteArrayInputStream;
