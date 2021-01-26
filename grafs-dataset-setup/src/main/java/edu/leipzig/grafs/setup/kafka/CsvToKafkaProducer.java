@@ -83,15 +83,8 @@ public class CsvToKafkaProducer extends AbstractProducer {
               e.printStackTrace();
             }
           });
-      // send a last object that is not part of the analysis, but marks end of stream
-      var source = new Vertex();
-      var END_OF_STREAM_LABEL = TripletDeserializationSchema.END_OF_STREAM_LABEL;
-      source.setLabel(END_OF_STREAM_LABEL);
-      var target = new Vertex();
-      target.setLabel(END_OF_STREAM_LABEL);
-      var edge = EdgeFactory.createEdge(source, target);
-      edge.setLabel(END_OF_STREAM_LABEL);
-      sendTriplet(new Triplet(edge, source, target));
+
+      sendEndOfStreamToAllPartitions();
     } catch (IOException | InterruptedException | ExecutionException e) {
       e.printStackTrace();
     } finally {
