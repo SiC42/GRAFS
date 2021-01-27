@@ -6,7 +6,6 @@ import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.model.Vertex;
 import edu.leipzig.grafs.operators.grouping.model.AggregateMode;
 import edu.leipzig.grafs.operators.grouping.model.GroupingInformation;
-import java.util.Objects;
 import java.util.TreeSet;
 import org.apache.flink.api.java.functions.KeySelector;
 
@@ -16,22 +15,18 @@ import org.apache.flink.api.java.functions.KeySelector;
  */
 public class TripletKeySelector implements KeySelector<Triplet, String> {
 
-  private final GroupingInformation vertexGi;
-  private final GroupingInformation edgeGi;
+  private final GroupingInformation gi;
   private final AggregateMode makeKeyFor;
 
   /**
    * Constructors the key selector using the given information.
    *
-   * @param vertexGi   information on which the vertices should be grouped upon
-   * @param edgeGi     information on which the edges should be grouped upon
+   * @param gi   information on which the vertices should be grouped upon
    * @param makeKeyFor determines if the key should be made for the source vertex, target vertex or
    *                   edge
    */
-  public TripletKeySelector(GroupingInformation vertexGi, GroupingInformation edgeGi,
-      AggregateMode makeKeyFor) {
-    this.vertexGi = Objects.requireNonNull(vertexGi, "grouping information for vertex was null");
-    this.edgeGi = edgeGi;
+  public TripletKeySelector(GroupingInformation gi, AggregateMode makeKeyFor) {
+    this.gi = gi;
     this.makeKeyFor = makeKeyFor;
   }
 
@@ -52,17 +47,17 @@ public class TripletKeySelector implements KeySelector<Triplet, String> {
     final String EMPTY_EDGE = "[]";
     switch (makeKeyFor) {
       case SOURCE: {
-        String vertex = generateKeyForVertex(triplet.getSourceVertex(), vertexGi);
+        String vertex = generateKeyForVertex(triplet.getSourceVertex(), gi);
         return generateKey(vertex, EMPTY_EDGE, EMPTY_VERTEX);
       }
       case TARGET: {
-        String vertex = generateKeyForVertex(triplet.getTargetVertex(), vertexGi);
+        String vertex = generateKeyForVertex(triplet.getTargetVertex(), gi);
         return generateKey(EMPTY_VERTEX, EMPTY_EDGE, vertex);
       }
       case EDGE: {
-        String source = generateKeyForVertex(triplet.getSourceVertex(), vertexGi);
-        String target = generateKeyForVertex(triplet.getTargetVertex(), vertexGi);
-        String edge = generateKeyForEdge(triplet.getEdge(), edgeGi);
+        String edge = generateKeyForEdge(triplet.getEdge(), gi);
+        var source = String.format("(%s)",triplet.getSourceVertex().getId().toString());
+        var target =  String.format("(%s)",triplet.getTargetVertex().getId().toString());
         return generateKey(source, edge, target);
       }
       default:

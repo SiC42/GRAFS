@@ -144,7 +144,7 @@ public class Grouping implements WindowGraphToGraphOperatorI {
    */
   private <W extends Window> DataStream<Triplet> aggregateOnVertex(DataStream<Triplet> stream,
       AggregateMode mode, WindowingInformation<W> wi) {
-    var windowedStream = createKeyedWindowedStream(stream, mode, wi);
+    var windowedStream = createKeyedWindowedStream(stream, vertexGi, mode, wi);
     return windowedStream.process(
         new VertexAggregation<>(vertexGi, vertexAggregateFunctions, mode))
         .name("Aggregate " + mode.name() + " VERTICES");
@@ -158,7 +158,7 @@ public class Grouping implements WindowGraphToGraphOperatorI {
    */
   private <W extends Window> DataStream<Triplet> aggregateOnEdge(DataStream<Triplet> stream,
       WindowingInformation<W> wi) {
-    var windowedStream = createKeyedWindowedStream(stream, AggregateMode.EDGE, wi);
+    var windowedStream = createKeyedWindowedStream(stream, edgeGi, AggregateMode.EDGE, wi);
     return windowedStream
         .process(new EdgeAggregation<>(edgeGi, edgeAggregateFunctions, GradoopId.get()))
         .name("Aggregate EDGES");
@@ -173,9 +173,9 @@ public class Grouping implements WindowGraphToGraphOperatorI {
    * @return stream that is keyed based on the given mode and windowed
    */
   private <W extends Window> WindowedStream<Triplet, String, W> createKeyedWindowedStream(
-      DataStream<Triplet> es, AggregateMode mode, WindowingInformation<W> wi) {
+      DataStream<Triplet> es, GroupingInformation gi, AggregateMode mode, WindowingInformation<W> wi) {
     var windowedStream = es
-        .keyBy(new TripletKeySelector(vertexGi, edgeGi, mode))
+        .keyBy(new TripletKeySelector(gi, mode))
         .window(wi.getWindow());
     windowedStream = applyOtherWindowInformation(windowedStream, wi);
     return windowedStream;
