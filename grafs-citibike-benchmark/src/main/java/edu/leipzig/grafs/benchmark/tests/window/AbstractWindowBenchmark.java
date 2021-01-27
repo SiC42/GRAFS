@@ -24,19 +24,17 @@ public abstract class AbstractWindowBenchmark extends AbstractBenchmark {
   boolean useTrigger;
   Trigger<Object, TimeWindow> countTrigger;
   private int windowSizeInMs;
-  private int countTriggerSize;
 
   public AbstractWindowBenchmark(String[] args) {
     super(args);
     windowSizeInMs = -1;
-    countTriggerSize = -1;
     checkArgs(args);
   }
 
   private void checkArgs(String[] args) {
     var parser = new DefaultParser();
     var options = buildOptions();
-    var header = String.format("Benchmarking GRAFS with %s.", operatorName);
+    var header = String.format("Benchmarking GRAFS with %s.", properties.getProperty(OPERATOR_NAME_KEY));
     HelpFormatter formatter = new HelpFormatter();
     try {
       var cmd = parser.parse(options, args);
@@ -56,19 +54,19 @@ public abstract class AbstractWindowBenchmark extends AbstractBenchmark {
           throw new ParseException("Error. argument after windowsize is not an integer.");
         }
       }
-      if (cmd.hasOption("triggersize")) {
-        try {
-          countTriggerSize = Integer.parseInt(cmd.getOptionValue("triggersize"));
-        } catch (NumberFormatException e) {
-          throw new ParseException("Error. argument after triggersize is not an integer.");
-        }
-        this.useTrigger = true;
-        this.windowSize = Time.days(5); // obsolete, as the trigger will fire instead
-        var windowedStream = ((GraphStream) stream)
-            .window(TumblingProcessingTimeWindows.of(windowSize));
-        windowedStream.trigger(PurgingTrigger.of(CountTrigger.of(countTriggerSize)));
-        stream = windowedStream;
-      }
+//      if (cmd.hasOption("triggersize")) {
+//        try {
+//          countTriggerSize = Integer.parseInt(cmd.getOptionValue("triggersize"));
+//        } catch (NumberFormatException e) {
+//          throw new ParseException("Error. argument after triggersize is not an integer.");
+//        }
+//        this.useTrigger = true;
+//        this.windowSize = Time.days(5); // obsolete, as the trigger will fire instead
+//        var windowedStream = ((GraphStream) stream)
+//            .window(TumblingProcessingTimeWindows.of(windowSize));
+//        windowedStream.trigger(PurgingTrigger.of(CountTrigger.of(countTriggerSize)));
+//        stream = windowedStream;
+//      }
     } catch (ParseException e) {
       e.printStackTrace();
       formatter.printHelp("grafsbenchmark", header, options, "");
@@ -79,7 +77,7 @@ public abstract class AbstractWindowBenchmark extends AbstractBenchmark {
 
   protected String getCsvLine(long timeInMilliSeconds) {
     return String
-        .format("%s;%d;%d;%d\n", this.operatorName, this.windowSizeInMs, this.countTriggerSize,
+        .format("%s;%d;%d\n", properties.getProperty(OPERATOR_NAME_KEY), this.windowSizeInMs,
             timeInMilliSeconds);
   }
 
