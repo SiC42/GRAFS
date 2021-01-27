@@ -6,11 +6,12 @@ import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.model.Vertex;
 import edu.leipzig.grafs.operators.grouping.functions.AggregateFunction;
 import edu.leipzig.grafs.operators.grouping.model.AggregateMode;
-import edu.leipzig.grafs.operators.grouping.model.AggregatedVertex;
 import edu.leipzig.grafs.operators.grouping.model.GroupingInformation;
+import java.util.HashSet;
 import java.util.Set;
 import org.apache.flink.streaming.api.windowing.windows.Window;
 import org.apache.flink.util.Collector;
+import org.gradoop.common.model.impl.id.GradoopId;
 
 /**
  * Provides the ability to aggregate on vertices of the streams by providing the {@link
@@ -18,7 +19,7 @@ import org.apache.flink.util.Collector;
  *
  * @param <W> the type of window to be used for the grouping
  */
-public class VertexAggregation<W extends Window> extends VertexAggregationProcess<W> {
+public class VertexAggregation<W extends Window> extends ElementAggregation<W> {
 
   private final GroupingInformation vertexGroupInfo;
   private final Set<AggregateFunction> aggregateFunctions;
@@ -53,7 +54,8 @@ public class VertexAggregation<W extends Window> extends VertexAggregationProces
   public void process(String obsoleteStr, Context obsoleteContext,
       Iterable<Triplet> tripletIt,
       Collector<Triplet> out) {
-    var aggregatedVertex = new AggregatedVertex();
+    var alreadyAggregated = new HashSet<GradoopId>();
+    var aggregatedVertex = new Vertex();
 
     // determine the aggregated vertice
     var isInitialAggregation = true;
@@ -63,12 +65,15 @@ public class VertexAggregation<W extends Window> extends VertexAggregationProces
           : triplet.getTargetVertex();
       if (isInitialAggregation) {
         isInitialAggregation = false;
-        aggregatedVertex = (AggregatedVertex) setGroupedProperties(vertexGroupInfo,
+        aggregatedVertex = (Vertex) setGroupedProperties(vertexGroupInfo,
             aggregatedVertex, curVertex);
       }
-      aggregatedVertex = aggregateVertex(aggregatedVertex, curVertex, aggregateFunctions);
+      if(!alreadyAggregated.contains(curVertex.getId())) {
+        alreadyAggregated.add(curVertex.getId());
+        aggregatedVertex = (Vertex) aggregateElement(aggregatedVertex, curVertex, aggregateFunctions);
+      }
     }
-    aggregatedVertex = (AggregatedVertex) checkForMissingAggregationsAndApply(aggregateFunctions,
+    aggregatedVertex = (Vertex) checkForMissingAggregationsAndApply(aggregateFunctions,
         aggregatedVertex);
 
     // build new triplets using the aggregated vertice

@@ -16,7 +16,7 @@ import org.gradoop.common.model.impl.properties.PropertyValue;
  *
  * @param <W> the type of window to be used for the grouping
  */
-public abstract class ElementAggregationProcess<W extends Window> extends
+public abstract class ElementAggregation<W extends Window> extends
     ProcessWindowFunction<Triplet, Triplet, String, W> {
 
   /**

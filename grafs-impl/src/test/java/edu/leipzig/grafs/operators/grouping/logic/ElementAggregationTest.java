@@ -15,7 +15,7 @@ import java.util.HashSet;
 import org.gradoop.common.model.impl.properties.PropertyValue;
 import org.junit.jupiter.api.Test;
 
-class ElementAggregationProcessTest {
+class ElementAggregationTest {
 
   @Test
   void testCheckAggregationAndGroupingKeyIntersection_withKeyConflict() {
@@ -24,7 +24,7 @@ class ElementAggregationProcessTest {
     var groupInfo = new GroupingInformation();
     groupInfo.addKey(TestUtils.KEY_1);
 
-    var aggProcess = mock(ElementAggregationProcess.class, CALLS_REAL_METHODS);
+    var aggProcess = mock(ElementAggregation.class, CALLS_REAL_METHODS);
     aggProcess.checkAggregationAndGroupingKeyIntersection(aggMap, groupInfo);
 
     groupInfo.addKey(TestUtils.KEY_0);
@@ -35,7 +35,7 @@ class ElementAggregationProcessTest {
 
   @Test
   void testSetGroupedProperties_noGroupInfo() {
-    var aggProcess = mock(ElementAggregationProcess.class, CALLS_REAL_METHODS);
+    var aggProcess = mock(ElementAggregation.class, CALLS_REAL_METHODS);
     var emptyVertex = new Vertex();
     emptyVertex.setProperty(TestUtils.KEY_0, PropertyValue.create(TestUtils.INT_VAL_2));
     var masterVertex = new Vertex();
@@ -48,7 +48,7 @@ class ElementAggregationProcessTest {
 
   @Test
   void testSetGroupedProperties_ShouldUseLabel() {
-    var aggProcess = mock(ElementAggregationProcess.class, CALLS_REAL_METHODS);
+    var aggProcess = mock(ElementAggregation.class, CALLS_REAL_METHODS);
     var groupInfo = new GroupingInformation();
     groupInfo.useLabel(true);
 
@@ -66,7 +66,7 @@ class ElementAggregationProcessTest {
 
   @Test
   void testSetGroupedProperties_onPropertyKeys() {
-    var aggProcess = mock(ElementAggregationProcess.class, CALLS_REAL_METHODS);
+    var aggProcess = mock(ElementAggregation.class, CALLS_REAL_METHODS);
     var groupInfo = new GroupingInformation();
     var groupKey = TestUtils.KEY_0;
     groupInfo.addKey(groupKey);
@@ -94,7 +94,7 @@ class ElementAggregationProcessTest {
 
   @Test
   void testAggregateGraphElement_aggElementHasProperty() {
-    var aggProcess = mock(ElementAggregationProcess.class, CALLS_REAL_METHODS);
+    var aggProcess = mock(ElementAggregation.class, CALLS_REAL_METHODS);
     var aggKey = TestUtils.KEY_0;
 
     var aggMap = new HashSet<AggregateFunction>();
@@ -120,7 +120,7 @@ class ElementAggregationProcessTest {
 
   @Test
   void testAggregateGraphElement_aggElementDoesntHaveProperty() {
-    var aggProcess = mock(ElementAggregationProcess.class, CALLS_REAL_METHODS);
+    var aggProcess = mock(ElementAggregation.class, CALLS_REAL_METHODS);
     var aggKey = TestUtils.KEY_0;
 
     var aggMap = new HashSet<AggregateFunction>();
@@ -145,7 +145,7 @@ class ElementAggregationProcessTest {
 
   @Test
   void testAggregateGraphElement_wontDeleteProps() {
-    var aggProcess = mock(ElementAggregationProcess.class, CALLS_REAL_METHODS);
+    var aggProcess = mock(ElementAggregation.class, CALLS_REAL_METHODS);
     var aggKey = TestUtils.KEY_0;
 
     var aggMap = new HashSet<AggregateFunction>();

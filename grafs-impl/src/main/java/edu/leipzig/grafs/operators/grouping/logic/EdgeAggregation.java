@@ -17,7 +17,7 @@ import org.gradoop.common.model.impl.id.GradoopIdSet;
  *
  * @param <W> the type of window to be used for the grouping
  */
-public class EdgeAggregation<W extends Window> extends ElementAggregationProcess<W> {
+public class EdgeAggregation<W extends Window> extends ElementAggregation<W> {
 
 
   private final GroupingInformation edgeGroupInfo;
