@@ -8,7 +8,7 @@ import edu.leipzig.grafs.operators.grouping.logic.TripletKeySelector;
 import edu.leipzig.grafs.operators.grouping.logic.VertexAggregation;
 import edu.leipzig.grafs.operators.grouping.model.AggregateMode;
 import edu.leipzig.grafs.operators.grouping.model.GroupingInformation;
-import edu.leipzig.grafs.operators.interfaces.window.WindowGraphToGraphOperatorI;
+import edu.leipzig.grafs.operators.interfaces.window.WindowedGraphToGraphOperatorI;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -25,7 +25,7 @@ import org.gradoop.common.model.impl.id.GradoopId;
  * and applies the given aggregation functions to the resulting element. This is done in a Window of
  * the stream.
  */
-public class Grouping implements WindowGraphToGraphOperatorI {
+public class Grouping implements WindowedGraphToGraphOperatorI {
 
   private final GroupingInformation vertexGi;
   private final Set<AggregateFunction> vertexAggregateFunctions;
