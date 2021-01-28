@@ -5,6 +5,6 @@ package edu.leipzig.grafs.operators.interfaces.window;
  * collections). This is only a formal definition and not used in any other way than to provide a
  * visual indicator which operators do what.
  */
-public interface WindowGraphToGraphCollectionOperatorI extends WindowOperatorI {
+public interface WindowedGraphToGraphCollectionOperatorI extends WindowedOperatorI {
 
 }
