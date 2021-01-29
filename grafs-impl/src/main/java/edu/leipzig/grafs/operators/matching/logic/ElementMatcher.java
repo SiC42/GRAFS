@@ -8,6 +8,7 @@ import org.gradoop.common.util.GradoopConstants;
  */
 public class ElementMatcher {
 
+
   /**
    * Returns <tt>true</tt> if the labels of the given elements match and the properties of the query
    * element are a subset of the properties of the element
@@ -18,7 +19,23 @@ public class ElementMatcher {
    * element are a subset of the properties of the element
    */
   static boolean matchesQueryElem(GraphElement queryElem, GraphElement elem) {
+    return matchesQueryElem(queryElem,elem,false);
+  }
+
+  /**
+   * Returns <tt>true</tt> if the labels of the given elements match and the properties of the query
+   * element are a subset of the properties of the element
+   *
+   * @param queryElem query element for which a match should be tested
+   * @param elem      element which should be tested against a query element
+   * @return <tt>true</tt> if the labels of the given elements match and the properties of the query
+   * element are a subset of the properties of the element
+   */
+  static boolean matchesQueryElem(GraphElement queryElem, GraphElement elem, boolean exact) {
     if (!labelMatches(queryElem.getLabel(), elem.getLabel())) {
+      return false;
+    }
+    if(exact && queryElem.getPropertyCount() != elem.getPropertyCount()){
       return false;
     }
     if (queryElem.getPropertyKeys() != null) {

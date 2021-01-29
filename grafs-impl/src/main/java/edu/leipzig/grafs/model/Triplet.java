@@ -11,11 +11,11 @@ import org.gradoop.common.model.impl.id.GradoopId;
  * Data model that encapsulates {@link Edge} and its {@link Vertex}. Used for separation purposes
  * (e.g. an edge shouldn't be modified in vertex transformations and vice versa).
  */
-public class Triplet implements Serializable {
+public class Triplet<V extends Vertex, E extends Edge> implements Serializable {
 
-  private Edge edge;
-  private Vertex sourceVertex;
-  private Vertex targetVertex;
+  private E edge;
+  private V sourceVertex;
+  private V targetVertex;
 
   /**
    * Empty constructor used for serialization.
@@ -33,7 +33,7 @@ public class Triplet implements Serializable {
    * @throws RuntimeException when the IDs of the given vertices do not match with the corresponding
    *                          IDs in the edge
    */
-  public Triplet(Edge edge, Vertex sourceVertex, Vertex targetVertex)
+  public Triplet(E edge, V sourceVertex, V targetVertex)
       throws RuntimeException {
     checkIfIdsMatch(edge, sourceVertex, targetVertex);
     this.edge = edge;
@@ -41,7 +41,7 @@ public class Triplet implements Serializable {
     this.targetVertex = targetVertex;
   }
 
-  private void checkIfIdsMatch(Edge edge, Vertex sourceVertex, Vertex targetVertex) {
+  private void checkIfIdsMatch(E edge, V sourceVertex, V targetVertex) {
     if(edge == null){
       return;
     }
@@ -63,22 +63,23 @@ public class Triplet implements Serializable {
    * @param sourceVertex source vertex of the given edge
    * @param targetVertex target vertex of the given edge
    */
-  public Triplet(GraphElement prevEdge, GraphElement sourceVertex,
+  public static Triplet<Vertex, Edge> createTriplet(GraphElement prevEdge, GraphElement sourceVertex,
       GraphElement targetVertex) {
-    this.sourceVertex = VertexFactory.createVertex(
+    var source = VertexFactory.createVertex(
         sourceVertex.getLabel(),
         sourceVertex.getProperties(),
         sourceVertex.getGraphIds());
-    this.targetVertex = VertexFactory.createVertex(
+    var target = VertexFactory.createVertex(
         targetVertex.getLabel(),
         targetVertex.getProperties(),
         targetVertex.getGraphIds());
-    this.edge = EdgeFactory.createEdge(
+    var e = EdgeFactory.createEdge(
         prevEdge.getLabel(),
         sourceVertex.getId(),
         targetVertex.getId(),
         prevEdge.getProperties(),
         prevEdge.getGraphIds());
+    return new Triplet<>(e,source,target);
   }
 
   /**
@@ -86,12 +87,12 @@ public class Triplet implements Serializable {
    *
    * @return edge of this triplet
    */
-  public Edge getEdge() {
+  public E getEdge() {
     return edge;
   }
 
 
-  protected void setEdge(Edge edge) {
+  protected void setEdge(E edge) {
     checkIfIdsMatch(edge, sourceVertex, targetVertex);
     this.edge = edge;
   }
@@ -101,11 +102,11 @@ public class Triplet implements Serializable {
    *
    * @return source vertex of this triplet
    */
-  public Vertex getSourceVertex() {
+  public V getSourceVertex() {
     return sourceVertex;
   }
 
-  public void setSourceVertex(Vertex sourceVertex) {
+  public void setSourceVertex(V sourceVertex) {
     checkIfIdsMatch(edge, sourceVertex, targetVertex);
     this.sourceVertex = sourceVertex;
   }
@@ -115,11 +116,11 @@ public class Triplet implements Serializable {
    *
    * @return target vertex of this triplet
    */
-  public Vertex getTargetVertex() {
+  public V getTargetVertex() {
     return targetVertex;
   }
 
-  public void setTargetVertex(Vertex targetVertex) {
+  public void setTargetVertex(V targetVertex) {
     checkIfIdsMatch(edge, sourceVertex, targetVertex);
     this.targetVertex = targetVertex;
   }
@@ -139,9 +140,9 @@ public class Triplet implements Serializable {
    * Creates a copy of this <tt>Triplet</tt>, but with source and target vertex reversed and the
    * appropriate flags in edge set.
    */
-  public Triplet createReverseTriplet() {
-    Edge reverseEdge = this.edge.createReverseEdge();
-    return new Triplet(reverseEdge, targetVertex, sourceVertex);
+  public Triplet<V,Edge> createReverseTriplet() {
+    var reverseEdge = this.edge.createReverseEdge();
+    return new Triplet<>(reverseEdge, targetVertex, sourceVertex);
   }
 
   @Override
@@ -157,7 +158,7 @@ public class Triplet implements Serializable {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    Triplet that = (Triplet) o;
+    Triplet<?,?> that = (Triplet<?,?>) o;
     return Objects.equals(edge, that.edge) &&
         Objects.equals(sourceVertex, that.sourceVertex) &&
         Objects.equals(targetVertex, that.targetVertex);
@@ -177,9 +178,9 @@ public class Triplet implements Serializable {
 
   private void readObject(java.io.ObjectInputStream in)
       throws IOException, ClassNotFoundException {
-    this.edge = (Edge) in.readObject();
-    this.sourceVertex = (Vertex) in.readObject();
-    this.targetVertex = (Vertex) in.readObject();
+    this.edge = (E) in.readObject();
+    this.sourceVertex = (V) in.readObject();
+    this.targetVertex = (V) in.readObject();
 
   }
 }
