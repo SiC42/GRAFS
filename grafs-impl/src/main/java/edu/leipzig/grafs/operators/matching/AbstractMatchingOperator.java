@@ -2,7 +2,8 @@ package edu.leipzig.grafs.operators.matching;
 
 import edu.leipzig.grafs.model.Graph;
 import edu.leipzig.grafs.model.Triplet;
-import edu.leipzig.grafs.model.streaming.window.AbstractWindowedStream.WindowingInformation;
+import edu.leipzig.grafs.model.window.WindowingInformation;
+import edu.leipzig.grafs.model.window.WindowsI;
 import edu.leipzig.grafs.operators.interfaces.window.WindowedGraphToGraphCollectionOperatorI;
 import edu.leipzig.grafs.operators.matching.logic.EdgeQueryFilter;
 import edu.leipzig.grafs.operators.matching.logic.VertexQueryFilter;
@@ -16,7 +17,7 @@ import org.apache.flink.streaming.api.windowing.windows.Window;
  * applying a window.
  */
 public abstract class AbstractMatchingOperator implements
-    WindowedGraphToGraphCollectionOperatorI {
+    WindowedGraphToGraphCollectionOperatorI<WindowsI<? extends Window>> {
 
   /**
    * Query graph used to find pattern matches

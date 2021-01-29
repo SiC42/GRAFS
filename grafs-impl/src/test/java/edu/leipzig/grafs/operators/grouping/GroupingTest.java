@@ -6,6 +6,7 @@ import static org.gradoop.common.util.GradoopConstants.NULL_STRING;
 import static org.hamcrest.core.Is.is;
 
 import edu.leipzig.grafs.model.Triplet;
+import edu.leipzig.grafs.model.window.TumblingEventTimeWindows;
 import edu.leipzig.grafs.operators.grouping.functions.Count;
 import edu.leipzig.grafs.operators.grouping.functions.MaxProperty;
 import edu.leipzig.grafs.operators.grouping.functions.MinProperty;
@@ -17,11 +18,11 @@ import edu.leipzig.grafs.util.FlinkConfigBuilder;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.Set;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
-import org.apache.flink.streaming.api.windowing.assigners.TumblingEventTimeWindows;
 import org.apache.flink.streaming.api.windowing.time.Time;
 import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.BeforeAll;
@@ -60,8 +61,7 @@ public class GroupingTest {
 
     var edgeStream = loader.createEdgeStreamByGraphVariables(config, "g0", "g1", "g2");
 
-    var finalStream = edgeStream
-        .window(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+    var intermediateStream = edgeStream
         .callForGraph(
             Grouping.createGrouping()
                 .addVertexGroupingKeys(Set.of(GroupingInformation.LABEL_SYMBOL, "city"))
@@ -70,6 +70,9 @@ public class GroupingTest {
                 .addEdgeAggregateFunction(new Count("count"))
                 .build()
         );
+    var finalStream = intermediateStream
+        .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        .apply();
     var tripletIt = finalStream.collect();
     var actualTripletCol = new ArrayList<Triplet>();
     while (tripletIt.hasNext()) {
@@ -97,8 +100,7 @@ public class GroupingTest {
     AsciiGraphLoader loader = getSocialNetworkLoader();
 
     var edgeStream = loader.createEdgeStreamByGraphVariables(config, "g2");
-    var finalStream = edgeStream
-        .window(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+    var intermediateStream = edgeStream
         .callForGraph(
             Grouping.createGrouping()
                 .addVertexGroupingKey("city")
@@ -107,7 +109,10 @@ public class GroupingTest {
                 .build()
         );
 
-    var tripletIt = finalStream.collect();
+    var finalStream = intermediateStream
+        .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        .apply();
+    var tripletIt =  finalStream.collect();
     var actualTripletCol = new ArrayList<Triplet>();
     while (tripletIt.hasNext()) {
       actualTripletCol.add(tripletIt.next());
@@ -146,8 +151,8 @@ public class GroupingTest {
         "(berlin)-[{count : 2L}]->(dresden)" +
         "]");
 
-    var finalStream = edgeStream
-        .window(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+    var intermediateStream = edgeStream
+
         .callForGraph(
             Grouping.createGrouping()
                 .addVertexGroupingKey("city")
@@ -156,6 +161,9 @@ public class GroupingTest {
                 .build()
         );
 
+    var finalStream = intermediateStream
+        .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        .apply();
     var tripletIt = finalStream.collect();
     var actualTripletCol = new ArrayList<Triplet>();
     while (tripletIt.hasNext()) {
@@ -192,8 +200,8 @@ public class GroupingTest {
         "(berlinM)-[{count : 1L}]->(dresdenM)" +
         "]");
 
-    var finalStream = edgeStream
-        .window(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+    var intermediateStream = edgeStream
+
         .callForGraph(
             Grouping.createGrouping()
                 .addVertexGroupingKey("city")
@@ -203,6 +211,9 @@ public class GroupingTest {
                 .build()
         );
 
+    var finalStream = intermediateStream
+        .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        .apply();
     var tripletIt = finalStream.collect();
     var actualTripletCol = new ArrayList<Triplet>();
     while (tripletIt.hasNext()) {
@@ -228,8 +239,8 @@ public class GroupingTest {
         "(dresden)-[{count : 1L}]->(dresden)" +
         "]");
 
-    var finalStream = edgeStream
-        .window(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+    var intermediateStream = edgeStream
+
         .callForGraph(
             Grouping.createGrouping()
                 .addVertexGroupingKey("city")
@@ -238,6 +249,9 @@ public class GroupingTest {
                 .build()
         );
 
+    var finalStream = intermediateStream
+        .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        .apply();
     var tripletIt = finalStream.collect();
     var actualTripletCol = new ArrayList<Triplet>();
     while (tripletIt.hasNext()) {
@@ -265,8 +279,8 @@ public class GroupingTest {
         "(dresdenF)-[{count : 1L}]->(dresdenM)" +
         "]");
 
-    var finalStream = edgeStream
-        .window(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+    var intermediateStream = edgeStream
+
         .callForGraph(
             Grouping.createGrouping()
                 .addVertexGroupingKey("city")
@@ -276,6 +290,9 @@ public class GroupingTest {
                 .build()
         );
 
+    var finalStream = intermediateStream
+        .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        .apply();
     var tripletIt = finalStream.collect();
     var actualTripletCol = new ArrayList<Triplet>();
     while (tripletIt.hasNext()) {
@@ -307,8 +324,8 @@ public class GroupingTest {
         "(berlin)-[{since : 2015, count : 2L}]->(dresden)" +
         "]");
 
-    var finalStream = edgeStream
-        .window(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+    var intermediateStream = edgeStream
+
         .callForGraph(
             Grouping.createGrouping()
                 .addVertexGroupingKey("city")
@@ -317,6 +334,9 @@ public class GroupingTest {
                 .addEdgeAggregateFunction(new Count("count"))
                 .build());
 
+    var finalStream = intermediateStream
+        .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        .apply();
     var tripletIt = finalStream.collect();
     var actualTripletCol = new ArrayList<Triplet>();
     while (tripletIt.hasNext()) {
@@ -369,8 +389,8 @@ public class GroupingTest {
 
     var edgeStream = loader.createEdgeStreamByGraphVariables(config, "input");
 
-    var finalStream = edgeStream
-        .window(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+    var intermediateStream = edgeStream
+
         .callForGraph(
             Grouping.createGrouping()
                 .addVertexGroupingKey("a")
@@ -380,6 +400,9 @@ public class GroupingTest {
                 .addEdgeAggregateFunction(new Count("count"))
                 .build());
 
+    var finalStream = intermediateStream
+        .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        .apply();
     var tripletIt = finalStream.collect();
     var actualTripletCol = new ArrayList<Triplet>();
     while (tripletIt.hasNext()) {
@@ -433,8 +456,8 @@ public class GroupingTest {
         "]");
 
     var edgeStream = loader.createEdgeStreamByGraphVariables(config, "input");
-    var finalStream = edgeStream
-        .window(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+    var intermediateStream = edgeStream
+
         .callForGraph(
             Grouping.createGrouping()
                 .addVertexGroupingKey("a")
@@ -445,6 +468,9 @@ public class GroupingTest {
                 .addEdgeAggregateFunction(new Count("count"))
                 .build());
 
+    var finalStream = intermediateStream
+        .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        .apply();
     var tripletIt = finalStream.collect();
     var actualTripletCol = new ArrayList<Triplet>();
     while (tripletIt.hasNext()) {
@@ -471,9 +497,9 @@ public class GroupingTest {
         "(dresden)-[{since : 2014, count : 1L}]->(dresden)" +
         "]");
 
-    var finalStream =
+    var intermediateStream =
         edgeStream
-            .window(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+    
             .callForGraph(
                 Grouping.createGrouping()
                     .addVertexGroupingKey("city")
@@ -483,6 +509,9 @@ public class GroupingTest {
                     .build()
             );
 
+    var finalStream = intermediateStream
+        .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        .apply();
     var tripletIt = finalStream.collect();
     var actualTripletCol = new ArrayList<Triplet>();
     while (tripletIt.hasNext()) {
@@ -511,8 +540,8 @@ public class GroupingTest {
         "(f)-[{count :  4L}]->(t)" +
         "]");
 
-    var finalStream = edgeStream
-        .window(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+    var intermediateStream = edgeStream
+
         .callForGraph(
             Grouping.createGrouping()
                 .useVertexLabel(true)
@@ -521,6 +550,9 @@ public class GroupingTest {
                 .build()
         );
 
+    var finalStream = intermediateStream
+        .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        .apply();
     var tripletIt = finalStream.collect();
     var actualTripletCol = new ArrayList<Triplet>();
     while (tripletIt.hasNext()) {
@@ -551,8 +583,8 @@ public class GroupingTest {
         "(b)-[{count : 2L}]->(d)" +
         "]");
 
-    var finalStream = edgeStream
-        .window(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+    var intermediateStream = edgeStream
+
         .callForGraph(
             Grouping.createGrouping()
                 .useVertexLabel(true)
@@ -562,6 +594,9 @@ public class GroupingTest {
                 .build()
         );
 
+    var finalStream = intermediateStream
+        .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        .apply();
     var tripletIt = finalStream.collect();
     var actualTripletCol = new ArrayList<Triplet>();
     while (tripletIt.hasNext()) {
@@ -599,8 +634,8 @@ public class GroupingTest {
         "(f)-[{count : 4L}]->(t)" +
         "]");
 
-    var finalStream = edgeStream
-        .window(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+    var intermediateStream = edgeStream
+
         .callForGraph(
             Grouping.createGrouping()
                 .useVertexLabel(true)
@@ -610,6 +645,9 @@ public class GroupingTest {
                 .build()
         );
 
+    var finalStream = intermediateStream
+        .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        .apply();
     var tripletIt = finalStream.collect();
     var actualTripletCol = new ArrayList<Triplet>();
     while (tripletIt.hasNext()) {
@@ -636,8 +674,8 @@ public class GroupingTest {
         "(p)-[{since : 2015, count : 3L}]->(p)" +
         "]");
 
-    var finalStream = edgeStream
-        .window(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+    var intermediateStream = edgeStream
+
         .callForGraph(
             Grouping.createGrouping()
                 .useVertexLabel(true)
@@ -647,6 +685,9 @@ public class GroupingTest {
                 .build()
         );
 
+    var finalStream = intermediateStream
+        .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        .apply();
     var tripletIt = finalStream.collect();
     var actualTripletCol = new ArrayList<Triplet>();
     while (tripletIt.hasNext()) {
@@ -678,8 +719,8 @@ public class GroupingTest {
         "(f)-[{since : " + NULL_STRING + ", count : 5L}]->(p)" +
         "]");
 
-    var finalStream = edgeStream
-        .window(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+    var intermediateStream = edgeStream
+
         .callForGraph(
             Grouping.createGrouping()
                 .useVertexLabel(true)
@@ -689,6 +730,9 @@ public class GroupingTest {
                 .build()
         );
 
+    var finalStream = intermediateStream
+        .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        .apply();
     var tripletIt = finalStream.collect();
     var actualTripletCol = new ArrayList<Triplet>();
     while (tripletIt.hasNext()) {
@@ -720,8 +764,8 @@ public class GroupingTest {
         "(b)-[{since : 2015, count : 2L}]->(d)" +
         "]");
 
-    var finalStream = edgeStream
-        .window(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+    var intermediateStream = edgeStream
+
         .callForGraph(
             Grouping.createGrouping()
                 .useVertexLabel(true)
@@ -732,6 +776,9 @@ public class GroupingTest {
                 .build()
         );
 
+    var finalStream = intermediateStream
+        .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        .apply();
     var tripletIt = finalStream.collect();
     var actualTripletCol = new ArrayList<Triplet>();
     while (tripletIt.hasNext()) {
@@ -762,8 +809,8 @@ public class GroupingTest {
         "(p)-[:knows        {count : 10L}]->(p)" +
         "]");
 
-    var finalStream = edgeStream
-        .window(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+    var intermediateStream = edgeStream
+
         .callForGraph(
             Grouping.createGrouping()
                 .useVertexLabel(true)
@@ -774,6 +821,9 @@ public class GroupingTest {
                 .build()
         );
 
+    var finalStream = intermediateStream
+        .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        .apply();
     var tripletIt = finalStream.collect();
     var actualTripletCol = new ArrayList<Triplet>();
     while (tripletIt.hasNext()) {
@@ -804,8 +854,8 @@ public class GroupingTest {
         "(b)-[:knows {count : 2L}]->(d)" +
         "]");
 
-    var finalStream = edgeStream
-        .window(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+    var intermediateStream = edgeStream
+
         .callForGraph(
             Grouping.createGrouping()
                 .addVertexGroupingKey("city")
@@ -816,6 +866,9 @@ public class GroupingTest {
                 .build()
         );
 
+    var finalStream = intermediateStream
+        .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        .apply();
     var tripletIt = finalStream.collect();
     var actualTripletCol = new ArrayList<Triplet>();
     while (tripletIt.hasNext()) {
@@ -847,8 +900,8 @@ public class GroupingTest {
         "(pB)-[:knows {since : 2015, count : 2L}]->(pD)" +
         "]");
 
-    var finalStream = edgeStream
-        .window(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+    var intermediateStream = edgeStream
+
         .callForGraph(
             Grouping.createGrouping()
                 .addVertexGroupingKey("city")
@@ -859,6 +912,9 @@ public class GroupingTest {
                 .addEdgeAggregateFunction(new Count("count"))
                 .build()
         );
+    var finalStream = intermediateStream
+        .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        .apply();
     var tripletIt = finalStream.collect();
     var actualTripletCol = new ArrayList<Triplet>();
     while (tripletIt.hasNext()) {
@@ -898,8 +954,8 @@ public class GroupingTest {
         "(f)-[:hasTag {count : 4L}]->(t)" +
         "]");
 
-    var finalStream = edgeStream
-        .window(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+    var intermediateStream = edgeStream
+
         .callForGraph(
             Grouping.createGrouping()
                 .addVertexGroupingKey("city")
@@ -910,6 +966,9 @@ public class GroupingTest {
                 .build()
         );
 
+    var finalStream = intermediateStream
+        .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        .apply();
     var tripletIt = finalStream.collect();
     var actualTripletCol = new ArrayList<Triplet>();
     while (tripletIt.hasNext()) {
@@ -936,8 +995,8 @@ public class GroupingTest {
         "(p)-[:knows {since : 2015, count : 3L}]->(p)" +
         "]");
 
-    var finalStream = edgeStream
-        .window(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+    var intermediateStream = edgeStream
+
         .callForGraph(
             Grouping.createGrouping()
                 .addEdgeGroupingKey("since")
@@ -948,6 +1007,9 @@ public class GroupingTest {
                 .build()
         );
 
+    var finalStream = intermediateStream
+        .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        .apply();
     var tripletIt = finalStream.collect();
     var actualTripletCol = new ArrayList<Triplet>();
     while (tripletIt.hasNext()) {
@@ -981,8 +1043,8 @@ public class GroupingTest {
 
         "]");
 
-    var finalStream = edgeStream
-        .window(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+    var intermediateStream = edgeStream
+
         .callForGraph(
             Grouping.createGrouping()
                 .addEdgeGroupingKey("since")
@@ -994,6 +1056,9 @@ public class GroupingTest {
                 .build()
         );
 
+    var finalStream = intermediateStream
+        .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        .apply();
     var tripletIt = finalStream.collect();
     var actualTripletCol = new ArrayList<Triplet>();
     while (tripletIt.hasNext()) {
@@ -1035,9 +1100,9 @@ public class GroupingTest {
         "(f)-[:hasTag {since : " + NULL_STRING + ", count : 4L}]->(t)" +
         "]");
 
-    var finalStream =
+    var intermediateStream =
         edgeStream
-            .window(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+    
             .callForGraph(
                 Grouping.createGrouping()
                     .addVertexGroupingKey("city")
@@ -1050,6 +1115,9 @@ public class GroupingTest {
                     .build()
             );
 
+    var finalStream = intermediateStream
+        .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        .apply();
     var tripletIt = finalStream.collect();
     var actualTripletCol = new ArrayList<Triplet>();
     while (tripletIt.hasNext()) {
@@ -1095,15 +1163,18 @@ public class GroupingTest {
         "(v01)-->(v01)" +
         "]");
 
-    var finalStream =
+    var intermediateStream =
         edgeStream
-            .window(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+    
             .callForGraph(
                 Grouping.createGrouping()
                     .useVertexLabel(true)
                     .build()
             );
 
+    var finalStream = intermediateStream
+        .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        .apply();
     var tripletIt = finalStream.collect();
     var actualTripletCol = new ArrayList<Triplet>();
     while (tripletIt.hasNext()) {
@@ -1145,9 +1216,9 @@ public class GroupingTest {
         "(v01)-[{count : 3L}]->(v01)" +
         "]");
 
-    var finalStream =
+    var intermediateStream =
         edgeStream
-            .window(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+    
             .callForGraph(
                 Grouping.createGrouping()
                     .useVertexLabel(true)
@@ -1157,6 +1228,9 @@ public class GroupingTest {
                     .build()
             );
 
+    var finalStream = intermediateStream
+        .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        .apply();
     var tripletIt = finalStream.collect();
     var actualTripletCol = new ArrayList<Triplet>();
     while (tripletIt.hasNext()) {
@@ -1198,9 +1272,9 @@ public class GroupingTest {
         "(v01)-[{sumB : 5}]->(v01)" +
         "]");
 
-    var finalStream =
+    var intermediateStream =
         edgeStream
-            .window(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+    
             .callForGraph(
                 Grouping.createGrouping()
                     .useVertexLabel(true)
@@ -1210,6 +1284,9 @@ public class GroupingTest {
                     .build()
             );
 
+    var finalStream = intermediateStream
+        .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        .apply();
     var tripletIt = finalStream.collect();
     var actualTripletCol = new ArrayList<Triplet>();
     while (tripletIt.hasNext()) {
@@ -1251,9 +1328,9 @@ public class GroupingTest {
         "(v01)-[{sumB : 5}]->(v01)" +
         "]");
 
-    var finalStream =
+    var intermediateStream =
         edgeStream
-            .window(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+    
             .callForGraph(
                 Grouping.createGrouping()
                     .useVertexLabel(true)
@@ -1263,6 +1340,9 @@ public class GroupingTest {
                     .build()
             );
 
+    var finalStream = intermediateStream
+        .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        .apply();
     var tripletIt = finalStream.collect();
     var actualTripletCol = new ArrayList<Triplet>();
     while (tripletIt.hasNext()) {
@@ -1304,9 +1384,9 @@ public class GroupingTest {
         "(v01)-[{sumB : " + NULL_STRING + "}]->(v01)" +
         "]");
 
-    var finalStream =
+    var intermediateStream =
         edgeStream
-            .window(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+    
             .callForGraph(
                 Grouping.createGrouping()
                     .useVertexLabel(true)
@@ -1316,6 +1396,9 @@ public class GroupingTest {
                     .build()
             );
 
+    var finalStream = intermediateStream
+        .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        .apply();
     var tripletIt = finalStream.collect();
     var actualTripletCol = new ArrayList<Triplet>();
     while (tripletIt.hasNext()) {
@@ -1357,9 +1440,9 @@ public class GroupingTest {
         "(v01)-[{minB : 1}]->(v01)" +
         "]");
 
-    var finalStream =
+    var intermediateStream =
         edgeStream
-            .window(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+    
             .callForGraph(
                 Grouping.createGrouping()
                     .useVertexLabel(true)
@@ -1369,6 +1452,9 @@ public class GroupingTest {
                     .build()
             );
 
+    var finalStream = intermediateStream
+        .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        .apply();
     var tripletIt = finalStream.collect();
     var actualTripletCol = new ArrayList<Triplet>();
     while (tripletIt.hasNext()) {
@@ -1410,9 +1496,9 @@ public class GroupingTest {
         "(v01)-[{minB : 1}]->(v01)" +
         "]");
 
-    var finalStream =
+    var intermediateStream =
         edgeStream
-            .window(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+    
             .callForGraph(
                 Grouping.createGrouping()
                     .useVertexLabel(true)
@@ -1422,6 +1508,9 @@ public class GroupingTest {
                     .build()
             );
 
+    var finalStream = intermediateStream
+        .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        .apply();
     var tripletIt = finalStream.collect();
     var actualTripletCol = new ArrayList<Triplet>();
     while (tripletIt.hasNext()) {
@@ -1463,9 +1552,9 @@ public class GroupingTest {
         "(v01)-[{minB : " + NULL_STRING + "}]->(v01)" +
         "]");
 
-    var finalStream =
+    var intermediateStream =
         edgeStream
-            .window(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+    
             .callForGraph(
                 Grouping.createGrouping()
                     .useVertexLabel(true)
@@ -1474,6 +1563,9 @@ public class GroupingTest {
                     .build()
             );
 
+    var finalStream = intermediateStream
+        .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        .apply();
     var tripletIt = finalStream.collect();
     var actualTripletCol = new ArrayList<Triplet>();
     while (tripletIt.hasNext()) {
@@ -1515,9 +1607,9 @@ public class GroupingTest {
         "(v01)-[{maxB : 3}]->(v01)" +
         "]");
 
-    var finalStream =
+    var intermediateStream =
         edgeStream
-            .window(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+    
             .callForGraph(
                 Grouping.createGrouping()
                     .useVertexLabel(true)
@@ -1526,6 +1618,9 @@ public class GroupingTest {
                     .build()
             );
 
+    var finalStream = intermediateStream
+        .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        .apply();
     var tripletIt = finalStream.collect();
     var actualTripletCol = new ArrayList<Triplet>();
     while (tripletIt.hasNext()) {
@@ -1567,9 +1662,9 @@ public class GroupingTest {
         "(v01)-[{maxB : 1}]->(v01)" +
         "]");
 
-    var finalStream =
+    var intermediateStream =
         edgeStream
-            .window(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+    
             .callForGraph(
                 Grouping.createGrouping()
                     .useVertexLabel(true)
@@ -1578,6 +1673,9 @@ public class GroupingTest {
                     .build()
             );
 
+    var finalStream = intermediateStream
+        .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        .apply();
     var tripletIt = finalStream.collect();
     var actualTripletCol = new ArrayList<Triplet>();
     while (tripletIt.hasNext()) {
@@ -1619,9 +1717,9 @@ public class GroupingTest {
         "(v01)-[{maxB : " + NULL_STRING + "}]->(v01)" +
         "]");
 
-    var finalStream =
+    var intermediateStream =
         edgeStream
-            .window(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+    
             .callForGraph(
                 Grouping.createGrouping()
                     .useVertexLabel(true)
@@ -1630,6 +1728,9 @@ public class GroupingTest {
                     .build()
             );
 
+    var finalStream = intermediateStream
+        .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        .apply();
     var tripletIt = finalStream.collect();
     var actualTripletCol = new ArrayList<Triplet>();
     while (tripletIt.hasNext()) {
@@ -1670,9 +1771,9 @@ public class GroupingTest {
         "(v00)-[{minB : 1,maxB : 3,sumB : 4,count : 2L}]->(v01)" +
         "(v01)-[{minB : 1,maxB : 3,sumB : 5,count : 3L}]->(v01)" +
         "]");
-    var finalStream =
+    var intermediateStream =
         edgeStream
-            .window(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+    
             .callForGraph(
                 Grouping.createGrouping()
                     .useVertexLabel(true)
@@ -1687,6 +1788,9 @@ public class GroupingTest {
                     .build()
             );
 
+    var finalStream = intermediateStream
+        .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        .apply();
     var tripletIt = finalStream.collect();
     var actualTripletCol = new ArrayList<Triplet>();
     while (tripletIt.hasNext()) {

@@ -1,4 +1,4 @@
-package edu.leipzig.grafs.model.streaming.nonwindow;
+package edu.leipzig.grafs.model.streaming;
 
 import edu.leipzig.grafs.model.Edge;
 import edu.leipzig.grafs.model.Element;

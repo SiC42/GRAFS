@@ -1,4 +1,4 @@
-package edu.leipzig.grafs.model.streaming.nonwindow;
+package edu.leipzig.grafs.model.streaming;
 
 import edu.leipzig.grafs.operators.interfaces.nonwindow.GraphCollectionToGraphCollectionOperatorI;
 import edu.leipzig.grafs.operators.interfaces.nonwindow.GraphCollectionToGraphOperatorI;
@@ -24,6 +24,12 @@ public interface GCStreamOperators {
    * @return result of given operator as graph collection stream
    */
   GCStream callForGC(GraphCollectionToGraphCollectionOperatorI operator);
+
+//  <WA extends Window, W extends AbstractWindows<WA>> IntermediateStream<GraphStream, WA, W> callForGraph(
+//      WindowedGraphCollectionToGraphOperatorI<W> operator);
+//
+//  <WA extends Window, W extends AbstractWindows<WA>> IntermediateStream<GCStream, WA, W> callForGC(
+//      WindowedGraphCollectionToGraphCollectionOperatorI<W> operator);
 
   // ---------------------------------------------------------------------------
   //  Operators

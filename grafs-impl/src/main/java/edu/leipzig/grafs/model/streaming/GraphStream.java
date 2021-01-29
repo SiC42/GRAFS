@@ -1,20 +1,21 @@
-package edu.leipzig.grafs.model.streaming.nonwindow;
+package edu.leipzig.grafs.model.streaming;
 
 import edu.leipzig.grafs.model.Triplet;
-import edu.leipzig.grafs.model.streaming.window.WindowedGraphStream;
+import edu.leipzig.grafs.model.window.WindowsI;
 import edu.leipzig.grafs.operators.interfaces.nonwindow.GraphToGraphCollectionOperatorI;
 import edu.leipzig.grafs.operators.interfaces.nonwindow.GraphToGraphOperatorI;
+import edu.leipzig.grafs.operators.interfaces.window.WindowedGraphToGraphCollectionOperatorI;
+import edu.leipzig.grafs.operators.interfaces.window.WindowedGraphToGraphOperatorI;
 import edu.leipzig.grafs.util.FlinkConfig;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
-import org.apache.flink.streaming.api.windowing.assigners.WindowAssigner;
 import org.apache.flink.streaming.api.windowing.windows.Window;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer;
 
 /**
  * Model that abstracts the data stream to a edge(container)-stream.
  */
-public class GraphStream extends AbstractNonWindowedStream implements GraphStreamOperators {
+public class GraphStream extends AbstractStream<GraphStream> implements GraphStreamOperators {
 
   /**
    * Constructs an graph stream with the given data stream and config.
@@ -45,6 +46,11 @@ public class GraphStream extends AbstractNonWindowedStream implements GraphStrea
     return new GraphStream(stream, config);
   }
 
+  @Override
+  protected GraphStream getThis() {
+    return this;
+  }
+
   /**
    * Creates an triplet stream from this stream using the given operator.
    *
@@ -62,8 +68,13 @@ public class GraphStream extends AbstractNonWindowedStream implements GraphStrea
     return new GCStream(result, config);
   }
 
-  public <W extends Window> WindowedGraphStream<W> window(
-      WindowAssigner<? super Triplet, W> window) {
-    return new WindowedGraphStream<>(stream, config, window);
+  public <FW extends Window, W extends WindowsI<FW>> InitialWindowBuilder<GraphStream, FW, W> callForGraph(
+      WindowedGraphToGraphOperatorI<W> operator) {
+    return new InitialWindowBuilder<>(new GraphStream(stream, config), operator);
+  }
+
+  public <FW extends Window, W extends WindowsI<? extends FW>> InitialWindowBuilder<GCStream, FW, W> callForGC(
+      WindowedGraphToGraphCollectionOperatorI<W> operator) {
+    return new InitialWindowBuilder<>(new GCStream(stream, config), operator);
   }
 }

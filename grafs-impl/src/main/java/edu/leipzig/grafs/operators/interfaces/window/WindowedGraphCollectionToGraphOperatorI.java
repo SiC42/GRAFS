@@ -1,5 +1,8 @@
 package edu.leipzig.grafs.operators.interfaces.window;
 
-public interface WindowedGraphCollectionToGraphOperatorI extends WindowedOperatorI {
+import edu.leipzig.grafs.model.window.WindowsI;
+
+public interface WindowedGraphCollectionToGraphOperatorI<W extends WindowsI<?>> extends
+    WindowedOperatorI<W> {
 
 }

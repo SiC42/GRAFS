@@ -1,7 +1,8 @@
 package edu.leipzig.grafs.operators.grouping;
 
 import edu.leipzig.grafs.model.Triplet;
-import edu.leipzig.grafs.model.streaming.window.AbstractWindowedStream.WindowingInformation;
+import edu.leipzig.grafs.model.window.WindowingInformation;
+import edu.leipzig.grafs.model.window.AbstractTumblingWindows;
 import edu.leipzig.grafs.operators.grouping.functions.AggregateFunction;
 import edu.leipzig.grafs.operators.grouping.logic.EdgeAggregation;
 import edu.leipzig.grafs.operators.grouping.logic.TripletKeySelector;
@@ -25,7 +26,7 @@ import org.gradoop.common.model.impl.id.GradoopId;
  * and applies the given aggregation functions to the resulting element. This is done in a Window of
  * the stream.
  */
-public class Grouping implements WindowedGraphToGraphOperatorI {
+public class Grouping implements WindowedGraphToGraphOperatorI<AbstractTumblingWindows> {
 
   private final GroupingInformation vertexGi;
   private final Set<AggregateFunction> vertexAggregateFunctions;
@@ -173,7 +174,8 @@ public class Grouping implements WindowedGraphToGraphOperatorI {
    * @return stream that is keyed based on the given mode and windowed
    */
   private <W extends Window> WindowedStream<Triplet, String, W> createKeyedWindowedStream(
-      DataStream<Triplet> es, GroupingInformation gi, AggregateMode mode, WindowingInformation<W> wi) {
+      DataStream<Triplet> es, GroupingInformation gi, AggregateMode mode,
+      WindowingInformation<W> wi) {
     var windowedStream = es
         .keyBy(new TripletKeySelector(gi, mode))
         .window(wi.getWindow());

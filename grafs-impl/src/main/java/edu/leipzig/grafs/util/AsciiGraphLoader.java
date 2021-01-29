@@ -8,7 +8,7 @@ import edu.leipzig.grafs.factory.VertexFactory;
 import edu.leipzig.grafs.model.Edge;
 import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.model.Vertex;
-import edu.leipzig.grafs.model.streaming.nonwindow.GraphStream;
+import edu.leipzig.grafs.model.streaming.GraphStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;

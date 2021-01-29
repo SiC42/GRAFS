@@ -12,7 +12,7 @@ import com.google.common.collect.Maps;
 import edu.leipzig.grafs.model.Element;
 import edu.leipzig.grafs.model.GraphElement;
 import edu.leipzig.grafs.model.Triplet;
-import edu.leipzig.grafs.model.streaming.nonwindow.AbstractNonWindowedStream;
+import edu.leipzig.grafs.model.streaming.AbstractStream;
 import edu.leipzig.grafs.operators.grouping.functions.AggregateFunction;
 import edu.leipzig.grafs.operators.grouping.functions.BaseAggregateFunction;
 import java.io.ByteArrayInputStream;
@@ -527,7 +527,7 @@ public class TestUtils {
     return cl.cast(o);
   }
 
-  public static void assertThatStreamContains(AbstractNonWindowedStream actualResultStream,
+  public static void assertThatStreamContains(AbstractStream<?> actualResultStream,
       Collection<Triplet> expectedResult)
       throws IOException {
     var tripletIt = actualResultStream.collect();

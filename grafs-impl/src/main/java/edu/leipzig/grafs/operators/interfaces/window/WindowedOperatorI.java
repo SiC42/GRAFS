@@ -1,13 +1,14 @@
 package edu.leipzig.grafs.operators.interfaces.window;
 
 import edu.leipzig.grafs.model.Triplet;
-import edu.leipzig.grafs.model.streaming.window.AbstractWindowedStream.WindowingInformation;
+import edu.leipzig.grafs.model.window.WindowingInformation;
+import edu.leipzig.grafs.model.window.WindowsI;
 import org.apache.flink.streaming.api.datastream.AllWindowedStream;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.WindowedStream;
 import org.apache.flink.streaming.api.windowing.windows.Window;
 
-public interface WindowedOperatorI {
+public interface WindowedOperatorI<W extends WindowsI<? extends Window>> {
 
   /**
    * Applies the given operator to the stream.
@@ -15,11 +16,11 @@ public interface WindowedOperatorI {
    * @param stream stream on which the operator should be applied
    * @return the stream with the applied operator
    */
-  <W extends Window> DataStream<Triplet> execute(DataStream<Triplet> stream,
-      WindowingInformation<W> wi);
+  <FW extends Window> DataStream<Triplet> execute(DataStream<Triplet> stream,
+      WindowingInformation<FW> wi);
 
-  default <W extends Window> WindowedStream<Triplet, String, W> applyOtherWindowInformation(
-      WindowedStream<Triplet, String, W> windowedStream, WindowingInformation<W> wi) {
+  default <FW extends Window> WindowedStream<Triplet, String, FW> applyOtherWindowInformation(
+      WindowedStream<Triplet, String, FW> windowedStream, WindowingInformation<FW> wi) {
     if (wi.getTrigger() != null) {
       windowedStream = windowedStream.trigger(wi.getTrigger());
     }
@@ -35,8 +36,8 @@ public interface WindowedOperatorI {
     return windowedStream;
   }
 
-  default <W extends Window> AllWindowedStream<Triplet, W> applyOtherWindowInformation(
-      AllWindowedStream<Triplet, W> windowedStream, WindowingInformation<W> wi) {
+  default <FW extends Window> AllWindowedStream<Triplet, FW> applyOtherWindowInformation(
+      AllWindowedStream<Triplet, FW> windowedStream, WindowingInformation<FW> wi) {
     if (wi.getTrigger() != null) {
       windowedStream = windowedStream.trigger(wi.getTrigger());
     }

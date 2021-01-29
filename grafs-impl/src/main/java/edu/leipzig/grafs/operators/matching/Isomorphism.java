@@ -1,7 +1,7 @@
 package edu.leipzig.grafs.operators.matching;
 
 import edu.leipzig.grafs.model.Triplet;
-import edu.leipzig.grafs.model.streaming.window.AbstractWindowedStream.WindowingInformation;
+import edu.leipzig.grafs.model.window.WindowingInformation;
 import edu.leipzig.grafs.operators.matching.logic.IsomorphismMatchingProcess;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.windowing.windows.Window;
@@ -36,4 +36,5 @@ public class Isomorphism extends AbstractMatchingOperator {
     return preProcessedStream.process(new IsomorphismMatchingProcess<>(queryGraph))
         .name("Isomorphism Pattern Matching");
   }
+
 }
