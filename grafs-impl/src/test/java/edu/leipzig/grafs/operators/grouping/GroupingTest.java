@@ -3,8 +3,10 @@ package edu.leipzig.grafs.operators.grouping;
 import static edu.leipzig.grafs.util.TestUtils.getSocialNetworkLoader;
 import static edu.leipzig.grafs.util.TestUtils.validateTripletCollections;
 import static org.gradoop.common.util.GradoopConstants.NULL_STRING;
+import static org.hamcrest.core.Is.is;
 
 import edu.leipzig.grafs.model.Triplet;
+import edu.leipzig.grafs.model.window.TumblingEventTimeWindows;
 import edu.leipzig.grafs.operators.grouping.functions.Count;
 import edu.leipzig.grafs.operators.grouping.functions.MaxProperty;
 import edu.leipzig.grafs.operators.grouping.functions.MinProperty;
@@ -15,12 +17,14 @@ import edu.leipzig.grafs.util.FlinkConfig;
 import edu.leipzig.grafs.util.FlinkConfigBuilder;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.Set;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
-import org.apache.flink.streaming.api.windowing.assigners.TumblingEventTimeWindows;
 import org.apache.flink.streaming.api.windowing.time.Time;
+import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -57,15 +61,18 @@ public class GroupingTest {
 
     var edgeStream = loader.createEdgeStreamByGraphVariables(config, "g0", "g1", "g2");
 
-    var finalStream = edgeStream
-        .callForStream(
+    var intermediateStream = edgeStream
+        .callForGraph(
             Grouping.createGrouping()
                 .addVertexGroupingKeys(Set.of(GroupingInformation.LABEL_SYMBOL, "city"))
                 .addVertexAggregateFunction(new Count("count"))
                 .addEdgeGroupingKeys(Set.of(GroupingInformation.LABEL_SYMBOL, "since"))
                 .addEdgeAggregateFunction(new Count("count"))
-                .buildWithWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+                .build()
         );
+    var finalStream = intermediateStream
+        .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        .apply();
     var tripletIt = finalStream.collect();
     var actualTripletCol = new ArrayList<Triplet>();
     while (tripletIt.hasNext()) {
@@ -85,6 +92,7 @@ public class GroupingTest {
     var expectedTripletCol = loader.createTripletsByGraphVariables("expected");
 
     validateTripletCollections(expectedTripletCol, actualTripletCol);
+    checkForOnlyOneGraphId(expectedTripletCol);
   }
 
   @Test
@@ -92,16 +100,19 @@ public class GroupingTest {
     AsciiGraphLoader loader = getSocialNetworkLoader();
 
     var edgeStream = loader.createEdgeStreamByGraphVariables(config, "g2");
-    var finalStream = edgeStream
-        .callForStream(
+    var intermediateStream = edgeStream
+        .callForGraph(
             Grouping.createGrouping()
                 .addVertexGroupingKey("city")
                 .addVertexAggregateFunction(new Count("count"))
                 .addEdgeAggregateFunction(new Count("count"))
-                .buildWithWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+                .build()
         );
 
-    var tripletIt = finalStream.collect();
+    var finalStream = intermediateStream
+        .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        .apply();
+    var tripletIt =  finalStream.collect();
     var actualTripletCol = new ArrayList<Triplet>();
     while (tripletIt.hasNext()) {
       actualTripletCol.add(tripletIt.next());
@@ -119,6 +130,7 @@ public class GroupingTest {
     var expectedTripletCol = loader.createTripletsByGraphVariables("expected");
 
     validateTripletCollections(expectedTripletCol, actualTripletCol);
+    checkForOnlyOneGraphId(expectedTripletCol);
   }
 
   @Test
@@ -139,15 +151,19 @@ public class GroupingTest {
         "(berlin)-[{count : 2L}]->(dresden)" +
         "]");
 
-    var finalStream = edgeStream
-        .callForStream(
+    var intermediateStream = edgeStream
+
+        .callForGraph(
             Grouping.createGrouping()
                 .addVertexGroupingKey("city")
                 .addVertexAggregateFunction(new Count("count"))
                 .addEdgeAggregateFunction(new Count("count"))
-                .buildWithWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+                .build()
         );
 
+    var finalStream = intermediateStream
+        .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        .apply();
     var tripletIt = finalStream.collect();
     var actualTripletCol = new ArrayList<Triplet>();
     while (tripletIt.hasNext()) {
@@ -157,6 +173,7 @@ public class GroupingTest {
     var expectedTripletCol = loader.createTripletsByGraphVariables("expected");
 
     validateTripletCollections(expectedTripletCol, actualTripletCol);
+    checkForOnlyOneGraphId(expectedTripletCol);
   }
 
   @Test
@@ -183,16 +200,20 @@ public class GroupingTest {
         "(berlinM)-[{count : 1L}]->(dresdenM)" +
         "]");
 
-    var finalStream = edgeStream
-        .callForStream(
+    var intermediateStream = edgeStream
+
+        .callForGraph(
             Grouping.createGrouping()
                 .addVertexGroupingKey("city")
                 .addVertexGroupingKey("gender")
                 .addVertexAggregateFunction(new Count("count"))
                 .addEdgeAggregateFunction(new Count("count"))
-                .buildWithWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+                .build()
         );
 
+    var finalStream = intermediateStream
+        .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        .apply();
     var tripletIt = finalStream.collect();
     var actualTripletCol = new ArrayList<Triplet>();
     while (tripletIt.hasNext()) {
@@ -202,6 +223,7 @@ public class GroupingTest {
     var expectedTripletCol = loader.createTripletsByGraphVariables("expected");
 
     validateTripletCollections(expectedTripletCol, actualTripletCol);
+    checkForOnlyOneGraphId(expectedTripletCol);
   }
 
   @Test
@@ -217,15 +239,19 @@ public class GroupingTest {
         "(dresden)-[{count : 1L}]->(dresden)" +
         "]");
 
-    var finalStream = edgeStream
-        .callForStream(
+    var intermediateStream = edgeStream
+
+        .callForGraph(
             Grouping.createGrouping()
                 .addVertexGroupingKey("city")
                 .addVertexAggregateFunction(new Count("count"))
                 .addEdgeAggregateFunction(new Count("count"))
-                .buildWithWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+                .build()
         );
 
+    var finalStream = intermediateStream
+        .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        .apply();
     var tripletIt = finalStream.collect();
     var actualTripletCol = new ArrayList<Triplet>();
     while (tripletIt.hasNext()) {
@@ -235,6 +261,7 @@ public class GroupingTest {
     var expectedTripletCol = loader.createTripletsByGraphVariables("expected");
 
     validateTripletCollections(expectedTripletCol, actualTripletCol);
+    checkForOnlyOneGraphId(expectedTripletCol);
   }
 
   @Test
@@ -252,16 +279,20 @@ public class GroupingTest {
         "(dresdenF)-[{count : 1L}]->(dresdenM)" +
         "]");
 
-    var finalStream = edgeStream
-        .callForStream(
+    var intermediateStream = edgeStream
+
+        .callForGraph(
             Grouping.createGrouping()
                 .addVertexGroupingKey("city")
                 .addVertexGroupingKey("gender")
                 .addVertexAggregateFunction(new Count("count"))
                 .addEdgeAggregateFunction(new Count("count"))
-                .buildWithWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+                .build()
         );
 
+    var finalStream = intermediateStream
+        .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        .apply();
     var tripletIt = finalStream.collect();
     var actualTripletCol = new ArrayList<Triplet>();
     while (tripletIt.hasNext()) {
@@ -271,6 +302,7 @@ public class GroupingTest {
     var expectedTripletCol = loader.createTripletsByGraphVariables("expected");
 
     validateTripletCollections(expectedTripletCol, actualTripletCol);
+    checkForOnlyOneGraphId(expectedTripletCol);
   }
 
   @Test
@@ -292,15 +324,19 @@ public class GroupingTest {
         "(berlin)-[{since : 2015, count : 2L}]->(dresden)" +
         "]");
 
-    var finalStream = edgeStream
-        .callForStream(
+    var intermediateStream = edgeStream
+
+        .callForGraph(
             Grouping.createGrouping()
                 .addVertexGroupingKey("city")
                 .addEdgeGroupingKey("since")
                 .addVertexAggregateFunction(new Count("count"))
                 .addEdgeAggregateFunction(new Count("count"))
-                .buildWithWindow(TumblingEventTimeWindows.of(Time.milliseconds(10))));
+                .build());
 
+    var finalStream = intermediateStream
+        .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        .apply();
     var tripletIt = finalStream.collect();
     var actualTripletCol = new ArrayList<Triplet>();
     while (tripletIt.hasNext()) {
@@ -310,6 +346,7 @@ public class GroupingTest {
     var expectedTripletCol = loader.createTripletsByGraphVariables("expected");
 
     validateTripletCollections(expectedTripletCol, actualTripletCol);
+    checkForOnlyOneGraphId(expectedTripletCol);
   }
 
   @Test
@@ -352,16 +389,20 @@ public class GroupingTest {
 
     var edgeStream = loader.createEdgeStreamByGraphVariables(config, "input");
 
-    var finalStream = edgeStream
-        .callForStream(
+    var intermediateStream = edgeStream
+
+        .callForGraph(
             Grouping.createGrouping()
                 .addVertexGroupingKey("a")
                 .addEdgeGroupingKey("a")
                 .addEdgeGroupingKey("b")
                 .addVertexAggregateFunction(new Count("count"))
                 .addEdgeAggregateFunction(new Count("count"))
-                .buildWithWindow(TumblingEventTimeWindows.of(Time.milliseconds(10))));
+                .build());
 
+    var finalStream = intermediateStream
+        .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        .apply();
     var tripletIt = finalStream.collect();
     var actualTripletCol = new ArrayList<Triplet>();
     while (tripletIt.hasNext()) {
@@ -371,6 +412,7 @@ public class GroupingTest {
     var expectedTripletCol = loader.createTripletsByGraphVariables("expected");
 
     validateTripletCollections(expectedTripletCol, actualTripletCol);
+    checkForOnlyOneGraphId(expectedTripletCol);
   }
 
   @Test
@@ -414,8 +456,9 @@ public class GroupingTest {
         "]");
 
     var edgeStream = loader.createEdgeStreamByGraphVariables(config, "input");
-    var finalStream = edgeStream
-        .callForStream(
+    var intermediateStream = edgeStream
+
+        .callForGraph(
             Grouping.createGrouping()
                 .addVertexGroupingKey("a")
                 .addVertexGroupingKey("b")
@@ -423,8 +466,11 @@ public class GroupingTest {
                 .addEdgeGroupingKey("b")
                 .addVertexAggregateFunction(new Count("count"))
                 .addEdgeAggregateFunction(new Count("count"))
-                .buildWithWindow(TumblingEventTimeWindows.of(Time.milliseconds(10))));
+                .build());
 
+    var finalStream = intermediateStream
+        .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        .apply();
     var tripletIt = finalStream.collect();
     var actualTripletCol = new ArrayList<Triplet>();
     while (tripletIt.hasNext()) {
@@ -434,6 +480,7 @@ public class GroupingTest {
     var expectedTripletCol = loader.createTripletsByGraphVariables("expected");
 
     validateTripletCollections(expectedTripletCol, actualTripletCol);
+    checkForOnlyOneGraphId(expectedTripletCol);
   }
 
   @Test
@@ -450,17 +497,21 @@ public class GroupingTest {
         "(dresden)-[{since : 2014, count : 1L}]->(dresden)" +
         "]");
 
-    var finalStream =
+    var intermediateStream =
         edgeStream
-            .callForStream(
+    
+            .callForGraph(
                 Grouping.createGrouping()
                     .addVertexGroupingKey("city")
                     .addEdgeGroupingKey("since")
                     .addVertexAggregateFunction(new Count("count"))
                     .addEdgeAggregateFunction(new Count("count"))
-                    .buildWithWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+                    .build()
             );
 
+    var finalStream = intermediateStream
+        .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        .apply();
     var tripletIt = finalStream.collect();
     var actualTripletCol = new ArrayList<Triplet>();
     while (tripletIt.hasNext()) {
@@ -470,6 +521,7 @@ public class GroupingTest {
     var expectedTripletCol = loader.createTripletsByGraphVariables("expected");
 
     validateTripletCollections(expectedTripletCol, actualTripletCol);
+    checkForOnlyOneGraphId(expectedTripletCol);
   }
 
   @Test
@@ -488,15 +540,19 @@ public class GroupingTest {
         "(f)-[{count :  4L}]->(t)" +
         "]");
 
-    var finalStream = edgeStream
-        .callForStream(
+    var intermediateStream = edgeStream
+
+        .callForGraph(
             Grouping.createGrouping()
                 .useVertexLabel(true)
                 .addVertexAggregateFunction(new Count("count"))
                 .addEdgeAggregateFunction(new Count("count"))
-                .buildWithWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+                .build()
         );
 
+    var finalStream = intermediateStream
+        .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        .apply();
     var tripletIt = finalStream.collect();
     var actualTripletCol = new ArrayList<Triplet>();
     while (tripletIt.hasNext()) {
@@ -506,6 +562,7 @@ public class GroupingTest {
     var expectedTripletCol = loader.createTripletsByGraphVariables("expected");
 
     validateTripletCollections(expectedTripletCol, actualTripletCol);
+    checkForOnlyOneGraphId(expectedTripletCol);
   }
 
   @Test
@@ -526,16 +583,20 @@ public class GroupingTest {
         "(b)-[{count : 2L}]->(d)" +
         "]");
 
-    var finalStream = edgeStream
-        .callForStream(
+    var intermediateStream = edgeStream
+
+        .callForGraph(
             Grouping.createGrouping()
                 .useVertexLabel(true)
                 .addVertexGroupingKey("city")
                 .addVertexAggregateFunction(new Count("count"))
                 .addEdgeAggregateFunction(new Count("count"))
-                .buildWithWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+                .build()
         );
 
+    var finalStream = intermediateStream
+        .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        .apply();
     var tripletIt = finalStream.collect();
     var actualTripletCol = new ArrayList<Triplet>();
     while (tripletIt.hasNext()) {
@@ -545,6 +606,7 @@ public class GroupingTest {
     var expectedTripletCol = loader.createTripletsByGraphVariables("expected");
 
     validateTripletCollections(expectedTripletCol, actualTripletCol);
+    checkForOnlyOneGraphId(expectedTripletCol);
   }
 
   @Test
@@ -572,16 +634,20 @@ public class GroupingTest {
         "(f)-[{count : 4L}]->(t)" +
         "]");
 
-    var finalStream = edgeStream
-        .callForStream(
+    var intermediateStream = edgeStream
+
+        .callForGraph(
             Grouping.createGrouping()
                 .useVertexLabel(true)
                 .addVertexGroupingKey("city")
                 .addVertexAggregateFunction(new Count("count"))
                 .addEdgeAggregateFunction(new Count("count"))
-                .buildWithWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+                .build()
         );
 
+    var finalStream = intermediateStream
+        .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        .apply();
     var tripletIt = finalStream.collect();
     var actualTripletCol = new ArrayList<Triplet>();
     while (tripletIt.hasNext()) {
@@ -591,6 +657,7 @@ public class GroupingTest {
     var expectedTripletCol = loader.createTripletsByGraphVariables("expected");
 
     validateTripletCollections(expectedTripletCol, actualTripletCol);
+    checkForOnlyOneGraphId(expectedTripletCol);
   }
 
   @Test
@@ -607,16 +674,20 @@ public class GroupingTest {
         "(p)-[{since : 2015, count : 3L}]->(p)" +
         "]");
 
-    var finalStream = edgeStream
-        .callForStream(
+    var intermediateStream = edgeStream
+
+        .callForGraph(
             Grouping.createGrouping()
                 .useVertexLabel(true)
                 .addEdgeGroupingKey("since")
                 .addVertexAggregateFunction(new Count("count"))
                 .addEdgeAggregateFunction(new Count("count"))
-                .buildWithWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+                .build()
         );
 
+    var finalStream = intermediateStream
+        .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        .apply();
     var tripletIt = finalStream.collect();
     var actualTripletCol = new ArrayList<Triplet>();
     while (tripletIt.hasNext()) {
@@ -626,6 +697,7 @@ public class GroupingTest {
     var expectedTripletCol = loader.createTripletsByGraphVariables("expected");
 
     validateTripletCollections(expectedTripletCol, actualTripletCol);
+    checkForOnlyOneGraphId(expectedTripletCol);
   }
 
   @Test
@@ -647,16 +719,20 @@ public class GroupingTest {
         "(f)-[{since : " + NULL_STRING + ", count : 5L}]->(p)" +
         "]");
 
-    var finalStream = edgeStream
-        .callForStream(
+    var intermediateStream = edgeStream
+
+        .callForGraph(
             Grouping.createGrouping()
                 .useVertexLabel(true)
                 .addEdgeGroupingKey("since")
                 .addVertexAggregateFunction(new Count("count"))
                 .addEdgeAggregateFunction(new Count("count"))
-                .buildWithWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+                .build()
         );
 
+    var finalStream = intermediateStream
+        .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        .apply();
     var tripletIt = finalStream.collect();
     var actualTripletCol = new ArrayList<Triplet>();
     while (tripletIt.hasNext()) {
@@ -666,6 +742,7 @@ public class GroupingTest {
     var expectedTripletCol = loader.createTripletsByGraphVariables("expected");
 
     validateTripletCollections(expectedTripletCol, actualTripletCol);
+    checkForOnlyOneGraphId(expectedTripletCol);
   }
 
   @Test
@@ -687,17 +764,21 @@ public class GroupingTest {
         "(b)-[{since : 2015, count : 2L}]->(d)" +
         "]");
 
-    var finalStream = edgeStream
-        .callForStream(
+    var intermediateStream = edgeStream
+
+        .callForGraph(
             Grouping.createGrouping()
                 .useVertexLabel(true)
                 .addVertexGroupingKey("city")
                 .addEdgeGroupingKey("since")
                 .addVertexAggregateFunction(new Count("count"))
                 .addEdgeAggregateFunction(new Count("count"))
-                .buildWithWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+                .build()
         );
 
+    var finalStream = intermediateStream
+        .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        .apply();
     var tripletIt = finalStream.collect();
     var actualTripletCol = new ArrayList<Triplet>();
     while (tripletIt.hasNext()) {
@@ -707,6 +788,7 @@ public class GroupingTest {
     var expectedTripletCol = loader.createTripletsByGraphVariables("expected");
 
     validateTripletCollections(expectedTripletCol, actualTripletCol);
+    checkForOnlyOneGraphId(expectedTripletCol);
 
   }
 
@@ -727,17 +809,21 @@ public class GroupingTest {
         "(p)-[:knows        {count : 10L}]->(p)" +
         "]");
 
-    var finalStream = edgeStream
-        .callForStream(
+    var intermediateStream = edgeStream
+
+        .callForGraph(
             Grouping.createGrouping()
                 .useVertexLabel(true)
                 .useEdgeLabel(true)
 
                 .addVertexAggregateFunction(new Count("count"))
                 .addEdgeAggregateFunction(new Count("count"))
-                .buildWithWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+                .build()
         );
 
+    var finalStream = intermediateStream
+        .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        .apply();
     var tripletIt = finalStream.collect();
     var actualTripletCol = new ArrayList<Triplet>();
     while (tripletIt.hasNext()) {
@@ -747,6 +833,7 @@ public class GroupingTest {
     var expectedTripletCol = loader.createTripletsByGraphVariables("expected");
 
     validateTripletCollections(expectedTripletCol, actualTripletCol);
+    checkForOnlyOneGraphId(expectedTripletCol);
   }
 
   @Test
@@ -767,17 +854,21 @@ public class GroupingTest {
         "(b)-[:knows {count : 2L}]->(d)" +
         "]");
 
-    var finalStream = edgeStream
-        .callForStream(
+    var intermediateStream = edgeStream
+
+        .callForGraph(
             Grouping.createGrouping()
                 .addVertexGroupingKey("city")
                 .useVertexLabel(true)
                 .useEdgeLabel(true)
                 .addVertexAggregateFunction(new Count("count"))
                 .addEdgeAggregateFunction(new Count("count"))
-                .buildWithWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+                .build()
         );
 
+    var finalStream = intermediateStream
+        .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        .apply();
     var tripletIt = finalStream.collect();
     var actualTripletCol = new ArrayList<Triplet>();
     while (tripletIt.hasNext()) {
@@ -787,6 +878,7 @@ public class GroupingTest {
     var expectedTripletCol = loader.createTripletsByGraphVariables("expected");
 
     validateTripletCollections(expectedTripletCol, actualTripletCol);
+    checkForOnlyOneGraphId(expectedTripletCol);
   }
 
   @Test
@@ -808,8 +900,9 @@ public class GroupingTest {
         "(pB)-[:knows {since : 2015, count : 2L}]->(pD)" +
         "]");
 
-    var finalStream = edgeStream
-        .callForStream(
+    var intermediateStream = edgeStream
+
+        .callForGraph(
             Grouping.createGrouping()
                 .addVertexGroupingKey("city")
                 .addEdgeGroupingKey("since")
@@ -817,8 +910,11 @@ public class GroupingTest {
                 .useEdgeLabel(true)
                 .addVertexAggregateFunction(new Count("count"))
                 .addEdgeAggregateFunction(new Count("count"))
-                .buildWithWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+                .build()
         );
+    var finalStream = intermediateStream
+        .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        .apply();
     var tripletIt = finalStream.collect();
     var actualTripletCol = new ArrayList<Triplet>();
     while (tripletIt.hasNext()) {
@@ -828,6 +924,7 @@ public class GroupingTest {
     var expectedTripletCol = loader.createTripletsByGraphVariables("expected");
 
     validateTripletCollections(expectedTripletCol, actualTripletCol);
+    checkForOnlyOneGraphId(expectedTripletCol);
   }
 
   @Test
@@ -857,17 +954,21 @@ public class GroupingTest {
         "(f)-[:hasTag {count : 4L}]->(t)" +
         "]");
 
-    var finalStream = edgeStream
-        .callForStream(
+    var intermediateStream = edgeStream
+
+        .callForGraph(
             Grouping.createGrouping()
                 .addVertexGroupingKey("city")
                 .useVertexLabel(true)
                 .useEdgeLabel(true)
                 .addVertexAggregateFunction(new Count("count"))
                 .addEdgeAggregateFunction(new Count("count"))
-                .buildWithWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+                .build()
         );
 
+    var finalStream = intermediateStream
+        .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        .apply();
     var tripletIt = finalStream.collect();
     var actualTripletCol = new ArrayList<Triplet>();
     while (tripletIt.hasNext()) {
@@ -877,6 +978,7 @@ public class GroupingTest {
     var expectedTripletCol = loader.createTripletsByGraphVariables("expected");
 
     validateTripletCollections(expectedTripletCol, actualTripletCol);
+    checkForOnlyOneGraphId(expectedTripletCol);
   }
 
   @Test
@@ -893,17 +995,21 @@ public class GroupingTest {
         "(p)-[:knows {since : 2015, count : 3L}]->(p)" +
         "]");
 
-    var finalStream = edgeStream
-        .callForStream(
+    var intermediateStream = edgeStream
+
+        .callForGraph(
             Grouping.createGrouping()
                 .addEdgeGroupingKey("since")
                 .useVertexLabel(true)
                 .useEdgeLabel(true)
                 .addVertexAggregateFunction(new Count("count"))
                 .addEdgeAggregateFunction(new Count("count"))
-                .buildWithWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+                .build()
         );
 
+    var finalStream = intermediateStream
+        .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        .apply();
     var tripletIt = finalStream.collect();
     var actualTripletCol = new ArrayList<Triplet>();
     while (tripletIt.hasNext()) {
@@ -913,6 +1019,7 @@ public class GroupingTest {
     var expectedTripletCol = loader.createTripletsByGraphVariables("expected");
 
     validateTripletCollections(expectedTripletCol, actualTripletCol);
+    checkForOnlyOneGraphId(expectedTripletCol);
   }
 
   @Test
@@ -936,8 +1043,9 @@ public class GroupingTest {
 
         "]");
 
-    var finalStream = edgeStream
-        .callForStream(
+    var intermediateStream = edgeStream
+
+        .callForGraph(
             Grouping.createGrouping()
                 .addEdgeGroupingKey("since")
                 .useVertexLabel(true)
@@ -945,9 +1053,12 @@ public class GroupingTest {
                 .addVertexAggregateFunction(new Count("count"))
                 .addEdgeAggregateFunction(new Count("count"))
 
-                .buildWithWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+                .build()
         );
 
+    var finalStream = intermediateStream
+        .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        .apply();
     var tripletIt = finalStream.collect();
     var actualTripletCol = new ArrayList<Triplet>();
     while (tripletIt.hasNext()) {
@@ -957,6 +1068,7 @@ public class GroupingTest {
     var expectedTripletCol = loader.createTripletsByGraphVariables("expected");
 
     validateTripletCollections(expectedTripletCol, actualTripletCol);
+    checkForOnlyOneGraphId(expectedTripletCol);
   }
 
   @Test
@@ -988,9 +1100,10 @@ public class GroupingTest {
         "(f)-[:hasTag {since : " + NULL_STRING + ", count : 4L}]->(t)" +
         "]");
 
-    var finalStream =
+    var intermediateStream =
         edgeStream
-            .callForStream(
+    
+            .callForGraph(
                 Grouping.createGrouping()
                     .addVertexGroupingKey("city")
                     .addEdgeGroupingKey("since")
@@ -999,9 +1112,12 @@ public class GroupingTest {
                     .addVertexAggregateFunction(new Count("count"))
                     .addEdgeAggregateFunction(new Count("count"))
 
-                    .buildWithWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+                    .build()
             );
 
+    var finalStream = intermediateStream
+        .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        .apply();
     var tripletIt = finalStream.collect();
     var actualTripletCol = new ArrayList<Triplet>();
     while (tripletIt.hasNext()) {
@@ -1011,6 +1127,7 @@ public class GroupingTest {
     var expectedTripletCol = loader.createTripletsByGraphVariables("expected");
 
     validateTripletCollections(expectedTripletCol, actualTripletCol);
+    checkForOnlyOneGraphId(expectedTripletCol);
   }
 
   //----------------------------------------------------------------------------
@@ -1046,14 +1163,18 @@ public class GroupingTest {
         "(v01)-->(v01)" +
         "]");
 
-    var finalStream =
+    var intermediateStream =
         edgeStream
-            .callForStream(
+    
+            .callForGraph(
                 Grouping.createGrouping()
                     .useVertexLabel(true)
-                    .buildWithWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+                    .build()
             );
 
+    var finalStream = intermediateStream
+        .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        .apply();
     var tripletIt = finalStream.collect();
     var actualTripletCol = new ArrayList<Triplet>();
     while (tripletIt.hasNext()) {
@@ -1063,6 +1184,7 @@ public class GroupingTest {
     var expectedTripletCol = loader.createTripletsByGraphVariables("expected");
 
     validateTripletCollections(expectedTripletCol, actualTripletCol);
+    checkForOnlyOneGraphId(expectedTripletCol);
   }
 
   @Test
@@ -1094,17 +1216,21 @@ public class GroupingTest {
         "(v01)-[{count : 3L}]->(v01)" +
         "]");
 
-    var finalStream =
+    var intermediateStream =
         edgeStream
-            .callForStream(
+    
+            .callForGraph(
                 Grouping.createGrouping()
                     .useVertexLabel(true)
                     .addVertexAggregateFunction(new Count("count"))
                     .addEdgeAggregateFunction(new Count("count"))
 
-                    .buildWithWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+                    .build()
             );
 
+    var finalStream = intermediateStream
+        .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        .apply();
     var tripletIt = finalStream.collect();
     var actualTripletCol = new ArrayList<Triplet>();
     while (tripletIt.hasNext()) {
@@ -1114,6 +1240,7 @@ public class GroupingTest {
     var expectedTripletCol = loader.createTripletsByGraphVariables("expected");
 
     validateTripletCollections(expectedTripletCol, actualTripletCol);
+    checkForOnlyOneGraphId(expectedTripletCol);
   }
 
   @Test
@@ -1145,17 +1272,21 @@ public class GroupingTest {
         "(v01)-[{sumB : 5}]->(v01)" +
         "]");
 
-    var finalStream =
+    var intermediateStream =
         edgeStream
-            .callForStream(
+    
+            .callForGraph(
                 Grouping.createGrouping()
                     .useVertexLabel(true)
                     .addVertexAggregateFunction(new SumProperty("a", "sumA"))
                     .addEdgeAggregateFunction(new SumProperty("b", "sumB"))
 
-                    .buildWithWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+                    .build()
             );
 
+    var finalStream = intermediateStream
+        .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        .apply();
     var tripletIt = finalStream.collect();
     var actualTripletCol = new ArrayList<Triplet>();
     while (tripletIt.hasNext()) {
@@ -1165,6 +1296,7 @@ public class GroupingTest {
     var expectedTripletCol = loader.createTripletsByGraphVariables("expected");
 
     validateTripletCollections(expectedTripletCol, actualTripletCol);
+    checkForOnlyOneGraphId(expectedTripletCol);
   }
 
   @Test
@@ -1196,17 +1328,21 @@ public class GroupingTest {
         "(v01)-[{sumB : 5}]->(v01)" +
         "]");
 
-    var finalStream =
+    var intermediateStream =
         edgeStream
-            .callForStream(
+    
+            .callForGraph(
                 Grouping.createGrouping()
                     .useVertexLabel(true)
                     .addVertexAggregateFunction(new SumProperty("a", "sumA"))
                     .addEdgeAggregateFunction(new SumProperty("b", "sumB"))
 
-                    .buildWithWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+                    .build()
             );
 
+    var finalStream = intermediateStream
+        .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        .apply();
     var tripletIt = finalStream.collect();
     var actualTripletCol = new ArrayList<Triplet>();
     while (tripletIt.hasNext()) {
@@ -1216,6 +1352,7 @@ public class GroupingTest {
     var expectedTripletCol = loader.createTripletsByGraphVariables("expected");
 
     validateTripletCollections(expectedTripletCol, actualTripletCol);
+    checkForOnlyOneGraphId(expectedTripletCol);
   }
 
   @Test
@@ -1247,17 +1384,21 @@ public class GroupingTest {
         "(v01)-[{sumB : " + NULL_STRING + "}]->(v01)" +
         "]");
 
-    var finalStream =
+    var intermediateStream =
         edgeStream
-            .callForStream(
+    
+            .callForGraph(
                 Grouping.createGrouping()
                     .useVertexLabel(true)
                     .addVertexAggregateFunction(new SumProperty("a", "sumA"))
                     .addEdgeAggregateFunction(new SumProperty("b", "sumB"))
 
-                    .buildWithWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+                    .build()
             );
 
+    var finalStream = intermediateStream
+        .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        .apply();
     var tripletIt = finalStream.collect();
     var actualTripletCol = new ArrayList<Triplet>();
     while (tripletIt.hasNext()) {
@@ -1267,6 +1408,7 @@ public class GroupingTest {
     var expectedTripletCol = loader.createTripletsByGraphVariables("expected");
 
     validateTripletCollections(expectedTripletCol, actualTripletCol);
+    checkForOnlyOneGraphId(expectedTripletCol);
   }
 
   @Test
@@ -1298,17 +1440,21 @@ public class GroupingTest {
         "(v01)-[{minB : 1}]->(v01)" +
         "]");
 
-    var finalStream =
+    var intermediateStream =
         edgeStream
-            .callForStream(
+    
+            .callForGraph(
                 Grouping.createGrouping()
                     .useVertexLabel(true)
                     .addVertexAggregateFunction(new MinProperty("a", "minA"))
                     .addEdgeAggregateFunction(new MinProperty("b", "minB"))
 
-                    .buildWithWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+                    .build()
             );
 
+    var finalStream = intermediateStream
+        .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        .apply();
     var tripletIt = finalStream.collect();
     var actualTripletCol = new ArrayList<Triplet>();
     while (tripletIt.hasNext()) {
@@ -1318,6 +1464,7 @@ public class GroupingTest {
     var expectedTripletCol = loader.createTripletsByGraphVariables("expected");
 
     validateTripletCollections(expectedTripletCol, actualTripletCol);
+    checkForOnlyOneGraphId(expectedTripletCol);
   }
 
   @Test
@@ -1349,17 +1496,21 @@ public class GroupingTest {
         "(v01)-[{minB : 1}]->(v01)" +
         "]");
 
-    var finalStream =
+    var intermediateStream =
         edgeStream
-            .callForStream(
+    
+            .callForGraph(
                 Grouping.createGrouping()
                     .useVertexLabel(true)
                     .addVertexAggregateFunction(new MinProperty("a", "minA"))
                     .addEdgeAggregateFunction(new MinProperty("b", "minB"))
 
-                    .buildWithWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+                    .build()
             );
 
+    var finalStream = intermediateStream
+        .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        .apply();
     var tripletIt = finalStream.collect();
     var actualTripletCol = new ArrayList<Triplet>();
     while (tripletIt.hasNext()) {
@@ -1369,6 +1520,7 @@ public class GroupingTest {
     var expectedTripletCol = loader.createTripletsByGraphVariables("expected");
 
     validateTripletCollections(expectedTripletCol, actualTripletCol);
+    checkForOnlyOneGraphId(expectedTripletCol);
   }
 
   @Test
@@ -1400,16 +1552,20 @@ public class GroupingTest {
         "(v01)-[{minB : " + NULL_STRING + "}]->(v01)" +
         "]");
 
-    var finalStream =
+    var intermediateStream =
         edgeStream
-            .callForStream(
+    
+            .callForGraph(
                 Grouping.createGrouping()
                     .useVertexLabel(true)
                     .addVertexAggregateFunction(new MinProperty("a", "minA"))
                     .addEdgeAggregateFunction(new MinProperty("b", "minB"))
-                    .buildWithWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+                    .build()
             );
 
+    var finalStream = intermediateStream
+        .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        .apply();
     var tripletIt = finalStream.collect();
     var actualTripletCol = new ArrayList<Triplet>();
     while (tripletIt.hasNext()) {
@@ -1419,6 +1575,7 @@ public class GroupingTest {
     var expectedTripletCol = loader.createTripletsByGraphVariables("expected");
 
     validateTripletCollections(expectedTripletCol, actualTripletCol);
+    checkForOnlyOneGraphId(expectedTripletCol);
   }
 
   @Test
@@ -1450,16 +1607,20 @@ public class GroupingTest {
         "(v01)-[{maxB : 3}]->(v01)" +
         "]");
 
-    var finalStream =
+    var intermediateStream =
         edgeStream
-            .callForStream(
+    
+            .callForGraph(
                 Grouping.createGrouping()
                     .useVertexLabel(true)
                     .addVertexAggregateFunction(new MaxProperty("a", "maxA"))
                     .addEdgeAggregateFunction(new MaxProperty("b", "maxB"))
-                    .buildWithWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+                    .build()
             );
 
+    var finalStream = intermediateStream
+        .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        .apply();
     var tripletIt = finalStream.collect();
     var actualTripletCol = new ArrayList<Triplet>();
     while (tripletIt.hasNext()) {
@@ -1469,6 +1630,7 @@ public class GroupingTest {
     var expectedTripletCol = loader.createTripletsByGraphVariables("expected");
 
     validateTripletCollections(expectedTripletCol, actualTripletCol);
+    checkForOnlyOneGraphId(expectedTripletCol);
   }
 
   @Test
@@ -1500,16 +1662,20 @@ public class GroupingTest {
         "(v01)-[{maxB : 1}]->(v01)" +
         "]");
 
-    var finalStream =
+    var intermediateStream =
         edgeStream
-            .callForStream(
+    
+            .callForGraph(
                 Grouping.createGrouping()
                     .useVertexLabel(true)
                     .addVertexAggregateFunction(new MaxProperty("a", "maxA"))
                     .addEdgeAggregateFunction(new MaxProperty("b", "maxB"))
-                    .buildWithWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+                    .build()
             );
 
+    var finalStream = intermediateStream
+        .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        .apply();
     var tripletIt = finalStream.collect();
     var actualTripletCol = new ArrayList<Triplet>();
     while (tripletIt.hasNext()) {
@@ -1519,6 +1685,7 @@ public class GroupingTest {
     var expectedTripletCol = loader.createTripletsByGraphVariables("expected");
 
     validateTripletCollections(expectedTripletCol, actualTripletCol);
+    checkForOnlyOneGraphId(expectedTripletCol);
   }
 
   @Test
@@ -1550,16 +1717,20 @@ public class GroupingTest {
         "(v01)-[{maxB : " + NULL_STRING + "}]->(v01)" +
         "]");
 
-    var finalStream =
+    var intermediateStream =
         edgeStream
-            .callForStream(
+    
+            .callForGraph(
                 Grouping.createGrouping()
                     .useVertexLabel(true)
                     .addVertexAggregateFunction(new MaxProperty("a", "maxA"))
                     .addEdgeAggregateFunction(new MaxProperty("b", "maxB"))
-                    .buildWithWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+                    .build()
             );
 
+    var finalStream = intermediateStream
+        .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        .apply();
     var tripletIt = finalStream.collect();
     var actualTripletCol = new ArrayList<Triplet>();
     while (tripletIt.hasNext()) {
@@ -1569,6 +1740,7 @@ public class GroupingTest {
     var expectedTripletCol = loader.createTripletsByGraphVariables("expected");
 
     validateTripletCollections(expectedTripletCol, actualTripletCol);
+    checkForOnlyOneGraphId(expectedTripletCol);
   }
 
   @Test
@@ -1599,9 +1771,10 @@ public class GroupingTest {
         "(v00)-[{minB : 1,maxB : 3,sumB : 4,count : 2L}]->(v01)" +
         "(v01)-[{minB : 1,maxB : 3,sumB : 5,count : 3L}]->(v01)" +
         "]");
-    var finalStream =
+    var intermediateStream =
         edgeStream
-            .callForStream(
+    
+            .callForGraph(
                 Grouping.createGrouping()
                     .useVertexLabel(true)
                     .addVertexAggregateFunction(new MinProperty("a", "minA"))
@@ -1612,9 +1785,12 @@ public class GroupingTest {
                     .addEdgeAggregateFunction(new MaxProperty("b", "maxB"))
                     .addEdgeAggregateFunction(new SumProperty("b", "sumB"))
                     .addEdgeAggregateFunction(new Count("count"))
-                    .buildWithWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+                    .build()
             );
 
+    var finalStream = intermediateStream
+        .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        .apply();
     var tripletIt = finalStream.collect();
     var actualTripletCol = new ArrayList<Triplet>();
     while (tripletIt.hasNext()) {
@@ -1624,6 +1800,15 @@ public class GroupingTest {
     var expectedTripletCol = loader.createTripletsByGraphVariables("expected");
 
     validateTripletCollections(expectedTripletCol, actualTripletCol);
+    checkForOnlyOneGraphId(expectedTripletCol);
+  }
+
+  private void checkForOnlyOneGraphId(Collection<Triplet> tripletCollection) {
+    for (var triplet : tripletCollection) {
+      MatcherAssert.assertThat(triplet.getEdge().getGraphCount(), is(1));
+      MatcherAssert.assertThat(triplet.getSourceVertex().getGraphCount(), is(1));
+      MatcherAssert.assertThat(triplet.getTargetVertex().getGraphCount(), is(1));
+    }
   }
 
 }

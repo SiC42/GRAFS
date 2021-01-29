@@ -1,8 +1,10 @@
 package edu.leipzig.grafs.operators.transform;
 
 import edu.leipzig.grafs.model.Edge;
+import edu.leipzig.grafs.model.Element;
 import edu.leipzig.grafs.model.Triplet;
-import edu.leipzig.grafs.operators.interfaces.GraphToGraphOperatorI;
+import edu.leipzig.grafs.operators.interfaces.nonwindow.GraphCollectionToGraphCollectionOperatorI;
+import edu.leipzig.grafs.operators.interfaces.nonwindow.GraphToGraphOperatorI;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.streaming.api.datastream.DataStream;
 
@@ -10,7 +12,8 @@ import org.apache.flink.streaming.api.datastream.DataStream;
  * Represents an Edge Transformation Operator. The given transformation function is applied to all
  * edges in the stream.
  */
-public class EdgeTransformation implements GraphToGraphOperatorI {
+public class EdgeTransformation implements GraphToGraphOperatorI,
+    GraphCollectionToGraphCollectionOperatorI {
 
   /**
    * Function that is applied to the stream
@@ -22,9 +25,9 @@ public class EdgeTransformation implements GraphToGraphOperatorI {
    *
    * @param mapper transformation function that is used on every edge of the stream
    */
-  public EdgeTransformation(final MapFunction<Edge, Edge> mapper) {
+  public EdgeTransformation(final MapFunction<Element, Element> mapper) {
     this.tripletMapper = triplet -> {
-      var transformedEdge = mapper.map(triplet.getEdge());
+      var transformedEdge = (Edge) mapper.map(triplet.getEdge());
       return new Triplet(transformedEdge, triplet.getSourceVertex(), triplet.getTargetVertex());
     };
   }

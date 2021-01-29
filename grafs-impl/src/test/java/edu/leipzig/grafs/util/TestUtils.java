@@ -9,10 +9,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import com.google.common.collect.Maps;
-import edu.leipzig.grafs.model.Triplet;
-import edu.leipzig.grafs.model.EdgeStream;
 import edu.leipzig.grafs.model.Element;
 import edu.leipzig.grafs.model.GraphElement;
+import edu.leipzig.grafs.model.Triplet;
+import edu.leipzig.grafs.model.streaming.AbstractStream;
 import edu.leipzig.grafs.operators.grouping.functions.AggregateFunction;
 import edu.leipzig.grafs.operators.grouping.functions.BaseAggregateFunction;
 import java.io.ByteArrayInputStream;
@@ -317,8 +317,8 @@ public class TestUtils {
   }
 
   /**
-   * Sorts the given collections by edge id and checks pairwise if the triplets are contained
-   * in the same graphs.
+   * Sorts the given collections by edge id and checks pairwise if the triplets are contained in the
+   * same graphs.
    *
    * @param expectedCollection first collection
    * @param actualCollection   second collection
@@ -527,7 +527,7 @@ public class TestUtils {
     return cl.cast(o);
   }
 
-  public static void assertThatStreamContains(EdgeStream actualResultStream,
+  public static void assertThatStreamContains(AbstractStream<?> actualResultStream,
       Collection<Triplet> expectedResult)
       throws IOException {
     var tripletIt = actualResultStream.collect();

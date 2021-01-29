@@ -1,6 +1,8 @@
 package edu.leipzig.grafs.benchmark.tests.window;
 
-import edu.leipzig.grafs.model.EdgeStream;
+import edu.leipzig.grafs.model.streaming.nonwindow.AbstractNonWindowedStream;
+import edu.leipzig.grafs.model.streaming.window.WindowedGraphStream;
+import org.apache.flink.streaming.api.windowing.windows.Window;
 
 public class IsomorphismMatchingBenchmark extends AbstractWindowBenchmark {
 
@@ -13,13 +15,9 @@ public class IsomorphismMatchingBenchmark extends AbstractWindowBenchmark {
     benchmark.execute();
   }
 
-  public EdgeStream applyOperator(EdgeStream edgeStream) {
+  public <W extends Window> AbstractNonWindowedStream applyOperator(WindowedGraphStream<W> stream) {
     var query = "(v1)-[]->(v2)-[]->(v1)";
-    if (useTrigger) {
-      return edgeStream.isomorphismMatching(query, window, countTrigger);
-    } else {
-      return edgeStream.isomorphismMatching(query, window);
-    }
+    return stream.isomorphismMatching(query);
   }
 
 }

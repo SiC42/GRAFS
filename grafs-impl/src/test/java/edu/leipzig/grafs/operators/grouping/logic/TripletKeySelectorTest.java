@@ -29,7 +29,7 @@ class TripletKeySelectorTest {
   void getKey_forSourceVertex() {
     GroupingInformation gi = new GroupingInformation();
     gi.addKey("n");
-    TripletKeySelector tks = new TripletKeySelector(gi, null, AggregateMode.SOURCE);
+    TripletKeySelector tks = new TripletKeySelector(gi, AggregateMode.SOURCE);
     assertThat(tks.getKey(triplet), equalTo("({n:A})-[]->()"));
   }
 
@@ -37,7 +37,7 @@ class TripletKeySelectorTest {
   void getKey_testNumberProperty() {
     GroupingInformation gi = new GroupingInformation();
     gi.addKey("a");
-    TripletKeySelector tks = new TripletKeySelector(gi, null, AggregateMode.SOURCE);
+    TripletKeySelector tks = new TripletKeySelector(gi, AggregateMode.SOURCE);
     assertThat(tks.getKey(triplet), equalTo("({a:18})-[]->()"));
   }
 
@@ -45,7 +45,7 @@ class TripletKeySelectorTest {
   void getKey_testLabelForVertex() {
     GroupingInformation gi = new GroupingInformation();
     gi.useLabel(true);
-    TripletKeySelector tks = new TripletKeySelector(gi, null, AggregateMode.SOURCE);
+    TripletKeySelector tks = new TripletKeySelector(gi, AggregateMode.SOURCE);
     assertThat(tks.getKey(triplet), equalTo("(:v)-[]->()"));
   }
 
@@ -53,18 +53,18 @@ class TripletKeySelectorTest {
   void getKey_forTargetVertex() {
     GroupingInformation gi = new GroupingInformation();
     gi.addKey("n");
-    TripletKeySelector tks = new TripletKeySelector(gi, null, AggregateMode.TARGET);
+    TripletKeySelector tks = new TripletKeySelector(gi, AggregateMode.TARGET);
     assertThat(tks.getKey(triplet), equalTo("()-[]->({n:B})"));
   }
 
   @Test
   void getKey_forEdgeWithVertexGroupingInformation() {
-    GroupingInformation vgi = new GroupingInformation();
-    vgi.addKey("n");
     GroupingInformation egi = new GroupingInformation();
     egi.addKey("t");
-    TripletKeySelector tks = new TripletKeySelector(vgi, egi, AggregateMode.EDGE);
-    assertThat(tks.getKey(triplet), equalTo("({n:A})-[{t:5}]->({n:B})"));
+    TripletKeySelector tks = new TripletKeySelector(egi, AggregateMode.EDGE);
+    var expectedSource = triplet.getSourceVertex().getId();
+    var expectedTarget = triplet.getTargetVertex().getId();
+    assertThat(tks.getKey(triplet), equalTo(String.format("(%s)-[{t:5}]->(%s)",expectedSource, expectedTarget)));
   }
 
   @Test
@@ -72,14 +72,18 @@ class TripletKeySelectorTest {
     GroupingInformation vgi = new GroupingInformation();
     GroupingInformation egi = new GroupingInformation();
     egi.useLabel(true);
-    TripletKeySelector tks = new TripletKeySelector(vgi, egi, AggregateMode.EDGE);
-    assertThat(tks.getKey(triplet), equalTo("()-[:e]->()"));
+    TripletKeySelector tks = new TripletKeySelector(egi, AggregateMode.EDGE);
+    var expectedSource = triplet.getSourceVertex().getId();
+    var expectedTarget = triplet.getTargetVertex().getId();
+    assertThat(tks.getKey(triplet), equalTo(String.format("(%s)-[:e]->(%s)",expectedSource, expectedTarget)));
   }
 
   @Test
   void getKey_forEdgeWithoutEdgeGroupingInformation() {
     GroupingInformation vgi = new GroupingInformation();
-    TripletKeySelector tks = new TripletKeySelector(vgi, null, AggregateMode.EDGE);
-    assertThat(tks.getKey(triplet), equalTo("()-[:e {a:8,t:5,x:value}]->()"));
+    TripletKeySelector tks = new TripletKeySelector(vgi, AggregateMode.EDGE);
+    var expectedSource = triplet.getSourceVertex().getId();
+    var expectedTarget = triplet.getTargetVertex().getId();
+    assertThat(tks.getKey(triplet), equalTo(String.format("(%s)-[]->(%s)",expectedSource, expectedTarget)));
   }
 }

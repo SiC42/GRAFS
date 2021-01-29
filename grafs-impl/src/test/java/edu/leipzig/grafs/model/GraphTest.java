@@ -236,7 +236,8 @@ public class GraphTest {
     var vertexSet = loader.getVerticesByGraphVariables("g0");
     var actualSubGraph = graph.getVertexInducedSubGraph(vertexSet);
 
-    TestUtils.validateElementCollections(actualSubGraph.getVertices(), expectedSubGraph.getVertices());
+    TestUtils
+        .validateElementCollections(actualSubGraph.getVertices(), expectedSubGraph.getVertices());
     TestUtils.validateElementCollections(actualSubGraph.getEdges(), expectedSubGraph.getEdges());
   }
 

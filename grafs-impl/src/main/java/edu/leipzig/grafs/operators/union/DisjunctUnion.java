@@ -2,9 +2,9 @@ package edu.leipzig.grafs.operators.union;
 
 import com.google.common.annotations.Beta;
 import edu.leipzig.grafs.model.Triplet;
-import edu.leipzig.grafs.model.EdgeStream;
-import edu.leipzig.grafs.operators.interfaces.GraphToGraphCollectionOperatorI;
-import edu.leipzig.grafs.operators.interfaces.GraphToGraphOperatorI;
+import edu.leipzig.grafs.model.streaming.GraphStream;
+import edu.leipzig.grafs.operators.interfaces.nonwindow.GraphCollectionToGraphCollectionOperatorI;
+import edu.leipzig.grafs.operators.interfaces.nonwindow.GraphToGraphOperatorI;
 import org.apache.flink.streaming.api.datastream.DataStream;
 
 /**
@@ -12,19 +12,20 @@ import org.apache.flink.streaming.api.datastream.DataStream;
  * elements in both streams are disjunct (or it is not of importance for the analysis.
  */
 @Beta
-public class DisjunctUnion implements GraphToGraphOperatorI, GraphToGraphCollectionOperatorI {
+public class DisjunctUnion implements GraphToGraphOperatorI,
+    GraphCollectionToGraphCollectionOperatorI {
 
   /**
    * Streams that should be unified via the union operation.
    */
-  private final EdgeStream[] streams;
+  private final GraphStream[] streams;
 
   /**
    * Initializes this operator with the given streams.
    *
    * @param streams streams that should be unified by applying the union operator onto a stream
    */
-  public DisjunctUnion(EdgeStream... streams) {
+  public DisjunctUnion(GraphStream... streams) {
     this.streams = streams;
   }
 

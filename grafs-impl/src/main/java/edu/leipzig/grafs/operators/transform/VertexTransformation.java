@@ -1,8 +1,10 @@
 package edu.leipzig.grafs.operators.transform;
 
+import edu.leipzig.grafs.model.Element;
 import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.model.Vertex;
-import edu.leipzig.grafs.operators.interfaces.GraphToGraphOperatorI;
+import edu.leipzig.grafs.operators.interfaces.nonwindow.GraphCollectionToGraphCollectionOperatorI;
+import edu.leipzig.grafs.operators.interfaces.nonwindow.GraphToGraphOperatorI;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.streaming.api.datastream.DataStream;
 
@@ -10,7 +12,8 @@ import org.apache.flink.streaming.api.datastream.DataStream;
  * Represents a Vertex Transformation Operator. The given transformation function is applied to all
  * vertices in the stream.
  */
-public class VertexTransformation implements GraphToGraphOperatorI {
+public class VertexTransformation implements GraphToGraphOperatorI,
+    GraphCollectionToGraphCollectionOperatorI {
 
   /**
    * Function that is applied to the stream
@@ -20,12 +23,12 @@ public class VertexTransformation implements GraphToGraphOperatorI {
   /**
    * Initializes this operator with the given transformation function.
    *
-   * @param mapper transformation function that is used on every vertice of the stream
+   * @param mapper transformation function that is used on every vertex of the stream
    */
-  public VertexTransformation(final MapFunction<Vertex, Vertex> mapper) {
+  public VertexTransformation(final MapFunction<Element, Element> mapper) {
     this.tripletMapper = triplet -> {
-      Vertex source = mapper.map(triplet.getSourceVertex());
-      Vertex target = mapper.map(triplet.getTargetVertex());
+      Vertex source = (Vertex) mapper.map(triplet.getSourceVertex());
+      Vertex target = (Vertex) mapper.map(triplet.getTargetVertex());
       return new Triplet(triplet.getEdge(), source, target);
     };
   }

@@ -1,7 +1,8 @@
 package edu.leipzig.grafs.benchmark.tests.nonwindow;
 
 import edu.leipzig.grafs.benchmark.tests.AbstractBenchmark;
-import edu.leipzig.grafs.model.EdgeStream;
+import edu.leipzig.grafs.model.streaming.nonwindow.AbstractNonWindowedStream;
+import edu.leipzig.grafs.model.streaming.nonwindow.GraphStream;
 
 public class VertexInducedSubgraphBenchmark extends AbstractBenchmark {
 
@@ -14,8 +15,9 @@ public class VertexInducedSubgraphBenchmark extends AbstractBenchmark {
     benchmark.execute();
   }
 
-  public EdgeStream applyOperator(EdgeStream edgeStream) {
-    return edgeStream.vertexInducedSubgraph(v -> v.hasProperty("key"));
+  public AbstractNonWindowedStream applyOperator(GraphStream stream) {
+    return stream
+        .vertexInducedSubgraph(v -> !v.hasProperty("name"));
   }
 
 }

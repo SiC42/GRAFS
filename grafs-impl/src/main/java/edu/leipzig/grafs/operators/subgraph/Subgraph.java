@@ -3,8 +3,7 @@ package edu.leipzig.grafs.operators.subgraph;
 import edu.leipzig.grafs.model.Edge;
 import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.model.Vertex;
-import edu.leipzig.grafs.operators.interfaces.GraphToGraphOperatorI;
-import java.util.Locale;
+import edu.leipzig.grafs.operators.interfaces.nonwindow.GraphToGraphOperatorI;
 import java.util.Objects;
 import org.apache.flink.api.common.functions.FilterFunction;
 import org.apache.flink.streaming.api.datastream.DataStream;
@@ -28,6 +27,7 @@ public class Subgraph implements GraphToGraphOperatorI {
   protected FilterFunction<Triplet> tripletFilter;
 
   private Strategy strategy;
+
   /**
    * Empty constructor for serialization.
    */
@@ -48,28 +48,24 @@ public class Subgraph implements GraphToGraphOperatorI {
       final Strategy strategy) {
     Objects.requireNonNull(strategy);
     this.strategy = strategy;
-    if (strategy == Strategy.BOTH &&
-        (vertexFilter == null || edgeFilter == null)) {
-      throw new IllegalArgumentException("No vertex or no edge filter function was given.");
-    }
-
-    if (strategy == Strategy.VERTEX_INDUCED && vertexFilter == null) {
-      throw new IllegalArgumentException("No vertex filter functions was given.");
-    }
-
-    if ((strategy == Strategy.EDGE_INDUCED) &&
-        edgeFilter == null) {
-      throw new IllegalArgumentException("No vertex edge functions was given.");
-    }
 
     switch (strategy) {
       case BOTH:
+        if(vertexFilter == null || edgeFilter == null){
+          throw new IllegalArgumentException("No vertex or no edge filter function was given.");
+        }
         tripletFilter = createSubGraphFilter(vertexFilter, edgeFilter);
         break;
       case VERTEX_INDUCED:
+        if(vertexFilter == null){
+          throw new IllegalArgumentException("No vertex filter functions was given.");
+        }
         tripletFilter = createVertexInducedSubgraphFilter(vertexFilter);
         break;
       case EDGE_INDUCED:
+        if(edgeFilter == null){
+          throw new IllegalArgumentException("No vertex edge functions was given.");
+        }
         tripletFilter = createEdgeInducedSubgraphFilter(edgeFilter);
         break;
       default:
@@ -78,8 +74,8 @@ public class Subgraph implements GraphToGraphOperatorI {
   }
 
   /**
-   * Creates a {@link FilterFunction} on Triplets for the given vertex and edge filter. The
-   * returned filter is the one applied to the stream.
+   * Creates a {@link FilterFunction} on Triplets for the given vertex and edge filter. The returned
+   * filter is the one applied to the stream.
    *
    * @param vertexFilter filter applied to the vertices of the stream
    * @param edgeFilter   filter applied to the edges of the stream
@@ -87,11 +83,10 @@ public class Subgraph implements GraphToGraphOperatorI {
    */
   private FilterFunction<Triplet> createSubGraphFilter(FilterFunction<Vertex> vertexFilter,
       FilterFunction<Edge> edgeFilter) {
-    FilterFunction<Triplet> tripletFilter = triplet ->
+    return triplet ->
         edgeFilter.filter(triplet.getEdge()) &&
             vertexFilter.filter(triplet.getSourceVertex()) &&
             vertexFilter.filter(triplet.getTargetVertex());
-    return tripletFilter;
   }
 
   /**
@@ -103,23 +98,21 @@ public class Subgraph implements GraphToGraphOperatorI {
    */
   private FilterFunction<Triplet> createVertexInducedSubgraphFilter(
       FilterFunction<Vertex> vertexFilter) {
-    FilterFunction<Triplet> tripletFilter = triplet ->
+    return triplet ->
         vertexFilter.filter(triplet.getSourceVertex()) && vertexFilter
             .filter(triplet.getTargetVertex());
-    return tripletFilter;
   }
 
   /**
-   * Creates a {@link FilterFunction} on Triplets for the given edge filter that represents a
-   * edge induced subgraph function. The returned filter is the one applied to the stream.
+   * Creates a {@link FilterFunction} on Triplets for the given edge filter that represents a edge
+   * induced subgraph function. The returned filter is the one applied to the stream.
    *
    * @param edgeFilter filter applied to the vertices of the stream
    * @return edge induced subgraph filter ready to be applied to the stream
    */
   private FilterFunction<Triplet> createEdgeInducedSubgraphFilter(
       FilterFunction<Edge> edgeFilter) {
-    FilterFunction<Triplet> tripletFilter = triplet -> edgeFilter.filter(triplet.getEdge());
-    return tripletFilter;
+    return triplet -> edgeFilter.filter(triplet.getEdge());
   }
 
   /**
@@ -130,7 +123,7 @@ public class Subgraph implements GraphToGraphOperatorI {
    */
   @Override
   public DataStream<Triplet> execute(DataStream<Triplet> stream) {
-    return stream.filter(tripletFilter).name(strategy.name().toLowerCase() + " subgraph" );
+    return stream.filter(tripletFilter).name(strategy.name().toLowerCase() + " subgraph");
   }
 
   /**

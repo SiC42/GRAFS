@@ -1,10 +1,11 @@
 package edu.leipzig.grafs.operators.matching.logic;
 
-import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.model.Graph;
+import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.model.Vertex;
 import edu.leipzig.grafs.operators.matching.model.CandidateMap;
 import edu.leipzig.grafs.util.Sets;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -105,9 +106,21 @@ public class DualSimulationProcess<W extends Window> extends
     if (dualSimulationMatches.isEmpty()) {
       return;
     }
-    var permutations = buildPermutations(dualSimulationMatches.asListOfCandidateSets());
-    var tripletSet = buildTripletSet(permutations, graph);
-    emitTriplet(collector, tripletSet);
+    var getAllVertices = dualSimulationMatches
+        .asListOfCandidateSets()
+        .stream()
+        .flatMap(Collection::stream)
+        .collect(Collectors.toSet());
+    var subgraph = graph.getVertexInducedSubGraph(getAllVertices);
+    var tripletFactory = new TripletFactory();
+    for (var edge : subgraph.getEdges()) {
+      if (matchesAnyQueryEdge(edge, graph)) {
+        var source = graph.getSourceForEdge(edge);
+        var target = graph.getTargetForEdge(edge);
+        tripletFactory.add(edge, source, target, subgraph.getId());
+      }
+    }
+    emitTriplet(collector, tripletFactory.getTriplets());
   }
 
   private CandidateMap<Vertex> dualSimulationProcess(Graph graph) {

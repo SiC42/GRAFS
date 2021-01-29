@@ -97,5 +97,3 @@ target/classes/log4j.properties
 target/classes/META-INF/wiki-edits.kotlin_module
 .idea/saveactions_settings.xml
 /target/
-
-**/resources/**

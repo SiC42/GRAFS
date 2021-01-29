@@ -1,10 +1,8 @@
 package edu.leipzig.grafs.setup.kafka;
 
-import edu.leipzig.grafs.factory.EdgeFactory;
 import edu.leipzig.grafs.model.Edge;
 import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.model.Vertex;
-import edu.leipzig.grafs.serialization.TripletDeserializationSchema;
 import edu.leipzig.grafs.setup.reader.EdgeReader;
 import edu.leipzig.grafs.setup.reader.VertexReader;
 import java.io.IOException;
@@ -35,26 +33,28 @@ public class CsvToKafkaProducer extends AbstractProducer {
     long start = System.nanoTime();
     System.out.println("Starting reading files. Vertices first...");
     Map<GradoopId, Vertex> vertexMap = new HashMap<>();
-    try (var pathsStream = Files.walk(Paths.get(BASE_PATH + VERTICE_PATH))) {
+    var basePath = properties.getProperty(BASE_PATH);
+    try (var pathsStream = Files.walk(Paths.get(basePath + VERTICE_PATH))) {
       pathsStream.filter(Files::isRegularFile)
           .forEach(file -> {
             System.out.print("Processing file '" + file.toString() + "'\r");
             System.out.flush();
-            try {
-              var inStream = Files.newInputStream(file);
+            try(var inStream = Files.newInputStream(file)) {
               var vertexReader = new VertexReader(inStream);
               vertexMap.putAll(vertexReader.getVertices());
             } catch (IOException e) {
               e.printStackTrace();
+            }finally {
+              System.out.println();
             }
           });
     } catch (IOException e) {
       e.printStackTrace();
     }
-    System.out.println("Finished processing vertices");
+    System.out.println("Finished processing vertices.");
     System.out.println("Found " + vertexMap.size() + " vertices.");
     AtomicInteger numberOfEdges = new AtomicInteger();
-    try (var pathsStream = Files.walk(Paths.get(BASE_PATH + EDGE_PATH))) {
+    try (var pathsStream = Files.walk(Paths.get(basePath + EDGE_PATH))) {
       pathsStream.filter(Files::isRegularFile)
           .forEach(file -> {
             try (var inStream = Files.newInputStream(file)) {
@@ -83,15 +83,8 @@ public class CsvToKafkaProducer extends AbstractProducer {
               e.printStackTrace();
             }
           });
-      // send a last object that is not part of the analysis, but marks end of stream
-      var source = new Vertex();
-      var END_OF_STREAM_LABEL = TripletDeserializationSchema.END_OF_STREAM_LABEL;
-      source.setLabel(END_OF_STREAM_LABEL);
-      var target = new Vertex();
-      target.setLabel(END_OF_STREAM_LABEL);
-      var edge = EdgeFactory.createEdge(source, target);
-      edge.setLabel(END_OF_STREAM_LABEL);
-      sendTriplet(new Triplet(edge, source, target));
+
+      sendEndOfStreamToAllPartitions();
     } catch (IOException | InterruptedException | ExecutionException e) {
       e.printStackTrace();
     } finally {

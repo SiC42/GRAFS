@@ -2,7 +2,8 @@ package edu.leipzig.grafs.operators.matching;
 
 
 import edu.leipzig.grafs.model.Triplet;
-import edu.leipzig.grafs.model.EdgeStream;
+import edu.leipzig.grafs.model.streaming.GraphStream;
+import edu.leipzig.grafs.model.window.TumblingEventTimeWindows;
 import edu.leipzig.grafs.operators.matching.logic.MatchingTestBase;
 import edu.leipzig.grafs.util.FlinkConfig;
 import edu.leipzig.grafs.util.FlinkConfigBuilder;
@@ -11,7 +12,6 @@ import java.time.Duration;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
-import org.apache.flink.streaming.api.windowing.assigners.TumblingEventTimeWindows;
 import org.apache.flink.streaming.api.windowing.time.Time;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -76,13 +76,15 @@ public class DualSimulationTest extends MatchingTestBase {
         + "(v29)-[e36]->(v30)"
         + "(v30)-[e37]->(v23)]";
     var loader = graphLoader;
-    EdgeStream edgeStream = loader.createEdgeStream(config);
+    GraphStream graphStream = loader.createEdgeStream(config);
     loader.appendFromString(appendDsGraph);
     var expectedEcs = loader.createTripletsByGraphVariables("ds");
 
-    var resultStream = edgeStream
-        .callForStream(new DualSimulation<>(queryPaperGraphGdlStr,
-            TumblingEventTimeWindows.of(Time.milliseconds(10))));
+    var resultStream = graphStream
+        .callForGC(new DualSimulation(queryPaperGraphGdlStr))
+        .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        .apply();
+
     TestUtils.assertThatStreamContains(resultStream, expectedEcs);
   }
 
@@ -90,7 +92,7 @@ public class DualSimulationTest extends MatchingTestBase {
   void testWithSocialGraph_personKnowsPerson() throws Exception {
     var loader = TestUtils.getSocialNetworkLoader();
     var queryStr = "(:Person)-[:knows]->(:Person)";
-    EdgeStream edgeStream = loader.createEdgeStream(config);
+    GraphStream graphStream = loader.createEdgeStream(config);
     var appendDsString = "ds {}["
         + "(alice)-[akb]->(bob)"
         + "(bob)-[bka]->(alice)"
@@ -106,9 +108,11 @@ public class DualSimulationTest extends MatchingTestBase {
     loader.appendFromString(appendDsString);
     var expectedEcs = loader.createTripletsByGraphVariables("ds");
 
-    var resultStream = edgeStream
-        .callForStream(new DualSimulation<>(queryStr,
-            TumblingEventTimeWindows.of(Time.milliseconds(10))));
+    var resultStream = graphStream
+        .callForGC(new DualSimulation(queryStr))
+        .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        .apply();
+
     TestUtils.assertThatStreamContains(resultStream, expectedEcs);
   }
 
@@ -116,7 +120,7 @@ public class DualSimulationTest extends MatchingTestBase {
   void testWithSocialGraph_personKnowsPersonSince2014() throws Exception {
     var loader = TestUtils.getSocialNetworkLoader();
     var queryStr = "(:Person)-[:knows {since: 2014}]->(:Person)";
-    EdgeStream edgeStream = loader.createEdgeStream(config);
+    GraphStream graphStream = loader.createEdgeStream(config);
     var appendDsString = "ds {}["
         + "(alice)-[akb]->(bob)"
         + "(bob)-[bka]->(alice)"
@@ -126,9 +130,11 @@ public class DualSimulationTest extends MatchingTestBase {
     loader.appendFromString(appendDsString);
     var expectedEcs = loader.createTripletsByGraphVariables("ds");
 
-    var resultStream = edgeStream
-        .callForStream(new DualSimulation<>(queryStr,
-            TumblingEventTimeWindows.of(Time.milliseconds(10))));
+    var resultStream = graphStream
+        .callForGC(new DualSimulation(queryStr))
+        .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        .apply();
+
     TestUtils.assertThatStreamContains(resultStream, expectedEcs);
   }
 
@@ -136,7 +142,7 @@ public class DualSimulationTest extends MatchingTestBase {
   void testWithSocialGraph_TripleWithPersonVertices() throws Exception {
     var loader = TestUtils.getSocialNetworkLoader();
     var queryStr = "(:Person)-[]->(:Person)";
-    EdgeStream edgeStream = loader.createEdgeStream(config);
+    GraphStream graphStream = loader.createEdgeStream(config);
     var appendDsString = "ds {}["
         + "(alice)-[akb]->(bob)"
         + "(bob)-[bka]->(alice)"
@@ -152,9 +158,11 @@ public class DualSimulationTest extends MatchingTestBase {
     loader.appendFromString(appendDsString);
     var expectedEcs = loader.createTripletsByGraphVariables("ds");
 
-    var resultStream = edgeStream
-        .callForStream(new DualSimulation<>(queryStr,
-            TumblingEventTimeWindows.of(Time.milliseconds(10))));
+    var resultStream = graphStream
+        .callForGC(new DualSimulation(queryStr))
+        .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        .apply();
+
     TestUtils.assertThatStreamContains(resultStream, expectedEcs);
   }
 
@@ -162,7 +170,7 @@ public class DualSimulationTest extends MatchingTestBase {
   void testWithSocialGraph_TripleWithKnowsEdge() throws Exception {
     var loader = TestUtils.getSocialNetworkLoader();
     var queryStr = "()-[:knows]->()";
-    EdgeStream edgeStream = loader.createEdgeStream(config);
+    GraphStream graphStream = loader.createEdgeStream(config);
     var appendDsString = "ds {}["
         + "(alice)-[akb]->(bob)"
         + "(bob)-[bka]->(alice)"
@@ -178,9 +186,12 @@ public class DualSimulationTest extends MatchingTestBase {
     loader.appendFromString(appendDsString);
     var expectedEcs = loader.createTripletsByGraphVariables("ds");
 
-    var resultStream = edgeStream
-        .callForStream(new DualSimulation<>(queryStr,
-            TumblingEventTimeWindows.of(Time.milliseconds(10))));
+    var resultStream = graphStream
+
+        .callForGC(new DualSimulation(queryStr))
+        .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        .apply();
+
     TestUtils.assertThatStreamContains(resultStream, expectedEcs);
   }
 
@@ -188,7 +199,7 @@ public class DualSimulationTest extends MatchingTestBase {
   void testWithSocialGraph_PersonsKnowEachOther() throws Exception {
     var loader = TestUtils.getSocialNetworkLoader();
     var queryStr = "(a)-[:knows]->(b)-[:knows]->(a)";
-    EdgeStream edgeStream = loader.createEdgeStream(config);
+    GraphStream graphStream = loader.createEdgeStream(config);
     var appendDsString = "ds {}["
         + "(alice)-[akb]->(bob)"
         + "(bob)-[bka]->(alice)"
@@ -200,9 +211,11 @@ public class DualSimulationTest extends MatchingTestBase {
     loader.appendFromString(appendDsString);
     var expectedEcs = loader.createTripletsByGraphVariables("ds");
 
-    var resultStream = edgeStream
-        .callForStream(new DualSimulation<>(queryStr,
-            TumblingEventTimeWindows.of(Time.milliseconds(10))));
+    var resultStream = graphStream
+        .callForGC(new DualSimulation(queryStr))
+        .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        .apply();
+
     TestUtils.assertThatStreamContains(resultStream, expectedEcs);
   }
 
@@ -210,7 +223,7 @@ public class DualSimulationTest extends MatchingTestBase {
   void testWithSocialGraph_forumHasModerator() throws Exception {
     var loader = TestUtils.getSocialNetworkLoader();
     var queryStr = "(:Forum)-[:hasModerator]->()";
-    EdgeStream edgeStream = loader.createEdgeStream(config);
+    GraphStream graphStream = loader.createEdgeStream(config);
     var appendDsString = "ds {}["
         + "(gps)-[gpshmod]->(dave)"
         + "(gdbs)-[gdbshmoa]->(alice)"
@@ -218,9 +231,11 @@ public class DualSimulationTest extends MatchingTestBase {
     loader.appendFromString(appendDsString);
     var expectedEcs = loader.createTripletsByGraphVariables("ds");
 
-    var resultStream = edgeStream
-        .callForStream(new DualSimulation<>(queryStr,
-            TumblingEventTimeWindows.of(Time.milliseconds(10))));
+    var resultStream = graphStream
+        .callForGC(new DualSimulation(queryStr))
+        .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        .apply();
+
     TestUtils.assertThatStreamContains(resultStream, expectedEcs);
   }
 }

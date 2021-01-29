@@ -11,7 +11,7 @@ import org.apache.flink.metrics.MetricGroup;
 import org.apache.flink.streaming.api.operators.StreamingRuntimeContext;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer;
 import org.apache.flink.streaming.connectors.kafka.config.OffsetCommitMode;
-import org.apache.flink.streaming.connectors.kafka.internal.KafkaFetcher;
+import org.apache.flink.streaming.connectors.kafka.internals.KafkaFetcher;
 import org.apache.flink.streaming.connectors.kafka.internals.AbstractFetcher;
 import org.apache.flink.streaming.connectors.kafka.internals.KafkaTopicPartition;
 import org.apache.flink.streaming.connectors.kafka.internals.KafkaTopicPartitionState;
@@ -49,7 +49,7 @@ public class RateLimitingKafkaConsumer<T> extends FlinkKafkaConsumer<T> {
       StreamingRuntimeContext runtimeContext, OffsetCommitMode offsetCommitMode,
       MetricGroup consumerMetricGroup, boolean useMetrics) throws Exception {
 
-    return new KafkaFetcher<T>(
+    return new KafkaFetcher<>(
         sourceContext, assignedPartitionsWithInitialOffsets, watermarkStrategy,
         runtimeContext.getProcessingTimeService(),
         runtimeContext.getExecutionConfig().getAutoWatermarkInterval(),

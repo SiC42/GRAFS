@@ -1,69 +1,54 @@
 package edu.leipzig.grafs.operators.matching;
 
-import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.model.Graph;
-import edu.leipzig.grafs.operators.interfaces.GraphToGraphCollectionOperatorI;
+import edu.leipzig.grafs.model.Triplet;
+import edu.leipzig.grafs.model.window.WindowingInformation;
+import edu.leipzig.grafs.model.window.WindowsI;
+import edu.leipzig.grafs.operators.interfaces.window.WindowedGraphToGraphCollectionOperatorI;
 import edu.leipzig.grafs.operators.matching.logic.EdgeQueryFilter;
 import edu.leipzig.grafs.operators.matching.logic.VertexQueryFilter;
 import edu.leipzig.grafs.util.AsciiGraphLoader;
 import org.apache.flink.streaming.api.datastream.AllWindowedStream;
 import org.apache.flink.streaming.api.datastream.DataStream;
-import org.apache.flink.streaming.api.windowing.assigners.WindowAssigner;
-import org.apache.flink.streaming.api.windowing.triggers.Trigger;
 import org.apache.flink.streaming.api.windowing.windows.Window;
 
 /**
  * Base for all pattern matching operators. Pre-processes the stream by filtering the elements and
- * applying the window.
- *
- * @param <W> type of window that is used in this operation
+ * applying a window.
  */
-public abstract class AbstractMatchingOperator<W extends Window> implements
-    GraphToGraphCollectionOperatorI {
+public abstract class AbstractMatchingOperator implements
+    WindowedGraphToGraphCollectionOperatorI<WindowsI<? extends Window>> {
 
   /**
    * Query graph used to find pattern matches
    */
   final Graph queryGraph;
-  /**
-   * Window that is applied to the stream before the pattern matching is applied.
-   */
-  final WindowAssigner<Object, W> window;
-  /**
-   * Trigger that is applied to the window.
-   */
-  final Trigger<Triplet, W> trigger;
 
   /**
    * Initializes the operator with the given parameter
    *
-   * @param query   query string that is used to make the query graph
-   * @param window  window that for this operation
-   * @param trigger optional window trigger that is used for this operation
+   * @param query query string that is used to make the query graph
    */
-  public AbstractMatchingOperator(String query, WindowAssigner<Object, W> window,
-      Trigger<Triplet, W> trigger) {
+  public AbstractMatchingOperator(String query) {
     queryGraph = AsciiGraphLoader.fromString(query).createGraph();
-    this.window = window;
-    this.trigger = trigger;
+
   }
 
   /**
-   * Prepares edge stream to be used by the pattern matching process by filtering the elements to
+   * Prepares triplet stream to be used by the pattern matching process by filtering the elements to
    * only use elements that fit the pattern and applies window to the stream.
    *
    * @param stream stream that should be used to pre process
    * @return pre-processed stream ready for applying the pattern matching process
    */
-  AllWindowedStream<Triplet, W> preProcessAndApplyWindow(DataStream<Triplet> stream) {
+  <W extends Window> AllWindowedStream<Triplet, W> preProcessAndApplyWindow(
+      DataStream<Triplet> stream, WindowingInformation<W> wi) {
     var filteredStream = queryGraph.getEdges().isEmpty() ? // Only vertices?
         stream.filter(new VertexQueryFilter(queryGraph)) :
         stream.filter(new EdgeQueryFilter(queryGraph));
     filteredStream = filteredStream.name("Filter relevant graph elements");
-    var windowedStream = filteredStream.windowAll(window);
-    if (trigger != null) {
-      windowedStream = windowedStream.trigger(trigger);
-    }
+    var windowedStream = filteredStream.windowAll(wi.getWindow());
+    windowedStream = applyOtherWindowInformation(windowedStream, wi);
     return windowedStream;
   }
 

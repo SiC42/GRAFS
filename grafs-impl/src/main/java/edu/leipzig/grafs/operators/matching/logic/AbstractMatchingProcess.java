@@ -3,8 +3,8 @@ package edu.leipzig.grafs.operators.matching.logic;
 import static edu.leipzig.grafs.operators.matching.logic.ElementMatcher.matchesQueryElem;
 
 import edu.leipzig.grafs.model.Edge;
-import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.model.Graph;
+import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.model.Vertex;
 import edu.leipzig.grafs.operators.matching.model.CandidateMap;
 import java.util.ArrayList;
@@ -42,9 +42,9 @@ public abstract class AbstractMatchingProcess<W extends Window> extends
   /**
    * Applies the pattern matching process onto the elements in the window.
    *
-   * @param notUsed    not used
+   * @param notUsed   not used
    * @param tripletIt all triplet in the window
-   * @param collector  outputs the matched elements
+   * @param collector outputs the matched elements
    */
   @Override
   public void process(Context notUsed, Iterable<Triplet> tripletIt,
@@ -52,7 +52,7 @@ public abstract class AbstractMatchingProcess<W extends Window> extends
     var graph = Graph.fromTriplets(tripletIt);
     if (queryGraph.getEdges().isEmpty()) {
       throw new RuntimeException(
-          "Can't process query with only vertices, because only edge stream model is supported");
+          "Can't process query with only vertices, because only triplet stream model is supported");
     } else {
       processQuery(graph, collector);
     }
@@ -90,9 +90,8 @@ public abstract class AbstractMatchingProcess<W extends Window> extends
    * Given a set of sets of vertices (the inner set represents one match), the method constructs the
    * resulting triplet.
    * <p>
-   * In this process an {@link TripletFactory} is used to ensure that the triplets are
-   * only emitted ones and the elements in the triplet have new graph ids applied to represent
-   * the new graph.
+   * In this process an {@link TripletFactory} is used to ensure that the triplets are only emitted
+   * ones and the elements in the triplet have new graph ids applied to represent the new graph.
    *
    * @param setOfMatches a set of sets of vertices (the inner set represents one match)
    * @param graph        original graph used to get the vertex induced subgraphs
@@ -120,7 +119,7 @@ public abstract class AbstractMatchingProcess<W extends Window> extends
    * @param graph graph used to get the source and target of the given edge
    * @return <tt>true</tt> if the given edge matches and edge in the query graph
    */
-  private boolean matchesAnyQueryEdge(Edge edge, Graph graph) {
+  protected boolean matchesAnyQueryEdge(Edge edge, Graph graph) {
     EdgeQueryFilter edgeFilter = new EdgeQueryFilter(queryGraph);
     var source = graph.getSourceForEdge(edge);
     var target = graph.getTargetForEdge(edge);
@@ -130,8 +129,8 @@ public abstract class AbstractMatchingProcess<W extends Window> extends
   /**
    * Emits the given triplets via the collector.
    *
-   * @param collector      used to emit the triplet
-   * @param triplets triplets which should be emitted
+   * @param collector used to emit the triplet
+   * @param triplets  triplets which should be emitted
    */
   void emitTriplet(Collector<Triplet> collector,
       Collection<Triplet> triplets) {
@@ -144,10 +143,10 @@ public abstract class AbstractMatchingProcess<W extends Window> extends
    * Returns <tt>true</tt> if the given vertex candidate was not used before, i.e. is not a
    * candidate for any query vertex in the array with an index smaller than the given depth.
    *
-   * @param candidate element to be tested if it was not a candidate before
+   * @param candidate    element to be tested if it was not a candidate before
    * @param candidateMap candidate map to be looked at for element
    * @param qVertexArray query elements of previous iterations used as key for map
-   * @param depth current depth, used to find out which query elements where used
+   * @param depth        current depth, used to find out which query elements where used
    * @return <tt>true</tt> if the given vertex candidate was not used before
    */
   boolean previouslyNotCandidate(Vertex candidate, CandidateMap<Vertex> candidateMap,

@@ -74,12 +74,11 @@
           <!-- Run shade goal on package phase -->
           <execution>
             <configuration>
+              <createDependencyReducedPom>false</createDependencyReducedPom>
               <artifactSet>
                 <excludes>
                   <exclude>org.apache.flink:force-shading</exclude>
                   <exclude>com.google.code.findbugs:jsr305</exclude>
-                  <exclude>org.slf4j:*</exclude>
-                  <exclude>org.apache.logging.log4j:*</exclude>
                 </excludes>
               </artifactSet>
               <filters>
@@ -113,6 +112,12 @@
   </build>
 
   <dependencies>
+    <!-- These dependencies are excluded from the application JAR by default. -->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-log4j12</artifactId>
+      <version>1.7.30</version>
+    </dependency>
     <dependency>
       <groupId>edu.leipzig</groupId>
       <artifactId>grafs</artifactId>
@@ -130,6 +135,5 @@
     <maven.compiler.source>${java.version}</maven.compiler.source>
     <maven.compiler.target>${java.version}</maven.compiler.target>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-
   </properties>
 </project>

@@ -6,11 +6,12 @@ import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.model.Vertex;
 import edu.leipzig.grafs.operators.grouping.functions.AggregateFunction;
 import edu.leipzig.grafs.operators.grouping.model.AggregateMode;
-import edu.leipzig.grafs.operators.grouping.model.AggregatedVertex;
 import edu.leipzig.grafs.operators.grouping.model.GroupingInformation;
+import java.util.HashSet;
 import java.util.Set;
 import org.apache.flink.streaming.api.windowing.windows.Window;
 import org.apache.flink.util.Collector;
+import org.gradoop.common.model.impl.id.GradoopId;
 
 /**
  * Provides the ability to aggregate on vertices of the streams by providing the {@link
@@ -18,7 +19,7 @@ import org.apache.flink.util.Collector;
  *
  * @param <W> the type of window to be used for the grouping
  */
-public class VertexAggregation<W extends Window> extends VertexAggregationProcess<W> {
+public class VertexAggregation<W extends Window> extends ElementAggregation<W> {
 
   private final GroupingInformation vertexGroupInfo;
   private final Set<AggregateFunction> aggregateFunctions;
@@ -30,8 +31,8 @@ public class VertexAggregation<W extends Window> extends VertexAggregationProces
    * @param vertexGroupInfo    grouping information used to determine which vertex are in a group
    * @param aggregateFunctions aggregate functions that are used to calculate the aggregates and set
    *                           them in the aggregated vertex
-   * @param aggregateMode      determines if the source or target vertex of the edge stream should
-   *                           be aggregated
+   * @param aggregateMode      determines if the source or target vertex of the triplet stream
+   *                           should be aggregated
    */
   public VertexAggregation(GroupingInformation vertexGroupInfo,
       Set<AggregateFunction> aggregateFunctions, AggregateMode aggregateMode) {
@@ -46,32 +47,33 @@ public class VertexAggregation<W extends Window> extends VertexAggregationProces
    *
    * @param obsoleteStr     the key selector string, which is not used in this process
    * @param obsoleteContext context, which is not used in this process
-   * @param tripletIt      iterable of the triplets in this window
+   * @param tripletIt       iterable of the triplets in this window
    * @param out             the collector in which the aggregated triplet are collected
    */
   @Override
   public void process(String obsoleteStr, Context obsoleteContext,
       Iterable<Triplet> tripletIt,
       Collector<Triplet> out) {
-    var aggregatedVertex = new AggregatedVertex();
+    var alreadyAggregated = new HashSet<GradoopId>();
+    var aggregatedVertex = new Vertex();
 
     // determine the aggregated vertice
     var isInitialAggregation = true;
     for (Triplet triplet : tripletIt) {
-      Vertex curVertex;
-      if (aggregateMode.equals(AggregateMode.SOURCE)) {
-        curVertex = triplet.getSourceVertex();
-      } else {
-        curVertex = triplet.getTargetVertex();
-      }
+      Vertex curVertex = aggregateMode.equals(AggregateMode.SOURCE)
+          ? triplet.getSourceVertex()
+          : triplet.getTargetVertex();
       if (isInitialAggregation) {
         isInitialAggregation = false;
-        aggregatedVertex = (AggregatedVertex) setGroupedProperties(vertexGroupInfo,
+        aggregatedVertex = (Vertex) setGroupedProperties(vertexGroupInfo,
             aggregatedVertex, curVertex);
       }
-      aggregatedVertex = aggregateVertex(aggregatedVertex, curVertex, aggregateFunctions);
+      if(!alreadyAggregated.contains(curVertex.getId())) {
+        alreadyAggregated.add(curVertex.getId());
+        aggregatedVertex = (Vertex) aggregateElement(aggregatedVertex, curVertex, aggregateFunctions);
+      }
     }
-    aggregatedVertex = (AggregatedVertex) checkForMissingAggregationsAndApply(aggregateFunctions,
+    aggregatedVertex = (Vertex) checkForMissingAggregationsAndApply(aggregateFunctions,
         aggregatedVertex);
 
     // build new triplets using the aggregated vertice

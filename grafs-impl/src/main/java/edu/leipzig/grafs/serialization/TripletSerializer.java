@@ -16,7 +16,7 @@ public class TripletSerializer implements Serializer<Triplet> {
   /**
    * Serializes the given triplet into a byte array and returns it
    *
-   * @param s  ignored
+   * @param s       ignored
    * @param triplet triplet which should be serialized into byte representation
    * @return byte representation of given triplet
    */

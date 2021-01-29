@@ -4,9 +4,9 @@ import static edu.leipzig.grafs.util.TestUtils.validateElementCollections;
 import static edu.leipzig.grafs.util.TestUtils.validateIdEquality;
 
 import edu.leipzig.grafs.model.Edge;
-import edu.leipzig.grafs.model.EdgeStream;
 import edu.leipzig.grafs.model.Element;
 import edu.leipzig.grafs.model.Vertex;
+import edu.leipzig.grafs.model.streaming.GraphStream;
 import edu.leipzig.grafs.util.AsciiGraphLoader;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -27,7 +27,7 @@ public class VertexTransformationTest extends TransformationBaseTest {
       "g11:B  { a : 2 } [(:A { a : 3, b : 5 })-[:a { a : 3, b : 4 }]->(:B { c : 2, d : 2 })]";
 
 
-  static Vertex transformVertex(Vertex current) {
+  static Element transformVertex(Element current) {
     current.setLabel(current.getLabel());
     if (current.getLabel().equals("A")) {
       current.setProperty("a", current.getPropertyValue("a").getInt() + 1);
@@ -92,9 +92,10 @@ public class VertexTransformationTest extends TransformationBaseTest {
     Collection<Edge> expectedEdges = loader.getEdgesByGraphVariables("g01");
     Collection<Vertex> expectedVertices = loader.getVerticesByGraphVariables("g01");
 
-    EdgeStream original = loader.createEdgeStreamByGraphVariables(getConfig(), "g0");
+    GraphStream original = loader.createEdgeStreamByGraphVariables(getConfig(), "g0");
 
-    var tripletResultIt = original.transformVertices(VertexTransformationTest::transformVertex).collect();
+    var tripletResultIt = original.transformVertices(VertexTransformationTest::transformVertex)
+        .collect();
 
     Set<Edge> actualEdgeResult = new HashSet<>();
     Set<Vertex> actualVertexResult = new HashSet<>();

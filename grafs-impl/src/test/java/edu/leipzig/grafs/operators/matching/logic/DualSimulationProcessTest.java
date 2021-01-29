@@ -4,8 +4,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.core.Is.is;
 
+import edu.leipzig.grafs.model.Graph;
 import edu.leipzig.grafs.operators.DummyCollector;
 import edu.leipzig.grafs.operators.matching.model.CandidateMap;
+import java.util.HashMap;
+import java.util.Map;
+import org.gradoop.common.model.impl.id.GradoopId;
 import org.junit.jupiter.api.Test;
 
 class DualSimulationProcessTest extends MatchingTestBase {
@@ -93,10 +97,27 @@ class DualSimulationProcessTest extends MatchingTestBase {
     graphLoader.appendFromString(appendDsGraph);
     var ds = new DualSimulationProcess<>(queryGraph);
     var collector = new DummyCollector();
+    Map<GradoopId, Integer> graphElementToGraphCountMap = new HashMap<>();
+    for(var v : graph.getVertices()){
+      graphElementToGraphCountMap.put(v.getId(), v.getGraphCount());
+    }
+    for(var e : graph.getEdges()){
+      graphElementToGraphCountMap.put(e.getId(), e.getGraphCount());
+    }
+
     ds.processQuery(graph, collector);
     var actualTriplets = collector.getCollected();
     var expectedTriplets = graphLoader.createTripletsByGraphVariables("ds");
     assertThat(actualTriplets, containsInAnyOrder(expectedTriplets.toArray()));
+
+    for(var triplet : actualTriplets){
+      var e = triplet.getEdge();
+      var s = triplet.getSourceVertex();
+      var t = triplet.getTargetVertex();
+      assertThat(e.getGraphCount(), is(graphElementToGraphCountMap.get(e.getId())+1));
+      assertThat(s.getGraphCount(), is(graphElementToGraphCountMap.get(s.getId())+1));
+      assertThat(t.getGraphCount(), is(graphElementToGraphCountMap.get(t.getId())+1));
+    }
   }
 
 

@@ -1,8 +1,8 @@
 package edu.leipzig.grafs.benchmark.operators.transform;
 
 import edu.leipzig.grafs.benchmark.operators.functions.MapFunctionWithMeter;
+import edu.leipzig.grafs.model.Element;
 import edu.leipzig.grafs.model.Triplet;
-import edu.leipzig.grafs.model.Vertex;
 import edu.leipzig.grafs.operators.transform.VertexTransformation;
 import java.io.IOException;
 import java.io.Serializable;
@@ -14,11 +14,11 @@ public class BenchmarkVertexTransformation extends VertexTransformation implemen
     super(null);
   }
 
-  public BenchmarkVertexTransformation(MapFunction<Vertex, Vertex> mapper) {
+  public BenchmarkVertexTransformation(MapFunction<Element, Element> mapper) {
     this(mapper, "vertexTransformationMeter");
   }
 
-  public BenchmarkVertexTransformation(MapFunction<Vertex, Vertex> mapper, String meterName) {
+  public BenchmarkVertexTransformation(MapFunction<Element, Element> mapper, String meterName) {
     super(mapper);
     var oldMapper = tripletMapper;
     this.tripletMapper = new MapFunctionWithMeter<>(meterName) {

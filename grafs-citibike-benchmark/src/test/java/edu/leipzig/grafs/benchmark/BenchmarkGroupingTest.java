@@ -56,15 +56,13 @@ public class BenchmarkGroupingTest {
     var edgeStream = loader.createEdgeStreamByGraphVariables(config, "g0", "g1", "g2");
 
     var finalStream = edgeStream
-        .callForStream(
-            new BenchmarkGrouping<>(
+        .window(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        .callForGraph(
+            new BenchmarkGrouping(
                 Set.of(GroupingInformation.LABEL_SYMBOL, "city"),
                 Set.of(new Count("count")),
                 Set.of(GroupingInformation.LABEL_SYMBOL, "since"),
-                Set.of(new Count("count")),
-                TumblingEventTimeWindows.of(Time.milliseconds(10)),
-                null
-            )
+                Set.of(new Count("count")))
         );
     var ecIt = finalStream.collect();
     var actualEcCol = new ArrayList<Triplet>();

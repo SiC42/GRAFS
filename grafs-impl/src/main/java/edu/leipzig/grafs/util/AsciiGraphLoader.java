@@ -7,8 +7,8 @@ import edu.leipzig.grafs.factory.EdgeFactory;
 import edu.leipzig.grafs.factory.VertexFactory;
 import edu.leipzig.grafs.model.Edge;
 import edu.leipzig.grafs.model.Triplet;
-import edu.leipzig.grafs.model.EdgeStream;
 import edu.leipzig.grafs.model.Vertex;
+import edu.leipzig.grafs.model.streaming.GraphStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
@@ -28,8 +28,8 @@ import org.s1ck.gdl.model.Graph;
 import org.s1ck.gdl.model.GraphElement;
 
 /**
- * This class is used to load GDL representations of graphs and return triplet
- * representations of those graphs.
+ * This class is used to load GDL representations of graphs and return triplet representations of
+ * those graphs.
  */
 public class AsciiGraphLoader {
 
@@ -156,7 +156,7 @@ public class AsciiGraphLoader {
   // ---------------------------------------------------------------------------
 
   /**
-   * Creates an edge stream with the given config.
+   * Creates an triplet stream with the given config.
    * <p>
    * The expected parameter specifies which edges should be used. Other edges are omitted.
    *
@@ -164,24 +164,24 @@ public class AsciiGraphLoader {
    * @param expected graph variables that should be selected
    * @return stream of selected edges
    */
-  public EdgeStream createEdgeStreamByGraphVariables(FlinkConfig config, String... expected) {
+  public GraphStream createEdgeStreamByGraphVariables(FlinkConfig config, String... expected) {
     return createEdgeStream(config, createTripletsByGraphVariables(expected));
   }
 
   /**
-   * Creates an edge stream with the given config.
+   * Creates an triplet stream with the given config.
    *
    * @param config config used to produce the stream
    * @return stream of edges loaded
    */
-  public EdgeStream createEdgeStream(FlinkConfig config) {
+  public GraphStream createEdgeStream(FlinkConfig config) {
     return createEdgeStream(config, createTriplets());
   }
 
-  private EdgeStream createEdgeStream(FlinkConfig config, Collection<Triplet> triplet) {
+  private GraphStream createEdgeStream(FlinkConfig config, Collection<Triplet> triplet) {
     StreamExecutionEnvironment env = config.getExecutionEnvironment();
     DataStream<Triplet> stream = env.fromCollection(triplet);
-    return new EdgeStream(stream, config);
+    return new GraphStream(stream, config);
   }
 
   /**

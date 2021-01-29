@@ -24,7 +24,7 @@ public class BenchmarkEdgeTransformationTest extends TransformationBaseTest {
       "g11:B  { a : 2 } [(:A { a : 2, b : 2 })-[:a { a : 4, b : 3 }]->(:B { c : 3 })]";
 
 
-  static Edge transformEdge(Edge current) {
+  static Element transformEdge(Element current) {
     current.setProperty("a", current.getPropertyValue("a").getInt() + 1);
     current.setProperty("b", current.getPropertyValue("b").getInt() - 1);
     return current;
@@ -41,7 +41,7 @@ public class BenchmarkEdgeTransformationTest extends TransformationBaseTest {
 
     var inputStream = loader.createEdgeStreamByGraphVariables(getConfig(), "g0");
     var ecResultIterator = inputStream
-        .callForStream(
+        .callForGraph(
             new BenchmarkEdgeTransformation(BenchmarkEdgeTransformationTest::transformEdge))
         .collect();
     List<GradoopId> resultEdgeIds = new ArrayList<>();
