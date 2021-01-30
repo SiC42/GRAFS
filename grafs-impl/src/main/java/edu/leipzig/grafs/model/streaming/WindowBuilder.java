@@ -10,7 +10,7 @@ import org.apache.flink.streaming.api.windowing.triggers.Trigger;
 import org.apache.flink.streaming.api.windowing.windows.Window;
 import org.apache.flink.util.OutputTag;
 
-public class WindowBuilder<S extends AbstractStream<S>, WBase extends WindowsI<?>, W extends WBase> {
+public class WindowBuilder<S extends AbstractStream<S>, WBase extends WindowsI<?>> {
 
 
   private final S stream;
@@ -23,22 +23,22 @@ public class WindowBuilder<S extends AbstractStream<S>, WBase extends WindowsI<?
     wi = new WindowingInformation<>(window.getFlinkWindowAssigner());
   }
 
-  public WindowBuilder<S, WBase, W> trigger(Trigger<? super Triplet, ? super Window> trigger) {
+  public WindowBuilder<S, WBase> trigger(Trigger<? super Triplet, ? super Window> trigger) {
     wi.addTrigger(trigger);
     return this;
   }
 
-  public WindowBuilder<S, WBase, W> evictor(Evictor<? super Triplet, ? super Window> evictor) {
+  public WindowBuilder<S, WBase> evictor(Evictor<? super Triplet, ? super Window> evictor) {
     wi.addEvictor(evictor);
     return this;
   }
 
-  public WindowBuilder<S, WBase, W> allowedLateness(Time lateness) {
+  public WindowBuilder<S, WBase> allowedLateness(Time lateness) {
     wi.addAllowedLateness(lateness);
     return this;
   }
 
-  public WindowBuilder<S, WBase, W> sideOutputLateData(OutputTag<Triplet> outputTag) {
+  public WindowBuilder<S, WBase> sideOutputLateData(OutputTag<Triplet> outputTag) {
     wi.addLateDataOutputTag(outputTag);
     return this;
   }
