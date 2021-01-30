@@ -55,10 +55,7 @@ public class TripletKeySelector implements KeySelector<Triplet, String> {
         return generateKey(EMPTY_VERTEX, EMPTY_EDGE, vertex);
       }
       case EDGE: {
-        String edge = generateKeyForEdge(triplet.getEdge(), gi);
-        var source = String.format("(%s)",triplet.getSourceVertex().getId().toString());
-        var target =  String.format("(%s)",triplet.getTargetVertex().getId().toString());
-        return generateKey(source, edge, target);
+        return generateKeyForEdge(triplet.getEdge(), gi);
       }
       default:
         throw new IllegalArgumentException("aggregate mode couldn't be found");
@@ -73,7 +70,7 @@ public class TripletKeySelector implements KeySelector<Triplet, String> {
    * @param target generated String for target vertex
    * @return key for the whole triplet in GDL format
    */
-  private String generateKey(String source, String edge, String target) {
+  private static String generateKey(String source, String edge, String target) {
     return String.format("%s-%s->%s", source, edge, target);
   }
 
@@ -84,7 +81,7 @@ public class TripletKeySelector implements KeySelector<Triplet, String> {
    * @param vertexGi grouping information for the vertex
    * @return key for the given vertex in GDL format based on the grouping information
    */
-  private String generateKeyForVertex(Vertex vertex, GroupingInformation vertexGi) {
+  public static String generateKeyForVertex(Vertex vertex, GroupingInformation vertexGi) {
     StringBuilder sb = new StringBuilder();
     sb.append("(");
     sb = keyStringBuilder(sb, vertex, vertexGi);
@@ -99,12 +96,14 @@ public class TripletKeySelector implements KeySelector<Triplet, String> {
    * @param edgeGi grouping information for the edge
    * @return key for the given edge in GDL format based on the grouping information
    */
-  private String generateKeyForEdge(Edge edge, GroupingInformation edgeGi) {
+  public static String generateKeyForEdge(Edge edge, GroupingInformation edgeGi) {
     StringBuilder sb = new StringBuilder();
     sb.append("[");
     sb = keyStringBuilder(sb, edge, edgeGi);
     sb.append("]");
-    return sb.toString();
+    var source = String.format("(%s)", edge.getSourceId().toString());
+    var target =  String.format("(%s)",edge.getTargetId().toString());
+    return generateKey(source, sb.toString(), target);
   }
 
   /**
@@ -115,7 +114,7 @@ public class TripletKeySelector implements KeySelector<Triplet, String> {
    * @param groupInfo grouping information for the element
    * @return filled key builder with missing end bracket
    */
-  private StringBuilder keyStringBuilder(StringBuilder sb, Element
+  private static StringBuilder keyStringBuilder(StringBuilder sb, Element
       element, GroupingInformation groupInfo) {
     if (groupInfo == null) {
       groupInfo = createUniqueGroupInfo(element);
@@ -143,7 +142,7 @@ public class TripletKeySelector implements KeySelector<Triplet, String> {
    * @param element element for which the unique grouping information should be generated
    * @return unique grouping information for this element
    */
-  private GroupingInformation createUniqueGroupInfo(Element element) {
+  private static GroupingInformation createUniqueGroupInfo(Element element) {
     var keys = element.getPropertyKeys();
     var sortedKeySet = new TreeSet<String>();
     for (var key : keys) {
