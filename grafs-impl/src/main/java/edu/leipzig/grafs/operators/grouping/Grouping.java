@@ -3,6 +3,7 @@ package edu.leipzig.grafs.operators.grouping;
 import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.model.window.WindowingInformation;
 import edu.leipzig.grafs.model.window.AbstractTumblingWindows;
+import edu.leipzig.grafs.model.window.WindowsI;
 import edu.leipzig.grafs.operators.grouping.functions.AggregateFunction;
 import edu.leipzig.grafs.operators.grouping.logic.EdgeAggregation;
 import edu.leipzig.grafs.operators.grouping.logic.TripletKeySelector;
@@ -26,13 +27,7 @@ import org.gradoop.common.model.impl.id.GradoopId;
  * and applies the given aggregation functions to the resulting element. This is done in a Window of
  * the stream.
  */
-public class Grouping implements WindowedGraphToGraphOperatorI<AbstractTumblingWindows> {
-
-  private final GroupingInformation vertexGi;
-  private final Set<AggregateFunction> vertexAggregateFunctions;
-  private final GroupingInformation edgeGi;
-  private final Set<AggregateFunction> edgeAggregateFunctions;
-
+public class Grouping extends AbstractGrouping<AbstractTumblingWindows> {
 
   /**
    * Constructs the operator with the given grouping information, aggregation functions and the
@@ -45,10 +40,7 @@ public class Grouping implements WindowedGraphToGraphOperatorI<AbstractTumblingW
    */
   public Grouping(GroupingInformation vertexGi, Set<AggregateFunction> vertexAggregateFunctions,
       GroupingInformation edgeGi, Set<AggregateFunction> edgeAggregateFunctions) {
-    this.vertexGi = vertexGi;
-    this.vertexAggregateFunctions = vertexAggregateFunctions;
-    this.edgeGi = edgeGi;
-    this.edgeAggregateFunctions = edgeAggregateFunctions;
+    super(vertexGi, vertexAggregateFunctions, edgeGi, edgeAggregateFunctions);
   }
 
   /**
@@ -66,10 +58,7 @@ public class Grouping implements WindowedGraphToGraphOperatorI<AbstractTumblingW
    */
   public Grouping(Set<String> vertexGiSet, Set<AggregateFunction> vertexAggregateFunctions,
       Set<String> edgeGiSet, Set<AggregateFunction> edgeAggregateFunctions) {
-    this(new GroupingInformation(vertexGiSet),
-        vertexAggregateFunctions,
-        new GroupingInformation(edgeGiSet),
-        edgeAggregateFunctions);
+    super(vertexGiSet, vertexAggregateFunctions, edgeGiSet, edgeAggregateFunctions);
   }
 
   /**
@@ -79,18 +68,6 @@ public class Grouping implements WindowedGraphToGraphOperatorI<AbstractTumblingW
    */
   public static GroupingBuilder createGrouping() {
     return new GroupingBuilder();
-  }
-
-  /**
-   * Applies the grouping operator onto the stream
-   *
-   * @param stream stream on which the operator should be applied
-   * @return the stream with the grouping operator applied
-   */
-  @Override
-  public <W extends Window> DataStream<Triplet> execute(DataStream<Triplet> stream,
-      WindowingInformation<W> wi) {
-    return groupBy(stream, wi);
   }
 
   /**
@@ -186,123 +163,16 @@ public class Grouping implements WindowedGraphToGraphOperatorI<AbstractTumblingW
   /**
    * Builder that provides an intuitive way to generate a {@link Grouping}-object.
    */
-  public static final class GroupingBuilder {
+  public static final class GroupingBuilder extends AbstractGroupingBuilder<AbstractTumblingWindows> {
 
-    private final GroupingInformation vertexGi;
-    private final Set<AggregateFunction> vertexAggFunctions;
-
-    private final GroupingInformation edgeGi;
-    private final Set<AggregateFunction> aggregateFunctions;
-
-    /**
-     * Constructs the initial state
-     */
-    public GroupingBuilder() {
-      vertexGi = new GroupingInformation();
-      vertexAggFunctions = new HashSet<>();
-      edgeGi = new GroupingInformation();
-      aggregateFunctions = new HashSet<>();
-    }
-
-    /**
-     * Adds the given grouping key to the vertex grouping information
-     *
-     * @param vertexGroupingKey grouping key for vertices
-     * @return the build with the given grouping key applied
-     */
-    public GroupingBuilder addVertexGroupingKey(String vertexGroupingKey) {
-      vertexGi.addKey(vertexGroupingKey);
-      return this;
-    }
-
-    /**
-     * Adds the given grouping keys to the vertex grouping information
-     *
-     * @param vertexGroupingKeys set of grouping keys for vertices
-     * @return the build with the given grouping keys applied
-     */
-    public GroupingBuilder addVertexGroupingKeys(Set<String> vertexGroupingKeys) {
-      vertexGi.addKeys(vertexGroupingKeys);
-      return this;
-    }
-
-    /**
-     * Adds the given grouping key to the edge grouping information
-     *
-     * @param edgeGroupingKey grouping key for edges
-     * @return the build with the given grouping key applied
-     */
-    public GroupingBuilder addEdgeGroupingKey(String edgeGroupingKey) {
-      edgeGi.addKey(edgeGroupingKey);
-      return this;
-    }
-
-    /**
-     * Adds the given grouping keys to the vertex grouping information
-     *
-     * @param edgeGroupingKeys grouping keys for edges
-     * @return the build with the given grouping keys applied
-     */
-    public GroupingBuilder addEdgeGroupingKeys(Set<String> edgeGroupingKeys) {
-      edgeGi.addKeys(edgeGroupingKeys);
-      return this;
-    }
 
     /**
      * Builds the grouping.
      *
      * @return grouping operator with the already provided grouping information and functions
      */
-    public <W extends Window> Grouping build() {
+    public Grouping build() {
       return new Grouping(vertexGi, vertexAggFunctions, edgeGi, aggregateFunctions);
     }
-
-    /**
-     * Define, if the vertex label shall be used for grouping vertices.
-     *
-     * @param useVertexLabel true, iff vertex label shall be used for grouping
-     * @return this builder
-     */
-    public GroupingBuilder useVertexLabel(boolean useVertexLabel) {
-      vertexGi.useLabel(useVertexLabel);
-      return this;
-    }
-
-    /**
-     * Define, if the edge label shall be used for grouping edges.
-     *
-     * @param useEdgeLabel true, iff edge label shall be used for grouping
-     * @return this builder
-     */
-    public GroupingBuilder useEdgeLabel(boolean useEdgeLabel) {
-      edgeGi.useLabel(useEdgeLabel);
-      return this;
-    }
-
-    /**
-     * Add an aggregate function which is applied on all vertices represented by a single super
-     * vertex.
-     *
-     * @param aggregateFunction vertex aggregate mapping
-     * @return this builder
-     */
-    public GroupingBuilder addVertexAggregateFunction(AggregateFunction aggregateFunction) {
-      Objects.requireNonNull(aggregateFunction, "Aggregate function must not be null");
-      vertexAggFunctions.add(aggregateFunction);
-      return this;
-    }
-
-    /**
-     * Add an aggregate function which is applied on all edges represented by a single super edge.
-     *
-     * @param eFunctions edge aggregate mapping
-     * @return this builder
-     */
-    public GroupingBuilder addEdgeAggregateFunction(AggregateFunction eFunctions) {
-      Objects.requireNonNull(eFunctions, "Aggregate function must not be null");
-      aggregateFunctions.add(eFunctions);
-      return this;
-    }
-
   }
 }
