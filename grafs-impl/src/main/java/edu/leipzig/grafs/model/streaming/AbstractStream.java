@@ -88,7 +88,7 @@ public abstract class AbstractStream<S extends AbstractStream<?>> {
       this.operator = operator;
     }
 
-    public <Wextension extends W> WindowBuilder<S, W> withWindow(Wextension window) {
+    public <Wextension extends W> WindowBuilder<S, W, Wextension> withWindow(Wextension window) {
       return new WindowBuilder<>(stream, operator, window);
     }
   }
