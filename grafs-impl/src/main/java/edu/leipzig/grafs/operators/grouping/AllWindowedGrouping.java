@@ -16,7 +16,7 @@ import org.apache.flink.streaming.api.windowing.windows.Window;
  * and applies the given aggregation functions to the resulting element. This is done in a Window of
  * the stream.
  */
-public class AllWindowGrouping extends AbstractGrouping<WindowsI<? extends Window>> {
+public class AllWindowedGrouping extends AbstractWindowedGrouping<WindowsI<? extends Window>> {
 
 
   /**
@@ -28,7 +28,7 @@ public class AllWindowGrouping extends AbstractGrouping<WindowsI<? extends Windo
    * @param edgeGi                   Grouping information for the edges
    * @param edgeAggregateFunctions   Aggregation functions for the grouped edges
    */
-  public AllWindowGrouping(GroupingInformation vertexGi,
+  public AllWindowedGrouping(GroupingInformation vertexGi,
       Set<AggregateFunction> vertexAggregateFunctions,
       GroupingInformation edgeGi, Set<AggregateFunction> edgeAggregateFunctions) {
     super(vertexGi, vertexAggregateFunctions, edgeGi, edgeAggregateFunctions);
@@ -47,15 +47,15 @@ public class AllWindowGrouping extends AbstractGrouping<WindowsI<? extends Windo
    *                                 for the edges
    * @param edgeAggregateFunctions   Aggregation functions for the grouped edges
    */
-  public AllWindowGrouping(Set<String> vertexGiSet, Set<AggregateFunction> vertexAggregateFunctions,
+  public AllWindowedGrouping(Set<String> vertexGiSet, Set<AggregateFunction> vertexAggregateFunctions,
       Set<String> edgeGiSet, Set<AggregateFunction> edgeAggregateFunctions) {
     super(vertexGiSet, vertexAggregateFunctions, edgeGiSet, edgeAggregateFunctions);
   }
 
   /**
-   * Provides a builder which provides an more intuitive way to build a {@link AllWindowGrouping}.
+   * Provides a builder which provides an more intuitive way to build a {@link AllWindowedGrouping}.
    *
-   * @return a builder which provides an more intuitive way to build a {@link AllWindowGrouping}.
+   * @return a builder which provides an more intuitive way to build a {@link AllWindowedGrouping}.
    */
   public static GroupingBuilder createGrouping() {
     return new GroupingBuilder();
@@ -82,7 +82,7 @@ public class AllWindowGrouping extends AbstractGrouping<WindowsI<? extends Windo
   }
 
   /**
-   * Builder that provides an intuitive way to generate a {@link Grouping}-object.
+   * Builder that provides an intuitive way to generate a {@link DistributedWindowedGrouping}-object.
    */
   public static final class GroupingBuilder extends AbstractGroupingBuilder<WindowsI<?>> {
 
@@ -91,8 +91,8 @@ public class AllWindowGrouping extends AbstractGrouping<WindowsI<? extends Windo
      *
      * @return grouping operator with the already provided grouping information and functions
      */
-    public AllWindowGrouping build() {
-      return new AllWindowGrouping(vertexGi, vertexAggFunctions, edgeGi, aggregateFunctions);
+    public AllWindowedGrouping build() {
+      return new AllWindowedGrouping(vertexGi, vertexAggFunctions, edgeGi, aggregateFunctions);
     }
   }
 }

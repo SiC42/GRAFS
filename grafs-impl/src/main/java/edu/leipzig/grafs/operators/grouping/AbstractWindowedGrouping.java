@@ -5,7 +5,6 @@ import edu.leipzig.grafs.model.window.WindowingInformation;
 import edu.leipzig.grafs.model.window.WindowsI;
 import edu.leipzig.grafs.operators.grouping.functions.AggregateFunction;
 import edu.leipzig.grafs.operators.grouping.model.GroupingInformation;
-import edu.leipzig.grafs.operators.interfaces.nonwindow.GraphToGraphOperatorI;
 import edu.leipzig.grafs.operators.interfaces.window.WindowedGraphToGraphOperatorI;
 import java.util.HashSet;
 import java.util.Objects;
@@ -13,7 +12,7 @@ import java.util.Set;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.windowing.windows.Window;
 
-public abstract class AbstractGrouping<W extends WindowsI<? extends Window>> implements
+public abstract class AbstractWindowedGrouping<W extends WindowsI<? extends Window>> implements
     WindowedGraphToGraphOperatorI<W> {
 
   protected final GroupingInformation vertexGi;
@@ -31,7 +30,7 @@ public abstract class AbstractGrouping<W extends WindowsI<? extends Window>> imp
    * @param edgeGi                   Grouping information for the edges
    * @param edgeAggregateFunctions   Aggregation functions for the grouped edges
    */
-  public AbstractGrouping(GroupingInformation vertexGi,
+  public AbstractWindowedGrouping(GroupingInformation vertexGi,
       Set<AggregateFunction> vertexAggregateFunctions,
       GroupingInformation edgeGi, Set<AggregateFunction> edgeAggregateFunctions) {
     this.vertexGi = vertexGi;
@@ -53,7 +52,7 @@ public abstract class AbstractGrouping<W extends WindowsI<? extends Window>> imp
    *                                 for the edges
    * @param edgeAggregateFunctions   Aggregation functions for the grouped edges
    */
-  public AbstractGrouping(Set<String> vertexGiSet, Set<AggregateFunction> vertexAggregateFunctions,
+  public AbstractWindowedGrouping(Set<String> vertexGiSet, Set<AggregateFunction> vertexAggregateFunctions,
       Set<String> edgeGiSet, Set<AggregateFunction> edgeAggregateFunctions) {
     this(new GroupingInformation(vertexGiSet),
         vertexAggregateFunctions,
@@ -76,7 +75,7 @@ public abstract class AbstractGrouping<W extends WindowsI<? extends Window>> imp
   abstract <FW extends Window> DataStream<Triplet> groupBy(DataStream<Triplet> stream, WindowingInformation<FW> wi);
 
   /**
-   * Builder that provides an intuitive way to generate a {@link AllWindowGrouping}-object.
+   * Builder that provides an intuitive way to generate a {@link AllWindowedGrouping}-object.
    */
   public static abstract class AbstractGroupingBuilder<W extends WindowsI<? extends Window>> {
 
@@ -187,7 +186,7 @@ public abstract class AbstractGrouping<W extends WindowsI<? extends Window>> imp
       return this;
     }
 
-    public abstract AbstractGrouping<W> build();
+    public abstract AbstractWindowedGrouping<W> build();
   }
 
   }

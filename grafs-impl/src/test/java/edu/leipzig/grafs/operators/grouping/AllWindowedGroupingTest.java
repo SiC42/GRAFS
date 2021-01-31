@@ -7,14 +7,11 @@ import static org.hamcrest.core.Is.is;
 
 import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.model.window.TumblingEventTimeWindows;
-import edu.leipzig.grafs.model.window.WindowsI;
 import edu.leipzig.grafs.operators.grouping.functions.Count;
 import edu.leipzig.grafs.operators.grouping.functions.MaxProperty;
 import edu.leipzig.grafs.operators.grouping.functions.MinProperty;
 import edu.leipzig.grafs.operators.grouping.functions.SumProperty;
 import edu.leipzig.grafs.operators.grouping.model.GroupingInformation;
-import edu.leipzig.grafs.operators.interfaces.nonwindow.GraphToGraphOperatorI;
-import edu.leipzig.grafs.operators.interfaces.window.WindowedGraphToGraphOperatorI;
 import edu.leipzig.grafs.util.AsciiGraphLoader;
 import edu.leipzig.grafs.util.FlinkConfig;
 import edu.leipzig.grafs.util.FlinkConfigBuilder;
@@ -26,13 +23,12 @@ import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.windowing.time.Time;
-import org.apache.flink.streaming.api.windowing.windows.Window;
 import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class AllWindowGroupingTest {
+public class AllWindowedGroupingTest {
 
   private static FlinkConfig config;
 
@@ -64,7 +60,7 @@ public class AllWindowGroupingTest {
 
     var edgeStream = loader.createEdgeStreamByGraphVariables(config, "g0", "g1", "g2");
 
-    var grouping =  AllWindowGrouping.createGrouping()
+    var grouping =  AllWindowedGrouping.createGrouping()
         .addVertexGroupingKeys(Set.of(GroupingInformation.LABEL_SYMBOL, "city"))
         .addVertexAggregateFunction(new Count("count"))
         .addEdgeGroupingKeys(Set.of(GroupingInformation.LABEL_SYMBOL, "since"))
@@ -105,7 +101,7 @@ public class AllWindowGroupingTest {
     var edgeStream = loader.createEdgeStreamByGraphVariables(config, "g2");
     var intermediateStream = edgeStream
         .callForGraph(
-            AllWindowGrouping.createGrouping()
+            AllWindowedGrouping.createGrouping()
                 .addVertexGroupingKey("city")
                 .addVertexAggregateFunction(new Count("count"))
                 .addEdgeAggregateFunction(new Count("count"))
@@ -157,7 +153,7 @@ public class AllWindowGroupingTest {
     var intermediateStream = edgeStream
 
         .callForGraph(
-            AllWindowGrouping.createGrouping()
+            AllWindowedGrouping.createGrouping()
                 .addVertexGroupingKey("city")
                 .addVertexAggregateFunction(new Count("count"))
                 .addEdgeAggregateFunction(new Count("count"))
@@ -206,7 +202,7 @@ public class AllWindowGroupingTest {
     var intermediateStream = edgeStream
 
         .callForGraph(
-            AllWindowGrouping.createGrouping()
+            AllWindowedGrouping.createGrouping()
                 .addVertexGroupingKey("city")
                 .addVertexGroupingKey("gender")
                 .addVertexAggregateFunction(new Count("count"))
@@ -245,7 +241,7 @@ public class AllWindowGroupingTest {
     var intermediateStream = edgeStream
 
         .callForGraph(
-            AllWindowGrouping.createGrouping()
+            AllWindowedGrouping.createGrouping()
                 .addVertexGroupingKey("city")
                 .addVertexAggregateFunction(new Count("count"))
                 .addEdgeAggregateFunction(new Count("count"))
@@ -285,7 +281,7 @@ public class AllWindowGroupingTest {
     var intermediateStream = edgeStream
 
         .callForGraph(
-            AllWindowGrouping.createGrouping()
+            AllWindowedGrouping.createGrouping()
                 .addVertexGroupingKey("city")
                 .addVertexGroupingKey("gender")
                 .addVertexAggregateFunction(new Count("count"))
@@ -330,7 +326,7 @@ public class AllWindowGroupingTest {
     var intermediateStream = edgeStream
 
         .callForGraph(
-            AllWindowGrouping.createGrouping()
+            AllWindowedGrouping.createGrouping()
                 .addVertexGroupingKey("city")
                 .addEdgeGroupingKey("since")
                 .addVertexAggregateFunction(new Count("count"))
@@ -395,7 +391,7 @@ public class AllWindowGroupingTest {
     var intermediateStream = edgeStream
 
         .callForGraph(
-            AllWindowGrouping.createGrouping()
+            AllWindowedGrouping.createGrouping()
                 .addVertexGroupingKey("a")
                 .addEdgeGroupingKey("a")
                 .addEdgeGroupingKey("b")
@@ -462,7 +458,7 @@ public class AllWindowGroupingTest {
     var intermediateStream = edgeStream
 
         .callForGraph(
-            AllWindowGrouping.createGrouping()
+            AllWindowedGrouping.createGrouping()
                 .addVertexGroupingKey("a")
                 .addVertexGroupingKey("b")
                 .addEdgeGroupingKey("a")
@@ -504,7 +500,7 @@ public class AllWindowGroupingTest {
         edgeStream
     
             .callForGraph(
-                AllWindowGrouping.createGrouping()
+                AllWindowedGrouping.createGrouping()
                     .addVertexGroupingKey("city")
                     .addEdgeGroupingKey("since")
                     .addVertexAggregateFunction(new Count("count"))
@@ -546,7 +542,7 @@ public class AllWindowGroupingTest {
     var intermediateStream = edgeStream
 
         .callForGraph(
-            AllWindowGrouping.createGrouping()
+            AllWindowedGrouping.createGrouping()
                 .useVertexLabel(true)
                 .addVertexAggregateFunction(new Count("count"))
                 .addEdgeAggregateFunction(new Count("count"))
@@ -589,7 +585,7 @@ public class AllWindowGroupingTest {
     var intermediateStream = edgeStream
 
         .callForGraph(
-            AllWindowGrouping.createGrouping()
+            AllWindowedGrouping.createGrouping()
                 .useVertexLabel(true)
                 .addVertexGroupingKey("city")
                 .addVertexAggregateFunction(new Count("count"))
@@ -640,7 +636,7 @@ public class AllWindowGroupingTest {
     var intermediateStream = edgeStream
 
         .callForGraph(
-            AllWindowGrouping.createGrouping()
+            AllWindowedGrouping.createGrouping()
                 .useVertexLabel(true)
                 .addVertexGroupingKey("city")
                 .addVertexAggregateFunction(new Count("count"))
@@ -680,7 +676,7 @@ public class AllWindowGroupingTest {
     var intermediateStream = edgeStream
 
         .callForGraph(
-            AllWindowGrouping.createGrouping()
+            AllWindowedGrouping.createGrouping()
                 .useVertexLabel(true)
                 .addEdgeGroupingKey("since")
                 .addVertexAggregateFunction(new Count("count"))
@@ -725,7 +721,7 @@ public class AllWindowGroupingTest {
     var intermediateStream = edgeStream
 
         .callForGraph(
-            AllWindowGrouping.createGrouping()
+            AllWindowedGrouping.createGrouping()
                 .useVertexLabel(true)
                 .addEdgeGroupingKey("since")
                 .addVertexAggregateFunction(new Count("count"))
@@ -770,7 +766,7 @@ public class AllWindowGroupingTest {
     var intermediateStream = edgeStream
 
         .callForGraph(
-            AllWindowGrouping.createGrouping()
+            AllWindowedGrouping.createGrouping()
                 .useVertexLabel(true)
                 .addVertexGroupingKey("city")
                 .addEdgeGroupingKey("since")
@@ -815,7 +811,7 @@ public class AllWindowGroupingTest {
     var intermediateStream = edgeStream
 
         .callForGraph(
-            AllWindowGrouping.createGrouping()
+            AllWindowedGrouping.createGrouping()
                 .useVertexLabel(true)
                 .useEdgeLabel(true)
 
@@ -860,7 +856,7 @@ public class AllWindowGroupingTest {
     var intermediateStream = edgeStream
 
         .callForGraph(
-            AllWindowGrouping.createGrouping()
+            AllWindowedGrouping.createGrouping()
                 .addVertexGroupingKey("city")
                 .useVertexLabel(true)
                 .useEdgeLabel(true)
@@ -906,7 +902,7 @@ public class AllWindowGroupingTest {
     var intermediateStream = edgeStream
 
         .callForGraph(
-            AllWindowGrouping.createGrouping()
+            AllWindowedGrouping.createGrouping()
                 .addVertexGroupingKey("city")
                 .addEdgeGroupingKey("since")
                 .useVertexLabel(true)
@@ -960,7 +956,7 @@ public class AllWindowGroupingTest {
     var intermediateStream = edgeStream
 
         .callForGraph(
-            AllWindowGrouping.createGrouping()
+            AllWindowedGrouping.createGrouping()
                 .addVertexGroupingKey("city")
                 .useVertexLabel(true)
                 .useEdgeLabel(true)
@@ -1001,7 +997,7 @@ public class AllWindowGroupingTest {
     var intermediateStream = edgeStream
 
         .callForGraph(
-            AllWindowGrouping.createGrouping()
+            AllWindowedGrouping.createGrouping()
                 .addEdgeGroupingKey("since")
                 .useVertexLabel(true)
                 .useEdgeLabel(true)
@@ -1049,7 +1045,7 @@ public class AllWindowGroupingTest {
     var intermediateStream = edgeStream
 
         .callForGraph(
-            AllWindowGrouping.createGrouping()
+            AllWindowedGrouping.createGrouping()
                 .addEdgeGroupingKey("since")
                 .useVertexLabel(true)
                 .useEdgeLabel(true)
@@ -1107,7 +1103,7 @@ public class AllWindowGroupingTest {
         edgeStream
     
             .callForGraph(
-                AllWindowGrouping.createGrouping()
+                AllWindowedGrouping.createGrouping()
                     .addVertexGroupingKey("city")
                     .addEdgeGroupingKey("since")
                     .useVertexLabel(true)
@@ -1170,7 +1166,7 @@ public class AllWindowGroupingTest {
         edgeStream
     
             .callForGraph(
-                AllWindowGrouping.createGrouping()
+                AllWindowedGrouping.createGrouping()
                     .useVertexLabel(true)
                     .build()
             );
@@ -1223,7 +1219,7 @@ public class AllWindowGroupingTest {
         edgeStream
     
             .callForGraph(
-                AllWindowGrouping.createGrouping()
+                AllWindowedGrouping.createGrouping()
                     .useVertexLabel(true)
                     .addVertexAggregateFunction(new Count("count"))
                     .addEdgeAggregateFunction(new Count("count"))
@@ -1279,7 +1275,7 @@ public class AllWindowGroupingTest {
         edgeStream
     
             .callForGraph(
-                AllWindowGrouping.createGrouping()
+                AllWindowedGrouping.createGrouping()
                     .useVertexLabel(true)
                     .addVertexAggregateFunction(new SumProperty("a", "sumA"))
                     .addEdgeAggregateFunction(new SumProperty("b", "sumB"))
@@ -1335,7 +1331,7 @@ public class AllWindowGroupingTest {
         edgeStream
     
             .callForGraph(
-                AllWindowGrouping.createGrouping()
+                AllWindowedGrouping.createGrouping()
                     .useVertexLabel(true)
                     .addVertexAggregateFunction(new SumProperty("a", "sumA"))
                     .addEdgeAggregateFunction(new SumProperty("b", "sumB"))
@@ -1391,7 +1387,7 @@ public class AllWindowGroupingTest {
         edgeStream
     
             .callForGraph(
-                AllWindowGrouping.createGrouping()
+                AllWindowedGrouping.createGrouping()
                     .useVertexLabel(true)
                     .addVertexAggregateFunction(new SumProperty("a", "sumA"))
                     .addEdgeAggregateFunction(new SumProperty("b", "sumB"))
@@ -1447,7 +1443,7 @@ public class AllWindowGroupingTest {
         edgeStream
     
             .callForGraph(
-                AllWindowGrouping.createGrouping()
+                AllWindowedGrouping.createGrouping()
                     .useVertexLabel(true)
                     .addVertexAggregateFunction(new MinProperty("a", "minA"))
                     .addEdgeAggregateFunction(new MinProperty("b", "minB"))
@@ -1503,7 +1499,7 @@ public class AllWindowGroupingTest {
         edgeStream
     
             .callForGraph(
-                AllWindowGrouping.createGrouping()
+                AllWindowedGrouping.createGrouping()
                     .useVertexLabel(true)
                     .addVertexAggregateFunction(new MinProperty("a", "minA"))
                     .addEdgeAggregateFunction(new MinProperty("b", "minB"))
@@ -1559,7 +1555,7 @@ public class AllWindowGroupingTest {
         edgeStream
     
             .callForGraph(
-                AllWindowGrouping.createGrouping()
+                AllWindowedGrouping.createGrouping()
                     .useVertexLabel(true)
                     .addVertexAggregateFunction(new MinProperty("a", "minA"))
                     .addEdgeAggregateFunction(new MinProperty("b", "minB"))
@@ -1614,7 +1610,7 @@ public class AllWindowGroupingTest {
         edgeStream
     
             .callForGraph(
-                AllWindowGrouping.createGrouping()
+                AllWindowedGrouping.createGrouping()
                     .useVertexLabel(true)
                     .addVertexAggregateFunction(new MaxProperty("a", "maxA"))
                     .addEdgeAggregateFunction(new MaxProperty("b", "maxB"))
@@ -1669,7 +1665,7 @@ public class AllWindowGroupingTest {
         edgeStream
     
             .callForGraph(
-                AllWindowGrouping.createGrouping()
+                AllWindowedGrouping.createGrouping()
                     .useVertexLabel(true)
                     .addVertexAggregateFunction(new MaxProperty("a", "maxA"))
                     .addEdgeAggregateFunction(new MaxProperty("b", "maxB"))
@@ -1724,7 +1720,7 @@ public class AllWindowGroupingTest {
         edgeStream
     
             .callForGraph(
-                AllWindowGrouping.createGrouping()
+                AllWindowedGrouping.createGrouping()
                     .useVertexLabel(true)
                     .addVertexAggregateFunction(new MaxProperty("a", "maxA"))
                     .addEdgeAggregateFunction(new MaxProperty("b", "maxB"))
@@ -1778,7 +1774,7 @@ public class AllWindowGroupingTest {
         edgeStream
     
             .callForGraph(
-                AllWindowGrouping.createGrouping()
+                AllWindowedGrouping.createGrouping()
                     .useVertexLabel(true)
                     .addVertexAggregateFunction(new MinProperty("a", "minA"))
                     .addVertexAggregateFunction(new MaxProperty("a", "maxA"))

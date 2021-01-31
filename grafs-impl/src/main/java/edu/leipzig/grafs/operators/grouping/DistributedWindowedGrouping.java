@@ -3,16 +3,12 @@ package edu.leipzig.grafs.operators.grouping;
 import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.model.window.WindowingInformation;
 import edu.leipzig.grafs.model.window.AbstractTumblingWindows;
-import edu.leipzig.grafs.model.window.WindowsI;
 import edu.leipzig.grafs.operators.grouping.functions.AggregateFunction;
 import edu.leipzig.grafs.operators.grouping.logic.EdgeAggregation;
 import edu.leipzig.grafs.operators.grouping.logic.TripletKeySelector;
 import edu.leipzig.grafs.operators.grouping.logic.VertexAggregation;
 import edu.leipzig.grafs.operators.grouping.model.AggregateMode;
 import edu.leipzig.grafs.operators.grouping.model.GroupingInformation;
-import edu.leipzig.grafs.operators.interfaces.window.WindowedGraphToGraphOperatorI;
-import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
 import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.streaming.api.datastream.DataStream;
@@ -27,7 +23,7 @@ import org.gradoop.common.model.impl.id.GradoopId;
  * and applies the given aggregation functions to the resulting element. This is done in a Window of
  * the stream.
  */
-public class Grouping extends AbstractGrouping<AbstractTumblingWindows> {
+public class DistributedWindowedGrouping extends AbstractWindowedGrouping<AbstractTumblingWindows> {
 
   /**
    * Constructs the operator with the given grouping information, aggregation functions and the
@@ -38,7 +34,7 @@ public class Grouping extends AbstractGrouping<AbstractTumblingWindows> {
    * @param edgeGi                   Grouping information for the edges
    * @param edgeAggregateFunctions   Aggregation functions for the grouped edges
    */
-  public Grouping(GroupingInformation vertexGi, Set<AggregateFunction> vertexAggregateFunctions,
+  public DistributedWindowedGrouping(GroupingInformation vertexGi, Set<AggregateFunction> vertexAggregateFunctions,
       GroupingInformation edgeGi, Set<AggregateFunction> edgeAggregateFunctions) {
     super(vertexGi, vertexAggregateFunctions, edgeGi, edgeAggregateFunctions);
   }
@@ -56,15 +52,15 @@ public class Grouping extends AbstractGrouping<AbstractTumblingWindows> {
    *                                 for the edges
    * @param edgeAggregateFunctions   Aggregation functions for the grouped edges
    */
-  public Grouping(Set<String> vertexGiSet, Set<AggregateFunction> vertexAggregateFunctions,
+  public DistributedWindowedGrouping(Set<String> vertexGiSet, Set<AggregateFunction> vertexAggregateFunctions,
       Set<String> edgeGiSet, Set<AggregateFunction> edgeAggregateFunctions) {
     super(vertexGiSet, vertexAggregateFunctions, edgeGiSet, edgeAggregateFunctions);
   }
 
   /**
-   * Provides a builder which provides an more intuitive way to build a {@link Grouping}.
+   * Provides a builder which provides an more intuitive way to build a {@link DistributedWindowedGrouping}.
    *
-   * @return a builder which provides an more intuitive way to build a {@link Grouping}.
+   * @return a builder which provides an more intuitive way to build a {@link DistributedWindowedGrouping}.
    */
   public static GroupingBuilder createGrouping() {
     return new GroupingBuilder();
@@ -161,7 +157,7 @@ public class Grouping extends AbstractGrouping<AbstractTumblingWindows> {
   }
 
   /**
-   * Builder that provides an intuitive way to generate a {@link Grouping}-object.
+   * Builder that provides an intuitive way to generate a {@link DistributedWindowedGrouping}-object.
    */
   public static final class GroupingBuilder extends AbstractGroupingBuilder<AbstractTumblingWindows> {
 
@@ -171,8 +167,8 @@ public class Grouping extends AbstractGrouping<AbstractTumblingWindows> {
      *
      * @return grouping operator with the already provided grouping information and functions
      */
-    public Grouping build() {
-      return new Grouping(vertexGi, vertexAggFunctions, edgeGi, aggregateFunctions);
+    public DistributedWindowedGrouping build() {
+      return new DistributedWindowedGrouping(vertexGi, vertexAggFunctions, edgeGi, aggregateFunctions);
     }
   }
 }
