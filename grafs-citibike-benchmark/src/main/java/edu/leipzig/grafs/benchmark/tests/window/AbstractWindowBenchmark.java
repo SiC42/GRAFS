@@ -72,9 +72,7 @@ public abstract class AbstractWindowBenchmark extends AbstractBenchmark {
   }
 
   protected String getCsvLine(long timeInMilliSeconds) {
-    return String
-        .format("%s;%d;%d\n", properties.getProperty(OPERATOR_NAME_KEY), this.windowSizeInMs,
-            timeInMilliSeconds);
+    return getCsvLine(timeInMilliSeconds, windowSizeInMs);
   }
 
   protected Options buildOptions() {

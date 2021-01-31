@@ -70,13 +70,20 @@ public abstract class AbstractBenchmark {
       } else {
         properties.putAll(ProducerConfig.loadDefaultProperties());
       }
+      int numOfPartitions = getNumberOfPartitions(createKafkaProperties(properties.getProperty("bootstrap.servers")));
+      System.out.format("Found %d partitions.\n", numOfPartitions);
       if (cmd.hasOption(CMD_INPUT_PARALLELISM)) {
         try {
-          Integer.parseInt(cmd.getOptionValue(CMD_INPUT_PARALLELISM));
-          properties.put(CMD_INPUT_PARALLELISM, cmd.getOptionValue(CMD_INPUT_PARALLELISM));
+          var parallelism = Integer.parseInt(cmd.getOptionValue(CMD_INPUT_PARALLELISM));
+          if(parallelism > numOfPartitions){
+            throw new ParseException("Provided number is greater than number of partitions");
+          }
+          properties.put(CMD_INPUT_PARALLELISM, String.valueOf(parallelism));
         } catch (NumberFormatException e) {
           throw new ParseException("Provided argument for input parallelism is not a number.");
         }
+      } else {
+        properties.put(CMD_INPUT_PARALLELISM, String.valueOf(numOfPartitions));
       }
       int rateLimit;
       if (cmd.hasOption(CMD_RATE_LIMIT)) {
@@ -137,9 +144,14 @@ public abstract class AbstractBenchmark {
     outputWriter.close();
   }
 
-  protected String getCsvLine(long timeInMilliSeconds) {
+  private String getCsvLine(long timeInMilliSeconds) {
+    return getCsvLine(timeInMilliSeconds, -1);
+  }
+
+  protected String getCsvLine(long timeInMilliSeconds, int windowSize) {
+    var outputTypeStr = properties.contains(OUTPUT_PATH_KEY) ? "w" : "d";
     return String
-        .format("%s;-1;%d\n", properties.getProperty(OPERATOR_NAME_KEY), timeInMilliSeconds);
+        .format("%s;%s;%d;%d\n", properties.getProperty(OPERATOR_NAME_KEY), outputTypeStr, windowSize, timeInMilliSeconds);
   }
 
   protected Options buildOptions() {
@@ -149,7 +161,7 @@ public abstract class AbstractBenchmark {
     options.addOption("kip", CMD_KAFKA, true, "the kafka server in the format hostname:port/topic");
     options
         .addOption(CMD_INPUT_PARALLELISM, true,
-            "maximum number of flink worker to read from source. Should not be larger than the number of kafka partitions");
+            "maximum number of flink worker to read from source. Has to me smaller than the number of topic partitions on the kafka server");
     options
         .addOption("l", CMD_RATE_LIMIT, true,
             "the rate limit for the intake of data into the system");
@@ -164,7 +176,9 @@ public abstract class AbstractBenchmark {
     var config = new FlinkConfigBuilder(env).build();
     env.setStreamTimeCharacteristic(TimeCharacteristic.ProcessingTime);
     var topic = properties.getProperty(TOPIC_KEY);
+    System.out.println("Test ----------->" + properties.getProperty(CMD_INPUT_PARALLELISM));
     int parallelism = Integer.parseInt(properties.getProperty(CMD_INPUT_PARALLELISM));
+    System.out.format("Input Parallelism is %d\n",parallelism);
     if (rateLimit > 0) {
       var kafkaConsumer = new RateLimitingKafkaConsumer<>(topic, schema, localProps,
           rateLimit);
@@ -173,6 +187,12 @@ public abstract class AbstractBenchmark {
       stream = GraphStream
           .fromSource(new FlinkKafkaConsumer<>(topic, schema, localProps), config, parallelism);
     }
+  }
+
+  private int getNumberOfPartitions(Properties localProps) {
+    var tempConsumer  = new org.apache.kafka.clients.consumer.KafkaConsumer<>(localProps);
+    var partitions = tempConsumer.partitionsFor(properties.getProperty(TOPIC_KEY));
+    return partitions.size();
   }
 
   private Properties createKafkaProperties(String bootstrapServerConfig) {
