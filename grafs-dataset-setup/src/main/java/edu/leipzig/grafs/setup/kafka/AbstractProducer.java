@@ -24,37 +24,37 @@ import org.apache.kafka.common.serialization.StringSerializer;
 public abstract class AbstractProducer extends AbstractCmdBase {
 
 
-  protected Producer<String, Triplet> producer;
   protected List<PartitionInfo> partitions;
   private final String KAFKA_TOPIC_KEY;
+  protected final String serverInfo;
 
   public AbstractProducer(String[] args) {
     super(args);
+    serverInfo = properties.getProperty("bootstrap.servers");
     KAFKA_TOPIC_KEY = properties.getProperty(TOPIC_KEY);
-    buildProducer();
     getPartitionInformation();
 
   }
 
   protected void getPartitionInformation() {
+    var producer = buildProducer("onlypartitioninfo", serverInfo);
     partitions = producer.partitionsFor(KAFKA_TOPIC_KEY);
     System.out.printf("Found %d partitions on topic '%s'.\n", partitions.size(), KAFKA_TOPIC_KEY);
   }
 
-  private void buildProducer() {
-    System.out.println("Initializing Producer");
+  protected static Producer<String, Triplet> buildProducer(String client, String serverInfo) {
     Properties kafkaProps = new Properties();
-    kafkaProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, properties.getProperty("bootstrap.servers"));
-    kafkaProps.put(ProducerConfig.CLIENT_ID_CONFIG, "CsvToKafkaProducer");
+    kafkaProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, serverInfo);
+    kafkaProps.put(ProducerConfig.CLIENT_ID_CONFIG, client + "-CsvToKafkaProducer");
     kafkaProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG,
         StringSerializer.class.getName());
     kafkaProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG,
         TripletSerializer.class.getName());
-    producer = new org.apache.kafka.clients.producer.KafkaProducer<>(kafkaProps);
+    return new org.apache.kafka.clients.producer.KafkaProducer<>(kafkaProps);
   }
 
 
-  protected void sendTriplet(Triplet triplet)
+  protected void sendTriplet(Producer<String, Triplet> producer, Triplet triplet)
       throws ExecutionException, InterruptedException {
     final var record = new ProducerRecord<>(
         properties.getProperty(TOPIC_KEY), triplet.getEdge().getId().toString(), triplet);
@@ -62,11 +62,12 @@ public abstract class AbstractProducer extends AbstractCmdBase {
   }
 
   protected void sendEndOfStreamToAllPartitions() throws ExecutionException, InterruptedException {
+    var producer = buildProducer("finaltripletproducer", serverInfo);
     for(var info : partitions){
       int partitionNumber = info.partition();
       var eosTriplet = createEndOfStreamTriplet();
       final var record = new ProducerRecord<>(KAFKA_TOPIC_KEY, partitionNumber, eosTriplet.getEdge().getId().toString(), eosTriplet);
-      producer.send(record).get();
+      producer.send(record);
     }
   }
 
