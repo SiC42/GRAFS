@@ -10,8 +10,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.gradoop.common.model.impl.id.GradoopId;
@@ -34,7 +32,7 @@ public class CsvToKafkaProducer extends AbstractProducer {
   public void run() {
     long start = System.nanoTime();
     System.out.println("Starting reading files. Vertices first...");
-    ConcurrentMap<GradoopId, Vertex> vertexMap = new ConcurrentHashMap<>();
+    Map<GradoopId, Vertex> vertexMap = new HashMap<>();
     var basePath = properties.getProperty(BASE_PATH);
     try (var pathsStream = Files.walk(Paths.get(basePath + VERTICE_PATH))) {
       pathsStream.filter(Files::isRegularFile)
@@ -57,10 +55,9 @@ public class CsvToKafkaProducer extends AbstractProducer {
     System.out.println("Found " + vertexMap.size() + " vertices.");
     AtomicInteger numberOfEdges = new AtomicInteger();
     try (var pathsStream = Files.walk(Paths.get(basePath + EDGE_PATH))) {
-      pathsStream.filter(Files::isRegularFile).parallel()
+      pathsStream.filter(Files::isRegularFile)
           .forEach(file -> {
             try (var inStream = Files.newInputStream(file)) {
-                var producer = buildProducer(file.getFileName().toString(), serverInfo);
               final var curFileMessageStr = "Current file: '" + file.toString() + "'\t";
               int i = 0;
               long lineCount = Files.lines(file).count();
@@ -77,10 +74,8 @@ public class CsvToKafkaProducer extends AbstractProducer {
                 var source = vertexMap.get(edge.getSourceId());
                 var target = vertexMap.get(edge.getTargetId());
                 var ec = new Triplet(edge, source, target);
-                sendTriplet(producer, ec);
+                sendTriplet(ec);
               }
-              producer.flush();
-              producer.close();
 
               System.out.println("Finished file '" + file.toString() + "'.");
               numberOfEdges.addAndGet(i);
@@ -92,6 +87,9 @@ public class CsvToKafkaProducer extends AbstractProducer {
       sendEndOfStreamToAllPartitions();
     } catch (IOException | InterruptedException | ExecutionException e) {
       e.printStackTrace();
+    } finally {
+      producer.flush();
+      producer.close();
     }
     long end = System.nanoTime();
     System.out.format("Finished process after %d seconds.", (end - start) / 1_000_000_000);
