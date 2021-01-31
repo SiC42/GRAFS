@@ -4,8 +4,9 @@ package edu.leipzig.grafs.benchmark;
 import static grafs.TestUtils.getSocialNetworkLoader;
 import static grafs.TestUtils.validateTripletCollections;
 
-import edu.leipzig.grafs.benchmark.operators.grouping.BenchmarkGrouping;
+import edu.leipzig.grafs.benchmark.operators.grouping.BenchmarkDistributedWindowedGrouping;
 import edu.leipzig.grafs.model.Triplet;
+import edu.leipzig.grafs.model.window.TumblingEventTimeWindows;
 import edu.leipzig.grafs.operators.grouping.functions.Count;
 import edu.leipzig.grafs.operators.grouping.model.GroupingInformation;
 import edu.leipzig.grafs.util.AsciiGraphLoader;
@@ -17,7 +18,6 @@ import java.util.Set;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
-import org.apache.flink.streaming.api.windowing.assigners.TumblingEventTimeWindows;
 import org.apache.flink.streaming.api.windowing.time.Time;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -56,14 +56,15 @@ public class BenchmarkGroupingTest {
     var edgeStream = loader.createEdgeStreamByGraphVariables(config, "g0", "g1", "g2");
 
     var finalStream = edgeStream
-        .window(TumblingEventTimeWindows.of(Time.milliseconds(10)))
         .callForGraph(
-            new BenchmarkGrouping(
+            new BenchmarkDistributedWindowedGrouping(
                 Set.of(GroupingInformation.LABEL_SYMBOL, "city"),
                 Set.of(new Count("count")),
                 Set.of(GroupingInformation.LABEL_SYMBOL, "since"),
                 Set.of(new Count("count")))
-        );
+        )
+        .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        .apply();
     var ecIt = finalStream.collect();
     var actualEcCol = new ArrayList<Triplet>();
     while (ecIt.hasNext()) {

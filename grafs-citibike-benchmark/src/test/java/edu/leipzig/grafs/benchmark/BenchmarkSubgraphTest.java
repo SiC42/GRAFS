@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import edu.leipzig.grafs.benchmark.operators.subgraph.BenchmarkSubgraph;
 import edu.leipzig.grafs.model.Triplet;
-import edu.leipzig.grafs.model.streaming.nonwindow.GraphStream;
+import edu.leipzig.grafs.model.streaming.GraphStream;
 import edu.leipzig.grafs.operators.subgraph.Subgraph.Strategy;
 import edu.leipzig.grafs.util.AsciiGraphLoader;
 import java.util.Collection;

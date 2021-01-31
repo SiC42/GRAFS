@@ -6,7 +6,7 @@ import edu.leipzig.grafs.benchmark.operators.transform.BenchmarkVertexTransforma
 import edu.leipzig.grafs.model.Edge;
 import edu.leipzig.grafs.model.Element;
 import edu.leipzig.grafs.model.Vertex;
-import edu.leipzig.grafs.model.streaming.nonwindow.GraphStream;
+import edu.leipzig.grafs.model.streaming.GraphStream;
 import edu.leipzig.grafs.util.AsciiGraphLoader;
 import java.util.Collection;
 import java.util.HashSet;

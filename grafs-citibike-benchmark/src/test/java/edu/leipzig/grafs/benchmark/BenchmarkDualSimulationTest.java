@@ -6,7 +6,8 @@ import static org.hamcrest.Matchers.containsInAnyOrder;
 
 import edu.leipzig.grafs.benchmark.operators.matching.BenchmarkDualSimulation;
 import edu.leipzig.grafs.model.Triplet;
-import edu.leipzig.grafs.model.streaming.nonwindow.GraphStream;
+import edu.leipzig.grafs.model.streaming.GraphStream;
+import edu.leipzig.grafs.model.window.TumblingEventTimeWindows;
 import edu.leipzig.grafs.util.FlinkConfig;
 import edu.leipzig.grafs.util.FlinkConfigBuilder;
 import java.time.Duration;
@@ -15,7 +16,6 @@ import java.util.Iterator;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
-import org.apache.flink.streaming.api.windowing.assigners.TumblingEventTimeWindows;
 import org.apache.flink.streaming.api.windowing.time.Time;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -96,8 +96,9 @@ public class BenchmarkDualSimulationTest extends MatchingTestBase {
     var expectedEcs = graphLoader.createTripletsByGraphVariables("ds");
 
     Iterator<Triplet> matchedEcIt = edgeStream
-        .window(TumblingEventTimeWindows.of(Time.milliseconds(10)))
         .callForGC(new BenchmarkDualSimulation(queryPaperGraphGdlStr))
+        .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        .apply()
         .collect();
     var actualEcs = new ArrayList<Triplet>();
     matchedEcIt.forEachRemaining(actualEcs::add);
