@@ -68,12 +68,12 @@ public class GraphStream extends AbstractStream<GraphStream> implements GraphStr
     return new GCStream(result, config);
   }
 
-  public <FW extends Window, W extends WindowsI<? extends FW>> InitialWindowBuilder<GraphStream, FW, W> callForGraph(
+  public <FW extends Window, W extends WindowsI<? extends FW>> InitialWindowBuilder<GraphStream,W> callForGraph(
       WindowedGraphToGraphOperatorI<W> operator) {
     return new InitialWindowBuilder<>(new GraphStream(stream, config), operator);
   }
 
-  public <FW extends Window, W extends WindowsI<? extends FW>> InitialWindowBuilder<GCStream, FW, W> callForGC(
+  public <FW extends Window, W extends WindowsI<? extends FW>> InitialWindowBuilder<GCStream,W> callForGC(
       WindowedGraphToGraphCollectionOperatorI<W> operator) {
     return new InitialWindowBuilder<>(new GCStream(stream, config), operator);
   }

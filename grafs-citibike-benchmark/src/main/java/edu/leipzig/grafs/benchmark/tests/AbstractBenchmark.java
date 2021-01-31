@@ -4,8 +4,7 @@ import edu.leipzig.grafs.benchmark.config.ProducerConfig;
 import edu.leipzig.grafs.benchmark.serialization.TripletDeserializer;
 import edu.leipzig.grafs.connectors.RateLimitingKafkaConsumer;
 import edu.leipzig.grafs.model.streaming.AbstractStream;
-import edu.leipzig.grafs.model.streaming.nonwindow.AbstractNonWindowedStream;
-import edu.leipzig.grafs.model.streaming.nonwindow.GraphStream;
+import edu.leipzig.grafs.model.streaming.GraphStream;
 import edu.leipzig.grafs.serialization.TripletDeserializationSchema;
 import edu.leipzig.grafs.util.FlinkConfigBuilder;
 import java.io.FileOutputStream;
@@ -38,7 +37,7 @@ public abstract class AbstractBenchmark {
   private static final String CMD_CONFIG = "config";
 
   protected StreamExecutionEnvironment env;
-  protected AbstractStream stream;
+  protected AbstractStream<?> stream;
   protected Writer outputWriter;
   protected Properties properties;
 
@@ -54,7 +53,8 @@ public abstract class AbstractBenchmark {
   private void checkArgs(String[] args) {
     var parser = new DefaultParser();
     var options = buildOptions();
-    var header = String.format("Benchmarking GRAFS with %s.", properties.getProperty(OPERATOR_NAME_KEY));
+    var header = String
+        .format("Benchmarking GRAFS with %s.", properties.getProperty(OPERATOR_NAME_KEY));
     HelpFormatter formatter = new HelpFormatter();
     try {
       var cmd = parser.parse(options, args);
@@ -95,13 +95,14 @@ public abstract class AbstractBenchmark {
 
       // Process OUTPUT
       if (cmd.hasOption("output")) {
-        properties.put(OUTPUT_PATH_KEY, cmd.getOptionValue("output") + "output_" + System.currentTimeMillis());
+        properties.put(OUTPUT_PATH_KEY,
+            cmd.getOptionValue("output") + "output_" + System.currentTimeMillis());
       }
 
       // Process LOG
       String logPath;
       if (cmd.hasOption("log")) {
-        properties.put("log",cmd.getOptionValue("log"));
+        properties.put("log", cmd.getOptionValue("log"));
       }
 
       logPath = properties.getProperty("log");
@@ -137,7 +138,8 @@ public abstract class AbstractBenchmark {
   }
 
   protected String getCsvLine(long timeInMilliSeconds) {
-    return String.format("%s;-1;%d\n", properties.getProperty(OPERATOR_NAME_KEY), timeInMilliSeconds);
+    return String
+        .format("%s;-1;%d\n", properties.getProperty(OPERATOR_NAME_KEY), timeInMilliSeconds);
   }
 
   protected Options buildOptions() {
@@ -162,15 +164,14 @@ public abstract class AbstractBenchmark {
     var config = new FlinkConfigBuilder(env).build();
     env.setStreamTimeCharacteristic(TimeCharacteristic.ProcessingTime);
     var topic = properties.getProperty(TOPIC_KEY);
-    int parallelism =  Integer.parseInt(properties.getProperty(CMD_INPUT_PARALLELISM));
+    int parallelism = Integer.parseInt(properties.getProperty(CMD_INPUT_PARALLELISM));
     if (rateLimit > 0) {
       var kafkaConsumer = new RateLimitingKafkaConsumer<>(topic, schema, localProps,
           rateLimit);
       stream = GraphStream.fromSource(kafkaConsumer, config, parallelism);
     } else {
       stream = GraphStream
-          .fromSource(new FlinkKafkaConsumer<>(topic, schema, localProps),
-              config,  parallelism);
+          .fromSource(new FlinkKafkaConsumer<>(topic, schema, localProps), config, parallelism);
     }
   }
 
@@ -188,5 +189,5 @@ public abstract class AbstractBenchmark {
     return props;
   }
 
-  public abstract AbstractNonWindowedStream applyOperator(GraphStream stream);
+  public abstract AbstractStream<?> applyOperator(GraphStream stream);
 }

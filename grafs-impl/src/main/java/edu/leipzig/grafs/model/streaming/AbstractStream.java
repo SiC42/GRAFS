@@ -76,19 +76,19 @@ public abstract class AbstractStream<S extends AbstractStream<?>> {
     return DataStreamUtils.collect(stream);
   }
 
-  public static class InitialWindowBuilder<S extends AbstractStream<S>, FW extends Window, W extends WindowsI<? extends FW>> {
+  public static class InitialWindowBuilder<S extends AbstractStream<S>, WBase extends WindowsI<? extends Window>> {
 
     private final S stream;
-    private final WindowedOperatorI<W> operator;
+    private final WindowedOperatorI<WBase> operator;
 
     public InitialWindowBuilder(S stream,
-        WindowedOperatorI<W> operator) {
+        WindowedOperatorI<WBase> operator) {
 
       this.stream = stream;
       this.operator = operator;
     }
 
-    public <Wextension extends W> WindowBuilder<S, W> withWindow(Wextension window) {
+    public <WExtension extends WBase> WindowBuilder<S, WBase> withWindow(WExtension window) {
       return new WindowBuilder<>(stream, operator, window);
     }
   }

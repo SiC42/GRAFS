@@ -1,9 +1,9 @@
 package edu.leipzig.grafs.benchmark.tests.window;
 
 import edu.leipzig.grafs.benchmark.tests.AbstractBenchmark;
-import edu.leipzig.grafs.model.streaming.nonwindow.AbstractNonWindowedStream;
-import edu.leipzig.grafs.model.streaming.window.WindowedGraphStream;
-import org.apache.flink.streaming.api.windowing.windows.Window;
+import edu.leipzig.grafs.model.streaming.AbstractStream;
+import edu.leipzig.grafs.model.streaming.GraphStream;
+import edu.leipzig.grafs.operators.matching.DualSimulation;
 
 public class DualSimulationMatchingBenchmark extends AbstractWindowBenchmark {
 
@@ -16,9 +16,10 @@ public class DualSimulationMatchingBenchmark extends AbstractWindowBenchmark {
     benchmark.execute();
   }
 
-  public <W extends Window> AbstractNonWindowedStream applyOperator(WindowedGraphStream<W> stream) {
+  public AbstractStream<?> applyOperatorWithWindow(GraphStream stream) {
     var query = "(v1)-[]->(v2)-[]->(v1)";
-    return stream.dualSimulation(query);
+    return stream.callForGC(new DualSimulation(query))
+        .withWindow(window).apply();
   }
 
 }

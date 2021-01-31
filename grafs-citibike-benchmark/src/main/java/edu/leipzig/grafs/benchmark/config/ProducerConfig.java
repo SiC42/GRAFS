@@ -18,11 +18,11 @@ public class ProducerConfig {
 
     // load from local file
     var path = Paths.get(LOCAL_DEFAULT_PROP_FILE);
-    if(Files.exists(path)){
+    if (Files.exists(path)) {
       System.out.println("Found local properties file. Loading.");
-      try(var inputStream =  Files.newInputStream(path)){
+      try (var inputStream = Files.newInputStream(path)) {
         props.load(inputStream);
-      } catch (IOException ignored){
+      } catch (IOException ignored) {
       }
     }
     return props;
@@ -31,9 +31,10 @@ public class ProducerConfig {
   private static Properties loadDefaultPropertiesInternal() {
     var props = new Properties();
 
-    try(var inputStream = ProducerConfig.class.getClassLoader().getResourceAsStream(DEFAULT_PROP_FILE)) {
+    try (var inputStream = ProducerConfig.class.getClassLoader()
+        .getResourceAsStream(DEFAULT_PROP_FILE)) {
       props.load(inputStream);
-    } catch (IOException ignored){
+    } catch (IOException ignored) {
     }
 
     return props;
@@ -42,9 +43,9 @@ public class ProducerConfig {
   public static Properties loadProperties(String propFileLocation) throws IOException {
     var props = loadDefaultProperties();
     var path = Paths.get(propFileLocation);
-    try(var inputStream =  Files.newInputStream(path)){
+    try (var inputStream = Files.newInputStream(path)) {
       props.load(inputStream);
-    } catch (IOException e){
+    } catch (IOException e) {
       throw e;
     }
     return props;
