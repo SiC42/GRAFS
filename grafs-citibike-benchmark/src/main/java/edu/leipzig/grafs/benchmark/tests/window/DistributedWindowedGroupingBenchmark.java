@@ -5,14 +5,14 @@ import edu.leipzig.grafs.model.streaming.GraphStream;
 import edu.leipzig.grafs.operators.grouping.DistributedWindowedGrouping;
 import edu.leipzig.grafs.operators.grouping.functions.Count;
 
-public class DistributedGroupingBenchmark extends AbstractWindowBenchmark {
+public class DistributedWindowedGroupingBenchmark extends AbstractWindowBenchmark {
 
-  public DistributedGroupingBenchmark(String[] args) {
+  public DistributedWindowedGroupingBenchmark(String[] args) {
     super(args);
   }
 
   public static void main(String[] args) throws Exception {
-    var benchmark = new DistributedGroupingBenchmark(args);
+    var benchmark = new DistributedWindowedGroupingBenchmark(args);
     benchmark.execute();
   }
 
