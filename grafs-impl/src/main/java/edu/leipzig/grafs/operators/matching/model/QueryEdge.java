@@ -21,14 +21,22 @@ public class QueryEdge extends Edge implements HasPredicate {
     private ArrayList<String> variables = new ArrayList<>();
 
 
+    public QueryEdge(GradoopId id, String label, GradoopId sourceId, GradoopId targetId, Properties properties, GradoopIdSet graphIds) {
+        super(id, label, sourceId, targetId, properties, graphIds);
+        selfPredicates = new ArrayList<>();
+        variables = new ArrayList<>();
+    }
+
+    public QueryEdge(GradoopId id, String label, GradoopId sourceId, GradoopId targetId, Properties properties) {
+        this(id, label, sourceId, targetId, properties, new GradoopIdSet());
+    }
+
     public QueryEdge(GradoopId id, String label, GradoopId sourceId, GradoopId targetId, Properties properties, String variable) {
         this(id, label, sourceId, targetId, properties, variable, new GradoopIdSet());
     }
 
     public QueryEdge(GradoopId id, String label, GradoopId sourceId, GradoopId targetId, Properties properties, String variable, GradoopIdSet graphIds) {
-        super(id, label, sourceId, targetId, properties, graphIds);
-        selfPredicates = new ArrayList<>();
-        variables = new ArrayList<>();
+        this(id, label, sourceId, targetId, properties, graphIds);
         variables.add(variable);
     }
 

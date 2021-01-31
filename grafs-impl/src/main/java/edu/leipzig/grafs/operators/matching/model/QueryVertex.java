@@ -23,14 +23,23 @@ public class QueryVertex extends Vertex implements HasPredicate {
     }
 
 
+    public QueryVertex(GradoopId id, String label, Properties properties,  GradoopIdSet gradoopIds) {
+        super(id, label, properties, gradoopIds);
+        selfPredicates = new ArrayList<>();
+        variables = new ArrayList<>();
+    }
+
+    public QueryVertex(GradoopId id, String label, Properties properties) {
+        this(id, label, properties, new GradoopIdSet());
+    }
+
     public QueryVertex(GradoopId id, String label, Properties properties, String variable) {
         this(id, label, properties, new GradoopIdSet(), variable);
     }
 
     public QueryVertex(GradoopId id, String label, Properties properties, GradoopIdSet gradoopIds, String variable) {
-        super(id, label, properties, gradoopIds);
-        selfPredicates = new ArrayList<>();
-        variables = new ArrayList<>();
+        this(id, label, properties, gradoopIds);
+
         variables.add(variable);
     }
 
