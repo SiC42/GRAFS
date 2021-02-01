@@ -1,10 +1,14 @@
 package edu.leipzig.grafs.operators.matching.logic;
 
+import edu.leipzig.grafs.factory.EdgeFactory;
+import edu.leipzig.grafs.factory.VertexFactory;
+import edu.leipzig.grafs.model.BasicTriplet;
 import edu.leipzig.grafs.model.Edge;
-import edu.leipzig.grafs.model.Graph;
 import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.model.Vertex;
 import edu.leipzig.grafs.operators.matching.model.Query;
+import edu.leipzig.grafs.operators.matching.model.QueryEdge;
+import edu.leipzig.grafs.operators.matching.model.QueryVertex;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -51,9 +55,8 @@ public class DualSimulationProcess<W extends Window> extends PatternMatchingProc
    * @param out      A collector for emitting elements.
    */
   @Override
-  public void process(Context context, Iterable<Triplet> elements,
+  public void process(Context context, Iterable<BasicTriplet<QueryVertex, QueryEdge>> elements,
       Collector<Triplet> out) {
-    Graph<Vertex, Edge> result;
     Iterable<Triplet> triplets;
     if (query.getEdges().isEmpty()) {
       throw new RuntimeException(
@@ -66,11 +69,12 @@ public class DualSimulationProcess<W extends Window> extends PatternMatchingProc
     }
   }
 
-  private Iterable<Triplet> executeForEdgesWithVertices(Iterable<Triplet> elements) {
+  private Iterable<Triplet> executeForEdgesWithVertices(
+      Iterable<BasicTriplet<QueryVertex, QueryEdge>> elements) {
     // get unique elements from stream
-    Map<GradoopId, Vertex> vertexMap = new HashMap<>();
+    Map<GradoopId, QueryVertex> vertexMap = new HashMap<>();
     Set<Edge> edgeSet = new HashSet<>();
-    for (Triplet candidate : elements) {
+    for (var candidate : elements) {
       var source = candidate.getSourceVertex();
       var target = candidate.getTargetVertex();
       vertexMap.put(source.getId(), source);
@@ -105,13 +109,14 @@ public class DualSimulationProcess<W extends Window> extends PatternMatchingProc
     for (var edge : candidateEdges.values()) {
       var source = vertexMap.get(edge.getSourceId());
       var target = vertexMap.get(edge.getTargetId());
-      result.add(new Triplet(edge, source, target));
+      result.add(new Triplet(EdgeFactory.createEdge(edge), VertexFactory.createVertex(source),
+          VertexFactory.createVertex(target)));
     }
     return result;
   }
 
-  private boolean checkPredicateTree(Vertex currentCandidateVertex, Predicate predicates,
-      Collection<Vertex> candidatesInWindow) {
+  private boolean checkPredicateTree(QueryVertex currentCandidateVertex, Predicate predicates,
+      Collection<QueryVertex> candidatesInWindow) {
     if (predicates.getArguments().length > 1) {
       boolean applyLeft = predicates.getArguments()[0].getVariables().stream()
           .anyMatch(currentCandidateVertex.getVariables()::contains);
@@ -168,7 +173,7 @@ public class DualSimulationProcess<W extends Window> extends PatternMatchingProc
       if (comparison.getVariables().size() == 1) {
         return compareSingleVariable(currentCandidateVertex, comparison, left, right);
       } else {
-        Collection<Vertex> streamVerticesToCompareWith = getVerticesToCompareWith(
+        Collection<QueryVertex> streamVerticesToCompareWith = getVerticesToCompareWith(
             currentCandidateVertex, candidatesInWindow, comparison);
         if (left.getClass().equals(PropertySelector.class) && right.getClass().equals(
             PropertySelector.class)) {// TODO:exclude the case where it may be evaluated in edge self predicates
@@ -192,8 +197,8 @@ public class DualSimulationProcess<W extends Window> extends PatternMatchingProc
       if (((PropertySelector) left).getPropertyName().equals("__label__")) {
         return true;
       }
-      leftValue = currentCandidateVertex.getProperties()
-          .get(((PropertySelector) left).getPropertyName());
+      leftValue = currentCandidateVertex
+          .getPropertyValue(((PropertySelector) left).getPropertyName());
       if (right.getClass().equals(Literal.class)) {
         rightValue = PropertyValue.create(((Literal) right).getValue());
       }
@@ -203,17 +208,16 @@ public class DualSimulationProcess<W extends Window> extends PatternMatchingProc
         if (((PropertySelector) right).getPropertyName().equals("__label__")) {
           return true;
         }
-        rightValue = currentCandidateVertex.getProperties()
-            .get(((PropertySelector) right).getPropertyName());
+        rightValue = currentCandidateVertex
+            .getPropertyValue(((PropertySelector) right).getPropertyName());
       }
     }
     return executeComparison(comparison, leftValue, rightValue);
     // return true; // as we are in window and all single predicate would be passes in the filter //TODO: check this
   }
 
-  @NotNull
-  private Collection<Vertex> getVerticesToCompareWith(Vertex currentCandidateVertex,
-      Collection<Vertex> candidatesInWindow, Comparison comparison) {
+  private Collection<QueryVertex> getVerticesToCompareWith(QueryVertex currentCandidateVertex,
+      Collection<QueryVertex> candidatesInWindow, Comparison comparison) {
     String otherVariable = null;
     for (String var : comparison.getVariables()) {
       for (String candidateVariable : currentCandidateVertex.getVariables()) {
@@ -229,17 +233,17 @@ public class DualSimulationProcess<W extends Window> extends PatternMatchingProc
         element.hasVariable(finalOtherVariable)).collect(Collectors.toList());
   }
 
-  private boolean compareWithPropertySelector(Vertex currentCandidateVertex,
+  private boolean compareWithPropertySelector(QueryVertex currentCandidateVertex,
       Comparison comparison, ComparableExpression left, PropertySelector right,
-      Collection<Vertex> streamVerticesToCompareWith) {
+      Collection<QueryVertex> streamVerticesToCompareWith) {
     PropertyValue leftValue;
     PropertyValue rightValue;
     if (currentCandidateVertex.hasVariable(left.getVariable())) {
-      leftValue = currentCandidateVertex.getProperties()
-          .get(((PropertySelector) left).getPropertyName());
+      leftValue = currentCandidateVertex
+          .getPropertyValue(((PropertySelector) left).getPropertyName());
       boolean result = false;
-      for (Vertex opponent : streamVerticesToCompareWith) {
-        rightValue = opponent.getProperties().get(right.getPropertyName());
+      for (QueryVertex opponent : streamVerticesToCompareWith) {
+        rightValue = opponent.getPropertyValue(right.getPropertyName());
         if (leftValue != null && rightValue != null) {
           if (executeComparison(comparison, leftValue, rightValue)) {
             result = true;
@@ -249,11 +253,11 @@ public class DualSimulationProcess<W extends Window> extends PatternMatchingProc
       }
       return result;
     } else {
-      leftValue = currentCandidateVertex.getProperties()
-          .get(((PropertySelector) left).getPropertyName());
+      leftValue = currentCandidateVertex
+          .getPropertyValue(((PropertySelector) left).getPropertyName());
       boolean result = false;
       for (Vertex opponent : streamVerticesToCompareWith) {
-        rightValue = opponent.getProperties().get(right.getPropertyName());
+        rightValue = opponent.getPropertyValue(right.getPropertyName());
         if (leftValue != null && rightValue != null) {
           if (executeComparison(comparison, rightValue, leftValue)) {
             result = true;
@@ -265,8 +269,8 @@ public class DualSimulationProcess<W extends Window> extends PatternMatchingProc
     }
   }
 
-  private boolean compareWithElementSelector(Vertex currentCandidateVertex,
-      Comparison comparison, Collection<Vertex> streamVerticesToCompareWith) {
+  private boolean compareWithElementSelector(QueryVertex currentCandidateVertex,
+      Comparison comparison, Collection<QueryVertex> streamVerticesToCompareWith) {
     PropertyValue leftValue;
     PropertyValue rightValue;
     leftValue = PropertyValue.create(currentCandidateVertex.getId());
@@ -304,29 +308,29 @@ public class DualSimulationProcess<W extends Window> extends PatternMatchingProc
     }
   }
 
-  private boolean checkParentsAndChildren(Vertex currentCandidateVertex,
-      Collection<Triplet> queryTriples,
-      Iterable<Triplet> candidatesInWindow) {
-    java.util.function.Predicate<Triplet> oneVertexInTripletMatchesCurVertex = e ->
+  private boolean checkParentsAndChildren(QueryVertex currentCandidateVertex,
+      Collection<BasicTriplet<QueryVertex, QueryEdge>> queryTriples,
+      Iterable<BasicTriplet<QueryVertex, QueryEdge>> candidatesInWindow) {
+    java.util.function.Predicate<BasicTriplet<QueryVertex, QueryEdge>> oneVertexInTripletMatchesCurVertex = e ->
         ElementMatcher.matchesQueryElem(e.getSourceVertex(), currentCandidateVertex) ||
             ElementMatcher.matchesQueryElem(e.getTargetVertex(), currentCandidateVertex);
 
-    Collection<Triplet> queryRelatives = queryTriples
+    var queryRelatives = queryTriples
         .stream()
         .filter(oneVertexInTripletMatchesCurVertex)
         .collect(Collectors.toList());
-    List<Triplet> candidateRelatives = StreamSupport
+    List<BasicTriplet<QueryVertex, QueryEdge>> candidateRelatives = StreamSupport
         .stream(candidatesInWindow.spliterator(), false)
         .filter(oneVertexInTripletMatchesCurVertex)
         .collect(Collectors.toList());
 
-    for (Triplet relative : queryRelatives) {
+    for (var relative : queryRelatives) {
       boolean exist = false;
-      java.util.function.Predicate<Triplet> tripletMatchesRelative = t ->
+      java.util.function.Predicate<BasicTriplet<QueryVertex, QueryEdge>> tripletMatchesRelative = t ->
           ElementMatcher.matchesQueryElem(t.getSourceVertex(), relative.getSourceVertex()) &&
               ElementMatcher.matchesQueryElem(t.getTargetVertex(), relative.getTargetVertex()) &&
               ElementMatcher.matchesQueryElem(t.getEdge(), relative.getEdge());
-      for (Triplet candidate : candidateRelatives) {
+      for (var candidate : candidateRelatives) {
         exist = tripletMatchesRelative.test(candidate);
         if (exist) {
           break;

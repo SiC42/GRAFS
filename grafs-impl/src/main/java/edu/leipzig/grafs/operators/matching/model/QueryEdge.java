@@ -40,8 +40,23 @@ public class QueryEdge extends Edge implements HasPredicate {
         variables.add(variable);
     }
 
+    public void addVariable(String variable) {
+        this.variables.add(variable);
+    }
+
     public String getVariable() {
         return this.variables.get(0);
+    }
+
+    public boolean hasVariable(String variable) {
+        boolean result = false;
+        for (String var : this.variables) {
+            if (var.equals(variable)) {
+                result = true;
+                break;
+            }
+        }
+        return result;
     }
 
     QueryEdge() {

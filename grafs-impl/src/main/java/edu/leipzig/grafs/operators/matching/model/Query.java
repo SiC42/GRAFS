@@ -1,6 +1,7 @@
 package edu.leipzig.grafs.operators.matching.model;
 
 import edu.leipzig.grafs.exceptions.VertexNotPartOfTheGraphException;
+import edu.leipzig.grafs.model.BasicGraph;
 import edu.leipzig.grafs.model.Graph;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -20,7 +21,7 @@ import org.s1ck.gdl.model.predicates.booleans.And;
 import org.s1ck.gdl.model.predicates.expressions.Comparison;
 import org.s1ck.gdl.utils.Comparator;
 
-public class Query extends Graph<QueryVertex, QueryEdge> {
+public class Query extends BasicGraph<QueryVertex, QueryEdge> {
 
     private Predicate predicates;
 

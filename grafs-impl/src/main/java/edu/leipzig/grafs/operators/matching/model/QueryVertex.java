@@ -51,6 +51,21 @@ public class QueryVertex extends Vertex implements HasPredicate {
         return this.variables.get(0);
     }
 
+    public ArrayList<String> getVariables(){
+        return this.variables;
+    }
+
+    public boolean hasVariable(String variable) {
+        boolean result = false;
+        for (String var : this.variables) {
+            if (var.equals(variable)) {
+                result = true;
+                break;
+            }
+        }
+        return result;
+    }
+
     public void addPredicate(Predicate predicate) {
         /*if (selfPredicates == null) {
             selfPredicates = new ArrayList<>();

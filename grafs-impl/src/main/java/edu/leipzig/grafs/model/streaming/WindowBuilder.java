@@ -1,6 +1,6 @@
 package edu.leipzig.grafs.model.streaming;
 
-import edu.leipzig.grafs.model.Triplet;
+import edu.leipzig.grafs.model.BasicTriplet;
 import edu.leipzig.grafs.model.window.WindowingInformation;
 import edu.leipzig.grafs.model.window.WindowsI;
 import edu.leipzig.grafs.operators.interfaces.window.WindowedOperatorI;
@@ -23,12 +23,12 @@ public class WindowBuilder<S extends AbstractStream<S>, WBase extends WindowsI<?
     wi = new WindowingInformation<>(window.getFlinkWindowAssigner());
   }
 
-  public WindowBuilder<S, WBase> trigger(Trigger<? super Triplet, ? super Window> trigger) {
+  public WindowBuilder<S, WBase> trigger(Trigger<? super BasicTriplet<?,?>, ? super Window> trigger) {
     wi.addTrigger(trigger);
     return this;
   }
 
-  public WindowBuilder<S, WBase> evictor(Evictor<? super Triplet, ? super Window> evictor) {
+  public WindowBuilder<S, WBase> evictor(Evictor<? super BasicTriplet<?,?>, ? super Window> evictor) {
     wi.addEvictor(evictor);
     return this;
   }
@@ -38,7 +38,7 @@ public class WindowBuilder<S extends AbstractStream<S>, WBase extends WindowsI<?
     return this;
   }
 
-  public WindowBuilder<S, WBase> sideOutputLateData(OutputTag<Triplet> outputTag) {
+  public WindowBuilder<S, WBase> sideOutputLateData(OutputTag<BasicTriplet<?,?>> outputTag) {
     wi.addLateDataOutputTag(outputTag);
     return this;
   }
