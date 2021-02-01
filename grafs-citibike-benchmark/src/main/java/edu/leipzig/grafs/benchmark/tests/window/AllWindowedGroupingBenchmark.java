@@ -19,6 +19,7 @@ public class AllWindowedGroupingBenchmark extends AbstractWindowBenchmark {
 
   public AbstractStream<?> applyOperatorWithWindow(GraphStream stream) {
     var groupingBuilder = AllWindowedGrouping.createGrouping()
+        .addVertexGroupingKey("name")
         .addVertexAggregateFunction(new Count("used"))
         .addEdgeGroupingKey("bike_id")
         .addEdgeAggregateFunction(new Count("used"));
