@@ -176,7 +176,6 @@ public abstract class AbstractBenchmark {
     var config = new FlinkConfigBuilder(env).build();
     env.setStreamTimeCharacteristic(TimeCharacteristic.ProcessingTime);
     var topic = properties.getProperty(TOPIC_KEY);
-    System.out.println("Test ----------->" + properties.getProperty(CMD_INPUT_PARALLELISM));
     int parallelism = Integer.parseInt(properties.getProperty(CMD_INPUT_PARALLELISM));
     System.out.format("Input Parallelism is %d\n",parallelism);
     if (rateLimit > 0) {
