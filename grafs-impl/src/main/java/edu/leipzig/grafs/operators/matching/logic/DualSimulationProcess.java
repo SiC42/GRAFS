@@ -54,19 +54,25 @@ public class DualSimulationProcess<W extends Window> extends
     var hasChanged = true;
     while (hasChanged) {
       hasChanged = false;
+      //5: for u ← Vq do
       for (var querySource : queryGraph.getVertices()) {
+        //6: for u' ← Q.adj(u) do
         for (var queryTarget : queryGraph.getTargetForSourceVertex(querySource)) {
+          //7: Φ'(u') ← ∅
           var verticesThatHaveParentInCandidates = new HashSet<Vertex>();
           Set<Vertex> deleteCandidates = new HashSet<>();
+          //8: for v ← Φ(u) do
           for (var sourceCandidate : candidatesMap.getCandidatesFor(querySource)) {
             var targetsOfCandidate = graph.getTargetForSourceVertex(sourceCandidate);
             var candidatesForTargetQuery = candidatesMap.getCandidatesFor(queryTarget);
+            //9: Φ_v(u') ← G.adj(v) ∩ Φ(u')
             var candidatesForTarget = Sets
                 .intersection(targetsOfCandidate, candidatesForTargetQuery);
             Predicate<Vertex> hasMatchingEdgeInQuery = (target) -> {
               var edge = graph.getEdgeForVertices(sourceCandidate, target);
               return edgeFilter.filter(edge);
             };
+            //10+11: if Φ_v(u') = ∅ then remove v from Φ(u)
             candidatesForTarget = candidatesForTarget.stream()
                 .filter(hasMatchingEdgeInQuery)
                 .collect(Collectors.toSet());
@@ -77,16 +83,20 @@ public class DualSimulationProcess<W extends Window> extends
             verticesThatHaveParentInCandidates.addAll(candidatesForTarget);
           }
           candidatesMap.removeCandidates(querySource, deleteCandidates);
+          //12: if Φ(u) = ∅ then
           if (candidatesMap.getCandidatesFor(querySource).isEmpty()) {
             return new CandidateMap<>();
           }
+          //16: if Φ'(u') = ∅ then
           if (verticesThatHaveParentInCandidates.isEmpty()) {
             return new CandidateMap<>();
           }
+          //18: if Φ(u) is smaller than Φ(u) then
           if (verticesThatHaveParentInCandidates.size() < candidatesMap
               .getCandidatesFor(queryTarget).size()) {
             hasChanged = true;
           }
+          //20: Φ(u) = Φ(u) ∩ Φ(u)
           candidatesMap.retainCandidates(queryTarget, verticesThatHaveParentInCandidates);
         }
       }
