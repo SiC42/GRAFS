@@ -157,7 +157,7 @@ public abstract class AbstractBenchmark {
   protected Options buildOptions() {
     var options = new Options();
     options.addOption("h", "help", false, "print this message");
-    options.addOption("i", CMD_INPUT, true, "input file path");
+    //options.addOption("i", CMD_INPUT, true, "input file path");
     options.addOption("kip", CMD_KAFKA, true, "the kafka server in the format hostname:port/topic");
     options
         .addOption(CMD_INPUT_PARALLELISM, true,
@@ -167,6 +167,7 @@ public abstract class AbstractBenchmark {
             "the rate limit for the intake of data into the system");
     options.addOption("o", "output", true, "location for the output file");
     options.addOption("log", true, "location for the log file");
+    options.addOption("c", CMD_CONFIG, true, "location for the config file");
     return options;
   }
 
