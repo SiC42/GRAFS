@@ -46,7 +46,6 @@ public class DualSimulationProcess<W extends Window> extends PatternMatchingProc
   private final Query query;
 
   public DualSimulationProcess(Query query) {
-    System.out.println("Initiationg Dual Simulation Process");
     this.query = query;
   }
 
@@ -84,7 +83,7 @@ public class DualSimulationProcess<W extends Window> extends PatternMatchingProc
       initialCandidateVertices.add(source);
       initialCandidateVertices.add(target);
       idToVertexMap.put(source.getId(), source);
-      idToVertexMap.put(source.getId(), source);
+      idToVertexMap.put(target.getId(), target);
       edgeSet.add(candidate.getEdge());
     }
     // Copy to be able to delete during iteration; for optimisation

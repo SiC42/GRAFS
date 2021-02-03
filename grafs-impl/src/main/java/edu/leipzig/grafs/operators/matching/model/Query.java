@@ -2,6 +2,7 @@ package edu.leipzig.grafs.operators.matching.model;
 
 import edu.leipzig.grafs.model.BasicGraph;
 import edu.leipzig.grafs.model.BasicTriplet;
+import edu.leipzig.grafs.util.AsciiGraphLoader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -79,7 +80,7 @@ public class Query extends BasicGraph<QueryVertex, QueryEdge> {
   }
 
   private GDLHandler initQueryHandler(String queryString) {
-    GDLHandler handler = new GDLHandler.Builder().buildFromString(queryString);
+    GDLHandler handler = AsciiGraphLoader.createDefaultGdlHandlerBuilder().buildFromString(queryString);
     handler.getPredicates().ifPresent(this::SetPredicates);
     return handler;
   }
