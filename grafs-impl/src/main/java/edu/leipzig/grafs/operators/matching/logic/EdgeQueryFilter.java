@@ -1,28 +1,32 @@
 package edu.leipzig.grafs.operators.matching.logic;
 
 
+import edu.leipzig.grafs.model.BasicGraph;
+import edu.leipzig.grafs.model.BasicTriplet;
 import edu.leipzig.grafs.model.Edge;
 import edu.leipzig.grafs.model.Graph;
 import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.model.Vertex;
+import edu.leipzig.grafs.operators.matching.model.QueryEdge;
+import edu.leipzig.grafs.operators.matching.model.QueryVertex;
 import org.apache.flink.api.common.functions.FilterFunction;
 
 /**
  * Filters edges based on query graph.
  */
-public class EdgeQueryFilter implements FilterFunction<Triplet> {
+public class EdgeQueryFilter implements FilterFunction<BasicTriplet<QueryVertex, QueryEdge>> {
 
   /**
    * Query graph which is used to filter edges
    */
-  private final Graph queryGraph;
+  private final BasicGraph<QueryVertex, QueryEdge> queryGraph;
 
   /**
    * Initializes the filter.
    *
    * @param queryGraph query graph which is used to filter edges
    */
-  public EdgeQueryFilter(final Graph queryGraph) {
+  public EdgeQueryFilter(final BasicGraph<QueryVertex, QueryEdge> queryGraph) {
     this.queryGraph = queryGraph;
   }
 
@@ -35,7 +39,7 @@ public class EdgeQueryFilter implements FilterFunction<Triplet> {
    * vertex in the query graph and the corresponding edge also matches the given edge
    */
   @Override
-  public boolean filter(Triplet triplet) {
+  public boolean filter(BasicTriplet<QueryVertex, QueryEdge> triplet) {
     var edge = triplet.getEdge();
     var source = triplet.getSourceVertex();
     var target = triplet.getTargetVertex();
@@ -52,7 +56,7 @@ public class EdgeQueryFilter implements FilterFunction<Triplet> {
    * @return <tt>true</tt> if for the given triplet there are matching source and target
    * * vertex in the query graph and the corresponding edge also matches the given edge
    */
-  public boolean filter(Edge edge, Vertex source, Vertex target) {
+  public boolean filter(QueryEdge edge, QueryVertex source, QueryVertex target) {
     for (var queryEdge : queryGraph.getEdges()) {
       if (ElementMatcher.matchesQueryElem(queryEdge, edge)) {
         var querySource = queryGraph.getSourceForEdge(queryEdge);
@@ -74,7 +78,7 @@ public class EdgeQueryFilter implements FilterFunction<Triplet> {
    * @param edge edge which is tested for filtering
    * @return <tt>true</tt> if there is a corresponding edge in the query graph for the given edge
    */
-  public boolean filter(Edge edge) {
+  public boolean filter(QueryEdge edge) {
     for (var queryEdge : queryGraph.getEdges()) {
       if (ElementMatcher.matchesQueryElem(queryEdge, edge)) {
         return true;

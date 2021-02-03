@@ -1,6 +1,6 @@
 package edu.leipzig.grafs.model.window;
 
-import edu.leipzig.grafs.model.Triplet;
+import edu.leipzig.grafs.model.BasicTriplet;
 import org.apache.flink.streaming.api.windowing.assigners.WindowAssigner;
 import org.apache.flink.streaming.api.windowing.evictors.Evictor;
 import org.apache.flink.streaming.api.windowing.time.Time;
@@ -10,13 +10,13 @@ import org.apache.flink.util.OutputTag;
 
 public class WindowingInformation<W extends Window> {
 
-  WindowAssigner<? super Triplet, W> window;
-  Trigger<? super Triplet, ? super W> trigger;
-  Evictor<? super Triplet, ? super W> evictor;
+  WindowAssigner<? super BasicTriplet<?,?>, W> window;
+  Trigger<? super BasicTriplet<?,?>, ? super W> trigger;
+  Evictor<? super BasicTriplet<?,?>, ? super W> evictor;
   Time lateness;
-  OutputTag<Triplet> outputTag;
+  OutputTag<BasicTriplet<?,?>> outputTag;
 
-  public WindowingInformation(WindowAssigner<? super Triplet, W> window) {
+  public WindowingInformation(WindowAssigner<? super BasicTriplet<?,?>, W> window) {
     this.window = window;
     trigger = null;
     evictor = null;
@@ -24,11 +24,11 @@ public class WindowingInformation<W extends Window> {
     outputTag = null;
   }
 
-  public void addTrigger(Trigger<? super Triplet, ? super W> trigger) {
+  public void addTrigger(Trigger<? super BasicTriplet<?,?>, ? super W> trigger) {
     this.trigger = trigger;
   }
 
-  public void addEvictor(Evictor<? super Triplet, ? super W> evictor) {
+  public void addEvictor(Evictor<? super BasicTriplet<?,?>, ? super W> evictor) {
     this.evictor = evictor;
   }
 
@@ -36,19 +36,19 @@ public class WindowingInformation<W extends Window> {
     this.lateness = lateness;
   }
 
-  public void addLateDataOutputTag(OutputTag<Triplet> outputTag) {
+  public void addLateDataOutputTag(OutputTag<BasicTriplet<?,?>> outputTag) {
     this.outputTag = outputTag;
   }
 
-  public WindowAssigner<? super Triplet, W> getWindow() {
+  public WindowAssigner<? super BasicTriplet<?,?>, W> getWindow() {
     return window;
   }
 
-  public Trigger<? super Triplet, ? super W> getTrigger() {
+  public Trigger<? super BasicTriplet<?,?>, ? super W> getTrigger() {
     return trigger;
   }
 
-  public Evictor<? super Triplet, ? super W> getEvictor() {
+  public Evictor<? super BasicTriplet<?,?>, ? super W> getEvictor() {
     return evictor;
   }
 
@@ -56,7 +56,7 @@ public class WindowingInformation<W extends Window> {
     return lateness;
   }
 
-  public OutputTag<Triplet> getOutputTag() {
+  public OutputTag<BasicTriplet<?,?>> getOutputTag() {
     return outputTag;
   }
 }

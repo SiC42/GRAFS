@@ -5,9 +5,18 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.core.IsEqual.equalTo;
 
 import edu.leipzig.grafs.factory.EdgeFactory;
+import edu.leipzig.grafs.model.BasicGraph;
+import edu.leipzig.grafs.model.BasicTriplet;
 import edu.leipzig.grafs.model.Graph;
 import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.model.Vertex;
+import edu.leipzig.grafs.operators.matching.model.QueryEdge;
+import edu.leipzig.grafs.operators.matching.model.QueryVertex;
+import java.util.ArrayList;
+import org.gradoop.common.model.impl.id.GradoopId;
+import org.gradoop.common.model.impl.id.GradoopIdSet;
+import org.gradoop.common.model.impl.properties.Properties;
+import org.gradoop.common.util.GradoopConstants;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -17,72 +26,70 @@ class EdgeQueryFilterTest {
 
   @BeforeAll
   static void init() {
-    var queryGraph = new Graph();
-    var vertexA = new Vertex();
+    var queryGraph = new BasicGraph<QueryVertex,QueryEdge>();
+    var vertexA = new QueryVertex();
     vertexA.setLabel("A");
-    var vertexB = new Vertex();
+    var vertexB = new QueryVertex();
     vertexB.setLabel("B");
     queryGraph.addVertex(vertexA);
     queryGraph.addVertex(vertexB);
-    var edge = EdgeFactory.createEdge(vertexA, vertexB);
-    edge.setLabel("E");
+    var edge = new QueryEdge(GradoopId.get(), "E", vertexA.getId(),  vertexB.getId(), null,  new GradoopIdSet());
     queryGraph.addEdge(edge);
     edgeFilter = new EdgeQueryFilter(queryGraph);
   }
 
   @Test
   void testFilter_sourceIsNotInQGraph() throws Exception {
-    var source = new Vertex();
+    var source = new QueryVertex();
     source.setLabel("NotA");
-    var target = new Vertex();
+    var target = new QueryVertex();
     target.setLabel("B");
-    var edge = EdgeFactory.createEdge(source, target);
-    var triplet = new Triplet(edge, source, target);
+    var edge = new QueryEdge(GradoopId.get(), GradoopConstants.DEFAULT_EDGE_LABEL, source.getId(),  target.getId(), null,  new GradoopIdSet());
+    var triplet = new BasicTriplet<>(edge, source, target);
     assertThat(edgeFilter.filter(triplet), is(equalTo(false)));
   }
 
   @Test
   void testFilter_targetIsNotInQGraph() throws Exception {
-    var source = new Vertex();
+    var source = new QueryVertex();
     source.setLabel("A");
-    var target = new Vertex();
+    var target = new QueryVertex();
     target.setLabel("NotB");
-    var edge = EdgeFactory.createEdge(source, target);
-    var triplet = new Triplet(edge, source, target);
+    var edge = new QueryEdge(GradoopId.get(), GradoopConstants.DEFAULT_EDGE_LABEL, source.getId(),  target.getId(), null,  new GradoopIdSet());
+    var triplet = new BasicTriplet<>(edge, source, target);
     assertThat(edgeFilter.filter(triplet), is(equalTo(false)));
   }
 
   @Test
   void testFilter_reverseEdgeIsInQGraph() throws Exception {
-    var source = new Vertex();
+    var source = new QueryVertex();
     source.setLabel("B");
-    var target = new Vertex();
+    var target = new QueryVertex();
     target.setLabel("A");
-    var edge = EdgeFactory.createEdge(source, target);
-    var triplet = new Triplet(edge, source, target);
+    var edge = new QueryEdge(GradoopId.get(), GradoopConstants.DEFAULT_EDGE_LABEL, source.getId(),  target.getId(), null,  new GradoopIdSet());
+    var triplet = new BasicTriplet<>(edge, source, target);
     assertThat(edgeFilter.filter(triplet), is(equalTo(false)));
   }
 
   @Test
   void testFilter_SourceAndTargetAreInQGraphButEdgeIsNot() throws Exception {
-    var source = new Vertex();
+    var source = new QueryVertex();
     source.setLabel("A");
-    var target = new Vertex();
+    var target = new QueryVertex();
     target.setLabel("B");
-    var edge = EdgeFactory.createEdge(source, target);
-    var triplet = new Triplet(edge, source, target);
+    var edge = new QueryEdge(GradoopId.get(), GradoopConstants.DEFAULT_EDGE_LABEL, source.getId(),  target.getId(), null,  new GradoopIdSet());
+    var triplet = new BasicTriplet<>(edge, source, target);
     assertThat(edgeFilter.filter(triplet), is(equalTo(false)));
   }
 
   @Test
   void testFilter_EdgeIsInQGraph() throws Exception {
-    var source = new Vertex();
+    var source = new QueryVertex();
     source.setLabel("A");
-    var target = new Vertex();
+    var target = new QueryVertex();
     target.setLabel("B");
-    var edge = EdgeFactory.createEdge(source, target);
-    edge.setLabel("E");
-    var triplet = new Triplet(edge, source, target);
+    var edge = new QueryEdge(GradoopId.get(), "E", source.getId(),  target.getId(), null,  new GradoopIdSet());
+    var triplet = new BasicTriplet<>(edge, source, target);
     assertThat(edgeFilter.filter(triplet), is(equalTo(true)));
   }
 }
