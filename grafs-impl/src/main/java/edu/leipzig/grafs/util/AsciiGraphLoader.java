@@ -131,7 +131,7 @@ public class AsciiGraphLoader {
    *
    * @return a loader with default labels set.
    */
-  private static Builder createDefaultGdlHandlerBuilder() {
+  public static Builder createDefaultGdlHandlerBuilder() {
     return new GDLHandler.Builder()
         .setDefaultGraphLabel(GradoopConstants.DEFAULT_GRAPH_LABEL)
         .setDefaultVertexLabel(GradoopConstants.DEFAULT_VERTEX_LABEL)
