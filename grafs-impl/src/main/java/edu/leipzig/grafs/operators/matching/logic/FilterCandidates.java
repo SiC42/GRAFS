@@ -50,7 +50,9 @@ public class FilterCandidates implements FilterFunction<BasicTriplet<QueryVertex
     boolean exist;
     boolean match = false;
     for (BasicTriplet<QueryVertex, QueryEdge> qt : queryTriples) { //TODO: get by label
-      exist = triplet.equals(qt);
+      exist =  ElementMatcher.matchesQueryElem(qt.getEdge(), triplet.getEdge());
+      exist = exist && ElementMatcher.matchesQueryElem(qt.getSourceVertex(), triplet.getSourceVertex());
+      exist = exist && ElementMatcher.matchesQueryElem(qt.getTargetVertex(), triplet.getTargetVertex());
       // !no need to verify remaining elements
       if (exist) {
         triplet.getSourceVertex().addVariable(qt.getSourceVertex().getVariable());

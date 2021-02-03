@@ -2,6 +2,7 @@ package edu.leipzig.grafs.operators.matching.logic;
 
 import edu.leipzig.grafs.model.BasicGraph;
 import edu.leipzig.grafs.model.BasicTriplet;
+import edu.leipzig.grafs.model.Edge;
 import edu.leipzig.grafs.model.Graph;
 import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.operators.matching.model.QueryEdge;
@@ -12,19 +13,19 @@ import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.introspec
 /**
  * Filters vertices based on query graph.
  */
-public class VertexQueryFilter implements FilterFunction<BasicTriplet<QueryVertex, QueryEdge>> {
+public class VertexQueryFilter implements FilterFunction<BasicTriplet<QueryVertex, ?>> {
 
   /**
    * Query graph which is used to filter edges
    */
-  private final BasicGraph<QueryVertex, QueryEdge> queryGraph;
+  private final BasicGraph<QueryVertex, ?> queryGraph;
 
   /**
    * Initializes the filter.
    *
    * @param queryGraph query graph which is used to filter edges
    */
-  public VertexQueryFilter(final BasicGraph<QueryVertex, QueryEdge> queryGraph) {
+  public VertexQueryFilter(final BasicGraph<QueryVertex, ?> queryGraph) {
     this.queryGraph = queryGraph;
   }
 
@@ -36,7 +37,7 @@ public class VertexQueryFilter implements FilterFunction<BasicTriplet<QueryVerte
    * graph
    */
   @Override
-  public boolean filter(BasicTriplet<QueryVertex, QueryEdge> triplet) throws Exception {
+  public boolean filter(BasicTriplet<QueryVertex, ?> triplet) throws Exception {
     var source = triplet.getSourceVertex();
     var target = triplet.getTargetVertex();
     boolean sourceInQuery = false;

@@ -11,6 +11,7 @@ import edu.leipzig.grafs.operators.matching.model.Query;
 import edu.leipzig.grafs.operators.matching.model.QueryEdge;
 import edu.leipzig.grafs.operators.matching.model.QueryVertex;
 import java.util.ArrayList;
+import java.util.List;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.windowing.windows.Window;
@@ -33,8 +34,9 @@ public class DualSimulation implements
    * @param query query string that is used to make the query graph
    */
   public DualSimulation(String query, boolean withEdgeOrder,
-      ArrayList<String> variableOrder) {
+      List<String> variableOrder) {
     gdlQuery = new Query(query, withEdgeOrder, variableOrder);
+    System.out.println(gdlQuery);
   }
 
 
@@ -58,7 +60,7 @@ public class DualSimulation implements
             var s = triplet.getSourceVertex();
             var qSource = new QueryVertex(s.getId(), s.getLabel(), s.getProperties(),
                 s.getGraphIds());
-            var t = triplet.getSourceVertex();
+            var t = triplet.getTargetVertex();
             var qTarget = new QueryVertex(t.getId(), t.getLabel(), t.getProperties(),
                 t.getGraphIds());
             return new BasicTriplet<>(qEdge, qSource, qTarget);

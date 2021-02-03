@@ -4,6 +4,7 @@ import edu.leipzig.grafs.model.Edge;
 import edu.leipzig.grafs.model.Element;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Objects;
 import org.gradoop.common.model.impl.id.GradoopId;
 import org.gradoop.common.model.impl.id.GradoopIdSet;
 import org.gradoop.common.model.impl.properties.Properties;
@@ -131,5 +132,31 @@ public class QueryEdge extends Edge implements HasPredicate {
             default:
                 throw new IllegalStateException("Unexpected value: " + comparison.getComparator());
         }
+    }
+
+    /**
+     * Returns <tt>true</tt>> if the given object is an <tt>Element</tt> and the IDs match with this
+     * element.
+     *
+     * @param o object to be tested for equality
+     * @return <tt>true</tt> if the other object is an <tt>Element</tt> and the IDs match.
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        QueryEdge that = (QueryEdge) o;
+
+        return Objects.equals(getId(), that.getId()) && Objects.equals(variables, that.variables);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
     }
 }

@@ -1,5 +1,7 @@
 package edu.leipzig.grafs.operators.matching.logic;
 
+import static java.util.stream.Collectors.toSet;
+
 import edu.leipzig.grafs.factory.EdgeFactory;
 import edu.leipzig.grafs.factory.VertexFactory;
 import edu.leipzig.grafs.model.BasicTriplet;
@@ -44,6 +46,7 @@ public class DualSimulationProcess<W extends Window> extends PatternMatchingProc
   private final Query query;
 
   public DualSimulationProcess(Query query) {
+    System.out.println("Initiationg Dual Simulation Process");
     this.query = query;
   }
 
@@ -72,43 +75,43 @@ public class DualSimulationProcess<W extends Window> extends PatternMatchingProc
   private Iterable<Triplet> executeForEdgesWithVertices(
       Iterable<BasicTriplet<QueryVertex, QueryEdge>> elements) {
     // get unique elements from stream
-    Map<GradoopId, QueryVertex> vertexMap = new HashMap<>();
+    Set<QueryVertex> initialCandidateVertices = new HashSet<>(); // used for process
+    Map<GradoopId, QueryVertex> idToVertexMap = new HashMap<>(); // used to find vertices for edges at the end
     Set<Edge> edgeSet = new HashSet<>();
     for (var candidate : elements) {
       var source = candidate.getSourceVertex();
       var target = candidate.getTargetVertex();
-      vertexMap.put(source.getId(), source);
-      vertexMap.put(target.getId(), target);
+      initialCandidateVertices.add(source);
+      initialCandidateVertices.add(target);
+      idToVertexMap.put(source.getId(), source);
+      idToVertexMap.put(source.getId(), source);
       edgeSet.add(candidate.getEdge());
     }
-    // Copy to be able to delete during iteration; for optimisation, we didn't do this for vertices, as no need to double the memory requirement
-    Map<GradoopId, Edge> candidateEdges = new HashMap<>();
-    for (var e : edgeSet) {
-      candidateEdges.put(e.getId(), e);
+    // Copy to be able to delete during iteration; for optimisation
+    Map<QueryVertex, GradoopId> prunableCandidateVertices = new HashMap<>();
+    for (var v : initialCandidateVertices) {
+      prunableCandidateVertices.put(v, v.getId());
     }
 
-    for (var candidateVertex : vertexMap.values()) {
+    for (var candidateVertex : initialCandidateVertices) {
       boolean stillMatch = checkParentsAndChildren(candidateVertex, query.toTriplets(),
           elements);// TODO: check with vertexMap.values()
             /*Map<String, Vertex> m = new HashMap<String, Vertex>(vertexMap);// to remove self
             m.remove(candidateVertex.getHash());*/
-      if (stillMatch && checkPredicateTree(candidateVertex, query.getPredicates(),
-          vertexMap.values())) {
-        // check performance
-      } else {
-        for (var edge : edgeSet) {
-          if (edge.getTargetId().equals(candidateVertex.getId()) || edge.getSourceId()
-              .equals(candidateVertex.getId())) {
-            candidateEdges.remove(edge.getId());
-            // check performance
-          }
-        }
+      if (!stillMatch || !checkPredicateTree(candidateVertex, query.getPredicates(),
+          initialCandidateVertices)) {
+        prunableCandidateVertices.remove(candidateVertex);
       }
     }
+
+    var finalEdgeSet = edgeSet.stream()
+        .filter(e -> prunableCandidateVertices.containsValue(e.getSourceId()))
+        .filter(e -> prunableCandidateVertices.containsValue(e.getTargetId()))
+        .collect(toSet());
     var result = new ArrayList<Triplet>();
-    for (var edge : candidateEdges.values()) {
-      var source = vertexMap.get(edge.getSourceId());
-      var target = vertexMap.get(edge.getTargetId());
+    for (var edge : finalEdgeSet) {
+      var source = idToVertexMap.get(edge.getSourceId());
+      var target = idToVertexMap.get(edge.getTargetId());
       result.add(new Triplet(EdgeFactory.createEdge(edge), VertexFactory.createVertex(source),
           VertexFactory.createVertex(target)));
     }
@@ -327,9 +330,9 @@ public class DualSimulationProcess<W extends Window> extends PatternMatchingProc
     for (var relative : queryRelatives) {
       boolean exist = false;
       java.util.function.Predicate<BasicTriplet<QueryVertex, QueryEdge>> tripletMatchesRelative = t ->
-          ElementMatcher.matchesQueryElem(t.getSourceVertex(), relative.getSourceVertex()) &&
-              ElementMatcher.matchesQueryElem(t.getTargetVertex(), relative.getTargetVertex()) &&
-              ElementMatcher.matchesQueryElem(t.getEdge(), relative.getEdge());
+          ElementMatcher.matchesQueryElem(relative.getSourceVertex(), t.getSourceVertex()) &&
+              ElementMatcher.matchesQueryElem(relative.getTargetVertex(), t.getTargetVertex()) &&
+              ElementMatcher.matchesQueryElem(relative.getEdge(), t.getEdge());
       for (var candidate : candidateRelatives) {
         exist = tripletMatchesRelative.test(candidate);
         if (exist) {

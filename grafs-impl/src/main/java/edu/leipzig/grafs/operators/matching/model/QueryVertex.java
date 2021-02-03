@@ -4,6 +4,7 @@ import edu.leipzig.grafs.model.Element;
 import edu.leipzig.grafs.model.Vertex;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Objects;
 import org.gradoop.common.model.impl.id.GradoopId;
 import org.gradoop.common.model.impl.id.GradoopIdSet;
 import org.gradoop.common.model.impl.properties.Properties;
@@ -123,5 +124,36 @@ public class QueryVertex extends Vertex implements HasPredicate {
             }
         }
         return true;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("(%s, variables=%s,selfPredicates=%s)", super.toString(),variables.toString(), selfPredicates.toString());
+    }
+
+    /**
+     * Returns <tt>true</tt>> if the given object is an <tt>Element</tt> and the IDs match with this
+     * element.
+     *
+     * @param o object to be tested for equality
+     * @return <tt>true</tt> if the other object is an <tt>Element</tt> and the IDs match.
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        QueryVertex that = (QueryVertex) o;
+
+        return Objects.equals(getId(), that.getId()) && Objects.equals(variables, that.variables);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
     }
 }

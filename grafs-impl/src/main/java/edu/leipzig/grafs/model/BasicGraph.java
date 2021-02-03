@@ -304,16 +304,6 @@ public class BasicGraph<V extends Vertex, E extends Edge> implements Serializabl
       addEdges(edges);
     }
 
-  public Collection<BasicTriplet<V, E>> toTriplets() {
-    var result = new ArrayList<BasicTriplet<V, E>>();
-    for(var edge : edges){
-      var source = vertexMap.get(edge.getSourceId());
-      var target = vertexMap.get(edge.getTargetId());
-      result.add(new BasicTriplet<>(edge,source,target));
-    }
-    return result;
-  }
-
     @Override
     public String toString() {
       return "Graph@" + id + "{" +
