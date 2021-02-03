@@ -21,7 +21,7 @@ public interface WindowedOperatorI<W extends WindowsI<? extends Window>> {
   <FW extends Window> DataStream<Triplet> execute(DataStream<Triplet> stream,
       WindowingInformation<FW> wi);
 
-  default <FW extends Window, T extends BasicTriplet<?,?>> WindowedStream<T, String, FW> applyOtherWindowInformation(
+  default <FW extends Window, T extends BasicTriplet<?, ?>> WindowedStream<T, String, FW> applyOtherWindowInformation(
       WindowedStream<T, String, FW> windowedStream, WindowingInformation<FW> wi) {
     if (wi.getTrigger() != null) {
       windowedStream = windowedStream.trigger(wi.getTrigger());
@@ -38,8 +38,8 @@ public interface WindowedOperatorI<W extends WindowsI<? extends Window>> {
     return windowedStream;
   }
 
-  default <FW extends Window> AllWindowedStream<BasicTriplet<?,?>, FW> applyOtherWindowInformation(
-      AllWindowedStream<BasicTriplet<?,?>, FW> windowedStream, WindowingInformation<FW> wi) {
+  default <FW extends Window, T extends BasicTriplet<?, ?>> AllWindowedStream<T, FW> applyOtherWindowInformation(
+      AllWindowedStream<T, FW> windowedStream, WindowingInformation<FW> wi) {
     if (wi.getTrigger() != null) {
       windowedStream = windowedStream.trigger(wi.getTrigger());
     }
@@ -50,7 +50,7 @@ public interface WindowedOperatorI<W extends WindowsI<? extends Window>> {
       windowedStream = windowedStream.allowedLateness(wi.getLateness());
     }
     if (wi.getOutputTag() != null) {
-      windowedStream = windowedStream.sideOutputLateData(wi.getOutputTag());
+      windowedStream = windowedStream.sideOutputLateData((OutputTag<T>) wi.getOutputTag());
     }
     return windowedStream;
   }
