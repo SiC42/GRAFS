@@ -8,6 +8,6 @@ package edu.leipzig.grafs.operators.interfaces.nonwindow;
  * with graph collections and handle them well internally, however that is not build in
  * automatically.
  */
-public interface GraphToGraphOperatorI extends OperatorI {
+public interface GraphToGraphOperatorI extends NonWindowedOperatorI {
 
 }

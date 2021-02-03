@@ -6,7 +6,7 @@ import org.apache.flink.streaming.api.datastream.DataStream;
 /**
  * Interface for all operators which should be applied to an triplet stream.
  */
-public interface OperatorI {
+public interface NonWindowedOperatorI {
 
   /**
    * Applies the given operator to the stream.
