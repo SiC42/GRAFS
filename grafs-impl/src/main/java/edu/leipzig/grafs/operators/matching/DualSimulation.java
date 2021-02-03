@@ -36,7 +36,6 @@ public class DualSimulation implements
   public DualSimulation(String query, boolean withEdgeOrder,
       List<String> variableOrder) {
     gdlQuery = new Query(query, withEdgeOrder, variableOrder);
-    System.out.println(gdlQuery);
   }
 
 
