@@ -32,17 +32,17 @@ public class Query extends BasicGraph<QueryVertex, QueryEdge> {
   }
 
 
-  public Query(String queryString, boolean withEdgeOrder, List<String> variableOrder) {
+  public Query(String queryString, String timestampKey, List<String> variableOrder) {
     // "g[(alice)-[e1:knows {since : 2014}]->(bob)]"
     super(GradoopId.get(), new ArrayList<>(), new ArrayList<>(), Set.of(), Set.of());
     GDLHandler handler = initQueryHandler(queryString);
-    extractGraph(handler, withEdgeOrder, new ArrayList<>(variableOrder));
-    if (withEdgeOrder) {
-      addOrderToPredicates(handler);
+    extractGraph(handler, timestampKey, variableOrder);
+    if (timestampKey != null) {
+      addOrderToPredicates(timestampKey);
     }
   }
 
-  private void addOrderToPredicates(GDLHandler handler) {
+  private void addOrderToPredicates(String timestampKey) {
     Comparison comparison;
     var edgeList = (ArrayList<QueryEdge>) edges;
     Predicate newPredicates = this.getPredicates();
@@ -50,13 +50,13 @@ public class Query extends BasicGraph<QueryVertex, QueryEdge> {
       QueryEdge e = edgeList.get(i);
       QueryEdge eNext = edgeList.get(i + 1);
       if (e.getOrder() < eNext.getOrder()) {
-        comparison = new Comparison(new PropertySelector(e.getVariable(), "timestamp"),
+        comparison = new Comparison(new PropertySelector(e.getVariable(), timestampKey),
             Comparator.LT,
-            new PropertySelector(eNext.getVariable(), "timestamp"));
+            new PropertySelector(eNext.getVariable(), timestampKey));
       } else {
-        comparison = new Comparison(new PropertySelector(e.getVariable(), "timestamp"),
+        comparison = new Comparison(new PropertySelector(e.getVariable(), timestampKey),
             Comparator.GT,
-            new PropertySelector(eNext.getVariable(), "timestamp"));
+            new PropertySelector(eNext.getVariable(), timestampKey));
       }
       newPredicates = new And(newPredicates, comparison);
     }
@@ -85,8 +85,8 @@ public class Query extends BasicGraph<QueryVertex, QueryEdge> {
     return handler;
   }
 
-  private void extractGraph(GDLHandler handler, boolean withEdgeOrder,
-      ArrayList<String> variableOrder) {
+  private void extractGraph(GDLHandler handler, String timestampKey,
+      List<String> variableOrder) {
     Map<Long, GradoopId> idMapping = new HashMap<>();
     for (Vertex v : handler.getVertices()) {
       var vId = GradoopId.get();
@@ -110,7 +110,7 @@ public class Query extends BasicGraph<QueryVertex, QueryEdge> {
           idMapping.get(e.getTargetVertexId()), Properties.createFromMap(e.getProperties()),
           e.getVariable());
       // tempEdge.setOrder(variableOrder.indexOf(e.getVariable()));
-      if (withEdgeOrder) {
+      if (timestampKey != null) {
         tempEdge.setOrder(variableOrder.indexOf(e.getVariable()));
       }
       if (this.predicates != null) {

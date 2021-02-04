@@ -17,7 +17,7 @@ public class DualSimulationMatchingBenchmark extends AbstractWindowBenchmark {
   }
 
   public AbstractStream<?> applyOperatorWithWindow(GraphStream stream) {
-    var query = "(v1)-[]->(v2)-[]->(v1)";
+    var query = "MATCH (v1)-[]->(v2)-[]->(v1)";
     return stream.callForGC(new DualSimulation(query))
         .withWindow(window).apply();
   }

@@ -30,7 +30,6 @@ public abstract class AbstractBenchmark {
   public static final String OPERATOR_NAME_KEY = "operatorname";
   public static final String OUTPUT_PATH_KEY = "output";
 
-  private static final String CMD_INPUT = "fileinput";
   private static final String CMD_KAFKA = "kafka";
   private static final String CMD_RATE_LIMIT = "ratelimit";
   private static final String CMD_INPUT_PARALLELISM = "inputp";

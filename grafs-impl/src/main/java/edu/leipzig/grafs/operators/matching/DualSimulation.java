@@ -33,9 +33,18 @@ public class DualSimulation implements
    *
    * @param query query string that is used to make the query graph
    */
-  public DualSimulation(String query, boolean withEdgeOrder,
+  public DualSimulation(String query, String timestampKey,
       List<String> variableOrder) {
-    gdlQuery = new Query(query, withEdgeOrder, variableOrder);
+    gdlQuery = new Query(query, timestampKey, variableOrder);
+  }
+
+  /**
+   * Initializes the operator with the given parameter
+   *
+   * @param query query string that is used to make the query graph
+   */
+  public DualSimulation(String query) {
+    gdlQuery = new Query(query, null, List.of());
   }
 
 

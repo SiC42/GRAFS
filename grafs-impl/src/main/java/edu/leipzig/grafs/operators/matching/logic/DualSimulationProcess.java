@@ -108,11 +108,14 @@ public class DualSimulationProcess<W extends Window> extends PatternMatchingProc
         .filter(e -> prunableCandidateVertices.containsValue(e.getTargetId()))
         .collect(toSet());
     var result = new ArrayList<Triplet>();
+    var newGraphId = GradoopId.get();
     for (var edge : finalEdgeSet) {
       var source = idToVertexMap.get(edge.getSourceId());
       var target = idToVertexMap.get(edge.getTargetId());
-      result.add(new Triplet(EdgeFactory.createEdge(edge), VertexFactory.createVertex(source),
-          VertexFactory.createVertex(target)));
+      var triplet = new Triplet(EdgeFactory.createEdge(edge), VertexFactory.createVertex(source),
+          VertexFactory.createVertex(target));
+      triplet.addGraphId(newGraphId);
+      result.add(triplet);
     }
     return result;
   }
