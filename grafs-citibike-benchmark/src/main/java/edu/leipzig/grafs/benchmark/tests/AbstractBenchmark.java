@@ -1,11 +1,13 @@
 package edu.leipzig.grafs.benchmark.tests;
 
+import edu.leipzig.grafs.benchmark.CitibikeConsumer;
 import edu.leipzig.grafs.benchmark.config.ProducerConfig;
-import edu.leipzig.grafs.benchmark.serialization.TripletDeserializer;
-import edu.leipzig.grafs.connectors.RateLimitingKafkaConsumer;
+import edu.leipzig.grafs.benchmark.connectors.RateLimitingKafkaConsumer;
+import edu.leipzig.grafs.benchmark.serialization.SimpleStringSchemaWithEnd;
+import edu.leipzig.grafs.benchmark.serialization.StringToTripletMapper;
+import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.model.streaming.AbstractStream;
 import edu.leipzig.grafs.model.streaming.GraphStream;
-import edu.leipzig.grafs.serialization.TripletDeserializationSchema;
 import edu.leipzig.grafs.util.FlinkConfigBuilder;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -17,16 +19,14 @@ import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-import org.apache.flink.streaming.api.TimeCharacteristic;
+import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.functions.sink.DiscardingSink;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer;
-import org.apache.kafka.clients.consumer.ConsumerConfig;
-import org.apache.kafka.common.serialization.StringDeserializer;
 
 public abstract class AbstractBenchmark {
 
-  public static final String TOPIC_KEY = "topic";
+  public static final String CMD_TOPIC = "topic";
   public static final String OPERATOR_NAME_KEY = "operatorname";
   public static final String OUTPUT_PATH_KEY = "output";
 
@@ -34,6 +34,10 @@ public abstract class AbstractBenchmark {
   private static final String CMD_RATE_LIMIT = "ratelimit";
   private static final String CMD_INPUT_PARALLELISM = "inputp";
   private static final String CMD_CONFIG = "config";
+  private static final String CMD_PARALLELISM = "parallelism";
+  private static final String CMD_RESULT = "result";
+
+  private static final int MAX_PARALLELISM = 96;
 
   protected StreamExecutionEnvironment env;
   protected AbstractStream<?> stream;
@@ -60,6 +64,8 @@ public abstract class AbstractBenchmark {
       if (cmd.hasOption("help")) {
         formatter.printHelp("grafsbenchmark", header, options, "");
       }
+
+      // ============= Load Configuration file ==============
       if (cmd.hasOption(CMD_CONFIG)) {
         try {
           properties.putAll(ProducerConfig.loadProperties(cmd.getOptionValue(CMD_CONFIG)));
@@ -69,21 +75,45 @@ public abstract class AbstractBenchmark {
       } else {
         properties.putAll(ProducerConfig.loadDefaultProperties());
       }
-      int numOfPartitions = getNumberOfPartitions(createKafkaProperties(properties.getProperty("bootstrap.servers")));
+
+      // ============= Load Configuration file ==============
+      if (cmd.hasOption(CMD_TOPIC)) {
+          properties.put(CMD_TOPIC, cmd.getOptionValue(CMD_TOPIC));
+      }
+
+      // ================= Input Parallelism =================
+      int numOfPartitions = getNumberOfPartitions(
+          CitibikeConsumer.createProperties(properties.getProperty("bootstrap.servers")));
       System.out.format("Found %d partitions.\n", numOfPartitions);
       if (cmd.hasOption(CMD_INPUT_PARALLELISM)) {
         try {
-          var parallelism = Integer.parseInt(cmd.getOptionValue(CMD_INPUT_PARALLELISM));
-          if(parallelism > numOfPartitions){
+          var inputParallelism = Integer.parseInt(cmd.getOptionValue(CMD_INPUT_PARALLELISM));
+          if (inputParallelism > numOfPartitions) {
             throw new ParseException("Provided number is greater than number of partitions");
           }
-          properties.put(CMD_INPUT_PARALLELISM, String.valueOf(parallelism));
+          properties.put(CMD_INPUT_PARALLELISM, String.valueOf(inputParallelism));
         } catch (NumberFormatException e) {
           throw new ParseException("Provided argument for input parallelism is not a number.");
         }
       } else {
         properties.put(CMD_INPUT_PARALLELISM, String.valueOf(numOfPartitions));
       }
+
+      // ============== Processing Parallelism ==============
+      int parallelism;
+      if (cmd.hasOption(CMD_PARALLELISM)) {
+        try {
+          parallelism = Integer.parseInt(cmd.getOptionValue(CMD_PARALLELISM));
+          if(parallelism < 1){
+            throw new NumberFormatException("Not a positive number");
+          }
+          properties.put(CMD_PARALLELISM, String.valueOf(parallelism));
+        } catch (NumberFormatException e) {
+          throw new ParseException("Provided argument for parallelism is not a valid number.");
+        }
+      }
+
+      // ==================== Rate Limit ====================
       int rateLimit;
       if (cmd.hasOption(CMD_RATE_LIMIT)) {
         try {
@@ -96,22 +126,22 @@ public abstract class AbstractBenchmark {
         rateLimit = -1;
         properties.put(CMD_RATE_LIMIT, "None");
       }
-      // do kafka stuff
+      // ================== Build Stream ===================
       buildStreamWithKafkaConsumer(rateLimit);
 
-      // Process OUTPUT
+      // ================= Process OUTPUT ==================
       if (cmd.hasOption("output")) {
         properties.put(OUTPUT_PATH_KEY,
             cmd.getOptionValue("output") + "output_" + System.currentTimeMillis());
       }
 
-      // Process LOG
+      // =============== Process RESULT LOG ================
       String logPath;
-      if (cmd.hasOption("log")) {
-        properties.put("log", cmd.getOptionValue("log"));
+      if (cmd.hasOption(CMD_RESULT)) {
+        properties.put(CMD_RESULT, cmd.getOptionValue(CMD_RESULT));
       }
 
-      logPath = properties.getProperty("log");
+      logPath = properties.getProperty(CMD_RESULT);
 
       try {
         var fileOutputStream = new FileOutputStream(logPath, true);
@@ -149,63 +179,74 @@ public abstract class AbstractBenchmark {
 
   protected String getCsvLine(long timeInMilliSeconds, int windowSize) {
     var outputTypeStr = properties.contains(OUTPUT_PATH_KEY) ? "w" : "d";
+    var parallelism = properties.getProperty(CMD_PARALLELISM, "-1");
     return String
-        .format("%s;%s;%d;%d\n", properties.getProperty(OPERATOR_NAME_KEY), outputTypeStr, windowSize, timeInMilliSeconds);
+        .format("%s;%s;%s;%s;%d;%d\n",
+            properties.getProperty(OPERATOR_NAME_KEY),
+            properties.getProperty(CMD_TOPIC),
+            outputTypeStr,
+            parallelism,
+            windowSize,
+            timeInMilliSeconds);
   }
 
   protected Options buildOptions() {
     var options = new Options();
     options.addOption("h", "help", false, "print this message");
-    //options.addOption("i", CMD_INPUT, true, "input file path");
     options.addOption("kip", CMD_KAFKA, true, "the kafka server in the format hostname:port/topic");
-    options
-        .addOption(CMD_INPUT_PARALLELISM, true,
-            "maximum number of flink worker to read from source. Has to me smaller than the number of topic partitions on the kafka server");
-    options
-        .addOption("l", CMD_RATE_LIMIT, true,
-            "the rate limit for the intake of data into the system");
+    options.addOption("i", CMD_INPUT_PARALLELISM, true,
+        "maximum number of flink worker to read from source. Has to me smaller than the number of topic partitions on the kafka server");
+    options.addOption("l", CMD_RATE_LIMIT, true,
+        "the rate limit for the intake of data into the system");
     options.addOption("o", "output", true, "location for the output file");
-    options.addOption("log", true, "location for the log file");
+    options.addOption(CMD_RESULT, true, "location for the result file");
     options.addOption("c", CMD_CONFIG, true, "location for the config file");
+    options.addOption("p", CMD_PARALLELISM, true, "parallelism set in execution environment");
+    options.addOption("t", CMD_TOPIC, true, "get topic for the kafka consumer");
     return options;
   }
 
   private void buildStreamWithKafkaConsumer(int rateLimit) {
-    var localProps = createKafkaProperties(properties.getProperty("bootstrap.servers"));
-    var schema = new TripletDeserializationSchema();
-    var config = new FlinkConfigBuilder(env).build();
-    env.setStreamTimeCharacteristic(TimeCharacteristic.ProcessingTime);
-    var topic = properties.getProperty(TOPIC_KEY);
-    int parallelism = Integer.parseInt(properties.getProperty(CMD_INPUT_PARALLELISM));
-    System.out.format("Input Parallelism is %d\n",parallelism);
-    if (rateLimit > 0) {
-      var kafkaConsumer = new RateLimitingKafkaConsumer<>(topic, schema, localProps,
-          rateLimit);
-      stream = GraphStream.fromSource(kafkaConsumer, config, parallelism);
-    } else {
-      stream = GraphStream
-          .fromSource(new FlinkKafkaConsumer<>(topic, schema, localProps), config, parallelism);
+    var localProps = CitibikeConsumer.createProperties(properties.getProperty("bootstrap.servers"));
+    var schema = new SimpleStringSchemaWithEnd();
+    var topic = properties.getProperty(CMD_TOPIC);
+    if(properties.containsKey(CMD_PARALLELISM)){
+      var parallelism = Integer.parseInt(properties.getProperty(CMD_PARALLELISM));
+      System.out.format("Processing Parallelism is %d\n", parallelism);
+      env.setParallelism(parallelism);
     }
+
+    // Prepare consumer
+    FlinkKafkaConsumer<String> kafkaConsumer;
+    String sourceName;
+    if (rateLimit > 0) {
+      kafkaConsumer = new RateLimitingKafkaConsumer<>(topic, schema, localProps, rateLimit);
+      sourceName = "Rate-Limiting Kafka-Consumer";
+    } else {
+      kafkaConsumer = new FlinkKafkaConsumer<>(topic, schema, localProps);
+      sourceName = "Kafka-Consumer";
+    }
+    int inputParallelism = Integer.parseInt(properties.getProperty(CMD_INPUT_PARALLELISM));
+    System.out.format("Input Parallelism is %d\n", inputParallelism);
+    DataStream<String> dataStream = env
+        .addSource(kafkaConsumer)
+        .name(sourceName)
+        .setParallelism(inputParallelism);
+    var config = new FlinkConfigBuilder(env).build();
+    stream = new GraphStream(transformToTripletStream(dataStream, inputParallelism), config);
+  }
+
+  private DataStream<Triplet> transformToTripletStream(DataStream<String> stream, int parallelism) {
+    return stream
+        .map(new StringToTripletMapper())
+        .name("Parse String to Triplet")
+        .setParallelism(MAX_PARALLELISM);
   }
 
   private int getNumberOfPartitions(Properties localProps) {
-    var tempConsumer  = new org.apache.kafka.clients.consumer.KafkaConsumer<>(localProps);
-    var partitions = tempConsumer.partitionsFor(properties.getProperty(TOPIC_KEY));
+    var tempConsumer = new org.apache.kafka.clients.consumer.KafkaConsumer<>(localProps);
+    var partitions = tempConsumer.partitionsFor(properties.getProperty(CMD_TOPIC));
     return partitions.size();
-  }
-
-  private Properties createKafkaProperties(String bootstrapServerConfig) {
-    var props = new Properties();
-    props.setProperty(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServerConfig);
-    props.setProperty(ConsumerConfig.GROUP_ID_CONFIG, "CitibikeConsumer" + Math.random());
-    props.setProperty(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG,
-        StringDeserializer.class.getName());
-    props.setProperty(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG,
-        TripletDeserializer.class.getName());
-    props.setProperty(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false");
-    props.setProperty(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
-    props.put(ConsumerConfig.CONNECTIONS_MAX_IDLE_MS_CONFIG, 10_000);
-    return props;
   }
 
   public abstract AbstractStream<?> applyOperator(GraphStream stream);
