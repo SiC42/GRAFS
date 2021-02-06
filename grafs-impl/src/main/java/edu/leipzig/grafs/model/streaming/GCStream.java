@@ -8,9 +8,8 @@ import edu.leipzig.grafs.operators.interfaces.window.WindowedGraphCollectionToGr
 import edu.leipzig.grafs.operators.interfaces.window.WindowedGraphCollectionToGraphOperatorI;
 import edu.leipzig.grafs.util.FlinkConfig;
 import org.apache.flink.streaming.api.datastream.DataStream;
-import org.apache.flink.streaming.api.datastream.DataStreamSource;
+import org.apache.flink.streaming.api.functions.source.SourceFunction;
 import org.apache.flink.streaming.api.windowing.windows.Window;
-import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer;
 
 public class GCStream extends AbstractStream<GCStream> implements GCStreamOperators {
 
@@ -25,23 +24,14 @@ public class GCStream extends AbstractStream<GCStream> implements GCStreamOperat
     super(stream, config);
   }
 
-  /**
-   * Constructs an graph collection stream using the given kafka consumer and stream config.
-   *
-   * @param fkConsumer kafka consumer from which the information are fetched
-   * @param config     config used for the stream
-   * @return graph collection stream that is extracted from source
-   */
-  public static GraphStream fromSource(FlinkKafkaConsumer<Triplet> fkConsumer,
-      FlinkConfig config, int parallelism) {
-    DataStreamSource<Triplet> stream;
-    if (parallelism > 0) {
-      stream = config.getExecutionEnvironment().addSource(fkConsumer).setParallelism(parallelism);
-    } else {
-      stream = config.getExecutionEnvironment().addSource(fkConsumer);
-    }
+  public static GCStream fromSource(SourceFunction<Triplet> function, FlinkConfig config) {
+    return fromSource(function, config, "Custom Source");
+  }
 
-    return new GraphStream(stream, config);
+  public static GCStream fromSource(SourceFunction<Triplet> function, FlinkConfig config,
+      String sourceName) {
+    var tripletStream = prepareStream(function, config, sourceName);
+    return new GCStream(tripletStream, config);
   }
 
   @Override

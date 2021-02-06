@@ -8,9 +8,8 @@ import edu.leipzig.grafs.operators.interfaces.window.WindowedGraphToGraphCollect
 import edu.leipzig.grafs.operators.interfaces.window.WindowedGraphToGraphOperatorI;
 import edu.leipzig.grafs.util.FlinkConfig;
 import org.apache.flink.streaming.api.datastream.DataStream;
-import org.apache.flink.streaming.api.datastream.DataStreamSource;
+import org.apache.flink.streaming.api.functions.source.SourceFunction;
 import org.apache.flink.streaming.api.windowing.windows.Window;
-import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer;
 
 /**
  * Model that abstracts the data stream to a edge(container)-stream.
@@ -27,23 +26,15 @@ public class GraphStream extends AbstractStream<GraphStream> implements GraphStr
     super(stream, config);
   }
 
-  /**
-   * Constructs an graph stream using the given kafka consumer and stream config.
-   *
-   * @param fkConsumer kafka consumer from which the information are fetched
-   * @param config     config used for the stream
-   * @return graph stream that is extracted from source
-   */
-  public static GraphStream fromSource(FlinkKafkaConsumer<Triplet> fkConsumer,
-      FlinkConfig config, int parallelism) {
-    DataStreamSource<Triplet> stream;
-    if (parallelism > 0) {
-      stream = config.getExecutionEnvironment().addSource(fkConsumer).setParallelism(parallelism);
-    } else {
-      stream = config.getExecutionEnvironment().addSource(fkConsumer);
-    }
 
-    return new GraphStream(stream, config);
+  public static GraphStream fromSource(SourceFunction<Triplet> function, FlinkConfig config) {
+    return fromSource(function, config, "Custom Source");
+  }
+
+  public static GraphStream fromSource(SourceFunction<Triplet> function, FlinkConfig config,
+      String sourceName) {
+    var tripletStream = prepareStream(function, config, sourceName);
+    return new GraphStream(tripletStream, config);
   }
 
   @Override
@@ -68,12 +59,12 @@ public class GraphStream extends AbstractStream<GraphStream> implements GraphStr
     return new GCStream(result, config);
   }
 
-  public <FW extends Window, W extends WindowsI<? extends FW>> InitialWindowBuilder<GraphStream,W> callForGraph(
+  public <FW extends Window, W extends WindowsI<? extends FW>> InitialWindowBuilder<GraphStream, W> callForGraph(
       WindowedGraphToGraphOperatorI<W> operator) {
     return new InitialWindowBuilder<>(new GraphStream(stream, config), operator);
   }
 
-  public <FW extends Window, W extends WindowsI<? extends FW>> InitialWindowBuilder<GCStream,W> callForGC(
+  public <FW extends Window, W extends WindowsI<? extends FW>> InitialWindowBuilder<GCStream, W> callForGC(
       WindowedGraphToGraphCollectionOperatorI<W> operator) {
     return new InitialWindowBuilder<>(new GCStream(stream, config), operator);
   }

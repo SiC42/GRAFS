@@ -7,9 +7,11 @@ import edu.leipzig.grafs.operators.interfaces.window.WindowedOperatorI;
 import edu.leipzig.grafs.util.FlinkConfig;
 import java.io.IOException;
 import java.util.Iterator;
+import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.DataStreamUtils;
 import org.apache.flink.streaming.api.functions.sink.SinkFunction;
+import org.apache.flink.streaming.api.functions.source.SourceFunction;
 import org.apache.flink.streaming.api.windowing.windows.Window;
 
 public abstract class AbstractStream<S extends AbstractStream<?>> {
@@ -29,6 +31,12 @@ public abstract class AbstractStream<S extends AbstractStream<?>> {
     this.config = config;
   }
 
+  protected static DataStream<Triplet> prepareStream(SourceFunction<Triplet> function,
+      FlinkConfig config, String sourceName) {
+    return config.getExecutionEnvironment().addSource(function, sourceName, TypeInformation
+        .of(Triplet.class));
+  }
+
   /**
    * Returns the underlying data stream.
    *
@@ -37,7 +45,6 @@ public abstract class AbstractStream<S extends AbstractStream<?>> {
   public DataStream<Triplet> getDataStream() {
     return stream;
   }
-
 
   public <FW extends Window, W extends WindowsI<?>> S applyWindowedOperator(
       WindowedOperatorI<W> operatorI, WindowingInformation<?> wi) {
