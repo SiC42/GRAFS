@@ -3,6 +3,7 @@ package edu.leipzig.grafs.setup.reader;
 import edu.leipzig.grafs.factory.EdgeFactory;
 import edu.leipzig.grafs.model.Edge;
 import edu.leipzig.grafs.model.Vertex;
+import edu.leipzig.grafs.setup.model.CSVEdge;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,26 +12,37 @@ import java.util.Map;
 import org.gradoop.common.model.impl.id.GradoopId;
 import org.gradoop.common.model.impl.properties.Properties;
 
-public class EdgeReader extends CSVElementReader<Edge> {
+public class EdgeReader extends CSVElementReader<CSVEdge> {
 
   public EdgeReader(InputStream csvStream) throws FileNotFoundException {
     super(csvStream);
   }
 
-  @Override
-  Edge parseGraphElem(String[] data) {
-    var id = GradoopId.fromString(data[0]);
+  CSVEdge parseGraphElem(String[] data) {
 
-    var graphIds = getGraphIds(data[1]);
+    var sb = new StringBuilder();
+    //id
+    sb.append(data[0]);
+    sb.append(";");
 
-    var sourceId = GradoopId.fromString(data[2]);
-    var targetId = GradoopId.fromString(data[3]);
+    // graph ids
+    sb.append(data[1]);
+    sb.append(";");
 
-    var label = data[4];
+    var sourceId = data[2];
+    sb.append(sourceId);
+    sb.append(";");
+    var targetId = data[3];
+    sb.append(targetId);
+    sb.append(";");
 
-    var properties = getProperties(data[5]);
+    // label
+    sb.append(data[4]);
+    sb.append(";");
 
-    return EdgeFactory.initEdge(id, label, sourceId, targetId, properties, graphIds);
+    sb.append(data[5]);
+
+    return new CSVEdge(data[0],sb.toString(), sourceId, targetId);
   }
 
   private Properties getProperties(String propertiesStr) {
@@ -48,7 +60,7 @@ public class EdgeReader extends CSVElementReader<Edge> {
     return properties;
   }
 
-  public Edge getNextEdge() throws IOException {
+  public CSVEdge getEdge() throws IOException {
     Map<GradoopId, Vertex> graphElems = new HashMap<>();
     String row;
     if ((row = csvReader.readLine()) != null) {

@@ -8,37 +8,42 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import org.apache.kafka.common.protocol.types.Field.Str;
 import org.gradoop.common.model.impl.id.GradoopId;
 import org.gradoop.common.model.impl.id.GradoopIdSet;
 import org.gradoop.common.model.impl.properties.Properties;
 
-public class VertexReader extends CSVElementReader<Vertex> {
+public class VertexReader extends CSVElementReader<String> {
 
   public VertexReader(InputStream csvStream) throws FileNotFoundException {
     super(csvStream);
   }
 
   @Override
-  Vertex parseGraphElem(String[] data) {
-    GradoopId id;
-    GradoopIdSet graphIds;
+  String parseGraphElem(String[] data) {
+    var sb = new StringBuilder();
     try {
-      id = GradoopId.fromString(data[0]);
+      sb.append(data[0]);
+      sb.append(";");
     } catch (IllegalArgumentException e) {
       throw new IllegalArgumentException(
           e.getMessage() + " in id of element " + Arrays.toString(data));
     }
     try {
-      graphIds = getGraphIds(data[1]);
+      sb.append(data[1]);
+      sb.append(";");
     } catch (IllegalArgumentException e) {
       throw new IllegalArgumentException(
           e.getMessage() + " in graphIds of element " + Arrays.toString(data));
     }
-    var label = data[2];
+    // label
+    sb.append(data[2]);
+    sb.append(";");
 
-    var properties = getProperties(data[3]);
+    // properties
+    sb.append(data[3]);
 
-    return VertexFactory.initVertex(id, label, properties, graphIds);
+    return sb.toString();
   }
 
   private Properties getProperties(String propertiesStr) {
@@ -65,13 +70,13 @@ public class VertexReader extends CSVElementReader<Vertex> {
     return properties;
   }
 
-  public Map<GradoopId, Vertex> getVertices() throws IOException {
-    Map<GradoopId, Vertex> graphElems = new HashMap<>();
+  public Map<String, String> getVertices() throws IOException {
+    Map<String, String> graphElems = new HashMap<>();
     String row;
     while ((row = csvReader.readLine()) != null) {
       String[] data = row.split(DELIMITER);
       var graphElem = parseGraphElem(data);
-      graphElems.put(graphElem.getId(), graphElem);
+      graphElems.put(data[0], graphElem);
     }
     csvReader.close();
     return graphElems;

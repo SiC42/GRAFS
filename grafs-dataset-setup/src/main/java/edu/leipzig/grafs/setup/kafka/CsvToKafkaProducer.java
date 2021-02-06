@@ -3,6 +3,7 @@ package edu.leipzig.grafs.setup.kafka;
 import edu.leipzig.grafs.model.Edge;
 import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.model.Vertex;
+import edu.leipzig.grafs.setup.model.CSVEdge;
 import edu.leipzig.grafs.setup.reader.EdgeReader;
 import edu.leipzig.grafs.setup.reader.VertexReader;
 import java.io.IOException;
@@ -32,7 +33,7 @@ public class CsvToKafkaProducer extends AbstractProducer {
   public void run() {
     long start = System.nanoTime();
     System.out.println("Starting reading files. Vertices first...");
-    Map<GradoopId, Vertex> vertexMap = new HashMap<>();
+    Map<String, String> vertexMap = new HashMap<>();
     var basePath = properties.getProperty(BASE_PATH);
     try (var pathsStream = Files.walk(Paths.get(basePath + VERTICE_PATH))) {
       pathsStream.filter(Files::isRegularFile)
@@ -62,19 +63,19 @@ public class CsvToKafkaProducer extends AbstractProducer {
               int i = 0;
               long lineCount = Files.lines(file).count();
               var edgeReader = new EdgeReader(inStream);
-              Edge edge;
+              CSVEdge edge;
               double curLine;
-              while ((edge = edgeReader.getNextEdge()) != null) {
+              while ((edge = edgeReader.getEdge()) != null) {
                 curLine = ++i;
                 if (curLine % 5000 == 0) {
                   var relativeProgress = Math.round(curLine * 100 / lineCount);
                   System.out.print(curFileMessageStr + " Progress: " + relativeProgress + "%\r");
                   System.out.flush();
                 }
-                var source = vertexMap.get(edge.getSourceId());
-                var target = vertexMap.get(edge.getTargetId());
-                var ec = new Triplet(edge, source, target);
-                sendTriplet(ec);
+                var source = vertexMap.get(edge.sourceId);
+                var target = vertexMap.get(edge.targetId);
+                var ec = String.format("%s\t%s\t%s",source,edge,target);
+                sendTriplet(edge.id,ec);
               }
 
               System.out.println("Finished file '" + file.toString() + "'.");

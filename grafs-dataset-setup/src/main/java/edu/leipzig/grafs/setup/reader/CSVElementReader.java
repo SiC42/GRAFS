@@ -9,7 +9,7 @@ import java.util.HashSet;
 import org.gradoop.common.model.impl.id.GradoopId;
 import org.gradoop.common.model.impl.id.GradoopIdSet;
 
-public abstract class CSVElementReader<E extends GraphElement> {
+public abstract class CSVElementReader<O extends Object> {
 
   protected static final String DELIMITER = ";";
 
@@ -40,6 +40,6 @@ public abstract class CSVElementReader<E extends GraphElement> {
     return GradoopIdSet.fromExisting(graphIds);
   }
 
-  abstract E parseGraphElem(String[] data);
+  abstract O parseGraphElem(String[] data);
 
 }

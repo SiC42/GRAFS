@@ -1,7 +1,7 @@
 package manual;
 
 import edu.leipzig.grafs.model.Triplet;
-import edu.leipzig.grafs.serialization.TripletDeserializationSchema;
+import edu.leipzig.grafs.serialization.SimpleStringSchemaWithEnd;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -18,7 +18,7 @@ public class FileConsumer {
     int counter = 1;
     var queue = new SmallQueue();
     while (!triplet.getEdge().getLabel()
-        .equals(TripletDeserializationSchema.END_OF_STREAM_LABEL)) {
+        .equals(SimpleStringSchemaWithEnd.END_OF_STREAM_LABEL)) {
       queue.add(triplet);
       counter++;
       if (counter % 10000 == 0) {
