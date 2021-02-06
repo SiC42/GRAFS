@@ -1,6 +1,5 @@
 package edu.leipzig.grafs.benchmark;
 
-import edu.leipzig.grafs.benchmark.serialization.TripletDeserializer;
 import edu.leipzig.grafs.model.Triplet;
 import java.time.Duration;
 import java.util.Collections;
@@ -15,12 +14,12 @@ public class CitibikeConsumer {
   private final static String TOPIC = "citibike";
   private final static String BOOTSTRAP_SERVERS = "bdclu1.informatik.intern.uni-leipzig.de:9092";
 
-  private static Properties createProperties(Properties properties) {
-    var props = properties;
-    props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, BOOTSTRAP_SERVERS);
+  public static Properties createProperties(String bootstrapServerConfig) {
+    var props = new Properties();
+    props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServerConfig);
     props.put(ConsumerConfig.GROUP_ID_CONFIG, "CitibikeConsumer" + Math.random());
     props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
-    props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, TripletDeserializer.class.getName());
+    props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
     props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false");
     props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
     props.put(ConsumerConfig.CONNECTIONS_MAX_IDLE_MS_CONFIG, 30_000);
@@ -29,7 +28,7 @@ public class CitibikeConsumer {
 
   private static Consumer<String, Triplet> createConsumer() {
     Consumer<String, Triplet> consumer = new KafkaConsumer<>(
-        createProperties(new Properties()));
+        createProperties(BOOTSTRAP_SERVERS));
     consumer.subscribe(Collections.singletonList(TOPIC));
     return consumer;
   }
