@@ -71,6 +71,7 @@ public abstract class AbstractWindowBenchmark extends AbstractBenchmark {
     }
   }
 
+  @Override
   protected String getCsvLine(long timeInMilliSeconds) {
     return getCsvLine(timeInMilliSeconds, windowSizeInMs);
   }

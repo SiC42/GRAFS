@@ -173,7 +173,7 @@ public abstract class AbstractBenchmark {
     outputWriter.close();
   }
 
-  private String getCsvLine(long timeInMilliSeconds) {
+  protected String getCsvLine(long timeInMilliSeconds) {
     return getCsvLine(timeInMilliSeconds, -1);
   }
 
