@@ -17,18 +17,18 @@ public class WindowBuilder<S extends AbstractStream<S>, WBase extends WindowsI<?
   private final WindowedOperatorI<?> operator;
   private final WindowingInformation<?> wi;
 
-  public <W extends WBase> WindowBuilder(S stream, WindowedOperatorI<WBase> operator,  W window) {
+  public <W extends WBase> WindowBuilder(S stream, WindowedOperatorI<WBase> operator, W window) {
     this.stream = stream;
     this.operator = operator;
     wi = new WindowingInformation<>(window.getFlinkWindowAssigner());
   }
 
-  public WindowBuilder<S, WBase> trigger(Trigger<? super Triplet<?,?>, ? super Window> trigger) {
+  public WindowBuilder<S, WBase> trigger(Trigger<? super Triplet<?, ?>, ? super Window> trigger) {
     wi.addTrigger(trigger);
     return this;
   }
 
-  public WindowBuilder<S, WBase> evictor(Evictor<? super Triplet<?,?>, ? super Window> evictor) {
+  public WindowBuilder<S, WBase> evictor(Evictor<? super Triplet<?, ?>, ? super Window> evictor) {
     wi.addEvictor(evictor);
     return this;
   }
@@ -38,7 +38,7 @@ public class WindowBuilder<S extends AbstractStream<S>, WBase extends WindowsI<?
     return this;
   }
 
-  public WindowBuilder<S, WBase> sideOutputLateData(OutputTag<Triplet<?,?>> outputTag) {
+  public WindowBuilder<S, WBase> sideOutputLateData(OutputTag<Triplet<?, ?>> outputTag) {
     wi.addLateDataOutputTag(outputTag);
     return this;
   }

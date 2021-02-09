@@ -2,9 +2,6 @@ package edu.leipzig.grafs.operators.grouping.logic;
 
 import static edu.leipzig.grafs.util.TestUtils.validateTripletCollections;
 
-import edu.leipzig.grafs.model.Edge;
-import edu.leipzig.grafs.model.Triplet;
-import edu.leipzig.grafs.model.Vertex;
 import edu.leipzig.grafs.operators.DummyCollector;
 import edu.leipzig.grafs.operators.grouping.functions.AggregateFunction;
 import edu.leipzig.grafs.operators.grouping.model.AggregateMode;

@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Set;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
-import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.windowing.time.Time;
 import org.hamcrest.MatcherAssert;
@@ -101,7 +100,7 @@ public class DistributedWindowedGroupingTest {
     var finalStream = intermediateStream
         .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
         .apply();
-    var tripletIt =  finalStream.collect();
+    var tripletIt = finalStream.collect();
     var actualTripletCol = new ArrayList<Triplet<Vertex, Edge>>();
     while (tripletIt.hasNext()) {
       actualTripletCol.add(tripletIt.next());

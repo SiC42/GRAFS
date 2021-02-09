@@ -69,9 +69,10 @@ public class VertexAggregation<W extends Window> extends ElementAggregation<W> {
         aggregatedVertex = (Vertex) setGroupedProperties(vertexGroupInfo,
             aggregatedVertex, curVertex);
       }
-      if(!alreadyAggregated.contains(curVertex.getId())) {
+      if (!alreadyAggregated.contains(curVertex.getId())) {
         alreadyAggregated.add(curVertex.getId());
-        aggregatedVertex = (Vertex) aggregateElement(aggregatedVertex, curVertex, aggregateFunctions);
+        aggregatedVertex = (Vertex) aggregateElement(aggregatedVertex, curVertex,
+            aggregateFunctions);
       }
     }
     aggregatedVertex = (Vertex) checkForMissingAggregationsAndApply(aggregateFunctions,

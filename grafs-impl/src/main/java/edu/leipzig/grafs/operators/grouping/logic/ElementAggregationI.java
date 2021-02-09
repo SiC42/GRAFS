@@ -8,9 +8,7 @@ import java.util.Set;
 import org.gradoop.common.model.impl.properties.PropertyValue;
 
 /**
- * Interface that provides basic functionalities for aggregating on elements in an edge
- * stream.
- *
+ * Interface that provides basic functionalities for aggregating on elements in an edge stream.
  */
 public interface ElementAggregationI {
 

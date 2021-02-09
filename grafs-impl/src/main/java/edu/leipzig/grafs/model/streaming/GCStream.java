@@ -26,11 +26,13 @@ public class GCStream extends AbstractStream<GCStream> implements GCStreamOperat
     super(stream, config);
   }
 
-  public static GCStream fromSource(SourceFunction<Triplet<Vertex, Edge>> function, FlinkConfig config) {
+  public static GCStream fromSource(SourceFunction<Triplet<Vertex, Edge>> function,
+      FlinkConfig config) {
     return fromSource(function, config, "Custom Source");
   }
 
-  public static GCStream fromSource(SourceFunction<Triplet<Vertex, Edge>> function, FlinkConfig config,
+  public static GCStream fromSource(SourceFunction<Triplet<Vertex, Edge>> function,
+      FlinkConfig config,
       String sourceName) {
     var tripletStream = prepareStream(function, config, sourceName);
     return new GCStream(tripletStream, config);

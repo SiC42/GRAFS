@@ -7,9 +7,7 @@ import edu.leipzig.grafs.model.Vertex;
 import edu.leipzig.grafs.operators.grouping.functions.AggregateFunction;
 import edu.leipzig.grafs.operators.grouping.model.GroupingInformation;
 import edu.leipzig.grafs.util.MultiMap;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import org.apache.flink.streaming.api.functions.windowing.ProcessAllWindowFunction;
@@ -19,7 +17,8 @@ import org.gradoop.common.model.impl.id.GradoopId;
 import org.gradoop.common.model.impl.id.GradoopIdSet;
 
 public class AllWindowAggregation<W extends Window> extends
-    ProcessAllWindowFunction<Triplet<Vertex, Edge>, Triplet<Vertex, Edge>, W> implements ElementAggregationI {
+    ProcessAllWindowFunction<Triplet<Vertex, Edge>, Triplet<Vertex, Edge>, W> implements
+    ElementAggregationI {
 
   protected final GroupingInformation vertexGroupInfo;
   protected final Set<AggregateFunction> vertexAggregateFunctions;
@@ -46,16 +45,17 @@ public class AllWindowAggregation<W extends Window> extends
 
 
   @Override
-  public void process(Context context, Iterable<Triplet<Vertex, Edge>> triplets, Collector<Triplet<Vertex, Edge>> collector)
+  public void process(Context context, Iterable<Triplet<Vertex, Edge>> triplets,
+      Collector<Triplet<Vertex, Edge>> collector)
       throws Exception {
     GradoopId newGraphId = GradoopId.get();
     MultiMap<GradoopId, GradoopId> sourceVertexToEdgeMap = new MultiMap<>();
     MultiMap<GradoopId, GradoopId> targetVertexToEdgeMap = new MultiMap<>();
-    Map<GradoopId,Edge> edges = new HashMap<>();
+    Map<GradoopId, Edge> edges = new HashMap<>();
     Map<GradoopId, Vertex> vertices = new HashMap<>();
     for (var triplet : triplets) {
       var source = triplet.getSourceVertex();
-      vertices.put(source.getId(),source);
+      vertices.put(source.getId(), source);
       var target = triplet.getTargetVertex();
       vertices.put(target.getId(), target);
 
@@ -69,13 +69,14 @@ public class AllWindowAggregation<W extends Window> extends
 
   }
 
-  private void aggregateEdges(Map<GradoopId, Vertex> vertices, Map<GradoopId,Edge> edges, GradoopId newGraphId, Collector<Triplet<Vertex, Edge>> collector) {
+  private void aggregateEdges(Map<GradoopId, Vertex> vertices, Map<GradoopId, Edge> edges,
+      GradoopId newGraphId, Collector<Triplet<Vertex, Edge>> collector) {
     MultiMap<String, Edge> groupedEdgesMap = new MultiMap<>();
     for (var edge : edges.values()) {
       var vKey = TripletKeySelector.generateKeyForEdge(edge, edgeGroupInfo);
       groupedEdgesMap.put(vKey, edge);
     }
-    for(var key : groupedEdgesMap.keySet()) {
+    for (var key : groupedEdgesMap.keySet()) {
       Edge lastEdge = null;
       var aggregatedEdge = EdgeFactory.createEdge();
       for (var edge : groupedEdgesMap.get(key)) {
@@ -96,15 +97,16 @@ public class AllWindowAggregation<W extends Window> extends
     }
   }
 
-  private void emitTriplet(Collector<Triplet<Vertex, Edge>> collector, Map<GradoopId, Vertex> vertices,
+  private void emitTriplet(Collector<Triplet<Vertex, Edge>> collector,
+      Map<GradoopId, Vertex> vertices,
       Edge e) {
-      var source = vertices.get(e.getSourceId());
-      var target = vertices.get(e.getTargetId());
-      collector.collect(new Triplet<Vertex, Edge>(e, source, target));
+    var source = vertices.get(e.getSourceId());
+    var target = vertices.get(e.getTargetId());
+    collector.collect(new Triplet<Vertex, Edge>(e, source, target));
   }
 
   private void aggregateVertices(Map<GradoopId, Vertex> vertices,
-      Map<GradoopId,Edge> edges, MultiMap<GradoopId, GradoopId> sourceVertexToEdgeMap,
+      Map<GradoopId, Edge> edges, MultiMap<GradoopId, GradoopId> sourceVertexToEdgeMap,
       MultiMap<GradoopId, GradoopId> targetVertexToEdgeMap,
       GradoopId newGraphId) {
     MultiMap<String, Vertex> groupedVerticesMap = new MultiMap<>();
@@ -142,24 +144,27 @@ public class AllWindowAggregation<W extends Window> extends
     }
   }
 
-  private void updateSourceForEdges(Map<GradoopId,Edge> edges, Vertex aggregatedVertex, Set<GradoopId> edgesForVertex) {
+  private void updateSourceForEdges(Map<GradoopId, Edge> edges, Vertex aggregatedVertex,
+      Set<GradoopId> edgesForVertex) {
     for (var id : edgesForVertex) {
       var e = edges.get(id);
       var newEdge = EdgeFactory
           .initEdge(e.getId(), e.getLabel(), aggregatedVertex.getId(), e.getTargetId(),
               e.getProperties(), e.getGraphIds());
       edges.remove(e.getId());
-      edges.put(newEdge.getId(),newEdge);
+      edges.put(newEdge.getId(), newEdge);
     }
   }
 
-  private void updateTargetForEdges(Map<GradoopId,Edge> edges, Vertex aggregatedVertex, Set<GradoopId> edgesForVertex) {
+  private void updateTargetForEdges(Map<GradoopId, Edge> edges, Vertex aggregatedVertex,
+      Set<GradoopId> edgesForVertex) {
     for (var id : edgesForVertex) {
       var e = edges.get(id);
       var newEdge = EdgeFactory
-          .initEdge(e.getId(), e.getLabel(), e.getSourceId(), aggregatedVertex.getId(), e.getProperties(), e.getGraphIds());
+          .initEdge(e.getId(), e.getLabel(), e.getSourceId(), aggregatedVertex.getId(),
+              e.getProperties(), e.getGraphIds());
       edges.remove(e.getId());
-      edges.put(newEdge.getId(),newEdge);
+      edges.put(newEdge.getId(), newEdge);
     }
   }
 

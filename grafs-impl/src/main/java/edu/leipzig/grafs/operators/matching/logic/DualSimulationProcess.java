@@ -4,8 +4,8 @@ import static java.util.stream.Collectors.toSet;
 
 import edu.leipzig.grafs.factory.EdgeFactory;
 import edu.leipzig.grafs.factory.VertexFactory;
-import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.model.Edge;
+import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.model.Vertex;
 import edu.leipzig.grafs.operators.matching.model.Query;
 import edu.leipzig.grafs.operators.matching.model.QueryEdge;
@@ -98,7 +98,7 @@ public class DualSimulationProcess<W extends Window> extends PatternMatchingProc
             m.remove(candidateVertex.getHash());*/
       if (!stillMatch ||
           (query.hasPredicates() && !checkPredicateTree(candidateVertex, query.getPredicates(),
-          initialCandidateVertices))) {
+              initialCandidateVertices))) {
         prunableCandidateVertices.remove(candidateVertex);
       }
     }

@@ -73,6 +73,10 @@ public class Query extends BasicGraph<QueryVertex, QueryEdge> {
     return predicates;
   }
 
+  private void setPredicates(Predicate predicate) {
+    this.predicates = predicate;
+  }
+
   public Collection<Triplet<QueryVertex, QueryEdge>> toTriplets() {
     var result = new ArrayList<Triplet<QueryVertex, QueryEdge>>();
     for (var edge : edges) {
@@ -166,10 +170,6 @@ public class Query extends BasicGraph<QueryVertex, QueryEdge> {
         }
       }
     }
-  }
-
-  private void setPredicates(Predicate predicate) {
-    this.predicates = predicate;
   }
 
   private boolean queryPredicatesOnlyAnd(Predicate predicate) {

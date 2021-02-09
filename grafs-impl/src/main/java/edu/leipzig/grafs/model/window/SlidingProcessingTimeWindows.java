@@ -8,8 +8,7 @@ import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
 public class SlidingProcessingTimeWindows extends AbstractSlidingWindows {
 
 
-
-  protected SlidingProcessingTimeWindows(Time size, Time slide, Time offset){
+  protected SlidingProcessingTimeWindows(Time size, Time slide, Time offset) {
     super(size, slide, offset);
   }
 
@@ -25,10 +24,12 @@ public class SlidingProcessingTimeWindows extends AbstractSlidingWindows {
 
   @Override
   public WindowAssigner<Object, TimeWindow> getFlinkWindowAssigner() {
-    if(offset == null){
-      return org.apache.flink.streaming.api.windowing.assigners.SlidingProcessingTimeWindows.of(size, slide);
-    } else{
-      return org.apache.flink.streaming.api.windowing.assigners.SlidingProcessingTimeWindows.of(size, slide, offset);
+    if (offset == null) {
+      return org.apache.flink.streaming.api.windowing.assigners.SlidingProcessingTimeWindows
+          .of(size, slide);
+    } else {
+      return org.apache.flink.streaming.api.windowing.assigners.SlidingProcessingTimeWindows
+          .of(size, slide, offset);
     }
   }
 }

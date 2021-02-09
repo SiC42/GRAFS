@@ -7,7 +7,7 @@ public abstract class AbstractTumblingWindows extends AbstractTimeWindows {
 
   WindowStagger windowStagger;
 
-  protected AbstractTumblingWindows(Time size, Time offset, WindowStagger windowStagger){
+  protected AbstractTumblingWindows(Time size, Time offset, WindowStagger windowStagger) {
     super(size, offset);
     this.windowStagger = windowStagger;
   }

@@ -51,19 +51,19 @@ public class Subgraph implements GraphToGraphOperatorI {
 
     switch (strategy) {
       case BOTH:
-        if(vertexFilter == null || edgeFilter == null){
+        if (vertexFilter == null || edgeFilter == null) {
           throw new IllegalArgumentException("No vertex or no edge filter function was given.");
         }
         tripletFilter = createSubGraphFilter(vertexFilter, edgeFilter);
         break;
       case VERTEX_INDUCED:
-        if(vertexFilter == null){
+        if (vertexFilter == null) {
           throw new IllegalArgumentException("No vertex filter functions was given.");
         }
         tripletFilter = createVertexInducedSubgraphFilter(vertexFilter);
         break;
       case EDGE_INDUCED:
-        if(edgeFilter == null){
+        if (edgeFilter == null) {
           throw new IllegalArgumentException("No vertex edge functions was given.");
         }
         tripletFilter = createEdgeInducedSubgraphFilter(edgeFilter);
@@ -81,7 +81,8 @@ public class Subgraph implements GraphToGraphOperatorI {
    * @param edgeFilter   filter applied to the edges of the stream
    * @return triplet filter ready to be applied to the stream
    */
-  private FilterFunction<Triplet<Vertex, Edge>> createSubGraphFilter(FilterFunction<Vertex> vertexFilter,
+  private FilterFunction<Triplet<Vertex, Edge>> createSubGraphFilter(
+      FilterFunction<Vertex> vertexFilter,
       FilterFunction<Edge> edgeFilter) {
     return triplet ->
         edgeFilter.filter(triplet.getEdge()) &&

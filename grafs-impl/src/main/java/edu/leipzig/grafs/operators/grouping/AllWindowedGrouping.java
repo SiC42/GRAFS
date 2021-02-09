@@ -49,13 +49,15 @@ public class AllWindowedGrouping extends AbstractWindowedGrouping<WindowsI<? ext
    *                                 for the edges
    * @param edgeAggregateFunctions   Aggregation functions for the grouped edges
    */
-  public AllWindowedGrouping(Set<String> vertexGiSet, Set<AggregateFunction> vertexAggregateFunctions,
+  public AllWindowedGrouping(Set<String> vertexGiSet,
+      Set<AggregateFunction> vertexAggregateFunctions,
       Set<String> edgeGiSet, Set<AggregateFunction> edgeAggregateFunctions) {
     super(vertexGiSet, vertexAggregateFunctions, edgeGiSet, edgeAggregateFunctions);
   }
 
   /**
-   * Provides a builder which provides an more intuitive way to build a {@link AllWindowedGrouping}.
+   * Provides a builder which provides an more intuitive way to build a {@link
+   * AllWindowedGrouping}.
    *
    * @return a builder which provides an more intuitive way to build a {@link AllWindowedGrouping}.
    */
@@ -69,10 +71,13 @@ public class AllWindowedGrouping extends AbstractWindowedGrouping<WindowsI<? ext
    * @param stream stream on which the operator should be applied
    * @return the stream with the grouping operator applied
    */
-  public <FW extends Window> DataStream<Triplet<Vertex, Edge>> groupBy(DataStream<Triplet<Vertex, Edge>> stream,
+  public <FW extends Window> DataStream<Triplet<Vertex, Edge>> groupBy(
+      DataStream<Triplet<Vertex, Edge>> stream,
       WindowingInformation<FW> wi) {
     var windowedStream = createWindowedStream(stream, wi);
-    return windowedStream.process(new AllWindowAggregation<>(vertexGi, vertexAggregateFunctions, edgeGi, edgeAggregateFunctions));
+    return windowedStream.process(
+        new AllWindowAggregation<>(vertexGi, vertexAggregateFunctions, edgeGi,
+            edgeAggregateFunctions));
   }
 
   private <W extends Window> AllWindowedStream<Triplet<Vertex, Edge>, W> createWindowedStream(

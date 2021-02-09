@@ -22,12 +22,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Set;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
-import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.windowing.time.Time;
 import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class AllWindowedGroupingTest {
@@ -51,14 +49,14 @@ public class AllWindowedGroupingTest {
 
     var edgeStream = loader.createEdgeStreamByGraphVariables(config, "g0", "g1", "g2");
 
-    var grouping =  AllWindowedGrouping.createGrouping()
+    var grouping = AllWindowedGrouping.createGrouping()
         .addVertexGroupingKeys(Set.of(GroupingInformation.LABEL_SYMBOL, "city"))
         .addVertexAggregateFunction(new Count("count"))
         .addEdgeGroupingKeys(Set.of(GroupingInformation.LABEL_SYMBOL, "since"))
         .addEdgeAggregateFunction(new Count("count"))
         .build();
     var intermediateStream = edgeStream
-        .callForGraph( grouping);
+        .callForGraph(grouping);
     var finalStream = intermediateStream
         .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
         .apply();
@@ -102,7 +100,7 @@ public class AllWindowedGroupingTest {
     var finalStream = intermediateStream
         .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
         .apply();
-    var tripletIt =  finalStream.collect();
+    var tripletIt = finalStream.collect();
     var actualTripletCol = new ArrayList<Triplet<Vertex, Edge>>();
     while (tripletIt.hasNext()) {
       actualTripletCol.add(tripletIt.next());

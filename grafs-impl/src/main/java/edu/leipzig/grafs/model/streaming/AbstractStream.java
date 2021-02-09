@@ -34,10 +34,12 @@ public abstract class AbstractStream<S extends AbstractStream<?>> {
     this.config = config;
   }
 
-  protected static DataStream<Triplet<Vertex, Edge>> prepareStream(SourceFunction<Triplet<Vertex, Edge>> function,
+  protected static DataStream<Triplet<Vertex, Edge>> prepareStream(
+      SourceFunction<Triplet<Vertex, Edge>> function,
       FlinkConfig config, String sourceName) {
     return config.getExecutionEnvironment().addSource(function, sourceName, TypeInformation
-        .of(new TypeHint<>() {}));
+        .of(new TypeHint<>() {
+        }));
   }
 
   /**

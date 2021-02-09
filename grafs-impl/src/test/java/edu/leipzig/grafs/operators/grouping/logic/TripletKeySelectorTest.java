@@ -66,7 +66,8 @@ class TripletKeySelectorTest {
     TripletKeySelector tks = new TripletKeySelector(egi, AggregateMode.EDGE);
     var expectedSource = triplet.getSourceVertex().getId();
     var expectedTarget = triplet.getTargetVertex().getId();
-    assertThat(tks.getKey(triplet), equalTo(String.format("(%s)-[{t:5}]->(%s)",expectedSource, expectedTarget)));
+    assertThat(tks.getKey(triplet),
+        equalTo(String.format("(%s)-[{t:5}]->(%s)", expectedSource, expectedTarget)));
   }
 
   @Test
@@ -77,7 +78,8 @@ class TripletKeySelectorTest {
     TripletKeySelector tks = new TripletKeySelector(egi, AggregateMode.EDGE);
     var expectedSource = triplet.getSourceVertex().getId();
     var expectedTarget = triplet.getTargetVertex().getId();
-    assertThat(tks.getKey(triplet), equalTo(String.format("(%s)-[:e]->(%s)",expectedSource, expectedTarget)));
+    assertThat(tks.getKey(triplet),
+        equalTo(String.format("(%s)-[:e]->(%s)", expectedSource, expectedTarget)));
   }
 
   @Test
@@ -86,6 +88,7 @@ class TripletKeySelectorTest {
     TripletKeySelector tks = new TripletKeySelector(vgi, AggregateMode.EDGE);
     var expectedSource = triplet.getSourceVertex().getId();
     var expectedTarget = triplet.getTargetVertex().getId();
-    assertThat(tks.getKey(triplet), equalTo(String.format("(%s)-[]->(%s)",expectedSource, expectedTarget)));
+    assertThat(tks.getKey(triplet),
+        equalTo(String.format("(%s)-[]->(%s)", expectedSource, expectedTarget)));
   }
 }

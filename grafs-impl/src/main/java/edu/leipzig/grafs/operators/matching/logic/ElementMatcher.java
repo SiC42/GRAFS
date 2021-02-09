@@ -19,7 +19,7 @@ public class ElementMatcher {
    * element are a subset of the properties of the element
    */
   static boolean matchesQueryElem(GraphElement queryElem, GraphElement elem) {
-    return matchesQueryElem(queryElem,elem,false);
+    return matchesQueryElem(queryElem, elem, false);
   }
 
   /**
@@ -35,7 +35,7 @@ public class ElementMatcher {
     if (!labelMatches(queryElem.getLabel(), elem.getLabel())) {
       return false;
     }
-    if(exact && queryElem.getPropertyCount() != elem.getPropertyCount()){
+    if (exact && queryElem.getPropertyCount() != elem.getPropertyCount()) {
       return false;
     }
     if (queryElem.getPropertyKeys() != null) {

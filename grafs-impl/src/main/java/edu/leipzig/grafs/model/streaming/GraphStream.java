@@ -29,11 +29,13 @@ public class GraphStream extends AbstractStream<GraphStream> implements GraphStr
   }
 
 
-  public static GraphStream fromSource(SourceFunction<Triplet<Vertex, Edge>> function, FlinkConfig config) {
+  public static GraphStream fromSource(SourceFunction<Triplet<Vertex, Edge>> function,
+      FlinkConfig config) {
     return fromSource(function, config, "Custom Source");
   }
 
-  public static GraphStream fromSource(SourceFunction<Triplet<Vertex, Edge>> function, FlinkConfig config,
+  public static GraphStream fromSource(SourceFunction<Triplet<Vertex, Edge>> function,
+      FlinkConfig config,
       String sourceName) {
     var tripletStream = prepareStream(function, config, sourceName);
     return new GraphStream(tripletStream, config);

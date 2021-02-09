@@ -21,45 +21,13 @@ public class TripletKeySelector implements KeySelector<Triplet<Vertex, Edge>, St
   /**
    * Constructors the key selector using the given information.
    *
-   * @param gi   information on which the vertices should be grouped upon
+   * @param gi         information on which the vertices should be grouped upon
    * @param makeKeyFor determines if the key should be made for the source vertex, target vertex or
    *                   edge
    */
   public TripletKeySelector(GroupingInformation gi, AggregateMode makeKeyFor) {
     this.gi = gi;
     this.makeKeyFor = makeKeyFor;
-  }
-
-  /**
-   * Constructs the key for the given triplet using the information provided in the constructor.
-   * <p>
-   * Two triplet generate the same key, if the selected element (i.e. the element for which the key
-   * is made for via {@link AggregateMode}) are in the same group using the grouping information.
-   * <p>
-   * The default toString methods of the elements are used for this to ease debugging.
-   *
-   * @param triplet triplet for which the key should be made
-   * @return key for the triplet that represents the group of the selected element
-   */
-  @Override
-  public String getKey(Triplet triplet) {
-    final String EMPTY_VERTEX = "()";
-    final String EMPTY_EDGE = "[]";
-    switch (makeKeyFor) {
-      case SOURCE: {
-        String vertex = generateKeyForVertex(triplet.getSourceVertex(), gi);
-        return generateKey(vertex, EMPTY_EDGE, EMPTY_VERTEX);
-      }
-      case TARGET: {
-        String vertex = generateKeyForVertex(triplet.getTargetVertex(), gi);
-        return generateKey(EMPTY_VERTEX, EMPTY_EDGE, vertex);
-      }
-      case EDGE: {
-        return generateKeyForEdge(triplet.getEdge(), gi);
-      }
-      default:
-        throw new IllegalArgumentException("aggregate mode couldn't be found");
-    }
   }
 
   /**
@@ -102,7 +70,7 @@ public class TripletKeySelector implements KeySelector<Triplet<Vertex, Edge>, St
     sb = keyStringBuilder(sb, edge, edgeGi);
     sb.append("]");
     var source = String.format("(%s)", edge.getSourceId().toString());
-    var target =  String.format("(%s)",edge.getTargetId().toString());
+    var target = String.format("(%s)", edge.getTargetId().toString());
     return generateKey(source, sb.toString(), target);
   }
 
@@ -149,5 +117,37 @@ public class TripletKeySelector implements KeySelector<Triplet<Vertex, Edge>, St
       sortedKeySet.add(key);
     }
     return new GroupingInformation(true, sortedKeySet);
+  }
+
+  /**
+   * Constructs the key for the given triplet using the information provided in the constructor.
+   * <p>
+   * Two triplet generate the same key, if the selected element (i.e. the element for which the key
+   * is made for via {@link AggregateMode}) are in the same group using the grouping information.
+   * <p>
+   * The default toString methods of the elements are used for this to ease debugging.
+   *
+   * @param triplet triplet for which the key should be made
+   * @return key for the triplet that represents the group of the selected element
+   */
+  @Override
+  public String getKey(Triplet triplet) {
+    final String EMPTY_VERTEX = "()";
+    final String EMPTY_EDGE = "[]";
+    switch (makeKeyFor) {
+      case SOURCE: {
+        String vertex = generateKeyForVertex(triplet.getSourceVertex(), gi);
+        return generateKey(vertex, EMPTY_EDGE, EMPTY_VERTEX);
+      }
+      case TARGET: {
+        String vertex = generateKeyForVertex(triplet.getTargetVertex(), gi);
+        return generateKey(EMPTY_VERTEX, EMPTY_EDGE, vertex);
+      }
+      case EDGE: {
+        return generateKeyForEdge(triplet.getEdge(), gi);
+      }
+      default:
+        throw new IllegalArgumentException("aggregate mode couldn't be found");
+    }
   }
 }

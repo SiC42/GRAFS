@@ -50,9 +50,11 @@ public class FilterCandidates implements FilterFunction<Triplet<QueryVertex, Que
     boolean exist;
     boolean match = false;
     for (Triplet<QueryVertex, QueryEdge> qt : queryTriples) { //TODO: get by label
-      exist =  ElementMatcher.matchesQueryElem(qt.getEdge(), triplet.getEdge());
-      exist = exist && ElementMatcher.matchesQueryElem(qt.getSourceVertex(), triplet.getSourceVertex());
-      exist = exist && ElementMatcher.matchesQueryElem(qt.getTargetVertex(), triplet.getTargetVertex());
+      exist = ElementMatcher.matchesQueryElem(qt.getEdge(), triplet.getEdge());
+      exist =
+          exist && ElementMatcher.matchesQueryElem(qt.getSourceVertex(), triplet.getSourceVertex());
+      exist =
+          exist && ElementMatcher.matchesQueryElem(qt.getTargetVertex(), triplet.getTargetVertex());
       // !no need to verify remaining elements
       if (exist) {
         triplet.getSourceVertex().addVariable(qt.getSourceVertex().getVariable());
@@ -71,7 +73,7 @@ public class FilterCandidates implements FilterFunction<Triplet<QueryVertex, Que
 
   private boolean filterVertexOnly(Triplet<QueryVertex, QueryEdge> triplet) {
     for (QueryVertex queryVertex : queryVertices) {
-      if (ElementMatcher.matchesQueryElem(queryVertex,triplet.getSourceVertex())) {
+      if (ElementMatcher.matchesQueryElem(queryVertex, triplet.getSourceVertex())) {
         triplet.getSourceVertex().addVariable(queryVertex.getVariable());
         if (queryVertex.hasPredicateSet()) {
           if (queryVertex.validatePredicate(triplet.getSourceVertex())) {
@@ -80,7 +82,7 @@ public class FilterCandidates implements FilterFunction<Triplet<QueryVertex, Que
         }
 
       }
-      if (ElementMatcher.matchesQueryElem(queryVertex,triplet.getTargetVertex())) {
+      if (ElementMatcher.matchesQueryElem(queryVertex, triplet.getTargetVertex())) {
         triplet.getTargetVertex().addVariable(queryVertex.getVariable());
         if (queryVertex.hasPredicateSet()) {
           if (queryVertex.validatePredicate(triplet.getSourceVertex())) {

@@ -75,7 +75,6 @@ public class AsciiGraphLoader {
 
   /**
    * Initializes the loader with the given GDL handler
-   *
    */
   public AsciiGraphLoader(GDLHandler gdlHandler) {
     this.gdlHandler = gdlHandler;
@@ -177,7 +176,8 @@ public class AsciiGraphLoader {
     return createEdgeStream(config, createTriplets());
   }
 
-  private GraphStream createEdgeStream(FlinkConfig config, Collection<Triplet<Vertex, Edge>> triplet) {
+  private GraphStream createEdgeStream(FlinkConfig config,
+      Collection<Triplet<Vertex, Edge>> triplet) {
     StreamExecutionEnvironment env = config.getExecutionEnvironment();
     DataStream<Triplet<Vertex, Edge>> stream = env.fromCollection(triplet);
     return new GraphStream(stream, config);

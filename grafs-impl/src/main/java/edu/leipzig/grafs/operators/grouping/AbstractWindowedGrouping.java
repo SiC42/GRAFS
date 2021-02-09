@@ -54,7 +54,8 @@ public abstract class AbstractWindowedGrouping<W extends WindowsI<? extends Wind
    *                                 for the edges
    * @param edgeAggregateFunctions   Aggregation functions for the grouped edges
    */
-  public AbstractWindowedGrouping(Set<String> vertexGiSet, Set<AggregateFunction> vertexAggregateFunctions,
+  public AbstractWindowedGrouping(Set<String> vertexGiSet,
+      Set<AggregateFunction> vertexAggregateFunctions,
       Set<String> edgeGiSet, Set<AggregateFunction> edgeAggregateFunctions) {
     this(new GroupingInformation(vertexGiSet),
         vertexAggregateFunctions,
@@ -69,12 +70,14 @@ public abstract class AbstractWindowedGrouping<W extends WindowsI<? extends Wind
    * @return the stream with the grouping operator applied
    */
   @Override
-  public <FW extends Window> DataStream<Triplet<Vertex, Edge>> execute(DataStream<Triplet<Vertex, Edge>> stream,
+  public <FW extends Window> DataStream<Triplet<Vertex, Edge>> execute(
+      DataStream<Triplet<Vertex, Edge>> stream,
       WindowingInformation<FW> wi) {
     return groupBy(stream, wi);
   }
 
-  abstract <FW extends Window> DataStream<Triplet<Vertex, Edge>> groupBy(DataStream<Triplet<Vertex, Edge>> stream, WindowingInformation<FW> wi);
+  abstract <FW extends Window> DataStream<Triplet<Vertex, Edge>> groupBy(
+      DataStream<Triplet<Vertex, Edge>> stream, WindowingInformation<FW> wi);
 
   /**
    * Builder that provides an intuitive way to generate a {@link AllWindowedGrouping}-object.
@@ -170,7 +173,8 @@ public abstract class AbstractWindowedGrouping<W extends WindowsI<? extends Wind
      * @param aggregateFunction vertex aggregate mapping
      * @return this builder
      */
-    public AbstractGroupingBuilder<W> addVertexAggregateFunction(AggregateFunction aggregateFunction) {
+    public AbstractGroupingBuilder<W> addVertexAggregateFunction(
+        AggregateFunction aggregateFunction) {
       Objects.requireNonNull(aggregateFunction, "Aggregate function must not be null");
       vertexAggFunctions.add(aggregateFunction);
       return this;
@@ -191,4 +195,4 @@ public abstract class AbstractWindowedGrouping<W extends WindowsI<? extends Wind
     public abstract AbstractWindowedGrouping<W> build();
   }
 
-  }
+}

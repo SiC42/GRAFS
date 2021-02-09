@@ -41,20 +41,6 @@ public class Triplet<V extends Vertex, E extends Edge> implements Serializable {
     this.targetVertex = targetVertex;
   }
 
-  private void checkIfIdsMatch(E edge, V sourceVertex, V targetVertex) {
-    if(edge == null){
-      return;
-    }
-    if (sourceVertex != null && !sourceVertex.getId().equals(edge.getSourceId())) {
-      throw new RuntimeException(
-          "ID of provided source vertex does not match with source id in provided edge.");
-    }
-    if (targetVertex != null && !targetVertex.getId().equals(edge.getTargetId())) {
-      throw new RuntimeException(
-          "ID of provided target vertex does not match with target id in provided edge.");
-    }
-  }
-
   /**
    * Constructs a <tt>Triplet</tt> with the given information. Here, the edge is constructed using
    * the ids in <tt>sourceVertex</tt> and <tt>targetVertex</tt> parameter
@@ -63,7 +49,8 @@ public class Triplet<V extends Vertex, E extends Edge> implements Serializable {
    * @param sourceVertex source vertex of the given edge
    * @param targetVertex target vertex of the given edge
    */
-  public static Triplet<Vertex, Edge> createTriplet(GraphElement prevEdge, GraphElement sourceVertex,
+  public static Triplet<Vertex, Edge> createTriplet(GraphElement prevEdge,
+      GraphElement sourceVertex,
       GraphElement targetVertex) {
     var source = VertexFactory.createVertex(
         sourceVertex.getLabel(),
@@ -79,7 +66,21 @@ public class Triplet<V extends Vertex, E extends Edge> implements Serializable {
         targetVertex.getId(),
         prevEdge.getProperties(),
         prevEdge.getGraphIds());
-    return new Triplet<>(e,source,target);
+    return new Triplet<>(e, source, target);
+  }
+
+  private void checkIfIdsMatch(E edge, V sourceVertex, V targetVertex) {
+    if (edge == null) {
+      return;
+    }
+    if (sourceVertex != null && !sourceVertex.getId().equals(edge.getSourceId())) {
+      throw new RuntimeException(
+          "ID of provided source vertex does not match with source id in provided edge.");
+    }
+    if (targetVertex != null && !targetVertex.getId().equals(edge.getTargetId())) {
+      throw new RuntimeException(
+          "ID of provided target vertex does not match with target id in provided edge.");
+    }
   }
 
   /**
@@ -140,7 +141,7 @@ public class Triplet<V extends Vertex, E extends Edge> implements Serializable {
    * Creates a copy of this <tt>Triplet</tt>, but with source and target vertex reversed and the
    * appropriate flags in edge set.
    */
-  public Triplet<V,Edge> createReverseTriplet() {
+  public Triplet<V, Edge> createReverseTriplet() {
     var reverseEdge = this.edge.createReverseEdge();
     return new Triplet<>(reverseEdge, targetVertex, sourceVertex);
   }
@@ -158,7 +159,7 @@ public class Triplet<V extends Vertex, E extends Edge> implements Serializable {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    Triplet<?,?> that = (Triplet<?,?>) o;
+    Triplet<?, ?> that = (Triplet<?, ?>) o;
     return Objects.equals(edge, that.edge) &&
         Objects.equals(sourceVertex, that.sourceVertex) &&
         Objects.equals(targetVertex, that.targetVertex);

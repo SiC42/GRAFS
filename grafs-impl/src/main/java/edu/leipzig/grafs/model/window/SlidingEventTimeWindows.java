@@ -2,15 +2,13 @@ package edu.leipzig.grafs.model.window;
 
 import org.apache.flink.annotation.PublicEvolving;
 import org.apache.flink.streaming.api.windowing.assigners.WindowAssigner;
-import org.apache.flink.streaming.api.windowing.assigners.WindowStagger;
 import org.apache.flink.streaming.api.windowing.time.Time;
 import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
 
 public class SlidingEventTimeWindows extends AbstractSlidingWindows {
 
 
-
-  protected SlidingEventTimeWindows(Time size, Time slide, Time offset){
+  protected SlidingEventTimeWindows(Time size, Time slide, Time offset) {
     super(size, slide, offset);
   }
 
@@ -26,10 +24,12 @@ public class SlidingEventTimeWindows extends AbstractSlidingWindows {
 
   @Override
   public WindowAssigner<Object, TimeWindow> getFlinkWindowAssigner() {
-    if(offset == null){
-      return org.apache.flink.streaming.api.windowing.assigners.SlidingEventTimeWindows.of(size, slide);
-    } else{
-      return org.apache.flink.streaming.api.windowing.assigners.SlidingEventTimeWindows.of(size, slide, offset);
+    if (offset == null) {
+      return org.apache.flink.streaming.api.windowing.assigners.SlidingEventTimeWindows
+          .of(size, slide);
+    } else {
+      return org.apache.flink.streaming.api.windowing.assigners.SlidingEventTimeWindows
+          .of(size, slide, offset);
     }
   }
 }
