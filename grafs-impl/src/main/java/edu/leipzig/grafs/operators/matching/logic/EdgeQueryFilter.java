@@ -2,11 +2,7 @@ package edu.leipzig.grafs.operators.matching.logic;
 
 
 import edu.leipzig.grafs.model.BasicGraph;
-import edu.leipzig.grafs.model.BasicTriplet;
-import edu.leipzig.grafs.model.Edge;
-import edu.leipzig.grafs.model.Graph;
 import edu.leipzig.grafs.model.Triplet;
-import edu.leipzig.grafs.model.Vertex;
 import edu.leipzig.grafs.operators.matching.model.QueryEdge;
 import edu.leipzig.grafs.operators.matching.model.QueryVertex;
 import org.apache.flink.api.common.functions.FilterFunction;
@@ -14,7 +10,7 @@ import org.apache.flink.api.common.functions.FilterFunction;
 /**
  * Filters edges based on query graph.
  */
-public class EdgeQueryFilter implements FilterFunction<BasicTriplet<QueryVertex, QueryEdge>> {
+public class EdgeQueryFilter implements FilterFunction<Triplet<QueryVertex, QueryEdge>> {
 
   /**
    * Query graph which is used to filter edges
@@ -39,7 +35,7 @@ public class EdgeQueryFilter implements FilterFunction<BasicTriplet<QueryVertex,
    * vertex in the query graph and the corresponding edge also matches the given edge
    */
   @Override
-  public boolean filter(BasicTriplet<QueryVertex, QueryEdge> triplet) {
+  public boolean filter(Triplet<QueryVertex, QueryEdge> triplet) {
     var edge = triplet.getEdge();
     var source = triplet.getSourceVertex();
     var target = triplet.getTargetVertex();

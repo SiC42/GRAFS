@@ -1,12 +1,15 @@
 package edu.leipzig.grafs.model.streaming;
 
+import edu.leipzig.grafs.model.Edge;
 import edu.leipzig.grafs.model.Triplet;
+import edu.leipzig.grafs.model.Vertex;
 import edu.leipzig.grafs.model.window.WindowingInformation;
 import edu.leipzig.grafs.model.window.WindowsI;
 import edu.leipzig.grafs.operators.interfaces.window.WindowedOperatorI;
 import edu.leipzig.grafs.util.FlinkConfig;
 import java.io.IOException;
 import java.util.Iterator;
+import org.apache.flink.api.common.typeinfo.TypeHint;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.DataStreamUtils;
@@ -18,7 +21,7 @@ public abstract class AbstractStream<S extends AbstractStream<?>> {
 
 
   protected final FlinkConfig config;
-  protected DataStream<Triplet> stream;
+  protected DataStream<Triplet<Vertex, Edge>> stream;
 
   /**
    * Constructs an triplet stream with the given data stream and config.
@@ -26,15 +29,15 @@ public abstract class AbstractStream<S extends AbstractStream<?>> {
    * @param stream data stream that holds <tt>Triplet</tt>
    * @param config config used for the stream
    */
-  public AbstractStream(DataStream<Triplet> stream, FlinkConfig config) {
+  public AbstractStream(DataStream<Triplet<Vertex, Edge>> stream, FlinkConfig config) {
     this.stream = stream.assignTimestampsAndWatermarks(config.getWatermarkStrategy());
     this.config = config;
   }
 
-  protected static DataStream<Triplet> prepareStream(SourceFunction<Triplet> function,
+  protected static DataStream<Triplet<Vertex, Edge>> prepareStream(SourceFunction<Triplet<Vertex, Edge>> function,
       FlinkConfig config, String sourceName) {
     return config.getExecutionEnvironment().addSource(function, sourceName, TypeInformation
-        .of(Triplet.class));
+        .of(new TypeHint<>() {}));
   }
 
   /**
@@ -42,7 +45,7 @@ public abstract class AbstractStream<S extends AbstractStream<?>> {
    *
    * @return the underlying data stream
    */
-  public DataStream<Triplet> getDataStream() {
+  public DataStream<Triplet<Vertex, Edge>> getDataStream() {
     return stream;
   }
 
@@ -62,7 +65,7 @@ public abstract class AbstractStream<S extends AbstractStream<?>> {
    *
    * @param sinkFunction The object containing the sink's invoke function.
    */
-  public void addSink(SinkFunction<Triplet> sinkFunction) {
+  public void addSink(SinkFunction<Triplet<Vertex, Edge>> sinkFunction) {
     stream.addSink(sinkFunction);
   }
 
@@ -79,7 +82,7 @@ public abstract class AbstractStream<S extends AbstractStream<?>> {
    * @return iterator of the stream content
    * @throws IOException
    */
-  public Iterator<Triplet> collect() throws IOException {
+  public Iterator<Triplet<Vertex, Edge>> collect() throws IOException {
     return DataStreamUtils.collect(stream);
   }
 

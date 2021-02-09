@@ -4,9 +4,8 @@ import static java.util.stream.Collectors.toSet;
 
 import edu.leipzig.grafs.factory.EdgeFactory;
 import edu.leipzig.grafs.factory.VertexFactory;
-import edu.leipzig.grafs.model.BasicTriplet;
-import edu.leipzig.grafs.model.Edge;
 import edu.leipzig.grafs.model.Triplet;
+import edu.leipzig.grafs.model.Edge;
 import edu.leipzig.grafs.model.Vertex;
 import edu.leipzig.grafs.operators.matching.model.Query;
 import edu.leipzig.grafs.operators.matching.model.QueryEdge;
@@ -57,9 +56,9 @@ public class DualSimulationProcess<W extends Window> extends PatternMatchingProc
    * @param out      A collector for emitting elements.
    */
   @Override
-  public void process(Context context, Iterable<BasicTriplet<QueryVertex, QueryEdge>> elements,
-      Collector<Triplet> out) {
-    Iterable<Triplet> triplets;
+  public void process(Context context, Iterable<Triplet<QueryVertex, QueryEdge>> elements,
+      Collector<Triplet<Vertex, Edge>> out) {
+    Iterable<Triplet<Vertex, Edge>> triplets;
     if (query.getEdges().isEmpty()) {
       throw new RuntimeException(
           "Can't process query with only vertices, because only triplet stream model is supported");
@@ -71,8 +70,8 @@ public class DualSimulationProcess<W extends Window> extends PatternMatchingProc
     }
   }
 
-  private Iterable<Triplet> executeForEdgesWithVertices(
-      Iterable<BasicTriplet<QueryVertex, QueryEdge>> elements) {
+  private Iterable<Triplet<Vertex, Edge>> executeForEdgesWithVertices(
+      Iterable<Triplet<QueryVertex, QueryEdge>> elements) {
     // get unique elements from stream
     Set<QueryVertex> initialCandidateVertices = new HashSet<>(); // used for process
     Map<GradoopId, QueryVertex> idToVertexMap = new HashMap<>(); // used to find vertices for edges at the end
@@ -108,12 +107,12 @@ public class DualSimulationProcess<W extends Window> extends PatternMatchingProc
         .filter(e -> prunableCandidateVertices.containsValue(e.getSourceId()))
         .filter(e -> prunableCandidateVertices.containsValue(e.getTargetId()))
         .collect(toSet());
-    var result = new ArrayList<Triplet>();
+    var result = new ArrayList<Triplet<Vertex, Edge>>();
     var newGraphId = GradoopId.get();
     for (var edge : finalEdgeSet) {
       var source = idToVertexMap.get(edge.getSourceId());
       var target = idToVertexMap.get(edge.getTargetId());
-      var triplet = new Triplet(EdgeFactory.createEdge(edge), VertexFactory.createVertex(source),
+      var triplet = new Triplet<>(EdgeFactory.createEdge(edge), VertexFactory.createVertex(source),
           VertexFactory.createVertex(target));
       triplet.addGraphId(newGraphId);
       result.add(triplet);
@@ -315,9 +314,9 @@ public class DualSimulationProcess<W extends Window> extends PatternMatchingProc
   }
 
   private boolean checkParentsAndChildren(QueryVertex currentCandidateVertex,
-      Collection<BasicTriplet<QueryVertex, QueryEdge>> queryTriples,
-      Iterable<BasicTriplet<QueryVertex, QueryEdge>> candidatesInWindow) {
-    java.util.function.Predicate<BasicTriplet<QueryVertex, QueryEdge>> oneVertexInTripletMatchesCurVertex = e ->
+      Collection<Triplet<QueryVertex, QueryEdge>> queryTriples,
+      Iterable<Triplet<QueryVertex, QueryEdge>> candidatesInWindow) {
+    java.util.function.Predicate<Triplet<QueryVertex, QueryEdge>> oneVertexInTripletMatchesCurVertex = e ->
         ElementMatcher.matchesQueryElem(e.getSourceVertex(), currentCandidateVertex) ||
             ElementMatcher.matchesQueryElem(e.getTargetVertex(), currentCandidateVertex);
 
@@ -325,14 +324,14 @@ public class DualSimulationProcess<W extends Window> extends PatternMatchingProc
         .stream()
         .filter(oneVertexInTripletMatchesCurVertex)
         .collect(Collectors.toList());
-    List<BasicTriplet<QueryVertex, QueryEdge>> candidateRelatives = StreamSupport
+    List<Triplet<QueryVertex, QueryEdge>> candidateRelatives = StreamSupport
         .stream(candidatesInWindow.spliterator(), false)
         .filter(oneVertexInTripletMatchesCurVertex)
         .collect(Collectors.toList());
 
     for (var relative : queryRelatives) {
       boolean exist = false;
-      java.util.function.Predicate<BasicTriplet<QueryVertex, QueryEdge>> tripletMatchesRelative = t ->
+      java.util.function.Predicate<Triplet<QueryVertex, QueryEdge>> tripletMatchesRelative = t ->
           ElementMatcher.matchesQueryElem(relative.getSourceVertex(), t.getSourceVertex()) &&
               ElementMatcher.matchesQueryElem(relative.getTargetVertex(), t.getTargetVertex()) &&
               ElementMatcher.matchesQueryElem(relative.getEdge(), t.getEdge());

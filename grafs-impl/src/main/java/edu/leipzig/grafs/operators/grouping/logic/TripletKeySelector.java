@@ -13,7 +13,7 @@ import org.apache.flink.api.java.functions.KeySelector;
  * Key selector used for grouping that returns a string representation of an {@link Triplet} using
  * the grouping information.
  */
-public class TripletKeySelector implements KeySelector<Triplet, String> {
+public class TripletKeySelector implements KeySelector<Triplet<Vertex, Edge>, String> {
 
   private final GroupingInformation gi;
   private final AggregateMode makeKeyFor;

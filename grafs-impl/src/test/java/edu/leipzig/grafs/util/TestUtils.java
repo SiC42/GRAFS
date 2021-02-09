@@ -9,9 +9,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import com.google.common.collect.Maps;
+import edu.leipzig.grafs.model.Edge;
 import edu.leipzig.grafs.model.Element;
 import edu.leipzig.grafs.model.GraphElement;
 import edu.leipzig.grafs.model.Triplet;
+import edu.leipzig.grafs.model.Vertex;
 import edu.leipzig.grafs.model.streaming.AbstractStream;
 import edu.leipzig.grafs.operators.grouping.functions.AggregateFunction;
 import edu.leipzig.grafs.operators.grouping.functions.BaseAggregateFunction;
@@ -116,7 +118,7 @@ public class TestUtils {
       return element.getPropertyValue(key);
     }
   };
-  private static final Comparator<Triplet> tripletComparator = (t1, t2) -> {
+  private static final Comparator<Triplet<Vertex, Edge>> tripletComparator = (t1, t2) -> {
     int difference;
 
     // compare edges
@@ -324,8 +326,8 @@ public class TestUtils {
    * @param actualCollection   second collection
    */
   public static void validateTripletCollections(
-      Collection<Triplet> expectedCollection,
-      Collection<Triplet> actualCollection) {
+      Collection<Triplet<Vertex, Edge>> expectedCollection,
+      Collection<Triplet<Vertex, Edge>> actualCollection) {
     assertNotNull(expectedCollection, "first collection was null");
     assertNotNull(expectedCollection, "second collection was null");
     assertEquals(expectedCollection.size(), actualCollection.size(), String.format(
@@ -528,10 +530,10 @@ public class TestUtils {
   }
 
   public static void assertThatStreamContains(AbstractStream<?> actualResultStream,
-      Collection<Triplet> expectedResult)
+      Collection<Triplet<Vertex, Edge>> expectedResult)
       throws IOException {
     var tripletIt = actualResultStream.collect();
-    var actualTriplets = new ArrayList<Triplet>();
+    var actualTriplets = new ArrayList<Triplet<Vertex, Edge>>();
     tripletIt.forEachRemaining(actualTriplets::add);
     assertThat(actualTriplets, containsInAnyOrder(expectedResult.toArray()));
   }

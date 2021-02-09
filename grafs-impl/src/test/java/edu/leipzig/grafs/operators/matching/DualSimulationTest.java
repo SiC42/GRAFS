@@ -1,7 +1,9 @@
 package edu.leipzig.grafs.operators.matching;
 
 
+import edu.leipzig.grafs.model.Edge;
 import edu.leipzig.grafs.model.Triplet;
+import edu.leipzig.grafs.model.Vertex;
 import edu.leipzig.grafs.model.streaming.GraphStream;
 import edu.leipzig.grafs.model.window.TumblingEventTimeWindows;
 import edu.leipzig.grafs.operators.subgraph.Subgraph;
@@ -10,7 +12,6 @@ import edu.leipzig.grafs.util.FlinkConfig;
 import edu.leipzig.grafs.util.FlinkConfigBuilder;
 import edu.leipzig.grafs.util.TestUtils;
 import java.time.Duration;
-import java.util.ArrayList;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.windowing.time.Time;
@@ -28,7 +29,7 @@ public class DualSimulationTest extends MatchingTestBase {
         StreamExecutionEnvironment.getExecutionEnvironment();
     config = new FlinkConfigBuilder(env)
         .withWaterMarkStrategy(WatermarkStrategy
-            .<Triplet>forBoundedOutOfOrderness(Duration.ZERO)
+            .<Triplet<Vertex, Edge>>forBoundedOutOfOrderness(Duration.ZERO)
             .withTimestampAssigner((ec, timestamp) -> 0))
         .build();
   }
@@ -114,8 +115,6 @@ public class DualSimulationTest extends MatchingTestBase {
         .callForGC(new DualSimulation(queryStr))
         .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
         .apply();
-    var iterator = resultStream.collect();
-    var triplets = new ArrayList<Triplet>();
     TestUtils.assertThatStreamContains(resultStream, expectedEcs);
   }
 
@@ -269,7 +268,8 @@ public class DualSimulationTest extends MatchingTestBase {
     var expectedEcs = loader.createTripletsByGraphVariables("ds");
 
     var resultStream = graphStream
-        .callForGraph(new Subgraph(v -> v.getLabel().equals("Person"),null, Strategy.VERTEX_INDUCED))
+        .callForGraph(
+            new Subgraph(v -> v.getLabel().equals("Person"), null, Strategy.VERTEX_INDUCED))
         .callForGC(new DualSimulation(queryStr))
         .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
         .apply();

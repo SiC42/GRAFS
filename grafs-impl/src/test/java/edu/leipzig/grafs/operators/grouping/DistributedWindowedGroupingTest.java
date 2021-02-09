@@ -5,7 +5,9 @@ import static edu.leipzig.grafs.util.TestUtils.validateTripletCollections;
 import static org.gradoop.common.util.GradoopConstants.NULL_STRING;
 import static org.hamcrest.core.Is.is;
 
+import edu.leipzig.grafs.model.Edge;
 import edu.leipzig.grafs.model.Triplet;
+import edu.leipzig.grafs.model.Vertex;
 import edu.leipzig.grafs.model.window.TumblingEventTimeWindows;
 import edu.leipzig.grafs.operators.grouping.functions.Count;
 import edu.leipzig.grafs.operators.grouping.functions.MaxProperty;
@@ -25,7 +27,6 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.windowing.time.Time;
 import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class DistributedWindowedGroupingTest {
@@ -38,18 +39,7 @@ public class DistributedWindowedGroupingTest {
         StreamExecutionEnvironment.getExecutionEnvironment();
     config = new FlinkConfigBuilder(env)
         .withWaterMarkStrategy(WatermarkStrategy
-            .<Triplet>forBoundedOutOfOrderness(Duration.ZERO)
-            .withTimestampAssigner((ec, timestamp) -> 0))
-        .build();
-  }
-
-  @BeforeEach
-  void init() {
-    var env = config.getExecutionEnvironment();
-    env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
-    FlinkConfig config = new FlinkConfigBuilder(env)
-        .withWaterMarkStrategy(WatermarkStrategy
-            .<Triplet>forBoundedOutOfOrderness(Duration.ZERO)
+            .<Triplet<Vertex, Edge>>forBoundedOutOfOrderness(Duration.ZERO)
             .withTimestampAssigner((ec, timestamp) -> 0))
         .build();
   }
@@ -73,7 +63,7 @@ public class DistributedWindowedGroupingTest {
         .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
         .apply();
     var tripletIt = finalStream.collect();
-    var actualTripletCol = new ArrayList<Triplet>();
+    var actualTripletCol = new ArrayList<Triplet<Vertex, Edge>>();
     while (tripletIt.hasNext()) {
       actualTripletCol.add(tripletIt.next());
     }
@@ -112,7 +102,7 @@ public class DistributedWindowedGroupingTest {
         .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
         .apply();
     var tripletIt =  finalStream.collect();
-    var actualTripletCol = new ArrayList<Triplet>();
+    var actualTripletCol = new ArrayList<Triplet<Vertex, Edge>>();
     while (tripletIt.hasNext()) {
       actualTripletCol.add(tripletIt.next());
     }
@@ -164,7 +154,7 @@ public class DistributedWindowedGroupingTest {
         .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
         .apply();
     var tripletIt = finalStream.collect();
-    var actualTripletCol = new ArrayList<Triplet>();
+    var actualTripletCol = new ArrayList<Triplet<Vertex, Edge>>();
     while (tripletIt.hasNext()) {
       actualTripletCol.add(tripletIt.next());
     }
@@ -214,7 +204,7 @@ public class DistributedWindowedGroupingTest {
         .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
         .apply();
     var tripletIt = finalStream.collect();
-    var actualTripletCol = new ArrayList<Triplet>();
+    var actualTripletCol = new ArrayList<Triplet<Vertex, Edge>>();
     while (tripletIt.hasNext()) {
       actualTripletCol.add(tripletIt.next());
     }
@@ -252,7 +242,7 @@ public class DistributedWindowedGroupingTest {
         .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
         .apply();
     var tripletIt = finalStream.collect();
-    var actualTripletCol = new ArrayList<Triplet>();
+    var actualTripletCol = new ArrayList<Triplet<Vertex, Edge>>();
     while (tripletIt.hasNext()) {
       actualTripletCol.add(tripletIt.next());
     }
@@ -293,7 +283,7 @@ public class DistributedWindowedGroupingTest {
         .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
         .apply();
     var tripletIt = finalStream.collect();
-    var actualTripletCol = new ArrayList<Triplet>();
+    var actualTripletCol = new ArrayList<Triplet<Vertex, Edge>>();
     while (tripletIt.hasNext()) {
       actualTripletCol.add(tripletIt.next());
     }
@@ -337,7 +327,7 @@ public class DistributedWindowedGroupingTest {
         .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
         .apply();
     var tripletIt = finalStream.collect();
-    var actualTripletCol = new ArrayList<Triplet>();
+    var actualTripletCol = new ArrayList<Triplet<Vertex, Edge>>();
     while (tripletIt.hasNext()) {
       actualTripletCol.add(tripletIt.next());
     }
@@ -403,7 +393,7 @@ public class DistributedWindowedGroupingTest {
         .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
         .apply();
     var tripletIt = finalStream.collect();
-    var actualTripletCol = new ArrayList<Triplet>();
+    var actualTripletCol = new ArrayList<Triplet<Vertex, Edge>>();
     while (tripletIt.hasNext()) {
       actualTripletCol.add(tripletIt.next());
     }
@@ -471,7 +461,7 @@ public class DistributedWindowedGroupingTest {
         .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
         .apply();
     var tripletIt = finalStream.collect();
-    var actualTripletCol = new ArrayList<Triplet>();
+    var actualTripletCol = new ArrayList<Triplet<Vertex, Edge>>();
     while (tripletIt.hasNext()) {
       actualTripletCol.add(tripletIt.next());
     }
@@ -498,7 +488,7 @@ public class DistributedWindowedGroupingTest {
 
     var intermediateStream =
         edgeStream
-    
+
             .callForGraph(
                 DistributedWindowedGrouping.createGrouping()
                     .addVertexGroupingKey("city")
@@ -512,7 +502,7 @@ public class DistributedWindowedGroupingTest {
         .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
         .apply();
     var tripletIt = finalStream.collect();
-    var actualTripletCol = new ArrayList<Triplet>();
+    var actualTripletCol = new ArrayList<Triplet<Vertex, Edge>>();
     while (tripletIt.hasNext()) {
       actualTripletCol.add(tripletIt.next());
     }
@@ -553,7 +543,7 @@ public class DistributedWindowedGroupingTest {
         .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
         .apply();
     var tripletIt = finalStream.collect();
-    var actualTripletCol = new ArrayList<Triplet>();
+    var actualTripletCol = new ArrayList<Triplet<Vertex, Edge>>();
     while (tripletIt.hasNext()) {
       actualTripletCol.add(tripletIt.next());
     }
@@ -597,7 +587,7 @@ public class DistributedWindowedGroupingTest {
         .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
         .apply();
     var tripletIt = finalStream.collect();
-    var actualTripletCol = new ArrayList<Triplet>();
+    var actualTripletCol = new ArrayList<Triplet<Vertex, Edge>>();
     while (tripletIt.hasNext()) {
       actualTripletCol.add(tripletIt.next());
     }
@@ -648,7 +638,7 @@ public class DistributedWindowedGroupingTest {
         .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
         .apply();
     var tripletIt = finalStream.collect();
-    var actualTripletCol = new ArrayList<Triplet>();
+    var actualTripletCol = new ArrayList<Triplet<Vertex, Edge>>();
     while (tripletIt.hasNext()) {
       actualTripletCol.add(tripletIt.next());
     }
@@ -688,7 +678,7 @@ public class DistributedWindowedGroupingTest {
         .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
         .apply();
     var tripletIt = finalStream.collect();
-    var actualTripletCol = new ArrayList<Triplet>();
+    var actualTripletCol = new ArrayList<Triplet<Vertex, Edge>>();
     while (tripletIt.hasNext()) {
       actualTripletCol.add(tripletIt.next());
     }
@@ -733,7 +723,7 @@ public class DistributedWindowedGroupingTest {
         .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
         .apply();
     var tripletIt = finalStream.collect();
-    var actualTripletCol = new ArrayList<Triplet>();
+    var actualTripletCol = new ArrayList<Triplet<Vertex, Edge>>();
     while (tripletIt.hasNext()) {
       actualTripletCol.add(tripletIt.next());
     }
@@ -779,7 +769,7 @@ public class DistributedWindowedGroupingTest {
         .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
         .apply();
     var tripletIt = finalStream.collect();
-    var actualTripletCol = new ArrayList<Triplet>();
+    var actualTripletCol = new ArrayList<Triplet<Vertex, Edge>>();
     while (tripletIt.hasNext()) {
       actualTripletCol.add(tripletIt.next());
     }
@@ -824,7 +814,7 @@ public class DistributedWindowedGroupingTest {
         .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
         .apply();
     var tripletIt = finalStream.collect();
-    var actualTripletCol = new ArrayList<Triplet>();
+    var actualTripletCol = new ArrayList<Triplet<Vertex, Edge>>();
     while (tripletIt.hasNext()) {
       actualTripletCol.add(tripletIt.next());
     }
@@ -869,7 +859,7 @@ public class DistributedWindowedGroupingTest {
         .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
         .apply();
     var tripletIt = finalStream.collect();
-    var actualTripletCol = new ArrayList<Triplet>();
+    var actualTripletCol = new ArrayList<Triplet<Vertex, Edge>>();
     while (tripletIt.hasNext()) {
       actualTripletCol.add(tripletIt.next());
     }
@@ -915,7 +905,7 @@ public class DistributedWindowedGroupingTest {
         .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
         .apply();
     var tripletIt = finalStream.collect();
-    var actualTripletCol = new ArrayList<Triplet>();
+    var actualTripletCol = new ArrayList<Triplet<Vertex, Edge>>();
     while (tripletIt.hasNext()) {
       actualTripletCol.add(tripletIt.next());
     }
@@ -969,7 +959,7 @@ public class DistributedWindowedGroupingTest {
         .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
         .apply();
     var tripletIt = finalStream.collect();
-    var actualTripletCol = new ArrayList<Triplet>();
+    var actualTripletCol = new ArrayList<Triplet<Vertex, Edge>>();
     while (tripletIt.hasNext()) {
       actualTripletCol.add(tripletIt.next());
     }
@@ -1010,7 +1000,7 @@ public class DistributedWindowedGroupingTest {
         .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
         .apply();
     var tripletIt = finalStream.collect();
-    var actualTripletCol = new ArrayList<Triplet>();
+    var actualTripletCol = new ArrayList<Triplet<Vertex, Edge>>();
     while (tripletIt.hasNext()) {
       actualTripletCol.add(tripletIt.next());
     }
@@ -1059,7 +1049,7 @@ public class DistributedWindowedGroupingTest {
         .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
         .apply();
     var tripletIt = finalStream.collect();
-    var actualTripletCol = new ArrayList<Triplet>();
+    var actualTripletCol = new ArrayList<Triplet<Vertex, Edge>>();
     while (tripletIt.hasNext()) {
       actualTripletCol.add(tripletIt.next());
     }
@@ -1101,7 +1091,7 @@ public class DistributedWindowedGroupingTest {
 
     var intermediateStream =
         edgeStream
-    
+
             .callForGraph(
                 DistributedWindowedGrouping.createGrouping()
                     .addVertexGroupingKey("city")
@@ -1118,7 +1108,7 @@ public class DistributedWindowedGroupingTest {
         .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
         .apply();
     var tripletIt = finalStream.collect();
-    var actualTripletCol = new ArrayList<Triplet>();
+    var actualTripletCol = new ArrayList<Triplet<Vertex, Edge>>();
     while (tripletIt.hasNext()) {
       actualTripletCol.add(tripletIt.next());
     }
@@ -1164,7 +1154,7 @@ public class DistributedWindowedGroupingTest {
 
     var intermediateStream =
         edgeStream
-    
+
             .callForGraph(
                 DistributedWindowedGrouping.createGrouping()
                     .useVertexLabel(true)
@@ -1175,7 +1165,7 @@ public class DistributedWindowedGroupingTest {
         .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
         .apply();
     var tripletIt = finalStream.collect();
-    var actualTripletCol = new ArrayList<Triplet>();
+    var actualTripletCol = new ArrayList<Triplet<Vertex, Edge>>();
     while (tripletIt.hasNext()) {
       actualTripletCol.add(tripletIt.next());
     }
@@ -1217,7 +1207,7 @@ public class DistributedWindowedGroupingTest {
 
     var intermediateStream =
         edgeStream
-    
+
             .callForGraph(
                 DistributedWindowedGrouping.createGrouping()
                     .useVertexLabel(true)
@@ -1231,7 +1221,7 @@ public class DistributedWindowedGroupingTest {
         .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
         .apply();
     var tripletIt = finalStream.collect();
-    var actualTripletCol = new ArrayList<Triplet>();
+    var actualTripletCol = new ArrayList<Triplet<Vertex, Edge>>();
     while (tripletIt.hasNext()) {
       actualTripletCol.add(tripletIt.next());
     }
@@ -1273,7 +1263,7 @@ public class DistributedWindowedGroupingTest {
 
     var intermediateStream =
         edgeStream
-    
+
             .callForGraph(
                 DistributedWindowedGrouping.createGrouping()
                     .useVertexLabel(true)
@@ -1287,7 +1277,7 @@ public class DistributedWindowedGroupingTest {
         .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
         .apply();
     var tripletIt = finalStream.collect();
-    var actualTripletCol = new ArrayList<Triplet>();
+    var actualTripletCol = new ArrayList<Triplet<Vertex, Edge>>();
     while (tripletIt.hasNext()) {
       actualTripletCol.add(tripletIt.next());
     }
@@ -1329,7 +1319,7 @@ public class DistributedWindowedGroupingTest {
 
     var intermediateStream =
         edgeStream
-    
+
             .callForGraph(
                 DistributedWindowedGrouping.createGrouping()
                     .useVertexLabel(true)
@@ -1343,7 +1333,7 @@ public class DistributedWindowedGroupingTest {
         .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
         .apply();
     var tripletIt = finalStream.collect();
-    var actualTripletCol = new ArrayList<Triplet>();
+    var actualTripletCol = new ArrayList<Triplet<Vertex, Edge>>();
     while (tripletIt.hasNext()) {
       actualTripletCol.add(tripletIt.next());
     }
@@ -1385,7 +1375,7 @@ public class DistributedWindowedGroupingTest {
 
     var intermediateStream =
         edgeStream
-    
+
             .callForGraph(
                 DistributedWindowedGrouping.createGrouping()
                     .useVertexLabel(true)
@@ -1399,7 +1389,7 @@ public class DistributedWindowedGroupingTest {
         .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
         .apply();
     var tripletIt = finalStream.collect();
-    var actualTripletCol = new ArrayList<Triplet>();
+    var actualTripletCol = new ArrayList<Triplet<Vertex, Edge>>();
     while (tripletIt.hasNext()) {
       actualTripletCol.add(tripletIt.next());
     }
@@ -1441,7 +1431,7 @@ public class DistributedWindowedGroupingTest {
 
     var intermediateStream =
         edgeStream
-    
+
             .callForGraph(
                 DistributedWindowedGrouping.createGrouping()
                     .useVertexLabel(true)
@@ -1455,7 +1445,7 @@ public class DistributedWindowedGroupingTest {
         .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
         .apply();
     var tripletIt = finalStream.collect();
-    var actualTripletCol = new ArrayList<Triplet>();
+    var actualTripletCol = new ArrayList<Triplet<Vertex, Edge>>();
     while (tripletIt.hasNext()) {
       actualTripletCol.add(tripletIt.next());
     }
@@ -1497,7 +1487,7 @@ public class DistributedWindowedGroupingTest {
 
     var intermediateStream =
         edgeStream
-    
+
             .callForGraph(
                 DistributedWindowedGrouping.createGrouping()
                     .useVertexLabel(true)
@@ -1511,7 +1501,7 @@ public class DistributedWindowedGroupingTest {
         .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
         .apply();
     var tripletIt = finalStream.collect();
-    var actualTripletCol = new ArrayList<Triplet>();
+    var actualTripletCol = new ArrayList<Triplet<Vertex, Edge>>();
     while (tripletIt.hasNext()) {
       actualTripletCol.add(tripletIt.next());
     }
@@ -1553,7 +1543,7 @@ public class DistributedWindowedGroupingTest {
 
     var intermediateStream =
         edgeStream
-    
+
             .callForGraph(
                 DistributedWindowedGrouping.createGrouping()
                     .useVertexLabel(true)
@@ -1566,7 +1556,7 @@ public class DistributedWindowedGroupingTest {
         .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
         .apply();
     var tripletIt = finalStream.collect();
-    var actualTripletCol = new ArrayList<Triplet>();
+    var actualTripletCol = new ArrayList<Triplet<Vertex, Edge>>();
     while (tripletIt.hasNext()) {
       actualTripletCol.add(tripletIt.next());
     }
@@ -1608,7 +1598,7 @@ public class DistributedWindowedGroupingTest {
 
     var intermediateStream =
         edgeStream
-    
+
             .callForGraph(
                 DistributedWindowedGrouping.createGrouping()
                     .useVertexLabel(true)
@@ -1621,7 +1611,7 @@ public class DistributedWindowedGroupingTest {
         .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
         .apply();
     var tripletIt = finalStream.collect();
-    var actualTripletCol = new ArrayList<Triplet>();
+    var actualTripletCol = new ArrayList<Triplet<Vertex, Edge>>();
     while (tripletIt.hasNext()) {
       actualTripletCol.add(tripletIt.next());
     }
@@ -1663,7 +1653,7 @@ public class DistributedWindowedGroupingTest {
 
     var intermediateStream =
         edgeStream
-    
+
             .callForGraph(
                 DistributedWindowedGrouping.createGrouping()
                     .useVertexLabel(true)
@@ -1676,7 +1666,7 @@ public class DistributedWindowedGroupingTest {
         .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
         .apply();
     var tripletIt = finalStream.collect();
-    var actualTripletCol = new ArrayList<Triplet>();
+    var actualTripletCol = new ArrayList<Triplet<Vertex, Edge>>();
     while (tripletIt.hasNext()) {
       actualTripletCol.add(tripletIt.next());
     }
@@ -1718,7 +1708,7 @@ public class DistributedWindowedGroupingTest {
 
     var intermediateStream =
         edgeStream
-    
+
             .callForGraph(
                 DistributedWindowedGrouping.createGrouping()
                     .useVertexLabel(true)
@@ -1731,7 +1721,7 @@ public class DistributedWindowedGroupingTest {
         .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
         .apply();
     var tripletIt = finalStream.collect();
-    var actualTripletCol = new ArrayList<Triplet>();
+    var actualTripletCol = new ArrayList<Triplet<Vertex, Edge>>();
     while (tripletIt.hasNext()) {
       actualTripletCol.add(tripletIt.next());
     }
@@ -1772,7 +1762,7 @@ public class DistributedWindowedGroupingTest {
         "]");
     var intermediateStream =
         edgeStream
-    
+
             .callForGraph(
                 DistributedWindowedGrouping.createGrouping()
                     .useVertexLabel(true)
@@ -1791,7 +1781,7 @@ public class DistributedWindowedGroupingTest {
         .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
         .apply();
     var tripletIt = finalStream.collect();
-    var actualTripletCol = new ArrayList<Triplet>();
+    var actualTripletCol = new ArrayList<Triplet<Vertex, Edge>>();
     while (tripletIt.hasNext()) {
       actualTripletCol.add(tripletIt.next());
     }
@@ -1802,7 +1792,7 @@ public class DistributedWindowedGroupingTest {
     checkForOnlyOneGraphId(expectedTripletCol);
   }
 
-  private void checkForOnlyOneGraphId(Collection<Triplet> tripletCollection) {
+  private void checkForOnlyOneGraphId(Collection<Triplet<Vertex, Edge>> tripletCollection) {
     for (var triplet : tripletCollection) {
       MatcherAssert.assertThat(triplet.getEdge().getGraphCount(), is(1));
       MatcherAssert.assertThat(triplet.getSourceVertex().getGraphCount(), is(1));

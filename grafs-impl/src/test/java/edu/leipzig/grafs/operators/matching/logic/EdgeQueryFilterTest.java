@@ -4,18 +4,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.core.IsEqual.equalTo;
 
-import edu.leipzig.grafs.factory.EdgeFactory;
 import edu.leipzig.grafs.model.BasicGraph;
-import edu.leipzig.grafs.model.BasicTriplet;
-import edu.leipzig.grafs.model.Graph;
 import edu.leipzig.grafs.model.Triplet;
-import edu.leipzig.grafs.model.Vertex;
 import edu.leipzig.grafs.operators.matching.model.QueryEdge;
 import edu.leipzig.grafs.operators.matching.model.QueryVertex;
-import java.util.ArrayList;
 import org.gradoop.common.model.impl.id.GradoopId;
 import org.gradoop.common.model.impl.id.GradoopIdSet;
-import org.gradoop.common.model.impl.properties.Properties;
 import org.gradoop.common.util.GradoopConstants;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -45,7 +39,7 @@ class EdgeQueryFilterTest {
     var target = new QueryVertex();
     target.setLabel("B");
     var edge = new QueryEdge(GradoopId.get(), GradoopConstants.DEFAULT_EDGE_LABEL, source.getId(),  target.getId(), null,  new GradoopIdSet());
-    var triplet = new BasicTriplet<>(edge, source, target);
+    var triplet = new Triplet<>(edge, source, target);
     assertThat(edgeFilter.filter(triplet), is(equalTo(false)));
   }
 
@@ -56,7 +50,7 @@ class EdgeQueryFilterTest {
     var target = new QueryVertex();
     target.setLabel("NotB");
     var edge = new QueryEdge(GradoopId.get(), GradoopConstants.DEFAULT_EDGE_LABEL, source.getId(),  target.getId(), null,  new GradoopIdSet());
-    var triplet = new BasicTriplet<>(edge, source, target);
+    var triplet = new Triplet<>(edge, source, target);
     assertThat(edgeFilter.filter(triplet), is(equalTo(false)));
   }
 
@@ -67,7 +61,7 @@ class EdgeQueryFilterTest {
     var target = new QueryVertex();
     target.setLabel("A");
     var edge = new QueryEdge(GradoopId.get(), GradoopConstants.DEFAULT_EDGE_LABEL, source.getId(),  target.getId(), null,  new GradoopIdSet());
-    var triplet = new BasicTriplet<>(edge, source, target);
+    var triplet = new Triplet<>(edge, source, target);
     assertThat(edgeFilter.filter(triplet), is(equalTo(false)));
   }
 
@@ -78,7 +72,7 @@ class EdgeQueryFilterTest {
     var target = new QueryVertex();
     target.setLabel("B");
     var edge = new QueryEdge(GradoopId.get(), GradoopConstants.DEFAULT_EDGE_LABEL, source.getId(),  target.getId(), null,  new GradoopIdSet());
-    var triplet = new BasicTriplet<>(edge, source, target);
+    var triplet = new Triplet<>(edge, source, target);
     assertThat(edgeFilter.filter(triplet), is(equalTo(false)));
   }
 
@@ -89,7 +83,7 @@ class EdgeQueryFilterTest {
     var target = new QueryVertex();
     target.setLabel("B");
     var edge = new QueryEdge(GradoopId.get(), "E", source.getId(),  target.getId(), null,  new GradoopIdSet());
-    var triplet = new BasicTriplet<>(edge, source, target);
+    var triplet = new Triplet<>(edge, source, target);
     assertThat(edgeFilter.filter(triplet), is(equalTo(true)));
   }
 }

@@ -1,18 +1,16 @@
 package edu.leipzig.grafs.operators.matching.logic;
 
-import com.codahale.metrics.UniformReservoir;
-import edu.leipzig.grafs.model.BasicTriplet;
+import edu.leipzig.grafs.model.Edge;
 import edu.leipzig.grafs.model.Triplet;
+import edu.leipzig.grafs.model.Vertex;
 import edu.leipzig.grafs.operators.matching.model.QueryEdge;
 import edu.leipzig.grafs.operators.matching.model.QueryVertex;
-import org.apache.flink.configuration.Configuration;
-import org.apache.flink.dropwizard.metrics.DropwizardHistogramWrapper;
 import org.apache.flink.metrics.Histogram;
 import org.apache.flink.streaming.api.functions.windowing.ProcessAllWindowFunction;
 import org.apache.flink.streaming.api.windowing.windows.Window;
 import org.apache.flink.util.Collector;
 
-public abstract class PatternMatchingProcess<W extends Window> extends ProcessAllWindowFunction<BasicTriplet<QueryVertex, QueryEdge>, Triplet, W> {
+public abstract class PatternMatchingProcess<W extends Window> extends ProcessAllWindowFunction<Triplet<QueryVertex, QueryEdge>, Triplet<Vertex, Edge>, W> {
     transient Histogram histogram;
 
     /**
@@ -23,6 +21,6 @@ public abstract class PatternMatchingProcess<W extends Window> extends ProcessAl
      * @param out      A collector for emitting elements.
      * @throws Exception The function may throw exceptions to fail the program and trigger recovery.
      */
-    public abstract void process(Context context, Iterable<BasicTriplet<QueryVertex, QueryEdge>> elements, Collector<Triplet> out) throws Exception;
+    public abstract void process(Context context, Iterable<Triplet<QueryVertex, QueryEdge>> elements, Collector<Triplet<Vertex, Edge>> out) throws Exception;
 
 }

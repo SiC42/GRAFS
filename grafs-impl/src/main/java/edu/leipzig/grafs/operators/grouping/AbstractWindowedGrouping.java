@@ -1,6 +1,8 @@
 package edu.leipzig.grafs.operators.grouping;
 
+import edu.leipzig.grafs.model.Edge;
 import edu.leipzig.grafs.model.Triplet;
+import edu.leipzig.grafs.model.Vertex;
 import edu.leipzig.grafs.model.window.WindowingInformation;
 import edu.leipzig.grafs.model.window.WindowsI;
 import edu.leipzig.grafs.operators.grouping.functions.AggregateFunction;
@@ -67,12 +69,12 @@ public abstract class AbstractWindowedGrouping<W extends WindowsI<? extends Wind
    * @return the stream with the grouping operator applied
    */
   @Override
-  public <FW extends Window> DataStream<Triplet> execute(DataStream<Triplet> stream,
+  public <FW extends Window> DataStream<Triplet<Vertex, Edge>> execute(DataStream<Triplet<Vertex, Edge>> stream,
       WindowingInformation<FW> wi) {
     return groupBy(stream, wi);
   }
 
-  abstract <FW extends Window> DataStream<Triplet> groupBy(DataStream<Triplet> stream, WindowingInformation<FW> wi);
+  abstract <FW extends Window> DataStream<Triplet<Vertex, Edge>> groupBy(DataStream<Triplet<Vertex, Edge>> stream, WindowingInformation<FW> wi);
 
   /**
    * Builder that provides an intuitive way to generate a {@link AllWindowedGrouping}-object.

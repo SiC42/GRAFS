@@ -24,7 +24,7 @@ public class Subgraph implements GraphToGraphOperatorI {
   /**
    * Filter used to make a subgraph.
    */
-  protected FilterFunction<Triplet> tripletFilter;
+  protected FilterFunction<Triplet<Vertex, Edge>> tripletFilter;
 
   private Strategy strategy;
 
@@ -81,7 +81,7 @@ public class Subgraph implements GraphToGraphOperatorI {
    * @param edgeFilter   filter applied to the edges of the stream
    * @return triplet filter ready to be applied to the stream
    */
-  private FilterFunction<Triplet> createSubGraphFilter(FilterFunction<Vertex> vertexFilter,
+  private FilterFunction<Triplet<Vertex, Edge>> createSubGraphFilter(FilterFunction<Vertex> vertexFilter,
       FilterFunction<Edge> edgeFilter) {
     return triplet ->
         edgeFilter.filter(triplet.getEdge()) &&
@@ -96,7 +96,7 @@ public class Subgraph implements GraphToGraphOperatorI {
    * @param vertexFilter filter applied to the vertices of the stream
    * @return vertex induced subgraph filter ready to be applied to the stream
    */
-  private FilterFunction<Triplet> createVertexInducedSubgraphFilter(
+  private FilterFunction<Triplet<Vertex, Edge>> createVertexInducedSubgraphFilter(
       FilterFunction<Vertex> vertexFilter) {
     return triplet ->
         vertexFilter.filter(triplet.getSourceVertex()) && vertexFilter
@@ -110,7 +110,7 @@ public class Subgraph implements GraphToGraphOperatorI {
    * @param edgeFilter filter applied to the vertices of the stream
    * @return edge induced subgraph filter ready to be applied to the stream
    */
-  private FilterFunction<Triplet> createEdgeInducedSubgraphFilter(
+  private FilterFunction<Triplet<Vertex, Edge>> createEdgeInducedSubgraphFilter(
       FilterFunction<Edge> edgeFilter) {
     return triplet -> edgeFilter.filter(triplet.getEdge());
   }
@@ -122,7 +122,7 @@ public class Subgraph implements GraphToGraphOperatorI {
    * @return the stream with the subgraph operator applied
    */
   @Override
-  public DataStream<Triplet> execute(DataStream<Triplet> stream) {
+  public DataStream<Triplet<Vertex, Edge>> execute(DataStream<Triplet<Vertex, Edge>> stream) {
     return stream.filter(tripletFilter).name(strategy.name().toLowerCase() + " subgraph");
   }
 

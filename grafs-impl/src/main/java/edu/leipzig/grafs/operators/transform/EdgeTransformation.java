@@ -3,6 +3,7 @@ package edu.leipzig.grafs.operators.transform;
 import edu.leipzig.grafs.model.Edge;
 import edu.leipzig.grafs.model.Element;
 import edu.leipzig.grafs.model.Triplet;
+import edu.leipzig.grafs.model.Vertex;
 import edu.leipzig.grafs.operators.interfaces.nonwindow.GraphCollectionToGraphCollectionOperatorI;
 import edu.leipzig.grafs.operators.interfaces.nonwindow.GraphToGraphOperatorI;
 import org.apache.flink.api.common.functions.MapFunction;
@@ -18,7 +19,7 @@ public class EdgeTransformation implements GraphToGraphOperatorI,
   /**
    * Function that is applied to the stream
    */
-  protected MapFunction<Triplet, Triplet> tripletMapper;
+  protected MapFunction<Triplet<Vertex, Edge>, Triplet<Vertex, Edge>> tripletMapper;
 
   /**
    * Initializes this operator with the given transformation function.
@@ -26,9 +27,12 @@ public class EdgeTransformation implements GraphToGraphOperatorI,
    * @param mapper transformation function that is used on every edge of the stream
    */
   public EdgeTransformation(final MapFunction<Element, Element> mapper) {
-    this.tripletMapper = triplet -> {
-      var transformedEdge = (Edge) mapper.map(triplet.getEdge());
-      return new Triplet(transformedEdge, triplet.getSourceVertex(), triplet.getTargetVertex());
+    this.tripletMapper = new MapFunction<Triplet<Vertex, Edge>, Triplet<Vertex, Edge>>() {
+      @Override
+      public Triplet<Vertex, Edge> map(Triplet<Vertex, Edge> triplet) throws Exception {
+        var transformedEdge = (Edge) mapper.map(triplet.getEdge());
+        return new Triplet<>(transformedEdge, triplet.getSourceVertex(), triplet.getTargetVertex());
+      }
     };
   }
 
@@ -39,7 +43,7 @@ public class EdgeTransformation implements GraphToGraphOperatorI,
    * @return the stream with the edge transformation operator applied
    */
   @Override
-  public DataStream<Triplet> execute(DataStream<Triplet> stream) {
+  public DataStream<Triplet<Vertex, Edge>> execute(DataStream<Triplet<Vertex, Edge>> stream) {
     return stream.map(tripletMapper).name("Edge Transformation");
   }
 }

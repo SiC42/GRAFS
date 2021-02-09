@@ -2,6 +2,7 @@ package edu.leipzig.grafs.operators.grouping.logic;
 
 import edu.leipzig.grafs.factory.EdgeFactory;
 import edu.leipzig.grafs.factory.VertexFactory;
+import edu.leipzig.grafs.model.Edge;
 import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.model.Vertex;
 import edu.leipzig.grafs.operators.grouping.functions.AggregateFunction;
@@ -52,14 +53,14 @@ public class VertexAggregation<W extends Window> extends ElementAggregation<W> {
    */
   @Override
   public void process(String obsoleteStr, Context obsoleteContext,
-      Iterable<Triplet> tripletIt,
-      Collector<Triplet> out) {
+      Iterable<Triplet<Vertex, Edge>> tripletIt,
+      Collector<Triplet<Vertex, Edge>> out) {
     var alreadyAggregated = new HashSet<GradoopId>();
     var aggregatedVertex = new Vertex();
 
     // determine the aggregated vertice
     var isInitialAggregation = true;
-    for (Triplet triplet : tripletIt) {
+    for (Triplet<Vertex, Edge> triplet : tripletIt) {
       Vertex curVertex = aggregateMode.equals(AggregateMode.SOURCE)
           ? triplet.getSourceVertex()
           : triplet.getTargetVertex();
@@ -77,26 +78,26 @@ public class VertexAggregation<W extends Window> extends ElementAggregation<W> {
         aggregatedVertex);
 
     // build new triplets using the aggregated vertice
-    for (Triplet triplet : tripletIt) {
+    for (Triplet<Vertex, Edge> triplet : tripletIt) {
       if (triplet.getEdge().isReverse()) {
         out.collect(triplet); // No need to aggregate for reverse edges
         continue;
       }
       Vertex finalVertex = VertexFactory.createVertex(aggregatedVertex);
-      Triplet aggregatedEC;
+      Triplet<Vertex, Edge> aggregatedEC;
       var edge = triplet.getEdge();
       if (aggregateMode.equals(AggregateMode.SOURCE)) {
         var newEdge = EdgeFactory.createEdge(edge.getLabel(),
             finalVertex.getId(),
             triplet.getTargetVertex().getId(),
             edge.getProperties());
-        aggregatedEC = new Triplet(newEdge, finalVertex, triplet.getTargetVertex());
+        aggregatedEC = new Triplet<>(newEdge, finalVertex, triplet.getTargetVertex());
       } else { // TARGET-mode
         var newEdge = EdgeFactory.createEdge(edge.getLabel(),
             triplet.getSourceVertex().getId(),
             finalVertex.getId(),
             edge.getProperties());
-        aggregatedEC = new Triplet(newEdge, triplet.getSourceVertex(), finalVertex);
+        aggregatedEC = new Triplet<>(newEdge, triplet.getSourceVertex(), finalVertex);
       }
       out.collect(aggregatedEC);
 

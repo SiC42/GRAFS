@@ -1,6 +1,8 @@
 package edu.leipzig.grafs.model.streaming;
 
+import edu.leipzig.grafs.model.Edge;
 import edu.leipzig.grafs.model.Triplet;
+import edu.leipzig.grafs.model.Vertex;
 import edu.leipzig.grafs.model.window.WindowsI;
 import edu.leipzig.grafs.operators.interfaces.nonwindow.GraphToGraphCollectionOperatorI;
 import edu.leipzig.grafs.operators.interfaces.nonwindow.GraphToGraphOperatorI;
@@ -22,16 +24,16 @@ public class GraphStream extends AbstractStream<GraphStream> implements GraphStr
    * @param stream data stream that holds <tt>Triplet</tt>
    * @param config config used for the stream
    */
-  public GraphStream(DataStream<Triplet> stream, FlinkConfig config) {
+  public GraphStream(DataStream<Triplet<Vertex, Edge>> stream, FlinkConfig config) {
     super(stream, config);
   }
 
 
-  public static GraphStream fromSource(SourceFunction<Triplet> function, FlinkConfig config) {
+  public static GraphStream fromSource(SourceFunction<Triplet<Vertex, Edge>> function, FlinkConfig config) {
     return fromSource(function, config, "Custom Source");
   }
 
-  public static GraphStream fromSource(SourceFunction<Triplet> function, FlinkConfig config,
+  public static GraphStream fromSource(SourceFunction<Triplet<Vertex, Edge>> function, FlinkConfig config,
       String sourceName) {
     var tripletStream = prepareStream(function, config, sourceName);
     return new GraphStream(tripletStream, config);
@@ -49,13 +51,13 @@ public class GraphStream extends AbstractStream<GraphStream> implements GraphStr
    * @return result of given operator
    */
   public GraphStream callForGraph(GraphToGraphOperatorI operator) {
-    DataStream<Triplet> result = operator.execute(stream);
+    DataStream<Triplet<Vertex, Edge>> result = operator.execute(stream);
     return new GraphStream(result, config);
   }
 
   @Override
   public GCStream callForGC(GraphToGraphCollectionOperatorI operator) {
-    DataStream<Triplet> result = operator.execute(stream);
+    DataStream<Triplet<Vertex, Edge>> result = operator.execute(stream);
     return new GCStream(result, config);
   }
 

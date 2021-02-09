@@ -1,7 +1,8 @@
 package edu.leipzig.grafs.operators.matching;
 
-import edu.leipzig.grafs.model.BasicTriplet;
+import edu.leipzig.grafs.model.Edge;
 import edu.leipzig.grafs.model.Triplet;
+import edu.leipzig.grafs.model.Vertex;
 import edu.leipzig.grafs.model.window.WindowingInformation;
 import edu.leipzig.grafs.model.window.WindowsI;
 import edu.leipzig.grafs.operators.interfaces.window.WindowedGraphToGraphCollectionOperatorI;
@@ -10,7 +11,6 @@ import edu.leipzig.grafs.operators.matching.logic.FilterCandidates;
 import edu.leipzig.grafs.operators.matching.model.Query;
 import edu.leipzig.grafs.operators.matching.model.QueryEdge;
 import edu.leipzig.grafs.operators.matching.model.QueryVertex;
-import java.util.ArrayList;
 import java.util.List;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.streaming.api.datastream.DataStream;
@@ -48,19 +48,19 @@ public class DualSimulation implements
   }
 
 
-  private DataStream<BasicTriplet<QueryVertex, QueryEdge>> filterExactEdgesWithVertices(
-      DataStream<BasicTriplet<QueryVertex, QueryEdge>> stream) {
+  private DataStream<Triplet<QueryVertex, QueryEdge>> filterExactEdgesWithVertices(
+      DataStream<Triplet<QueryVertex, QueryEdge>> stream) {
     return stream.filter(new FilterCandidates(gdlQuery.toTriplets(), false, null))
         .name("Filter relevant graph elements");
   }
 
   @Override
-  public <FW extends Window> DataStream<Triplet> execute(
-      DataStream<Triplet> stream, WindowingInformation<FW> wi) {
+  public <FW extends Window> DataStream<Triplet<Vertex, Edge>> execute(
+      DataStream<Triplet<Vertex, Edge>> stream, WindowingInformation<FW> wi) {
     var transformedStream = stream.map(
-        new MapFunction<Triplet, BasicTriplet<QueryVertex, QueryEdge>>() {
+        new MapFunction<Triplet<Vertex, Edge>, Triplet<QueryVertex, QueryEdge>>() {
           @Override
-          public BasicTriplet<QueryVertex, QueryEdge> map(Triplet triplet)
+          public Triplet<QueryVertex, QueryEdge> map(Triplet<Vertex, Edge> triplet)
               throws Exception {
             var e = triplet.getEdge();
             var qEdge = new QueryEdge(e.getId(), e.getLabel(), e.getSourceId(), e.getTargetId(),
@@ -71,7 +71,7 @@ public class DualSimulation implements
             var t = triplet.getTargetVertex();
             var qTarget = new QueryVertex(t.getId(), t.getLabel(), t.getProperties(),
                 t.getGraphIds());
-            return new BasicTriplet<>(qEdge, qSource, qTarget);
+            return new Triplet<>(qEdge, qSource, qTarget);
           }
         }
     ).name("Transform Graph Elements to Query Elements");

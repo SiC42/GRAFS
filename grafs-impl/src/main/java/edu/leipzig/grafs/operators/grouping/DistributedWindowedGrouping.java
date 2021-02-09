@@ -1,8 +1,10 @@
 package edu.leipzig.grafs.operators.grouping;
 
+import edu.leipzig.grafs.model.Edge;
 import edu.leipzig.grafs.model.Triplet;
-import edu.leipzig.grafs.model.window.WindowingInformation;
+import edu.leipzig.grafs.model.Vertex;
 import edu.leipzig.grafs.model.window.AbstractTumblingWindows;
+import edu.leipzig.grafs.model.window.WindowingInformation;
 import edu.leipzig.grafs.operators.grouping.functions.AggregateFunction;
 import edu.leipzig.grafs.operators.grouping.logic.EdgeAggregation;
 import edu.leipzig.grafs.operators.grouping.logic.TripletKeySelector;
@@ -11,6 +13,7 @@ import edu.leipzig.grafs.operators.grouping.model.AggregateMode;
 import edu.leipzig.grafs.operators.grouping.model.GroupingInformation;
 import java.util.Set;
 import org.apache.flink.api.common.functions.FlatMapFunction;
+import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.datastream.WindowedStream;
@@ -34,7 +37,8 @@ public class DistributedWindowedGrouping extends AbstractWindowedGrouping<Abstra
    * @param edgeGi                   Grouping information for the edges
    * @param edgeAggregateFunctions   Aggregation functions for the grouped edges
    */
-  public DistributedWindowedGrouping(GroupingInformation vertexGi, Set<AggregateFunction> vertexAggregateFunctions,
+  public DistributedWindowedGrouping(GroupingInformation vertexGi,
+      Set<AggregateFunction> vertexAggregateFunctions,
       GroupingInformation edgeGi, Set<AggregateFunction> edgeAggregateFunctions) {
     super(vertexGi, vertexAggregateFunctions, edgeGi, edgeAggregateFunctions);
   }
@@ -52,15 +56,18 @@ public class DistributedWindowedGrouping extends AbstractWindowedGrouping<Abstra
    *                                 for the edges
    * @param edgeAggregateFunctions   Aggregation functions for the grouped edges
    */
-  public DistributedWindowedGrouping(Set<String> vertexGiSet, Set<AggregateFunction> vertexAggregateFunctions,
+  public DistributedWindowedGrouping(Set<String> vertexGiSet,
+      Set<AggregateFunction> vertexAggregateFunctions,
       Set<String> edgeGiSet, Set<AggregateFunction> edgeAggregateFunctions) {
     super(vertexGiSet, vertexAggregateFunctions, edgeGiSet, edgeAggregateFunctions);
   }
 
   /**
-   * Provides a builder which provides an more intuitive way to build a {@link DistributedWindowedGrouping}.
+   * Provides a builder which provides an more intuitive way to build a {@link
+   * DistributedWindowedGrouping}.
    *
-   * @return a builder which provides an more intuitive way to build a {@link DistributedWindowedGrouping}.
+   * @return a builder which provides an more intuitive way to build a {@link
+   * DistributedWindowedGrouping}.
    */
   public static GroupingBuilder createGrouping() {
     return new GroupingBuilder();
@@ -72,7 +79,8 @@ public class DistributedWindowedGrouping extends AbstractWindowedGrouping<Abstra
    * @param stream stream on which the operator should be applied
    * @return the stream with the grouping operator applied
    */
-  public <W extends Window> DataStream<Triplet> groupBy(DataStream<Triplet> stream,
+  public <W extends Window> DataStream<Triplet<Vertex, Edge>> groupBy(
+      DataStream<Triplet<Vertex, Edge>> stream,
       WindowingInformation<W> wi) {
     // Enrich stream with reverse edges
     var expandedStream = createStreamWithReverseEdges(stream);
@@ -83,10 +91,14 @@ public class DistributedWindowedGrouping extends AbstractWindowedGrouping<Abstra
     var reducedStream = aggregatedOnVertexStream.filter(ec -> !ec.getEdge().isReverse());
     var aggregatedOnEdgeStream = aggregateOnEdge(reducedStream, wi);
     var graphId = GradoopId.get();
-    return aggregatedOnEdgeStream.map(triplet -> {
-      triplet.addGraphId(graphId);
-      return triplet;
-    });
+    return aggregatedOnEdgeStream.map(
+        new MapFunction<Triplet<Vertex, Edge>, Triplet<Vertex, Edge>>() {
+          @Override
+          public Triplet<Vertex, Edge> map(Triplet<Vertex, Edge> triplet) {
+            triplet.addGraphId(graphId);
+            return triplet;
+          }
+        });
   }
 
   /**
@@ -95,12 +107,12 @@ public class DistributedWindowedGrouping extends AbstractWindowedGrouping<Abstra
    * @param stream stream which should be enriched by reverse edges
    * @return stream with reverse edges
    */
-  private SingleOutputStreamOperator<Triplet> createStreamWithReverseEdges(
-      DataStream<Triplet> stream) {
+  private SingleOutputStreamOperator<Triplet<Vertex, Edge>> createStreamWithReverseEdges(
+      DataStream<Triplet<Vertex, Edge>> stream) {
     return stream
-        .flatMap(new FlatMapFunction<Triplet, Triplet>() {
+        .flatMap(new FlatMapFunction<Triplet<Vertex, Edge>, Triplet<Vertex, Edge>>() {
           @Override
-          public void flatMap(Triplet value, Collector<Triplet> out) {
+          public void flatMap(Triplet<Vertex, Edge> value, Collector<Triplet<Vertex, Edge>> out) {
             out.collect(value.createReverseTriplet());
             out.collect(value);
           }
@@ -116,7 +128,8 @@ public class DistributedWindowedGrouping extends AbstractWindowedGrouping<Abstra
    *               the grouping key is generated)
    * @return stream on which the indicated vertices are grouped
    */
-  private <W extends Window> DataStream<Triplet> aggregateOnVertex(DataStream<Triplet> stream,
+  private <W extends Window> DataStream<Triplet<Vertex, Edge>> aggregateOnVertex(
+      DataStream<Triplet<Vertex, Edge>> stream,
       AggregateMode mode, WindowingInformation<W> wi) {
     var windowedStream = createKeyedWindowedStream(stream, vertexGi, mode, wi);
     return windowedStream.process(
@@ -130,7 +143,8 @@ public class DistributedWindowedGrouping extends AbstractWindowedGrouping<Abstra
    * @param stream stream on which the edges should be aggregated
    * @return stream on which the edges are grouped
    */
-  private <W extends Window> DataStream<Triplet> aggregateOnEdge(DataStream<Triplet> stream,
+  private <W extends Window> DataStream<Triplet<Vertex, Edge>> aggregateOnEdge(
+      DataStream<Triplet<Vertex, Edge>> stream,
       WindowingInformation<W> wi) {
     var windowedStream = createKeyedWindowedStream(stream, edgeGi, AggregateMode.EDGE, wi);
     return windowedStream
@@ -146,8 +160,8 @@ public class DistributedWindowedGrouping extends AbstractWindowedGrouping<Abstra
    *             be keyed upon
    * @return stream that is keyed based on the given mode and windowed
    */
-  private <W extends Window> WindowedStream<Triplet, String, W> createKeyedWindowedStream(
-      DataStream<Triplet> es, GroupingInformation gi, AggregateMode mode,
+  private <W extends Window> WindowedStream<Triplet<Vertex, Edge>, String, W> createKeyedWindowedStream(
+      DataStream<Triplet<Vertex, Edge>> es, GroupingInformation gi, AggregateMode mode,
       WindowingInformation<W> wi) {
     var windowedStream = es
         .keyBy(new TripletKeySelector(gi, mode))
@@ -159,7 +173,8 @@ public class DistributedWindowedGrouping extends AbstractWindowedGrouping<Abstra
   /**
    * Builder that provides an intuitive way to generate a {@link DistributedWindowedGrouping}-object.
    */
-  public static final class GroupingBuilder extends AbstractGroupingBuilder<AbstractTumblingWindows> {
+  public static final class GroupingBuilder extends
+      AbstractGroupingBuilder<AbstractTumblingWindows> {
 
 
     /**
@@ -168,7 +183,8 @@ public class DistributedWindowedGrouping extends AbstractWindowedGrouping<Abstra
      * @return grouping operator with the already provided grouping information and functions
      */
     public DistributedWindowedGrouping build() {
-      return new DistributedWindowedGrouping(vertexGi, vertexAggFunctions, edgeGi, aggregateFunctions);
+      return new DistributedWindowedGrouping(vertexGi, vertexAggFunctions, edgeGi,
+          aggregateFunctions);
     }
   }
 }

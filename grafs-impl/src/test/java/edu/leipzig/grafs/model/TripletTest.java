@@ -18,7 +18,7 @@ class TripletTest {
 
     var e = EdgeFactory.createEdge(v1, v2);
 
-    assertDoesNotThrow(() -> new Triplet(e, v1, v2));
+    assertDoesNotThrow(() -> new Triplet<>(e, v1, v2));
   }
 
   @Test
@@ -29,7 +29,7 @@ class TripletTest {
 
     var e = EdgeFactory.createEdge(v1, v2);
 
-    assertThrows(RuntimeException.class, () -> new Triplet(e, v1, v3));
+    assertThrows(RuntimeException.class, () -> new Triplet<>(e, v1, v3));
   }
 
   @Test
@@ -40,7 +40,7 @@ class TripletTest {
 
     var e = EdgeFactory.createEdge(v1, v2);
 
-    assertThrows(RuntimeException.class, () -> new Triplet(e, v3, v2));
+    assertThrows(RuntimeException.class, () -> new Triplet<>(e, v3, v2));
   }
 
 
@@ -50,7 +50,7 @@ class TripletTest {
     var v2 = new Vertex();
 
     var e = EdgeFactory.createEdge(v1, v2);
-    var triplet = new Triplet(e, v1, v2);
+    var triplet = new Triplet<>(e, v1, v2);
     assertThat(triplet.getEdge(), is(equalTo(e)));
   }
 
@@ -60,7 +60,7 @@ class TripletTest {
     var v2 = new Vertex();
 
     var e = EdgeFactory.createEdge(v1, v2);
-    var triplet = new Triplet(e, v1, v2);
+    var triplet = new Triplet<>(e, v1, v2);
     assertThat(triplet.getSourceVertex(), is(equalTo(v1)));
   }
 
@@ -71,7 +71,7 @@ class TripletTest {
     var v2 = new Vertex();
 
     var e = EdgeFactory.createEdge(v1, v2);
-    var triplet = new Triplet(e, v1, v2);
+    var triplet = new Triplet<>(e, v1, v2);
     assertThat(triplet.getTargetVertex(), is(equalTo(v2)));
   }
 
@@ -83,7 +83,7 @@ class TripletTest {
 
     var e = EdgeFactory.createEdge(v1, v2);
     var reverseE = e.createReverseEdge();
-    var triplet = new Triplet(e, v1, v2);
+    var triplet = new Triplet<>(e, v1, v2);
     triplet = triplet.createReverseTriplet();
     assertThat(triplet.getEdge(), is(equalTo(reverseE)));
   }

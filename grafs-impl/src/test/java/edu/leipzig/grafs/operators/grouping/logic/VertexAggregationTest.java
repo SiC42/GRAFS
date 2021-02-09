@@ -2,7 +2,9 @@ package edu.leipzig.grafs.operators.grouping.logic;
 
 import static edu.leipzig.grafs.util.TestUtils.validateTripletCollections;
 
+import edu.leipzig.grafs.model.Edge;
 import edu.leipzig.grafs.model.Triplet;
+import edu.leipzig.grafs.model.Vertex;
 import edu.leipzig.grafs.operators.DummyCollector;
 import edu.leipzig.grafs.operators.grouping.functions.AggregateFunction;
 import edu.leipzig.grafs.operators.grouping.model.AggregateMode;
@@ -132,7 +134,7 @@ class VertexAggregationTest {
     );
 
     var invertedTripletList = new ArrayList<>(loader.createTriplets());
-    Triplet invertedTriplet = invertedTripletList.get(0);
+    var invertedTriplet = invertedTripletList.get(0);
     invertedTriplet = invertedTriplet.createReverseTriplet();
     tripletList.add(invertedTriplet);
 
@@ -158,7 +160,7 @@ class VertexAggregationTest {
     );
 
     var expectedInvertedTripletList = new ArrayList<>(loader.createTriplets());
-    Triplet expectedInvertedTriplet = expectedInvertedTripletList.get(0);
+    var expectedInvertedTriplet = expectedInvertedTripletList.get(0);
     expectedInvertedTriplet = expectedInvertedTriplet.createReverseTriplet();
     expectedTripletCol.add(expectedInvertedTriplet);
 

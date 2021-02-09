@@ -76,7 +76,6 @@ public class AsciiGraphLoader {
   /**
    * Initializes the loader with the given GDL handler
    *
-   * @param gdlHandler
    */
   public AsciiGraphLoader(GDLHandler gdlHandler) {
     this.gdlHandler = gdlHandler;
@@ -178,9 +177,9 @@ public class AsciiGraphLoader {
     return createEdgeStream(config, createTriplets());
   }
 
-  private GraphStream createEdgeStream(FlinkConfig config, Collection<Triplet> triplet) {
+  private GraphStream createEdgeStream(FlinkConfig config, Collection<Triplet<Vertex, Edge>> triplet) {
     StreamExecutionEnvironment env = config.getExecutionEnvironment();
-    DataStream<Triplet> stream = env.fromCollection(triplet);
+    DataStream<Triplet<Vertex, Edge>> stream = env.fromCollection(triplet);
     return new GraphStream(stream, config);
   }
 
@@ -192,7 +191,7 @@ public class AsciiGraphLoader {
    * @param expected graph variables that should be selected
    * @return collection of selected triplets
    */
-  public Collection<Triplet> createTripletsByGraphVariables(String... expected) {
+  public Collection<Triplet<Vertex, Edge>> createTripletsByGraphVariables(String... expected) {
     var edges = getEdgesByGraphVariables(expected);
     return createTriplets(edges);
   }
@@ -202,16 +201,16 @@ public class AsciiGraphLoader {
    *
    * @return collection of triplets loaded
    */
-  public Collection<Triplet> createTriplets() {
+  public Collection<Triplet<Vertex, Edge>> createTriplets() {
     return createTriplets(edges.values());
   }
 
-  private Collection<Triplet> createTriplets(Collection<Edge> edges) {
-    Set<Triplet> triplets = new HashSet<>();
+  private Collection<Triplet<Vertex, Edge>> createTriplets(Collection<Edge> edges) {
+    Set<Triplet<Vertex, Edge>> triplets = new HashSet<>();
     for (var edge : edges) {
       var source = vertices.get(edge.getSourceId());
       var target = vertices.get(edge.getTargetId());
-      var triplet = new Triplet(edge, source, target);
+      var triplet = new Triplet<>(edge, source, target);
       triplets.add(triplet);
     }
     return triplets;

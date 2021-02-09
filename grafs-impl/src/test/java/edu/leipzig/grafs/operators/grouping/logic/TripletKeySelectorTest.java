@@ -3,7 +3,9 @@ package edu.leipzig.grafs.operators.grouping.logic;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsEqual.equalTo;
 
+import edu.leipzig.grafs.model.Edge;
 import edu.leipzig.grafs.model.Triplet;
+import edu.leipzig.grafs.model.Vertex;
 import edu.leipzig.grafs.operators.grouping.model.AggregateMode;
 import edu.leipzig.grafs.operators.grouping.model.GroupingInformation;
 import edu.leipzig.grafs.util.AsciiGraphLoader;
@@ -12,7 +14,7 @@ import org.junit.jupiter.api.Test;
 
 class TripletKeySelectorTest {
 
-  private final Triplet triplet;
+  private final Triplet<Vertex, Edge> triplet;
 
   public TripletKeySelectorTest() {
     AsciiGraphLoader loader = AsciiGraphLoader.fromString(
@@ -20,7 +22,7 @@ class TripletKeySelectorTest {
             "(b17:v {n : \"B\", a : 17})," +
             "(a18)-[e1:e {t: 5, x: \"value\", a: 8}]->(b17)"
     );
-    Collection<Triplet> edgeSet = loader.createTriplets();
+    Collection<Triplet<Vertex, Edge>> edgeSet = loader.createTriplets();
     triplet = edgeSet.iterator().next();
 
   }

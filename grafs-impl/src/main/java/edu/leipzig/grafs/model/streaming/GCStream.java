@@ -1,6 +1,8 @@
 package edu.leipzig.grafs.model.streaming;
 
+import edu.leipzig.grafs.model.Edge;
 import edu.leipzig.grafs.model.Triplet;
+import edu.leipzig.grafs.model.Vertex;
 import edu.leipzig.grafs.model.window.WindowsI;
 import edu.leipzig.grafs.operators.interfaces.nonwindow.GraphCollectionToGraphCollectionOperatorI;
 import edu.leipzig.grafs.operators.interfaces.nonwindow.GraphCollectionToGraphOperatorI;
@@ -20,15 +22,15 @@ public class GCStream extends AbstractStream<GCStream> implements GCStreamOperat
    * @param config config used for the stream
    */
   public GCStream(
-      DataStream<Triplet> stream, FlinkConfig config) {
+      DataStream<Triplet<Vertex, Edge>> stream, FlinkConfig config) {
     super(stream, config);
   }
 
-  public static GCStream fromSource(SourceFunction<Triplet> function, FlinkConfig config) {
+  public static GCStream fromSource(SourceFunction<Triplet<Vertex, Edge>> function, FlinkConfig config) {
     return fromSource(function, config, "Custom Source");
   }
 
-  public static GCStream fromSource(SourceFunction<Triplet> function, FlinkConfig config,
+  public static GCStream fromSource(SourceFunction<Triplet<Vertex, Edge>> function, FlinkConfig config,
       String sourceName) {
     var tripletStream = prepareStream(function, config, sourceName);
     return new GCStream(tripletStream, config);
@@ -41,7 +43,7 @@ public class GCStream extends AbstractStream<GCStream> implements GCStreamOperat
 
   @Override
   public GraphStream callForGraph(GraphCollectionToGraphOperatorI operator) {
-    DataStream<Triplet> result = operator.execute(stream);
+    DataStream<Triplet<Vertex, Edge>> result = operator.execute(stream);
     return new GraphStream(result, config);
   }
 

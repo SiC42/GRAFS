@@ -23,8 +23,7 @@ class EdgeAggregationTest {
     groupInfo.addKey("n");
     var aggMap = new HashSet<AggregateFunction>();
     aggMap.add(TestUtils.INT_ADD_FUNC.apply("e"));
-    var expectedGraphId = GRADOOP_ID_VAL_8;
-    var vertexAggregation = new EdgeAggregation<>(groupInfo, aggMap, expectedGraphId);
+    var vertexAggregation = new EdgeAggregation<>(groupInfo, aggMap, GRADOOP_ID_VAL_8);
 
     var collector = new DummyCollector();
     var loader = AsciiGraphLoader.fromString(

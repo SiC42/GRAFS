@@ -1,5 +1,6 @@
 package edu.leipzig.grafs.operators.transform;
 
+import edu.leipzig.grafs.model.Edge;
 import edu.leipzig.grafs.model.Element;
 import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.model.Vertex;
@@ -18,7 +19,7 @@ public class VertexTransformation implements GraphToGraphOperatorI,
   /**
    * Function that is applied to the stream
    */
-  protected MapFunction<Triplet, Triplet> tripletMapper;
+  protected MapFunction<Triplet<Vertex, Edge>, Triplet<Vertex, Edge>> tripletMapper;
 
   /**
    * Initializes this operator with the given transformation function.
@@ -26,10 +27,13 @@ public class VertexTransformation implements GraphToGraphOperatorI,
    * @param mapper transformation function that is used on every vertex of the stream
    */
   public VertexTransformation(final MapFunction<Element, Element> mapper) {
-    this.tripletMapper = triplet -> {
-      Vertex source = (Vertex) mapper.map(triplet.getSourceVertex());
-      Vertex target = (Vertex) mapper.map(triplet.getTargetVertex());
-      return new Triplet(triplet.getEdge(), source, target);
+    this.tripletMapper = new MapFunction<Triplet<Vertex, Edge>, Triplet<Vertex, Edge>>() {
+      @Override
+      public Triplet<Vertex, Edge> map(Triplet<Vertex, Edge> triplet) throws Exception {
+        Vertex source = (Vertex) mapper.map(triplet.getSourceVertex());
+        Vertex target = (Vertex) mapper.map(triplet.getTargetVertex());
+        return new Triplet<>(triplet.getEdge(), source, target);
+      }
     };
   }
 
@@ -40,7 +44,7 @@ public class VertexTransformation implements GraphToGraphOperatorI,
    * @return the stream with the vertex transformation operator applied
    */
   @Override
-  public DataStream<Triplet> execute(DataStream<Triplet> stream) {
+  public DataStream<Triplet<Vertex, Edge>> execute(DataStream<Triplet<Vertex, Edge>> stream) {
     return stream.map(tripletMapper).name("Vertex Transformation");
   }
 }

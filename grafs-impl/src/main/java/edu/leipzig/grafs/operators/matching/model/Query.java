@@ -1,7 +1,7 @@
 package edu.leipzig.grafs.operators.matching.model;
 
 import edu.leipzig.grafs.model.BasicGraph;
-import edu.leipzig.grafs.model.BasicTriplet;
+import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.util.AsciiGraphLoader;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -73,12 +73,12 @@ public class Query extends BasicGraph<QueryVertex, QueryEdge> {
     return predicates;
   }
 
-  public Collection<BasicTriplet<QueryVertex, QueryEdge>> toTriplets() {
-    var result = new ArrayList<BasicTriplet<QueryVertex, QueryEdge>>();
+  public Collection<Triplet<QueryVertex, QueryEdge>> toTriplets() {
+    var result = new ArrayList<Triplet<QueryVertex, QueryEdge>>();
     for (var edge : edges) {
       var source = vertexMap.get(edge.getSourceId());
       var target = vertexMap.get(edge.getTargetId());
-      result.add(new BasicTriplet<>(edge, source, target));
+      result.add(new Triplet<>(edge, source, target));
     }
     return result;
   }

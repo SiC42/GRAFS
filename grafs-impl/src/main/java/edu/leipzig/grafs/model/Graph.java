@@ -68,7 +68,7 @@ public class Graph extends BasicGraph<Vertex, Edge> {
    * @param tripletIt iterable of triplets to be used for the construction of the graph
    * @return the constructed graph
    */
-  public static Graph fromTriplets(Iterable<Triplet> tripletIt) {
+  public static Graph fromTriplets(Iterable<Triplet<Vertex, Edge>> tripletIt) {
     var graph = new Graph();
     for (var triplet : tripletIt) {
       graph.addVertex(triplet.getSourceVertex());
@@ -78,8 +78,8 @@ public class Graph extends BasicGraph<Vertex, Edge> {
     return graph;
   }
 
-  public Collection<Triplet> toTriplets() {
-    var result = new ArrayList<Triplet>();
+  public Collection<Triplet<Vertex, Edge>> toTriplets() {
+    var result = new ArrayList<Triplet<Vertex, Edge>>();
     for(var edge : edges){
       var source = vertexMap.get(edge.getSourceId());
       var target = vertexMap.get(edge.getTargetId());

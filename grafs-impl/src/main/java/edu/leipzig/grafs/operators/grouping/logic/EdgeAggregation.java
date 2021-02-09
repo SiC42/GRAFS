@@ -3,6 +3,7 @@ package edu.leipzig.grafs.operators.grouping.logic;
 import edu.leipzig.grafs.factory.EdgeFactory;
 import edu.leipzig.grafs.model.Edge;
 import edu.leipzig.grafs.model.Triplet;
+import edu.leipzig.grafs.model.Vertex;
 import edu.leipzig.grafs.operators.grouping.functions.AggregateFunction;
 import edu.leipzig.grafs.operators.grouping.model.GroupingInformation;
 import java.util.Set;
@@ -52,11 +53,11 @@ public class EdgeAggregation<W extends Window> extends ElementAggregation<W> {
    */
   @Override
   public void process(String obsoleteStr, Context obsoleteContext,
-      Iterable<Triplet> tripletIt,
-      Collector<Triplet> out) {
+      Iterable<Triplet<Vertex, Edge>> tripletIt,
+      Collector<Triplet<Vertex, Edge>> out) {
     var aggregatedEdge = EdgeFactory.createEdge();
 
-    Triplet lastTriplet = null;
+    Triplet<Vertex, Edge> lastTriplet = null;
 
     for (var triplet : tripletIt) {
       aggregatedEdge = (Edge) aggregateElement(aggregatedEdge, triplet.getEdge(),
@@ -66,7 +67,7 @@ public class EdgeAggregation<W extends Window> extends ElementAggregation<W> {
     }
     aggregatedEdge = (Edge) checkForMissingAggregationsAndApply(edgeAggregateFunctions,
         aggregatedEdge);
-    Triplet aggregatedTriplet;
+    Triplet<Vertex, Edge> aggregatedTriplet;
 
     // we have not set the grouped properties yet
     assert lastTriplet != null;
@@ -80,7 +81,7 @@ public class EdgeAggregation<W extends Window> extends ElementAggregation<W> {
     target.setGraphIds(GradoopIdSet.fromExisting(newGraphId));
     aggregatedEdge.setSourceId(source.getId());
     aggregatedEdge.setTargetId(target.getId());
-    aggregatedTriplet = new Triplet(aggregatedEdge, source,
+    aggregatedTriplet = new Triplet<Vertex, Edge>(aggregatedEdge, source,
         target);
 
     out.collect(aggregatedTriplet);

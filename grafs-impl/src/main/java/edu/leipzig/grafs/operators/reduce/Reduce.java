@@ -1,7 +1,9 @@
 package edu.leipzig.grafs.operators.reduce;
 
+import edu.leipzig.grafs.model.Edge;
 import edu.leipzig.grafs.model.GraphElement;
 import edu.leipzig.grafs.model.Triplet;
+import edu.leipzig.grafs.model.Vertex;
 import edu.leipzig.grafs.operators.interfaces.nonwindow.GraphCollectionToGraphOperatorI;
 import java.util.function.Consumer;
 import org.apache.flink.api.common.functions.FilterFunction;
@@ -23,7 +25,7 @@ import org.gradoop.common.model.impl.id.GradoopIdSet;
 public class Reduce implements GraphCollectionToGraphOperatorI {
 
 
-  protected FilterFunction<Triplet> tripletFilter;
+  protected FilterFunction<Triplet<Vertex, Edge>> tripletFilter;
   protected GradoopId newId;
 
 
@@ -42,7 +44,7 @@ public class Reduce implements GraphCollectionToGraphOperatorI {
    * @return the stream with the subgraph operator applied
    */
   @Override
-  public DataStream<Triplet> execute(DataStream<Triplet> stream) {
+  public DataStream<Triplet<Vertex, Edge>> execute(DataStream<Triplet<Vertex, Edge>> stream) {
     Consumer<GraphElement> setGraphIds = ge -> ge.setGraphIds(GradoopIdSet.fromExisting(newId));
     return stream.filter(tripletFilter)
         .map(triplet -> {

@@ -1,6 +1,6 @@
 package edu.leipzig.grafs.operators.matching.logic;
 
-import edu.leipzig.grafs.model.BasicTriplet;
+import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.operators.matching.model.QueryEdge;
 import edu.leipzig.grafs.operators.matching.model.QueryVertex;
 import java.util.Collection;
@@ -12,13 +12,13 @@ import org.s1ck.gdl.model.comparables.PropertySelector;
 import org.s1ck.gdl.model.predicates.Predicate;
 import org.s1ck.gdl.model.predicates.expressions.Comparison;
 
-public class FilterCandidates implements FilterFunction<BasicTriplet<QueryVertex, QueryEdge>> {
+public class FilterCandidates implements FilterFunction<Triplet<QueryVertex, QueryEdge>> {
 
   private final boolean filterForVertexOnly;
   private final List<QueryVertex> queryVertices;
-  private final Collection<BasicTriplet<QueryVertex, QueryEdge>> queryTriples;
+  private final Collection<Triplet<QueryVertex, QueryEdge>> queryTriples;
 
-  public FilterCandidates(Collection<BasicTriplet<QueryVertex, QueryEdge>> queryTriples,
+  public FilterCandidates(Collection<Triplet<QueryVertex, QueryEdge>> queryTriples,
       boolean vertexOnly, List<QueryVertex> queryVertices) {
     this.queryTriples = queryTriples;
     this.filterForVertexOnly = vertexOnly;
@@ -38,7 +38,7 @@ public class FilterCandidates implements FilterFunction<BasicTriplet<QueryVertex
    *                   operation to fail and may trigger recovery.
    */
   @Override
-  public boolean filter(BasicTriplet<QueryVertex, QueryEdge> streamObject) throws Exception {
+  public boolean filter(Triplet<QueryVertex, QueryEdge> streamObject) throws Exception {
     if (filterForVertexOnly) {
       return filterVertexOnly(streamObject);
     } else {
@@ -46,10 +46,10 @@ public class FilterCandidates implements FilterFunction<BasicTriplet<QueryVertex
     }
   }
 
-  private boolean filterEdgesWithVertices(BasicTriplet<QueryVertex, QueryEdge> triplet) {
+  private boolean filterEdgesWithVertices(Triplet<QueryVertex, QueryEdge> triplet) {
     boolean exist;
     boolean match = false;
-    for (BasicTriplet<QueryVertex, QueryEdge> qt : queryTriples) { //TODO: get by label
+    for (Triplet<QueryVertex, QueryEdge> qt : queryTriples) { //TODO: get by label
       exist =  ElementMatcher.matchesQueryElem(qt.getEdge(), triplet.getEdge());
       exist = exist && ElementMatcher.matchesQueryElem(qt.getSourceVertex(), triplet.getSourceVertex());
       exist = exist && ElementMatcher.matchesQueryElem(qt.getTargetVertex(), triplet.getTargetVertex());
@@ -69,7 +69,7 @@ public class FilterCandidates implements FilterFunction<BasicTriplet<QueryVertex
     return match;
   }
 
-  private boolean filterVertexOnly(BasicTriplet<QueryVertex, QueryEdge> triplet) {
+  private boolean filterVertexOnly(Triplet<QueryVertex, QueryEdge> triplet) {
     for (QueryVertex queryVertex : queryVertices) {
       if (ElementMatcher.matchesQueryElem(queryVertex,triplet.getSourceVertex())) {
         triplet.getSourceVertex().addVariable(queryVertex.getVariable());
@@ -92,8 +92,8 @@ public class FilterCandidates implements FilterFunction<BasicTriplet<QueryVertex
     return false;
   }
 
-  private boolean validateInterVertexPredicate(BasicTriplet<QueryVertex, QueryEdge> queryTriplet,
-      BasicTriplet<QueryVertex, QueryEdge> triplet) {
+  private boolean validateInterVertexPredicate(Triplet<QueryVertex, QueryEdge> queryTriplet,
+      Triplet<QueryVertex, QueryEdge> triplet) {
     boolean result = true;
     for (Predicate p : queryTriplet.getEdge()
         .getPredicates()) { // only comparisons we have here and with values
