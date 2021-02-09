@@ -4,13 +4,14 @@ package edu.leipzig.grafs.operators.matching;
 import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.model.streaming.GraphStream;
 import edu.leipzig.grafs.model.window.TumblingEventTimeWindows;
+import edu.leipzig.grafs.operators.subgraph.Subgraph;
+import edu.leipzig.grafs.operators.subgraph.Subgraph.Strategy;
 import edu.leipzig.grafs.util.FlinkConfig;
 import edu.leipzig.grafs.util.FlinkConfigBuilder;
 import edu.leipzig.grafs.util.TestUtils;
 import java.time.Duration;
 import java.util.ArrayList;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
-import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.windowing.time.Time;
 import org.junit.jupiter.api.BeforeAll;
@@ -25,7 +26,6 @@ public class DualSimulationTest extends MatchingTestBase {
   static void initConfig() {
     StreamExecutionEnvironment env =
         StreamExecutionEnvironment.getExecutionEnvironment();
-    env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
     config = new FlinkConfigBuilder(env)
         .withWaterMarkStrategy(WatermarkStrategy
             .<Triplet>forBoundedOutOfOrderness(Duration.ZERO)
@@ -241,6 +241,35 @@ public class DualSimulationTest extends MatchingTestBase {
     var expectedEcs = loader.createTripletsByGraphVariables("ds");
 
     var resultStream = graphStream
+        .callForGC(new DualSimulation(queryStr))
+        .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        .apply();
+
+    TestUtils.assertThatStreamContains(resultStream, expectedEcs);
+  }
+
+  @Test
+  void testWithSocialGraph_PersonsKnowEachOther_WithoutPersonLabels() throws Exception {
+    var loader = TestUtils.getSocialNetworkLoader();
+    var queryStr = "MATCH (a)-[]->(b)-[]->(a)";
+    GraphStream graphStream = loader.createEdgeStream(config);
+    var appendDsString = "ds {}["
+        + "(alice)-[akb]->(bob)"
+        + "(bob)-[bka]->(alice)"
+        + "(bob)-[bkc]->(carol)"
+        + "(carol)-[ckb]->(bob)"
+        + "(carol)-[ckd]->(dave)"
+        + "(dave)-[dkc]->(carol)"
+        + "(eve)-[ekb]->(bob)"
+        + "(eve)-[eka]->(alice)"
+        + "(frank)-[fkd]->(dave)"
+        + "(frank)-[fkc]->(carol)"
+        + "]";
+    loader.appendFromString(appendDsString);
+    var expectedEcs = loader.createTripletsByGraphVariables("ds");
+
+    var resultStream = graphStream
+        .callForGraph(new Subgraph(v -> v.getLabel().equals("Person"),null, Strategy.VERTEX_INDUCED))
         .callForGC(new DualSimulation(queryStr))
         .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
         .apply();

@@ -65,6 +65,10 @@ public class Query extends BasicGraph<QueryVertex, QueryEdge> {
     }
   }
 
+  public boolean hasPredicates() {
+    return predicates != null;
+  }
+
   public Predicate getPredicates() {
     return predicates;
   }
@@ -80,9 +84,7 @@ public class Query extends BasicGraph<QueryVertex, QueryEdge> {
   }
 
   private GDLHandler initQueryHandler(String queryString) {
-    GDLHandler handler = AsciiGraphLoader.createDefaultGdlHandlerBuilder().buildFromString(queryString);
-    handler.getPredicates().ifPresent(this::SetPredicates);
-    return handler;
+    return AsciiGraphLoader.createDefaultGdlHandlerBuilder().buildFromString(queryString);
   }
 
   private void extractGraph(GDLHandler handler, String timestampKey,
@@ -166,7 +168,7 @@ public class Query extends BasicGraph<QueryVertex, QueryEdge> {
     }
   }
 
-  private void SetPredicates(Predicate predicate) {
+  private void setPredicates(Predicate predicate) {
     this.predicates = predicate;
   }
 

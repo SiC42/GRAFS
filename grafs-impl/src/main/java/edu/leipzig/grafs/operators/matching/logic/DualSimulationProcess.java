@@ -97,8 +97,9 @@ public class DualSimulationProcess<W extends Window> extends PatternMatchingProc
           elements);// TODO: check with vertexMap.values()
             /*Map<String, Vertex> m = new HashMap<String, Vertex>(vertexMap);// to remove self
             m.remove(candidateVertex.getHash());*/
-      if (!stillMatch || !checkPredicateTree(candidateVertex, query.getPredicates(),
-          initialCandidateVertices)) {
+      if (!stillMatch ||
+          (query.hasPredicates() && !checkPredicateTree(candidateVertex, query.getPredicates(),
+          initialCandidateVertices))) {
         prunableCandidateVertices.remove(candidateVertex);
       }
     }
