@@ -15,19 +15,19 @@ import org.gradoop.common.model.impl.id.GradoopIdSet;
 import org.gradoop.common.model.impl.properties.Properties;
 
 
-public class StringToTripletMapper implements MapFunction<String,Triplet>,
-    Function<String,Triplet> {
+public class StringToTripletMapper implements MapFunction<String,Triplet<Vertex,Edge>>,
+    Function<String,Triplet<Vertex,Edge>> {
 
   public static final String DELIMITER = ";";
 
 
   @Override
-  public Triplet apply(String tripletString) {
+  public Triplet<Vertex,Edge> apply(String tripletString) {
     return map(tripletString);
   }
 
   @Override
-  public Triplet map(String tripletString) {
+  public Triplet<Vertex,Edge> map(String tripletString) {
     String[] tripletArray = tripletString.split("\t");
     if(tripletArray.length != 3){
       throw new ParseException("Malformed triplet. Could not find all elements of a triplet");
@@ -51,7 +51,7 @@ public class StringToTripletMapper implements MapFunction<String,Triplet>,
       e.printStackTrace();
       throw new ParseException(String.format("Malformed edge string: '%s'", tripletArray[1]),e);
     }
-    return new Triplet(edge, sourceVertex, targetVertex);
+    return new Triplet<>(edge, sourceVertex, targetVertex);
   }
 
   private Vertex parserVertex(String vertexStr) {

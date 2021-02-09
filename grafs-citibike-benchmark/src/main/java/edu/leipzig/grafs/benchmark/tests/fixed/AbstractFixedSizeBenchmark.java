@@ -5,7 +5,9 @@ import edu.leipzig.grafs.benchmark.config.ProducerConfig;
 import edu.leipzig.grafs.benchmark.connectors.RateLimitingKafkaConsumer;
 import edu.leipzig.grafs.benchmark.serialization.SimpleStringSchemaWithEnd;
 import edu.leipzig.grafs.benchmark.serialization.StringToTripletMapper;
+import edu.leipzig.grafs.model.Edge;
 import edu.leipzig.grafs.model.Triplet;
+import edu.leipzig.grafs.model.Vertex;
 import edu.leipzig.grafs.model.streaming.AbstractStream;
 import edu.leipzig.grafs.model.streaming.GraphStream;
 import edu.leipzig.grafs.util.FlinkConfigBuilder;
@@ -164,7 +166,7 @@ public abstract class AbstractFixedSizeBenchmark {
     System.out.println("Starting to read from Kafka.");
     for (int i = 0; i < iterations; i++) {
       System.out.println("Iteration: " + i);
-      var tripletCol = new ArrayList<Triplet>();
+      var tripletCol = new ArrayList<Triplet<Vertex,Edge>>();
       while (tripletCol.size() < windowSize) {
         if (recordIt == null || !recordIt.hasNext()) {
           var consumerRecords = consumer.poll(Duration.ofMillis(1000));
@@ -181,7 +183,7 @@ public abstract class AbstractFixedSizeBenchmark {
       var stream = env.fromCollection(tripletCol);
       var config = new FlinkConfigBuilder(env)
           .withWaterMarkStrategy(WatermarkStrategy
-              .<Triplet>forBoundedOutOfOrderness(Duration.ZERO)
+              .<Triplet<Vertex, Edge>>forBoundedOutOfOrderness(Duration.ZERO)
               .withTimestampAssigner((t, timestamp) -> 0))
           .build();
       var graphStream = new GraphStream(stream, config);
@@ -258,7 +260,7 @@ public abstract class AbstractFixedSizeBenchmark {
     stream = new GraphStream(transformToTripletStream(dataStream, inputParallelism), config);
   }
 
-  private DataStream<Triplet> transformToTripletStream(DataStream<String> stream, int parallelism) {
+  private DataStream<Triplet<Vertex,Edge>> transformToTripletStream(DataStream<String> stream, int parallelism) {
     return stream
         .map(new StringToTripletMapper())
         .name("Parse String to Triplet")
@@ -273,7 +275,10 @@ public abstract class AbstractFixedSizeBenchmark {
 
   public abstract AbstractStream<?> applyOperator(GraphStream stream);
 
-  protected boolean filter(Triplet triplet) {
+  /**
+   * Override this if the operator filters first (so the specified number of triplets is in a window)
+   */
+  protected boolean filter(Triplet<Vertex,Edge> triplet) {
     return true;
   }
 }

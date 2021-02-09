@@ -5,7 +5,9 @@ import edu.leipzig.grafs.benchmark.config.ProducerConfig;
 import edu.leipzig.grafs.benchmark.connectors.RateLimitingKafkaConsumer;
 import edu.leipzig.grafs.benchmark.serialization.SimpleStringSchemaWithEnd;
 import edu.leipzig.grafs.benchmark.serialization.StringToTripletMapper;
+import edu.leipzig.grafs.model.Edge;
 import edu.leipzig.grafs.model.Triplet;
+import edu.leipzig.grafs.model.Vertex;
 import edu.leipzig.grafs.model.streaming.AbstractStream;
 import edu.leipzig.grafs.model.streaming.GraphStream;
 import edu.leipzig.grafs.util.FlinkConfigBuilder;
@@ -237,7 +239,7 @@ public abstract class AbstractStreamingBenchmark {
     stream = new GraphStream(transformToTripletStream(dataStream, inputParallelism), config);
   }
 
-  private DataStream<Triplet> transformToTripletStream(DataStream<String> stream, int parallelism) {
+  private DataStream<Triplet<Vertex, Edge>> transformToTripletStream(DataStream<String> stream, int parallelism) {
     return stream
         .map(new StringToTripletMapper())
         .name("Parse String to Triplet")
