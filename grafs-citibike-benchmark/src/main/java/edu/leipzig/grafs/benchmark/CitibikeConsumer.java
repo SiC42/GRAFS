@@ -2,7 +2,7 @@ package edu.leipzig.grafs.benchmark;
 
 import edu.leipzig.grafs.model.Triplet;
 import java.time.Duration;
-import java.util.Collections;
+import java.util.List;
 import java.util.Properties;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
@@ -26,15 +26,18 @@ public class CitibikeConsumer {
     return props;
   }
 
-  private static Consumer<String, Triplet> createConsumer() {
-    Consumer<String, Triplet> consumer = new KafkaConsumer<>(
-        createProperties(BOOTSTRAP_SERVERS));
-    consumer.subscribe(Collections.singletonList(TOPIC));
+  public static Consumer<String, String> createConsumer(Properties properties) {
+    Consumer<String, String> consumer = new KafkaConsumer<>(
+        createProperties(properties.getProperty("bootstrap.servers")));
+    consumer.subscribe(List.of(properties.getProperty("topic")));
     return consumer;
   }
 
   private static void runConsumer() {
-    var consumer = createConsumer();
+    var properties = new Properties();
+    properties.put("bootstrap.servers", BOOTSTRAP_SERVERS);
+    properties.put("topic", TOPIC);
+    var consumer = createConsumer(properties);
     int noMessageFound = 0;
     while (true) {
       var consumerRecords = consumer.poll(Duration.ofMillis(1000));

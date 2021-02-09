@@ -1,6 +1,6 @@
-package edu.leipzig.grafs.benchmark.tests.window;
+package edu.leipzig.grafs.benchmark.tests.streaming.window;
 
-import edu.leipzig.grafs.benchmark.tests.AbstractBenchmark;
+import edu.leipzig.grafs.benchmark.tests.streaming.AbstractStreamingBenchmark;
 import edu.leipzig.grafs.model.streaming.AbstractStream;
 import edu.leipzig.grafs.model.streaming.GraphStream;
 import edu.leipzig.grafs.model.window.TumblingProcessingTimeWindows;
@@ -12,7 +12,7 @@ import org.apache.flink.streaming.api.windowing.time.Time;
 import org.apache.flink.streaming.api.windowing.triggers.Trigger;
 import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
 
-public abstract class AbstractWindowBenchmark extends AbstractBenchmark {
+public abstract class AbstractWindowBenchmark extends AbstractStreamingBenchmark {
 
   Time windowSize;
   TumblingProcessingTimeWindows window;

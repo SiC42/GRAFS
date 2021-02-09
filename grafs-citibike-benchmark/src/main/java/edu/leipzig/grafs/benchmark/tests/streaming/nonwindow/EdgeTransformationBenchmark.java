@@ -1,18 +1,18 @@
-package edu.leipzig.grafs.benchmark.tests.nonwindow;
+package edu.leipzig.grafs.benchmark.tests.streaming.nonwindow;
 
 import edu.leipzig.grafs.benchmark.tests.AbstractBenchmark;
 import edu.leipzig.grafs.model.streaming.AbstractStream;
 import edu.leipzig.grafs.model.streaming.GraphStream;
 import org.gradoop.common.model.impl.properties.PropertyValue;
 
-public class VertexTransformationBenchmark extends AbstractBenchmark {
+public class EdgeTransformationBenchmark extends AbstractBenchmark {
 
-  public VertexTransformationBenchmark(String[] args) {
+  public EdgeTransformationBenchmark(String[] args) {
     super(args);
   }
 
   public static void main(String[] args) throws Exception {
-    var benchmark = new VertexTransformationBenchmark(args);
+    var benchmark = new EdgeTransformationBenchmark(args);
     benchmark.execute();
   }
 

@@ -1,23 +1,22 @@
-package edu.leipzig.grafs.benchmark.tests.nonwindow;
+package edu.leipzig.grafs.benchmark.tests.streaming.nonwindow;
 
 import edu.leipzig.grafs.benchmark.tests.AbstractBenchmark;
 import edu.leipzig.grafs.model.streaming.AbstractStream;
 import edu.leipzig.grafs.model.streaming.GraphStream;
 
-public class VertexInducedSubgraphBenchmark extends AbstractBenchmark {
+public class EdgeInducedSubgraphBenchmark extends AbstractBenchmark {
 
-  public VertexInducedSubgraphBenchmark(String[] args) {
+  public EdgeInducedSubgraphBenchmark(String[] args) {
     super(args);
   }
 
   public static void main(String[] args) throws Exception {
-    var benchmark = new VertexInducedSubgraphBenchmark(args);
+    var benchmark = new EdgeInducedSubgraphBenchmark(args);
     benchmark.execute();
   }
 
   public AbstractStream<?> applyOperator(GraphStream stream) {
-    return stream
-        .vertexInducedSubgraph(v -> !v.hasProperty("name"));
+    return stream.edgeInducedSubgraph(e -> e.hasProperty("gender"));
   }
 
 }

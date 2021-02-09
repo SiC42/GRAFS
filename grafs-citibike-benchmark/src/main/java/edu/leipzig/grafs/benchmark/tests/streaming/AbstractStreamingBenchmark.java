@@ -24,6 +24,7 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.functions.sink.DiscardingSink;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer;
 
+// TODO: Base this benchmark on AbstractBenchmark
 public abstract class AbstractStreamingBenchmark {
 
   public static final String CMD_TOPIC = "topic";
@@ -40,7 +41,7 @@ public abstract class AbstractStreamingBenchmark {
   private static final int MAX_PARALLELISM = 96;
 
   protected StreamExecutionEnvironment env;
-  protected AbstractStream<?> stream;
+  protected GraphStream stream;
   protected Writer outputWriter;
   protected Properties properties;
 
@@ -104,7 +105,7 @@ public abstract class AbstractStreamingBenchmark {
       if (cmd.hasOption(CMD_PARALLELISM)) {
         try {
           parallelism = Integer.parseInt(cmd.getOptionValue(CMD_PARALLELISM));
-          if(parallelism < 1){
+          if (parallelism < 1) {
             throw new NumberFormatException("Not a positive number");
           }
           properties.put(CMD_PARALLELISM, String.valueOf(parallelism));
@@ -160,7 +161,7 @@ public abstract class AbstractStreamingBenchmark {
   }
 
   public void execute() throws Exception {
-    var baseStream = applyOperator((GraphStream) stream);
+    var baseStream = applyOperator(stream);
     if (properties.contains(OUTPUT_PATH_KEY)) {
       baseStream.getDataStream().writeAsText(properties.getProperty(OUTPUT_PATH_KEY));
     } else {
@@ -173,7 +174,7 @@ public abstract class AbstractStreamingBenchmark {
     outputWriter.close();
   }
 
-  private String getCsvLine(long timeInMilliSeconds) {
+  protected String getCsvLine(long timeInMilliSeconds) {
     return getCsvLine(timeInMilliSeconds, -1);
   }
 
@@ -210,7 +211,7 @@ public abstract class AbstractStreamingBenchmark {
     var localProps = CitibikeConsumer.createProperties(properties.getProperty("bootstrap.servers"));
     var schema = new SimpleStringSchemaWithEnd();
     var topic = properties.getProperty(CMD_TOPIC);
-    if(properties.containsKey(CMD_PARALLELISM)){
+    if (properties.containsKey(CMD_PARALLELISM)) {
       var parallelism = Integer.parseInt(properties.getProperty(CMD_PARALLELISM));
       System.out.format("Processing Parallelism is %d\n", parallelism);
       env.setParallelism(parallelism);

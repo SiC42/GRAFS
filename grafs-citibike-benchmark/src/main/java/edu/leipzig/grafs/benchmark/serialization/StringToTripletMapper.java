@@ -7,6 +7,7 @@ import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.model.Vertex;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.function.Function;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.common.io.ParseException;
 import org.gradoop.common.model.impl.id.GradoopId;
@@ -14,15 +15,19 @@ import org.gradoop.common.model.impl.id.GradoopIdSet;
 import org.gradoop.common.model.impl.properties.Properties;
 
 
-public class StringToTripletMapper implements MapFunction<String,Triplet> {
+public class StringToTripletMapper implements MapFunction<String,Triplet>,
+    Function<String,Triplet> {
 
   public static final String DELIMITER = ";";
 
 
-
+  @Override
+  public Triplet apply(String tripletString) {
+    return map(tripletString);
+  }
 
   @Override
-  public Triplet map(String tripletString) throws Exception {
+  public Triplet map(String tripletString) {
     String[] tripletArray = tripletString.split("\t");
     if(tripletArray.length != 3){
       throw new ParseException("Malformed triplet. Could not find all elements of a triplet");
@@ -84,8 +89,15 @@ public class StringToTripletMapper implements MapFunction<String,Triplet> {
         properties.set("capacity", Integer.parseInt(propertyStrArray[0]));
       }
       properties.set("id", propertyStrArray[1]);
-      properties.set("lat", propertyStrArray[2]);
-      properties.set("long", propertyStrArray[3]);
+
+      var latStr = propertyStrArray[2];
+      float lat = !latStr.equals("") && ! latStr.equals("NULL")  ? Float.parseFloat(latStr) : -1;
+      properties.set("lat", lat);
+
+      var lonStr = propertyStrArray[3];
+      float lon = !lonStr.equals("") && ! lonStr.equals("NULL") ? Float.parseFloat(lonStr) : -1;
+      properties.set("long", lon);
+
       properties.set("name", propertyStrArray[4]);
       if (propertyStrArray.length > 5 && !propertyStrArray[5].equals("")) {
         properties.set("regionId", Integer.parseInt(propertyStrArray[5]));
@@ -152,5 +164,4 @@ public class StringToTripletMapper implements MapFunction<String,Triplet> {
     graphIds.add(GradoopId.fromString(lastId));
     return GradoopIdSet.fromExisting(graphIds);
   }
-
 }

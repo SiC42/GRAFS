@@ -1,10 +1,9 @@
-package edu.leipzig.grafs.benchmark.tests.nonwindow;
+package edu.leipzig.grafs.benchmark.tests.streaming.latency;
 
-import edu.leipzig.grafs.benchmark.tests.AbstractBenchmark;
 import edu.leipzig.grafs.model.streaming.AbstractStream;
 import edu.leipzig.grafs.model.streaming.GraphStream;
 
-public class EdgeInducedSubgraphBenchmark extends AbstractBenchmark {
+public class EdgeInducedSubgraphBenchmark extends AbstractLatencyBenchmark {
 
   public EdgeInducedSubgraphBenchmark(String[] args) {
     super(args);
@@ -16,7 +15,7 @@ public class EdgeInducedSubgraphBenchmark extends AbstractBenchmark {
   }
 
   public AbstractStream<?> applyOperator(GraphStream stream) {
-    return stream.edgeInducedSubgraph(e -> e.getPropertyValue("gender").getString().equals("1"));
+    return stream.edgeInducedSubgraph(e -> e.hasProperty("gender"));
   }
 
 }

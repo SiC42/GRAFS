@@ -1,4 +1,4 @@
-package edu.leipzig.grafs.benchmark.tests.nonwindow;
+package edu.leipzig.grafs.benchmark.tests.streaming.nonwindow;
 
 import edu.leipzig.grafs.benchmark.tests.AbstractBenchmark;
 import edu.leipzig.grafs.model.streaming.AbstractStream;

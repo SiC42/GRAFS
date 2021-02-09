@@ -1,6 +1,5 @@
-package edu.leipzig.grafs.benchmark.tests.window;
+package edu.leipzig.grafs.benchmark.tests.streaming.window;
 
-import edu.leipzig.grafs.benchmark.tests.AbstractBenchmark;
 import edu.leipzig.grafs.model.streaming.AbstractStream;
 import edu.leipzig.grafs.model.streaming.GraphStream;
 import edu.leipzig.grafs.operators.matching.DualSimulation;
@@ -12,7 +11,7 @@ public class DualSimulationMatchingBenchmark extends AbstractWindowBenchmark {
   }
 
   public static void main(String[] args) throws Exception {
-    AbstractBenchmark benchmark = new DualSimulationMatchingBenchmark(args);
+    var benchmark = new DualSimulationMatchingBenchmark(args);
     benchmark.execute();
   }
 
