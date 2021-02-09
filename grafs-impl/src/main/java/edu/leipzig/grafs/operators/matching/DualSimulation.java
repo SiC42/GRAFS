@@ -74,9 +74,10 @@ public class DualSimulation implements
             return new BasicTriplet<>(qEdge, qSource, qTarget);
           }
         }
-    );
+    ).name("Transform Graph Elements to Query Elements");
     var filteredStream = filterExactEdgesWithVertices(transformedStream);
     var windowedStream = filteredStream.windowAll(wi.getWindow());
-    return windowedStream.process(new DualSimulationProcess<>(gdlQuery));
+    return windowedStream.process(new DualSimulationProcess<>(gdlQuery))
+        .name("Dual Simulation");
   }
 }
