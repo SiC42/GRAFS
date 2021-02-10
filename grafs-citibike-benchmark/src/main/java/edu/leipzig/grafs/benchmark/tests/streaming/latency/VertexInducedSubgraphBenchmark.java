@@ -16,7 +16,7 @@ public class VertexInducedSubgraphBenchmark extends AbstractLatencyBenchmark {
 
   public AbstractStream<?> applyOperator(GraphStream stream) {
     return stream
-        .vertexInducedSubgraph(v -> !v.hasProperty("name"));
+        .vertexInducedSubgraph(v -> v.hasProperty("name"));
   }
 
 }
