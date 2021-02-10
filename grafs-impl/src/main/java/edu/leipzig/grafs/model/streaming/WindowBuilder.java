@@ -38,11 +38,6 @@ public class WindowBuilder<S extends AbstractStream<S>, WBase extends WindowsI<?
     return this;
   }
 
-  public WindowBuilder<S, WBase> sideOutputLateData(OutputTag<Triplet<?, ?>> outputTag) {
-    wi.addLateDataOutputTag(outputTag);
-    return this;
-  }
-
   public S apply() {
     return stream.applyWindowedOperator(operator, wi);
   }

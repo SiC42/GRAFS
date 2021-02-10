@@ -14,14 +14,12 @@ public class WindowingInformation<W extends Window> {
   Trigger<? super Triplet<?, ?>, ? super W> trigger;
   Evictor<? super Triplet<?, ?>, ? super W> evictor;
   Time lateness;
-  OutputTag<Triplet<?, ?>> outputTag;
 
   public WindowingInformation(WindowAssigner<? super Triplet<?, ?>, W> window) {
     this.window = window;
     trigger = null;
     evictor = null;
     lateness = null;
-    outputTag = null;
   }
 
   public void addTrigger(Trigger<? super Triplet<?, ?>, ? super W> trigger) {
@@ -36,9 +34,6 @@ public class WindowingInformation<W extends Window> {
     this.lateness = lateness;
   }
 
-  public void addLateDataOutputTag(OutputTag<Triplet<?, ?>> outputTag) {
-    this.outputTag = outputTag;
-  }
 
   public WindowAssigner<? super Triplet<?, ?>, W> getWindow() {
     return window;
@@ -54,9 +49,5 @@ public class WindowingInformation<W extends Window> {
 
   public Time getLateness() {
     return lateness;
-  }
-
-  public OutputTag<Triplet<?, ?>> getOutputTag() {
-    return outputTag;
   }
 }
