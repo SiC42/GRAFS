@@ -10,6 +10,7 @@ import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.model.Vertex;
 import edu.leipzig.grafs.model.streaming.AbstractStream;
 import edu.leipzig.grafs.model.streaming.GraphStream;
+import edu.leipzig.grafs.util.FlinkConfig;
 import edu.leipzig.grafs.util.FlinkConfigBuilder;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -46,11 +47,13 @@ public abstract class AbstractStreamingBenchmark {
   protected GraphStream stream;
   protected Writer outputWriter;
   protected Properties properties;
+  protected FlinkConfig config;
 
   public AbstractStreamingBenchmark(String[] args) {
     properties = new Properties();
     properties.put(OPERATOR_NAME_KEY, getClass().getSimpleName());
     this.env = StreamExecutionEnvironment.getExecutionEnvironment();
+    this.config = new FlinkConfigBuilder(env).build();
     checkArgs(args);
     System.out.println("Loaded Properties:");
     System.out.println(properties);
@@ -135,7 +138,7 @@ public abstract class AbstractStreamingBenchmark {
       // ================= Process OUTPUT ==================
       if (cmd.hasOption("output")) {
         properties.put(OUTPUT_PATH_KEY,
-            cmd.getOptionValue("output") + "output_" + System.currentTimeMillis());
+            cmd.getOptionValue("output"));
       }
 
       // =============== Process RESULT LOG ================
@@ -167,7 +170,7 @@ public abstract class AbstractStreamingBenchmark {
     if (properties.contains(OUTPUT_PATH_KEY)) {
       baseStream.getDataStream().writeAsText(properties.getProperty(OUTPUT_PATH_KEY));
     } else {
-      baseStream.addSink(new DiscardingSink<>());
+      baseStream.getDataStream().addSink(new DiscardingSink<>()).name("DiscardingSink");
     }
     var result = env.execute(properties.getProperty(OPERATOR_NAME_KEY));
     var timeInMilliSeconds = result.getNetRuntime(TimeUnit.MILLISECONDS);
@@ -235,7 +238,6 @@ public abstract class AbstractStreamingBenchmark {
         .addSource(kafkaConsumer)
         .name(sourceName)
         .setParallelism(inputParallelism);
-    var config = new FlinkConfigBuilder(env).build();
     stream = new GraphStream(transformToTripletStream(dataStream, inputParallelism), config);
   }
 
