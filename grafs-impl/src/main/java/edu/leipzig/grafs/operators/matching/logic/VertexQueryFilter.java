@@ -1,6 +1,6 @@
 package edu.leipzig.grafs.operators.matching.logic;
 
-import edu.leipzig.grafs.model.BasicGraph;
+import edu.leipzig.grafs.model.Graph;
 import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.operators.matching.model.QueryVertex;
 import org.apache.flink.api.common.functions.FilterFunction;
@@ -13,14 +13,14 @@ public class VertexQueryFilter implements FilterFunction<Triplet<QueryVertex, ?>
   /**
    * Query graph which is used to filter edges
    */
-  private final BasicGraph<QueryVertex, ?> queryGraph;
+  private final Graph<QueryVertex, ?> queryGraph;
 
   /**
    * Initializes the filter.
    *
    * @param queryGraph query graph which is used to filter edges
    */
-  public VertexQueryFilter(final BasicGraph<QueryVertex, ?> queryGraph) {
+  public VertexQueryFilter(final Graph<QueryVertex, ?> queryGraph) {
     this.queryGraph = queryGraph;
   }
 

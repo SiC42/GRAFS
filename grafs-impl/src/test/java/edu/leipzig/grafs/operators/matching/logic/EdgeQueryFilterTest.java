@@ -4,7 +4,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.core.IsEqual.equalTo;
 
-import edu.leipzig.grafs.model.BasicGraph;
+import edu.leipzig.grafs.model.Graph;
 import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.operators.matching.model.QueryEdge;
 import edu.leipzig.grafs.operators.matching.model.QueryVertex;
@@ -20,7 +20,7 @@ class EdgeQueryFilterTest {
 
   @BeforeAll
   static void init() {
-    var queryGraph = new BasicGraph<QueryVertex, QueryEdge>();
+    var queryGraph = new Graph<QueryVertex, QueryEdge>();
     var vertexA = new QueryVertex();
     vertexA.setLabel("A");
     var vertexB = new QueryVertex();

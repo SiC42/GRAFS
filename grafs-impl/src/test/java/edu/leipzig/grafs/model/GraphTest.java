@@ -29,7 +29,7 @@ public class GraphTest {
 
   @Test
   void testAddVertex() {
-    var graph = new Graph();
+    var graph = new Graph<>();
     var vertex = new Vertex();
     graph.addVertex(vertex);
     assertThat(graph.getVertices(), hasSize(1));
@@ -38,7 +38,7 @@ public class GraphTest {
 
   @Test
   void testAddVertex_AddTwoTimes() {
-    var graph = new Graph();
+    var graph = new Graph<>();
     var vertex = new Vertex();
     graph.addVertex(vertex);
     graph.addVertex(vertex);
@@ -48,7 +48,7 @@ public class GraphTest {
 
   @Test
   void testAddVertices() {
-    var graph = new Graph();
+    var graph = new Graph<>();
     var vertex = new Vertex();
     var vertexSet = Set.of(vertex);
     graph.addVertices(vertexSet);
@@ -58,7 +58,7 @@ public class GraphTest {
 
   @Test
   void testAddEdge() {
-    var graph = new Graph();
+    var graph = new Graph<>();
     var source = new Vertex();
     var target = new Vertex();
     var edge = EdgeFactory.createEdge(source.getId(), target.getId());
@@ -71,7 +71,7 @@ public class GraphTest {
 
   @Test
   void testAddEdge_noSource() {
-    var graph = new Graph();
+    var graph = new Graph<>();
     var source = new Vertex();
     var target = new Vertex();
     var edge = EdgeFactory.createEdge(source.getId(), target.getId());
@@ -81,7 +81,7 @@ public class GraphTest {
 
   @Test
   void testAddEdge_noTarget() {
-    var graph = new Graph();
+    var graph = new Graph<>();
     var source = new Vertex();
     var target = new Vertex();
     var edge = EdgeFactory.createEdge(source.getId(), target.getId());
@@ -91,7 +91,7 @@ public class GraphTest {
 
   @Test
   void testAddEdges() {
-    var graph = new Graph();
+    var graph = new Graph<>();
     var source = new Vertex();
     var target = new Vertex();
     var edge = EdgeFactory.createEdge(source.getId(), target.getId());
@@ -104,7 +104,7 @@ public class GraphTest {
 
   @Test
   void testGetSourceForEdge() {
-    var graph = new Graph();
+    var graph = new Graph<>();
     var source = new Vertex();
     var target = new Vertex();
     var edge = EdgeFactory.createEdge(source.getId(), target.getId());
@@ -116,7 +116,7 @@ public class GraphTest {
 
   @Test
   void testGetTargetForEdge() {
-    var graph = new Graph();
+    var graph = new Graph<>();
     var source = new Vertex();
     var target = new Vertex();
     var edge = EdgeFactory.createEdge(source.getId(), target.getId());
@@ -128,7 +128,7 @@ public class GraphTest {
 
   @Test
   void testGetEdgesForSource() {
-    var graph = new Graph();
+    var graph = new Graph<>();
     var source = new Vertex();
     var target1 = new Vertex();
     var target2 = new Vertex();
@@ -146,7 +146,7 @@ public class GraphTest {
 
   @Test
   void testGetEdgesForSource_NoEdges() {
-    var graph = new Graph();
+    var graph = new Graph<>();
     var source = new Vertex();
     var target1 = new Vertex();
     graph.addVertex(source);
@@ -156,7 +156,7 @@ public class GraphTest {
 
   @Test
   void testGetEdgesForTarget() {
-    var graph = new Graph();
+    var graph = new Graph<>();
     var source1 = new Vertex();
     var source2 = new Vertex();
     var target = new Vertex();
@@ -174,7 +174,7 @@ public class GraphTest {
 
   @Test
   void testGetEdgesForTarget_NoEdges() {
-    var graph = new Graph();
+    var graph = new Graph<>();
     var source = new Vertex();
     var target = new Vertex();
     graph.addVertex(source);
@@ -184,7 +184,7 @@ public class GraphTest {
 
   @Test
   void testGetTargetForSourceVertex() {
-    var graph = new Graph();
+    var graph = new Graph<>();
     var source = new Vertex();
     var target1 = new Vertex();
     var target2 = new Vertex();
@@ -202,7 +202,7 @@ public class GraphTest {
 
   @Test
   void testGetTargetForSourceVertex_NoEdges() {
-    var graph = new Graph();
+    var graph = new Graph<>();
     var source = new Vertex();
     var target1 = new Vertex();
     graph.addVertex(source);
@@ -212,7 +212,7 @@ public class GraphTest {
 
   @Test
   void testGetEdgeForVertices() {
-    var graph = new Graph();
+    var graph = new Graph<>();
     var source = new Vertex();
     var target1 = new Vertex();
     var target2 = new Vertex();

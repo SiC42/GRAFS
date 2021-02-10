@@ -1,7 +1,7 @@
 package edu.leipzig.grafs.operators.matching.logic;
 
 
-import edu.leipzig.grafs.model.BasicGraph;
+import edu.leipzig.grafs.model.Graph;
 import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.operators.matching.model.QueryEdge;
 import edu.leipzig.grafs.operators.matching.model.QueryVertex;
@@ -15,14 +15,14 @@ public class EdgeQueryFilter implements FilterFunction<Triplet<QueryVertex, Quer
   /**
    * Query graph which is used to filter edges
    */
-  private final BasicGraph<QueryVertex, QueryEdge> queryGraph;
+  private final Graph<QueryVertex, QueryEdge> queryGraph;
 
   /**
    * Initializes the filter.
    *
    * @param queryGraph query graph which is used to filter edges
    */
-  public EdgeQueryFilter(final BasicGraph<QueryVertex, QueryEdge> queryGraph) {
+  public EdgeQueryFilter(final Graph<QueryVertex, QueryEdge> queryGraph) {
     this.queryGraph = queryGraph;
   }
 

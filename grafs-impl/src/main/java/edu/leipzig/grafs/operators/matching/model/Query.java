@@ -1,6 +1,6 @@
 package edu.leipzig.grafs.operators.matching.model;
 
-import edu.leipzig.grafs.model.BasicGraph;
+import edu.leipzig.grafs.model.Graph;
 import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.util.AsciiGraphLoader;
 import java.util.ArrayList;
@@ -23,7 +23,7 @@ import org.s1ck.gdl.model.predicates.booleans.And;
 import org.s1ck.gdl.model.predicates.expressions.Comparison;
 import org.s1ck.gdl.utils.Comparator;
 
-public class Query extends BasicGraph<QueryVertex, QueryEdge> {
+public class Query extends Graph<QueryVertex, QueryEdge> {
 
   private Predicate predicates;
 

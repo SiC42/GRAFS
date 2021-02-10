@@ -229,7 +229,7 @@ public class AsciiGraphLoader {
    * @param expected graph variables that should be selected
    * @return graphs for the selected graph variables
    */
-  public edu.leipzig.grafs.model.Graph createGraphByGraphVariables(String... expected) {
+  public edu.leipzig.grafs.model.Graph<Vertex, Edge> createGraphByGraphVariables(String... expected) {
     var vertices = getVerticesByGraphVariables(expected);
     var edges = getEdgesByGraphVariables(expected);
     return createGraph(vertices, edges);
@@ -240,13 +240,13 @@ public class AsciiGraphLoader {
    *
    * @return graphs loaded by this object
    */
-  public edu.leipzig.grafs.model.Graph createGraph() {
+  public edu.leipzig.grafs.model.Graph<Vertex, Edge> createGraph() {
     return createGraph(vertices.values(), edges.values());
   }
 
-  private edu.leipzig.grafs.model.Graph createGraph(Collection<Vertex> vertices,
+  private edu.leipzig.grafs.model.Graph<Vertex, Edge> createGraph(Collection<Vertex> vertices,
       Collection<Edge> edges) {
-    return new edu.leipzig.grafs.model.Graph(vertices, edges);
+    return new edu.leipzig.grafs.model.Graph<>(vertices, edges);
   }
 
   // ---------------------------------------------------------------------------
