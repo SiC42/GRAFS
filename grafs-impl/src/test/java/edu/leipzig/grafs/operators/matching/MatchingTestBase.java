@@ -104,9 +104,7 @@ public abstract class MatchingTestBase {
       + "g3[(v1) (v2) (v4) (v5)"
       + "(v1)-[e1]->(v2) (v2)-[e2]->(v1) (v2)-[e4]->(v4) (v2)-[e5]->(v5)]";
   protected AsciiGraphLoader graphLoader;
-  protected Graph graph;
   protected AsciiGraphLoader queryLoader;
-  protected Graph queryGraph;
   protected String queryPaperGraphGdlStr = "MATCH "
       // vertices
       + "(qa1:A),"
@@ -122,9 +120,7 @@ public abstract class MatchingTestBase {
   @BeforeEach
   public void initLoadersAndGraphs() {
     graphLoader = AsciiGraphLoader.fromString(paperGraphGdlStr);
-    graph = graphLoader.createGraph();
     queryLoader = AsciiGraphLoader.fromString(queryPaperGraphGdlStr);
-    queryGraph = queryLoader.createGraph();
   }
 
   Set<Vertex> filterBySelfAssignedId(Collection<Vertex> vertices, int... ids) {
