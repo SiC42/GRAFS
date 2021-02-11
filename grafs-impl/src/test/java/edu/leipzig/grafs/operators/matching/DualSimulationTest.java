@@ -85,7 +85,6 @@ public class DualSimulationTest extends MatchingTestBase {
         .callForGC(new DualSimulation(queryPaperGraphGdlStr))
         .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
         .apply();
-    resultStream.print();
 
     TestUtils.assertThatStreamContains(resultStream, expectedEcs);
   }
