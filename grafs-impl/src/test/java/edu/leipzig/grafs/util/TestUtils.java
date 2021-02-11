@@ -407,7 +407,8 @@ public class TestUtils {
     assertNotNull(expectedElement, "expected element was null");
     assertNotNull(actualElement, "actual element was null");
 
-    assertEquals(expectedElement.getLabel(), actualElement.getLabel(), "label mismatch");
+    assertEquals(expectedElement.getLabel(), actualElement.getLabel(), String.format(
+        "Expected element %s mismatched actual element %s. Label mismatch",expectedElement, actualElement));
 
     if (expectedElement.getPropertyCount() == 0) {
       assertEquals(expectedElement.getPropertyCount(), actualElement.getPropertyCount(),
