@@ -88,7 +88,7 @@ public class DistributedWindowedGrouping extends AbstractWindowedGrouping<Abstra
     var aggregatedOnSourceStream = aggregateOnVertex(expandedStream, AggregateMode.SOURCE, wi);
     var aggregatedOnVertexStream = aggregateOnVertex(aggregatedOnSourceStream,
         AggregateMode.TARGET, wi);
-    var reducedStream = aggregatedOnVertexStream.filter(ec -> !ec.getEdge().isReverse());
+    var reducedStream = aggregatedOnVertexStream.filter(ec -> !ec.getEdge().isReverse()).name("Filter reverse edges out");
     var aggregatedOnEdgeStream = aggregateOnEdge(reducedStream, wi);
     var graphId = GradoopId.get();
     return aggregatedOnEdgeStream.map(
@@ -98,7 +98,7 @@ public class DistributedWindowedGrouping extends AbstractWindowedGrouping<Abstra
             triplet.addGraphId(graphId);
             return triplet;
           }
-        });
+        }).name("Add Graph ID");
   }
 
   /**
