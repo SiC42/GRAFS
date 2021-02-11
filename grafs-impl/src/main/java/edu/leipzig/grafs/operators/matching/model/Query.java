@@ -131,16 +131,17 @@ public class Query extends Graph<QueryVertex, QueryEdge> {
     }
   }
 
-  private void searchTreeForProperty(GraphElement v, HasPredicate tempVertex, Predicate a) {
-    if (a.getClass() == And.class) {// comparison?
-      for (Predicate aa : a.getArguments()) {
-        searchTreeForProperty(v, tempVertex, aa);
+  private void searchTreeForProperty(GraphElement elem, HasPredicate predicateElement,
+      Predicate pTree) {
+    if (pTree.getClass() == And.class) {// comparison?
+      for (Predicate pSubTree : pTree.getArguments()) {
+        searchTreeForProperty(elem, predicateElement, pSubTree);
       }
     }
-    if (a.getVariables().contains(v.getVariable())) {
-      if (a.getClass() == Comparison.class) {
-        if (a.getVariables().size() == 1) { // has info only about this object
-          Comparison ca = (Comparison) a;
+    if (pTree.getVariables().contains(elem.getVariable())) {
+      if (pTree.getClass() == Comparison.class) {
+        if (pTree.getVariables().size() == 1) { // has info only about this object
+          Comparison ca = (Comparison) pTree;
           if (ca.getComparator().equals(Comparator.EQ)) {
             if (ca.getComparableExpressions()[0].getClass() == PropertySelector.class &&
                 ca.getComparableExpressions()[1].getClass() == Literal.class) {
@@ -149,26 +150,26 @@ public class Query extends Graph<QueryVertex, QueryEdge> {
               String propertyName = ps.getPropertyName();
               Object propertyValue = ls.getValue();
               if (!propertyName.equals("__label__")) {
-                tempVertex.setProperty(propertyName, propertyValue);
+                predicateElement.setProperty(propertyName, propertyValue);
               }
             }
           } else {
-            tempVertex.addPredicate(a);
+            predicateElement.addPredicate(pTree);
           }
         } //was here
       }
-    } else if (a.getVariables().size() == 2 && tempVertex.getClass()
+    } else if (pTree.getVariables().size() == 2 && predicateElement.getClass()
         == QueryEdge.class) { // edge: then look for direct neighbor expressions
       Optional<QueryVertex> relatedSourceVertex = vertices.stream().filter(element ->
-          element.getId().equals(((QueryEdge) tempVertex).getSourceId())).findAny();
+          element.getId().equals(((QueryEdge) predicateElement).getSourceId())).findAny();
       Optional<QueryVertex> relatedTargetVertex = vertices.stream().filter(element ->
-          element.getId().equals(((QueryEdge) tempVertex).getTargetId())).findAny();
+          element.getId().equals(((QueryEdge) predicateElement).getTargetId())).findAny();
       if (relatedSourceVertex.isPresent() && relatedTargetVertex.isPresent()) {
         Collection<String> variables = new ArrayList<>();
         variables.add(relatedTargetVertex.get().getVariable());
         variables.add(relatedSourceVertex.get().getVariable());
-        if (a.getVariables().containsAll(variables)) {
-          tempVertex.addPredicate(a);
+        if (pTree.getVariables().containsAll(variables)) {
+          predicateElement.addPredicate(pTree);
         }
       }
     }
