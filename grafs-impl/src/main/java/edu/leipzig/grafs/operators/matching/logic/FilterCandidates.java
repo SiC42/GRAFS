@@ -57,13 +57,13 @@ public class FilterCandidates implements FilterFunction<Triplet<QueryVertex, Que
           exist && ElementMatcher.matchesQueryElem(qt.getTargetVertex(), triplet.getTargetVertex());
       // !no need to verify remaining elements
       if (exist) {
-        triplet.getSourceVertex().addVariable(qt.getSourceVertex().getVariable());
-        triplet.getTargetVertex().addVariable(qt.getTargetVertex().getVariable());
-        triplet.getEdge().addVariable(qt.getEdge().getVariable());
         if (!match && qt.getSourceVertex().validatePredicate(triplet.getSourceVertex())
             && qt.getTargetVertex().validatePredicate(triplet.getTargetVertex())
             && qt.getEdge().validatePredicate(triplet.getEdge())
             && validateInterVertexPredicate(qt, triplet)) {
+          triplet.getSourceVertex().addVariable(qt.getSourceVertex().getVariable());
+          triplet.getTargetVertex().addVariable(qt.getTargetVertex().getVariable());
+          triplet.getEdge().addVariable(qt.getEdge().getVariable());
           match = true;
         }
       }
