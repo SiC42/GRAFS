@@ -17,10 +17,14 @@ import org.s1ck.gdl.model.predicates.expressions.Comparison;
 
 public class QueryEdge extends Edge implements HasPredicate {
 
-  Collection<Predicate> selfPredicates;
-  int order;
-  private ArrayList<String> variables = new ArrayList<>();
+  private int order;
+  private final Collection<Predicate> selfPredicates;
+  private final Collection<String> variables;
 
+  protected QueryEdge() {
+    this.selfPredicates = new ArrayList<>();
+    this.variables = new ArrayList<>();
+  }
 
   public QueryEdge(GradoopId id, String label, GradoopId sourceId, GradoopId targetId,
       Properties properties, GradoopIdSet graphIds) {
@@ -45,27 +49,16 @@ public class QueryEdge extends Edge implements HasPredicate {
     variables.add(variable);
   }
 
-  QueryEdge() {
-    selfPredicates = new ArrayList<>();
-  }
-
   public void addVariable(String variable) {
     this.variables.add(variable);
   }
 
   public String getVariable() {
-    return this.variables.get(0);
+    return this.variables.iterator().next();
   }
 
   public boolean hasVariable(String variable) {
-    boolean result = false;
-    for (String var : this.variables) {
-      if (var.equals(variable)) {
-        result = true;
-        break;
-      }
-    }
-    return result;
+    return variables.contains(variable);
   }
 
   public int getOrder() {

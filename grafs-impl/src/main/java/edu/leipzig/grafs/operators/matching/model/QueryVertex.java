@@ -17,11 +17,12 @@ import org.s1ck.gdl.model.predicates.expressions.Comparison;
 
 public class QueryVertex extends Vertex implements HasPredicate {
 
-  Collection<Predicate> selfPredicates;
-  private ArrayList<String> variables = new ArrayList<>();
+  private final Collection<Predicate> selfPredicates;
+  private final Collection<String> variables;
 
   public QueryVertex() {
-    selfPredicates = new ArrayList<>();
+    this.selfPredicates = new ArrayList<>();
+    this.variables = new ArrayList<>();
   }
 
 
@@ -51,28 +52,18 @@ public class QueryVertex extends Vertex implements HasPredicate {
   }
 
   public String getVariable() {
-    return this.variables.get(0);
+    return this.variables.iterator().next();
   }
 
-  public ArrayList<String> getVariables() {
+  public Collection<String> getVariables() {
     return this.variables;
   }
 
   public boolean hasVariable(String variable) {
-    boolean result = false;
-    for (String var : this.variables) {
-      if (var.equals(variable)) {
-        result = true;
-        break;
-      }
-    }
-    return result;
+    return variables.contains(variable);
   }
 
   public void addPredicate(Predicate predicate) {
-        /*if (selfPredicates == null) {
-            selfPredicates = new ArrayList<>();
-        }*/
     selfPredicates.add(predicate);
   }
 
