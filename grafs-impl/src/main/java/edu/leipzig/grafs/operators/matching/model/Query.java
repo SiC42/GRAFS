@@ -175,26 +175,6 @@ public class Query extends Graph<QueryVertex, QueryEdge> {
     }
   }
 
-  private boolean queryPredicatesOnlyAnd(Predicate predicate) {
-    boolean result;
-    if (predicate.getClass() != And.class && predicate.getClass() != Comparison.class) {
-      return false;
-    } else {
-      result = true;
-      for (Predicate p : predicate.getArguments()) {
-        result = result && queryPredicatesOnlyAnd(p);
-      }
-    }
-    return result;
-  }
-
-  public boolean isVertexOnly() {
-    if (!this.isEmpty()) {
-      return edges.size() == 0;
-    }
-    return false;
-  }
-
   public boolean isEmpty() {
     return edges.size() == 0 && this.vertices.size() == 0;
   }
