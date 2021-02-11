@@ -88,7 +88,9 @@ public class Query extends Graph<QueryVertex, QueryEdge> {
   }
 
   private GDLHandler initQueryHandler(String queryString) {
-    return AsciiGraphLoader.createDefaultGdlHandlerBuilder().buildFromString(queryString);
+    var handler = AsciiGraphLoader.createDefaultGdlHandlerBuilder().buildFromString(queryString);
+    handler.getPredicates().ifPresent(this::setPredicates);
+    return handler;
   }
 
   private void extractGraph(GDLHandler handler, String timestampKey,
