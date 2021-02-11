@@ -15,6 +15,11 @@ public class CitibikePipelineBenchmark extends AbstractWindowBenchmark {
     super(args);
   }
 
+  public static void main(String[] args) throws Exception {
+    var benchmark = new CitibikePipelineBenchmark(args);
+    benchmark.execute();
+  }
+
   @Override
   public AbstractStream<?> applyOperatorWithWindow(GraphStream stream) {
     var gridCellKey = "gridCell";
