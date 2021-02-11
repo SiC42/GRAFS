@@ -66,16 +66,16 @@ public class VertexAggregation<W extends Window> extends ElementAggregation<W> {
           : triplet.getTargetVertex();
       if (isInitialAggregation) {
         isInitialAggregation = false;
-        aggregatedVertex = (Vertex) setGroupedProperties(vertexGroupInfo,
+        aggregatedVertex = setGroupedProperties(vertexGroupInfo,
             aggregatedVertex, curVertex);
       }
       if (!alreadyAggregated.contains(curVertex.getId())) {
         alreadyAggregated.add(curVertex.getId());
-        aggregatedVertex = (Vertex) aggregateElement(aggregatedVertex, curVertex,
+        aggregatedVertex = aggregateElement(aggregatedVertex, curVertex,
             aggregateFunctions);
       }
     }
-    aggregatedVertex = (Vertex) checkForMissingAggregationsAndApply(aggregateFunctions,
+    aggregatedVertex = checkForMissingAggregationsAndApply(aggregateFunctions,
         aggregatedVertex);
 
     // build new triplets using the aggregated vertice

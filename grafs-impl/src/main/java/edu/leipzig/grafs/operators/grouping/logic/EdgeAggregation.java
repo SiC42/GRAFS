@@ -60,18 +60,18 @@ public class EdgeAggregation<W extends Window> extends ElementAggregation<W> {
     Triplet<Vertex, Edge> lastTriplet = null;
 
     for (var triplet : tripletIt) {
-      aggregatedEdge = (Edge) aggregateElement(aggregatedEdge, triplet.getEdge(),
+      aggregatedEdge = aggregateElement(aggregatedEdge, triplet.getEdge(),
           edgeAggregateFunctions
       );
       lastTriplet = triplet;
     }
-    aggregatedEdge = (Edge) checkForMissingAggregationsAndApply(edgeAggregateFunctions,
+    aggregatedEdge = checkForMissingAggregationsAndApply(edgeAggregateFunctions,
         aggregatedEdge);
     Triplet<Vertex, Edge> aggregatedTriplet;
 
     // we have not set the grouped properties yet
     assert lastTriplet != null;
-    aggregatedEdge = (Edge) setGroupedProperties(edgeGroupInfo,
+    aggregatedEdge = setGroupedProperties(edgeGroupInfo,
         aggregatedEdge,
         lastTriplet.getEdge());
     aggregatedEdge.setGraphIds(GradoopIdSet.fromExisting(newGraphId));
@@ -81,7 +81,7 @@ public class EdgeAggregation<W extends Window> extends ElementAggregation<W> {
     target.setGraphIds(GradoopIdSet.fromExisting(newGraphId));
     aggregatedEdge.setSourceId(source.getId());
     aggregatedEdge.setTargetId(target.getId());
-    aggregatedTriplet = new Triplet<Vertex, Edge>(aggregatedEdge, source,
+    aggregatedTriplet = new Triplet<>(aggregatedEdge, source,
         target);
 
     out.collect(aggregatedTriplet);

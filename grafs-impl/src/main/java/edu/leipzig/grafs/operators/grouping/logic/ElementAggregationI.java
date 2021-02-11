@@ -46,8 +46,8 @@ public interface ElementAggregationI {
    * @param masterElem  element which holds the fields used to set the 'base' element
    * @return the given 'base' element, now with the fields set from the 'master' element
    */
-  default Element setGroupedProperties(GroupingInformation groupInfo,
-      Element baseElement, Element masterElem) {
+  default <E extends Element> E setGroupedProperties(GroupingInformation groupInfo,
+      E baseElement, E masterElem) {
     if (groupInfo != null) {
       if (groupInfo.shouldUseLabel()) {
         baseElement.setLabel(masterElem.getLabel());
@@ -82,8 +82,8 @@ public interface ElementAggregationI {
    * @param aggregateFunctions aggregate functions used for the aggregation
    * @return the aggregation element with the new aggregates
    */
-  default Element aggregateElement(
-      Element aggregationElement, Element element,
+  default <E extends Element> E aggregateElement(
+      E aggregationElement, E element,
       Set<AggregateFunction> aggregateFunctions) {
     for (AggregateFunction aggFunc : aggregateFunctions) {
       PropertyValue increment = aggFunc.getIncrement(element);
@@ -111,8 +111,8 @@ public interface ElementAggregationI {
    * @param aggregationElement element on which the aggregate was applied upon
    * @return the aggregation element with all missing aggregate set to the default value
    */
-  default Element checkForMissingAggregationsAndApply(Set<AggregateFunction> aggregateFunctions,
-      Element aggregationElement) {
+  default <E extends Element> E checkForMissingAggregationsAndApply(Set<AggregateFunction> aggregateFunctions,
+      E aggregationElement) {
     for (var func : aggregateFunctions) {
       var aggregateKey = func.getAggregatePropertyKey();
       if (!aggregationElement.hasProperty(aggregateKey)) {
