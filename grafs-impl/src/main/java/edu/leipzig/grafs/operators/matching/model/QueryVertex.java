@@ -91,15 +91,16 @@ public class QueryVertex extends Vertex implements HasPredicate {
     for (Predicate p : this.selfPredicates) { // only comparisons we have here and with values
       if (result) {
         if (p.getClass() == Comparison.class) {
-          Comparison comparison = (Comparison) p;
-          ComparableExpression[] list = comparison.getComparableExpressions();
-          if (list[0].getClass() == PropertySelector.class && list[1].getClass() == Literal.class) {
-            PropertySelector propertySelector = (PropertySelector) list[0];
-            PropertyValue vertexPropertyValue = e.getProperties()
+          var comparison = (Comparison) p;
+          ComparableExpression[] expressionArray = comparison.getComparableExpressions();
+          if (expressionArray[0].getClass() == PropertySelector.class
+              && expressionArray[1].getClass() == Literal.class) {
+            var propertySelector = (PropertySelector) expressionArray[0];
+            var vertexPropertyValue = e.getProperties()
                 .get(propertySelector.getPropertyName());
             if (vertexPropertyValue != null) { // check here if right
-              Literal literal = (Literal) list[1];
-              PropertyValue literalPropertyValue = PropertyValue.create(literal.getValue());
+              var literal = (Literal) expressionArray[1];
+              var literalPropertyValue = PropertyValue.create(literal.getValue());
               switch (comparison.getComparator()) {
                 case NEQ:
                   result = vertexPropertyValue.compareTo(literalPropertyValue) != 0;
