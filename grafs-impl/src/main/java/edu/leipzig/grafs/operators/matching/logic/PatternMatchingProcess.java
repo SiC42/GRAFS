@@ -13,8 +13,6 @@ import org.apache.flink.util.Collector;
 public abstract class PatternMatchingProcess<W extends Window> extends
     ProcessAllWindowFunction<Triplet<QueryVertex, QueryEdge>, Triplet<Vertex, Edge>, W> {
 
-  transient Histogram histogram;
-
   /**
    * Evaluates the window and outputs none or several elements.
    *
