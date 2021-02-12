@@ -4,7 +4,9 @@ import edu.leipzig.grafs.model.Element;
 import edu.leipzig.grafs.model.Vertex;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 import org.gradoop.common.model.impl.id.GradoopId;
 import org.gradoop.common.model.impl.id.GradoopIdSet;
 import org.gradoop.common.model.impl.properties.Properties;
@@ -18,18 +20,18 @@ import org.s1ck.gdl.model.predicates.expressions.Comparison;
 public class QueryVertex extends Vertex implements HasPredicate {
 
   private final Collection<Predicate> selfPredicates;
-  private final Collection<String> variables;
+  private final Set<String> variables;
 
   public QueryVertex() {
     this.selfPredicates = new ArrayList<>();
-    this.variables = new ArrayList<>();
+    this.variables = new HashSet<>();
   }
 
 
   public QueryVertex(GradoopId id, String label, Properties properties, GradoopIdSet gradoopIds) {
     super(id, label, properties, gradoopIds);
     selfPredicates = new ArrayList<>();
-    variables = new ArrayList<>();
+    variables = new HashSet<>();
   }
 
   public QueryVertex(GradoopId id, String label, Properties properties) {
@@ -50,12 +52,15 @@ public class QueryVertex extends Vertex implements HasPredicate {
   public void addVariable(String variable) {
     this.variables.add(variable);
   }
+  public void addVariables(Collection<String> variables) {
+    this.variables.addAll(variables);
+  }
 
   public String getVariable() {
     return this.variables.iterator().next();
   }
 
-  public Collection<String> getVariables() {
+  public Set<String> getVariables() {
     return this.variables;
   }
 
