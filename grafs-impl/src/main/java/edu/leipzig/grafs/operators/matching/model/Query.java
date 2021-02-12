@@ -3,11 +3,15 @@ package edu.leipzig.grafs.operators.matching.model;
 import edu.leipzig.grafs.model.Graph;
 import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.util.AsciiGraphLoader;
+import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 import org.gradoop.common.model.impl.id.GradoopId;
@@ -23,18 +27,21 @@ import org.s1ck.gdl.model.predicates.booleans.And;
 import org.s1ck.gdl.model.predicates.expressions.Comparison;
 import org.s1ck.gdl.utils.Comparator;
 
-public class Query extends Graph<QueryVertex, QueryEdge> {
+public class Query extends Graph<QueryVertex, QueryEdge> implements Serializable {
 
   private Predicate predicates;
+  private Map<String,QueryVertex> variableToVertexMap;
 
   public Query() {
     super();
+    this.variableToVertexMap = new HashMap<>();
   }
 
 
   public Query(String queryString, String timestampKey, List<String> variableOrder) {
     // "g[(alice)-[e1:knows {since : 2014}]->(bob)]"
     super(GradoopId.get(), new ArrayList<>(), new ArrayList<>(), Set.of(), Set.of());
+    this.variableToVertexMap = new HashMap<>();
     GDLHandler handler = initQueryHandler(queryString);
     extractGraph(handler, timestampKey, variableOrder);
     if (timestampKey != null) {
@@ -177,6 +184,24 @@ public class Query extends Graph<QueryVertex, QueryEdge> {
 
   public boolean isEmpty() {
     return edges.size() == 0 && this.vertices.size() == 0;
+  }
+
+
+  public QueryVertex getVertexByVariable(String variable) {
+    return variableToVertexMap.get(variable);
+  }
+
+  /**
+   * Adds a vertex to the graph. Returns <tt>true</tt> if this vertex was not already part of the
+   * graph. Does not add the vertex, if it is already part of the graph.
+   *
+   * @param vertex vertex to be added to this graph
+   * @return <tt>true</tt>  if this graph did not already contain the specified vertex
+   */
+  public boolean addVertex(QueryVertex vertex) {
+    var alreadyAdded = super.addVertex(vertex);
+    this.variableToVertexMap.put(vertex.getVariable(), vertex);
+    return alreadyAdded;
   }
 
 
