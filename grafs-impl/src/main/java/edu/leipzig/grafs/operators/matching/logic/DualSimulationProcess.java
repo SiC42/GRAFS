@@ -53,71 +53,56 @@ public class DualSimulationProcess<W extends Window> extends PatternMatchingProc
    *
    * @param context  The context in which the window is being evaluated.
    * @param elements The elements in the window being evaluated.
-   * @param out      A collector for emitting elements.
+   * @param collector      A collector for emitting elements.
    */
   @Override
   public void process(Context context, Iterable<Triplet<QueryVertex, QueryEdge>> elements,
-      Collector<Triplet<Vertex, Edge>> out) {
+      Collector<Triplet<Vertex, Edge>> collector) {
     Iterable<Triplet<Vertex, Edge>> triplets;
     if (query.getEdges().isEmpty()) {
       throw new RuntimeException(
           "Can't process query with only vertices, because only triplet stream model is supported");
     } else {
-      triplets = executeForEdgesWithVertices(elements);
-    }
-    for (var triplet : triplets) {
-      out.collect(triplet);
+      executeForEdgesWithVertices(elements, collector);
     }
   }
 
-  private Iterable<Triplet<Vertex, Edge>> executeForEdgesWithVertices(
-      Iterable<Triplet<QueryVertex, QueryEdge>> elements) {
+  private void executeForEdgesWithVertices(
+      Iterable<Triplet<QueryVertex, QueryEdge>> tripletElements,
+      Collector<Triplet<Vertex, Edge>> collector) {
     // get unique elements from stream
     Set<QueryVertex> initialCandidateVertices = new HashSet<>(); // used for process
-    Map<GradoopId, QueryVertex> idToVertexMap = new HashMap<>(); // used to find vertices for edges at the end
-    Set<Edge> edgeSet = new HashSet<>();
-    for (var candidate : elements) {
+    for (var candidate : tripletElements) {
       var source = candidate.getSourceVertex();
       var target = candidate.getTargetVertex();
       initialCandidateVertices.add(source);
       initialCandidateVertices.add(target);
-      idToVertexMap.put(source.getId(), source);
-      idToVertexMap.put(target.getId(), target);
-      edgeSet.add(candidate.getEdge());
     }
     // Copy to be able to delete during iteration; for optimisation
-    Map<QueryVertex, GradoopId> prunableCandidateVertices = new HashMap<>();
-    for (var v : initialCandidateVertices) {
-      prunableCandidateVertices.put(v, v.getId());
-    }
-
+    Set<GradoopId> candidateVertices = new HashSet<>();
+    var queryTriplets = query.toTriplets();
     for (var candidateVertex : initialCandidateVertices) {
-      boolean stillMatch = checkParentsAndChildren(candidateVertex, query.toTriplets(),
-          elements);// TODO: check with vertexMap.values()
-            /*Map<String, Vertex> m = new HashMap<String, Vertex>(vertexMap);// to remove self
-            m.remove(candidateVertex.getHash());*/
-      if (!stillMatch ||
-          (query.hasPredicates() && !checkPredicateTree(candidateVertex, query.getPredicates(),
-              initialCandidateVertices))) {
-        prunableCandidateVertices.remove(candidateVertex);
+      if(checkParentsAndChildren(candidateVertex, queryTriplets, tripletElements)) {
+        if (!query.hasPredicates() ||
+            checkPredicateTree(candidateVertex, query.getPredicates(), initialCandidateVertices)) {
+          candidateVertices.add(candidateVertex.getId());
+        }
       }
     }
-
-    var finalEdgeSet = edgeSet.stream()
-        .filter(e -> prunableCandidateVertices.containsValue(e.getSourceId()))
-        .filter(e -> prunableCandidateVertices.containsValue(e.getTargetId()))
-        .collect(toSet());
-    var result = new ArrayList<Triplet<Vertex, Edge>>();
     var newGraphId = GradoopId.get();
-    for (var edge : finalEdgeSet) {
-      var source = idToVertexMap.get(edge.getSourceId());
-      var target = idToVertexMap.get(edge.getTargetId());
-      var triplet = new Triplet<>(EdgeFactory.createEdge(edge), VertexFactory.createVertex(source),
-          VertexFactory.createVertex(target));
-      triplet.addGraphId(newGraphId);
-      result.add(triplet);
+    for(var t : tripletElements){
+      var source = t.getSourceVertex();
+      var target = t.getTargetVertex();
+      if(candidateVertices.contains(source.getId()) && candidateVertices.contains(target.getId())){
+        // We need to make a Triplet<Vertex,Edge> instead of Triplet<QueryVertex,QueryEdge>
+        var triplet = new Triplet<>(
+            EdgeFactory.createEdge(t.getEdge()),
+            VertexFactory.createVertex(source),
+            VertexFactory.createVertex(target));
+        triplet.addGraphId(newGraphId);
+        collector.collect(triplet);
+      }
     }
-    return result;
   }
 
   private boolean checkPredicateTree(QueryVertex currentCandidateVertex, Predicate predicates,
