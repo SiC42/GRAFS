@@ -1,5 +1,7 @@
 package edu.leipzig.grafs.util;
 
+import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -8,6 +10,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import org.gradoop.common.model.impl.id.GradoopId;
 
 /**
  * This class represents a multimap, i.e. a map which can hold multiple (distinct) values for each
@@ -16,10 +19,10 @@ import java.util.Set;
  * @param <K> the type of keys maintained by this map
  * @param <V> the type of mapped values
  */
-public class MultiMap<K, V> {
+public class MultiMap<K, V> implements Serializable {
 
-  private final Map<K, Set<V>> map;
-  private int size;
+  protected Map<K, Set<V>> map;
+  protected int size;
 
   /**
    * Initializes an empty multi map with the default initial capacity (16) and the default load
@@ -28,6 +31,19 @@ public class MultiMap<K, V> {
   public MultiMap() {
     map = new HashMap<>();
     size = 0;
+  }
+
+  /**
+   * Initializes an empty multi map with the default initial capacity (16) and the default load
+   * factor (0.75).
+   */
+  public MultiMap(MultiMap<K,V> otherMultiMap) {
+    this();
+    for(var key : otherMultiMap.keySet()){
+      for(var value : otherMultiMap.get(key)){
+        put(key, value);
+      }
+    }
   }
 
   /**
@@ -302,5 +318,32 @@ public class MultiMap<K, V> {
       values.addAll(valuesPerKey);
     }
     return values;
+  }
+
+  protected void writeObject(java.io.ObjectOutputStream out)
+      throws IOException {
+    out.writeInt(map.keySet().size());
+    for (var key : map.keySet()) {
+      out.writeObject(key);
+      var values = map.get(key);
+      out.writeInt(values.size());
+      for(var value : values){
+        out.writeObject(value);
+      }
+    }
+  }
+
+  protected void readObject(java.io.ObjectInputStream in)
+      throws IOException, ClassNotFoundException {
+    var keySetSize = in.readInt();
+    map = new HashMap<>();
+    for(int i = 0; i< keySetSize; i++){
+      var key = (K) in.readObject();
+      var valueSetSize = in.readInt();
+      for(int j = 0; j< valueSetSize; j++){
+        var value = (V) in.readObject();
+        put(key, value);
+      }
+    }
   }
 }
