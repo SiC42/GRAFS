@@ -47,17 +47,16 @@ public class FilterCandidates implements FilterFunction<Triplet<QueryVertex, Que
   }
 
   private boolean filterEdgesWithVertices(Triplet<QueryVertex, QueryEdge> triplet) {
-    boolean exist;
     boolean match = false;
     for (Triplet<QueryVertex, QueryEdge> qt : queryTriples) { //TODO: get by label
-      exist = ElementMatcher.matchesQueryElem(qt.getEdge(), triplet.getEdge());
+      boolean exist = ElementMatcher.matchesQueryElem(qt.getEdge(), triplet.getEdge());
       exist =
           exist && ElementMatcher.matchesQueryElem(qt.getSourceVertex(), triplet.getSourceVertex());
       exist =
           exist && ElementMatcher.matchesQueryElem(qt.getTargetVertex(), triplet.getTargetVertex());
       // !no need to verify remaining elements
       if (exist) {
-        if (!match && qt.getSourceVertex().validatePredicate(triplet.getSourceVertex())
+        if (qt.getSourceVertex().validatePredicate(triplet.getSourceVertex())
             && qt.getTargetVertex().validatePredicate(triplet.getTargetVertex())
             && qt.getEdge().validatePredicate(triplet.getEdge())
             && validateInterVertexPredicate(qt, triplet)) {
