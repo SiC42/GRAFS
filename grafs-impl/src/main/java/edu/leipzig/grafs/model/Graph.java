@@ -348,7 +348,7 @@ public class Graph<V extends Vertex, E extends Edge> implements Serializable {
     return Objects.hash(vertices, vertexMap, edges, sourceToEdgeMap, targetToEdgeMap);
   }
 
-  private void writeObject(java.io.ObjectOutputStream out)
+  protected void writeObject(java.io.ObjectOutputStream out)
       throws IOException {
     out.writeObject(id);
     out.writeInt(vertices.size());
@@ -361,7 +361,7 @@ public class Graph<V extends Vertex, E extends Edge> implements Serializable {
     }
   }
 
-  private void readObject(java.io.ObjectInputStream in)
+  protected void readObject(java.io.ObjectInputStream in)
       throws IOException, ClassNotFoundException {
     var id = (GradoopId) in.readObject();
     int size = in.readInt();

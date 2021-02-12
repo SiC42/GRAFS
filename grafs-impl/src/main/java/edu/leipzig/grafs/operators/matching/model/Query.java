@@ -204,5 +204,27 @@ public class Query extends Graph<QueryVertex, QueryEdge> implements Serializable
     return alreadyAdded;
   }
 
+  protected void writeObject(java.io.ObjectOutputStream out)
+      throws IOException {
+    super.writeObject(out);
+    out.writeInt(variableToVertexMap.size());
+    for(Entry<String, QueryVertex> entry: variableToVertexMap.entrySet()){
+      out.writeObject(entry.getKey());
+      out.writeObject(entry.getValue());
+    }
+    out.writeObject(predicates);
+  }
 
+  protected void readObject(java.io.ObjectInputStream in)
+      throws IOException, ClassNotFoundException {
+    super.readObject(in);
+    var size = in.readInt();
+    variableToVertexMap = new HashMap<>();
+    for(var i = 0; i < size; i++){
+      var key = (String) in.readObject();
+      var value = (QueryVertex) in.readObject();
+      variableToVertexMap.put(key, value);
+    }
+    predicates = (Predicate) in.readObject();
+  }
 }
