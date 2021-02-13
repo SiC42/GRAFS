@@ -107,15 +107,15 @@ public abstract class MatchingTestBase {
   protected AsciiGraphLoader queryLoader;
   protected String queryPaperGraphGdlStr = "MATCH "
       // vertices
-      + "(qa1:A),"
-      + "(qb2:B),"
-      + "(qc3:C),"
-      + "(qc4:C),"
+      + "(qa:A),"
+      + "(qb:B),"
+      + "(qc1:C),"
+      + "(qc2:C),"
       //edges
-      + "(qa1)-[]->(qb2),"
-      + "(qb2)-[]->(qa1),"
-      + "(qb2)-[]->(qc3),"
-      + "(qb2)-[]->(qc4)";
+      + "(qa)-[]->(qb),"
+      + "(qb)-[]->(qa),"
+      + "(qb)-[]->(qc1),"
+      + "(qb)-[]->(qc2)";
 
   @BeforeEach
   public void initLoadersAndGraphs() {
