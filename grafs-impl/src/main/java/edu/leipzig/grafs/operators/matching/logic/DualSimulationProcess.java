@@ -5,6 +5,7 @@ import static java.util.stream.Collectors.toSet;
 import edu.leipzig.grafs.factory.EdgeFactory;
 import edu.leipzig.grafs.factory.VertexFactory;
 import edu.leipzig.grafs.model.Edge;
+import edu.leipzig.grafs.model.Element;
 import edu.leipzig.grafs.model.Graph;
 import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.model.Vertex;
@@ -12,7 +13,6 @@ import edu.leipzig.grafs.operators.matching.model.Query;
 import edu.leipzig.grafs.operators.matching.model.QueryEdge;
 import edu.leipzig.grafs.operators.matching.model.QueryVertex;
 import edu.leipzig.grafs.util.MultiMap;
-import edu.leipzig.grafs.util.Sets;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -72,10 +72,12 @@ public class DualSimulationProcess<W extends Window> extends PatternMatchingProc
   private void executeForEdgesWithVertices(
       Iterable<Triplet<QueryVertex, QueryEdge>> tripletElements,
       Collector<Triplet<Vertex, Edge>> collector) {
-    // get unique elements from stream
-    var variableToVerticesMap = new MultiMap<String, QueryVertex>(); // used for process
+
+    var variablesToElementMap = new MultiMap<String, Element>(); // used for process
     var vertexMap = new HashMap<GradoopId, QueryVertex>();
     var edgeMap = new HashMap<GradoopId, QueryEdge>();
+
+    // Map triplets to above defined maps
     for (var triplet : tripletElements) {
       // source
       var source = triplet.getSourceVertex();
@@ -109,7 +111,13 @@ public class DualSimulationProcess<W extends Window> extends PatternMatchingProc
     }
     for (var vertex : vertexMap.values()) {
       for (var variable : vertex.getVariables()) {
-        variableToVerticesMap.put(variable, vertex);
+        variablesToElementMap.put(variable, vertex);
+      }
+    }
+
+    for (var edge : edgeMap.values()) {
+      for (var variable : edge.getVariables()) {
+        variablesToElementMap.put(variable, edge);
       }
     }
 
@@ -121,21 +129,24 @@ public class DualSimulationProcess<W extends Window> extends PatternMatchingProc
       for (var queryVertex : query.getVertices()) {
         var queryVariable = queryVertex.getVariable();
         for (var queryVertexTarget : query.getTargetForSourceVertex(queryVertex)) {
-          Set<QueryVertex> candidatesForQueryTarget = new HashSet<>();
-          var candidatesForQueryVertex = variableToVerticesMap.get(queryVariable);
+          Set<Element> candidatesForQueryTarget = new HashSet<>();
+          var candidatesForQueryVertex = variablesToElementMap.get(queryVariable);
           var queryVertexTargetVariable = queryVertexTarget.getVariable();
-          for (Iterator<QueryVertex> candidateIt = candidatesForQueryVertex.iterator();
+          for (Iterator<Element> candidateIt = candidatesForQueryVertex.iterator();
               candidateIt.hasNext(); ) {
-            var candidate = candidateIt.next();
+            var candidate = (QueryVertex) candidateIt.next();
             if (checkPredicateTree(candidate, queryVariable, query.getPredicates(),
-                variableToVerticesMap)) {
-              var targetCandidates = Sets.intersection(
-                  graph.getTargetForSourceVertex(candidate),
-                  variableToVerticesMap.get(queryVertexTargetVariable));
+                variablesToElementMap)) {
+              // TODO: Edge checking probably goes somewhere here.Preparations are made, edge should be passable to checkPredicateTree
+              var targetCandidates = variablesToElementMap
+                  .get(queryVertexTargetVariable)
+                  .stream()
+                  .map(e -> (QueryVertex) e)
+                  .filter(graph.getTargetForSourceVertex(candidate)::contains).collect(toSet());
               targetCandidates = targetCandidates.stream()
                   .filter(v ->
                       checkPredicateTree(v, queryVertexTargetVariable, query.getPredicates(),
-                          variableToVerticesMap))
+                          variablesToElementMap))
                   .collect(toSet());
               if (targetCandidates.isEmpty()) {
                 candidateIt.remove();
@@ -152,27 +163,31 @@ public class DualSimulationProcess<W extends Window> extends PatternMatchingProc
           if (candidatesForQueryTarget.isEmpty()) {
             return;
           }
-          if (candidatesForQueryTarget.size() < variableToVerticesMap.get(
+          if (candidatesForQueryTarget.size() < variablesToElementMap.get(
               queryVertexTargetVariable).size()) {
             changed = true;
           }
-          variableToVerticesMap.retainAll(queryVertexTargetVariable, candidatesForQueryTarget);
+          variablesToElementMap.retainAll(queryVertexTargetVariable, candidatesForQueryTarget);
         }
       }
     }
 
-    var emittableTriplets = new HashSet<Triplet<Vertex,Edge>>();
+    var emittableTriplets = new HashSet<Triplet<Vertex, Edge>>();
     for (var qSource : query.getVertices()) {
-      var candidatesForSource = variableToVerticesMap.get(qSource.getVariable());
+      var candidatesForSource = variablesToElementMap.get(qSource.getVariable());
       for (var sourceCandidate : candidatesForSource) {
         for (var qTarget : query.getTargetForSourceVertex(qSource)) {
-          var candidatesForTarget = Sets.intersection(
-              variableToVerticesMap.get(qTarget.getVariable()),
-              graph.getTargetForSourceVertex(sourceCandidate));
-          for(var targetCandidate : candidatesForTarget){
-            var edge = graph.getEdgeForVertices(sourceCandidate, targetCandidate);
-            var normalSource = VertexFactory.createVertex(sourceCandidate);
-            var normalTarget = VertexFactory.createVertex(targetCandidate);
+          var candidatesForTarget = variablesToElementMap
+              .get(qTarget.getVariable())
+              .stream()
+              .map(e -> (QueryVertex) e)
+              .filter(graph.getTargetForSourceVertex((QueryVertex) sourceCandidate)::contains)
+              .collect(toSet());
+          for (var targetCandidate : candidatesForTarget) {
+            var edge = graph
+                .getEdgeForVertices((QueryVertex) sourceCandidate, (QueryVertex) targetCandidate);
+            var normalSource = VertexFactory.createVertex((QueryVertex) sourceCandidate);
+            var normalTarget = VertexFactory.createVertex((QueryVertex) targetCandidate);
             var normalEdge = EdgeFactory.createEdge(edge);
             emittableTriplets.add(new Triplet<>(normalEdge, normalSource, normalTarget));
           }
@@ -183,68 +198,68 @@ public class DualSimulationProcess<W extends Window> extends PatternMatchingProc
 
   }
 
-  private boolean checkPredicateTree(QueryVertex currentCandidateVertex, String currentVariable,
+  private boolean checkPredicateTree(Element currentCandidate, String currentVariable,
       Predicate predicates,
-      MultiMap<String, QueryVertex> variableToVerticesMap) {
+      MultiMap<String, Element> variableToVerticesMap) {
     if (predicates == null) {
       return true;
     }
     if (predicates.getArguments().length > 1) {
       boolean applyLeft = predicates.getArguments()[0].getVariables().stream()
-          .anyMatch(currentCandidateVertex.getVariables()::contains);
+          .anyMatch(currentVariable::equals);
       boolean applyRight = predicates.getArguments()[1].getVariables().stream()
-          .anyMatch(currentCandidateVertex.getVariables()::contains);
+          .anyMatch(currentVariable::equals);
       if (And.class.equals(predicates.getClass())) {
         if (applyLeft && applyRight) {
-          return checkPredicateTree(currentCandidateVertex, currentVariable,
+          return checkPredicateTree(currentCandidate, currentVariable,
               predicates.getArguments()[0],
               variableToVerticesMap) &&
-              checkPredicateTree(currentCandidateVertex, currentVariable,
+              checkPredicateTree(currentCandidate, currentVariable,
                   predicates.getArguments()[1],
                   variableToVerticesMap);
         } else if (applyLeft) {
-          return checkPredicateTree(currentCandidateVertex, currentVariable,
+          return checkPredicateTree(currentCandidate, currentVariable,
               predicates.getArguments()[0],
               variableToVerticesMap);
         } else {
-          return checkPredicateTree(currentCandidateVertex, currentVariable,
+          return checkPredicateTree(currentCandidate, currentVariable,
               predicates.getArguments()[1],
               variableToVerticesMap);
         }
       } else if (Not.class.equals(predicates.getClass())) {
-        return !checkPredicateTree(currentCandidateVertex, currentVariable,
+        return !checkPredicateTree(currentCandidate, currentVariable,
             predicates.getArguments()[0],
             variableToVerticesMap);
       } else if (Or.class.equals(predicates.getClass())) {
         if (applyLeft && applyRight) {
-          return checkPredicateTree(currentCandidateVertex, currentVariable,
+          return checkPredicateTree(currentCandidate, currentVariable,
               predicates.getArguments()[0],
               variableToVerticesMap) ||
-              checkPredicateTree(currentCandidateVertex, currentVariable,
+              checkPredicateTree(currentCandidate, currentVariable,
                   predicates.getArguments()[1],
                   variableToVerticesMap);
         } else if (applyLeft) {
-          return checkPredicateTree(currentCandidateVertex, currentVariable,
+          return checkPredicateTree(currentCandidate, currentVariable,
               predicates.getArguments()[0],
               variableToVerticesMap);
         } else {
-          checkPredicateTree(currentCandidateVertex, currentVariable, predicates.getArguments()[1],
+          checkPredicateTree(currentCandidate, currentVariable, predicates.getArguments()[1],
               variableToVerticesMap);
         }
       } else if (Xor.class.equals(predicates.getClass())) {
         if (applyLeft && applyRight) {
-          return checkPredicateTree(currentCandidateVertex, currentVariable,
+          return checkPredicateTree(currentCandidate, currentVariable,
               predicates.getArguments()[0],
               variableToVerticesMap) ^
-              checkPredicateTree(currentCandidateVertex, currentVariable,
+              checkPredicateTree(currentCandidate, currentVariable,
                   predicates.getArguments()[1],
                   variableToVerticesMap);
         } else if (applyLeft) {
-          return checkPredicateTree(currentCandidateVertex, currentVariable,
+          return checkPredicateTree(currentCandidate, currentVariable,
               predicates.getArguments()[0],
               variableToVerticesMap);
         } else {
-          return checkPredicateTree(currentCandidateVertex, currentVariable,
+          return checkPredicateTree(currentCandidate, currentVariable,
               predicates.getArguments()[1],
               variableToVerticesMap);
         }
@@ -259,7 +274,7 @@ public class DualSimulationProcess<W extends Window> extends PatternMatchingProc
       ComparableExpression right = comparison.getComparableExpressions()[1];
       var rightVar = right.getVariable();
       if (comparison.getVariables().size() == 1 && left.getVariable().equals(currentVariable)) {
-        return compareSingleVariable(currentCandidateVertex, comparison, left, right);
+        return compareSingleVariable(currentCandidate, comparison, left, right);
       } else if (left.getVariable().equals(currentVariable) ||
           (rightVar != null && rightVar
               .equals(currentVariable))) { // We have to compare Vertices with each other
@@ -268,7 +283,8 @@ public class DualSimulationProcess<W extends Window> extends PatternMatchingProc
         if (left.getClass().equals(PropertySelector.class) &&
             right.getClass().equals(PropertySelector.class)) {
           return compareWithPropertySelector(
-              currentCandidateVertex,
+              currentCandidate,
+              currentVariable,
               comparison,
               left,
               (PropertySelector) right,
@@ -276,7 +292,7 @@ public class DualSimulationProcess<W extends Window> extends PatternMatchingProc
         } else if (left.getClass().equals(ElementSelector.class) &&
             right.getClass().equals(ElementSelector.class)) {
           return compareWithElementSelector(
-              currentCandidateVertex,
+              currentCandidate,
               comparison,
               verticesToCompareWith);
         }
@@ -285,7 +301,7 @@ public class DualSimulationProcess<W extends Window> extends PatternMatchingProc
     return true;// no comparison? error? fall back to dual simulation?
   }
 
-  private boolean compareSingleVariable(Vertex currentCandidateVertex, Comparison comparison,
+  private boolean compareSingleVariable(Element currenCandidate, Comparison comparison,
       ComparableExpression left, ComparableExpression right) {
     PropertyValue leftValue = null;
     PropertyValue rightValue = null;
@@ -293,7 +309,7 @@ public class DualSimulationProcess<W extends Window> extends PatternMatchingProc
       if (((PropertySelector) left).getPropertyName().equals("__label__")) {
         return true;
       }
-      leftValue = currentCandidateVertex
+      leftValue = currenCandidate
           .getPropertyValue(((PropertySelector) left).getPropertyName());
       if (right.getClass().equals(Literal.class)) {
         rightValue = PropertyValue.create(((Literal) right).getValue());
@@ -304,7 +320,7 @@ public class DualSimulationProcess<W extends Window> extends PatternMatchingProc
         if (((PropertySelector) right).getPropertyName().equals("__label__")) {
           return true;
         }
-        rightValue = currentCandidateVertex
+        rightValue = currenCandidate
             .getPropertyValue(((PropertySelector) right).getPropertyName());
       }
     }
@@ -312,24 +328,25 @@ public class DualSimulationProcess<W extends Window> extends PatternMatchingProc
     // return true; // as we are in window and all single predicate would be passes in the filter //TODO: check this
   }
 
-  private Collection<QueryVertex> getVerticesToCompareWith(String currentVariable,
-      MultiMap<String, QueryVertex> variableToVerticeMap, Comparison comparison) {
+  private Collection<Element> getVerticesToCompareWith(String currentVariable,
+      MultiMap<String, Element> variableToVerticeMap, Comparison comparison) {
     return comparison.getVariables().stream()
         .filter(v -> !currentVariable.equals(v))
         .flatMap(v -> variableToVerticeMap.get(v).stream())
         .collect(toSet());
   }
 
-  private boolean compareWithPropertySelector(QueryVertex currentCandidateVertex,
+  private boolean compareWithPropertySelector(Element currentCandidateVertex,
+      String currentVariable,
       Comparison comparison, ComparableExpression left, PropertySelector right,
-      Collection<QueryVertex> streamVerticesToCompareWith) {
+      Collection<Element> streamVerticesToCompareWith) {
     PropertyValue leftValue;
     PropertyValue rightValue;
-    if (currentCandidateVertex.hasVariable(left.getVariable())) {
+    if (currentVariable.equals(left.getVariable())) {
       leftValue = currentCandidateVertex
           .getPropertyValue(((PropertySelector) left).getPropertyName());
       boolean result = false;
-      for (QueryVertex opponent : streamVerticesToCompareWith) {
+      for (var opponent : streamVerticesToCompareWith) {
         rightValue = opponent.getPropertyValue(right.getPropertyName());
         if (leftValue != null && rightValue != null) {
           if (executeComparison(comparison, leftValue, rightValue)) {
@@ -343,7 +360,7 @@ public class DualSimulationProcess<W extends Window> extends PatternMatchingProc
       leftValue = currentCandidateVertex
           .getPropertyValue(((PropertySelector) left).getPropertyName());
       boolean result = false;
-      for (Vertex opponent : streamVerticesToCompareWith) {
+      for (var opponent : streamVerticesToCompareWith) {
         rightValue = opponent.getPropertyValue(right.getPropertyName());
         if (leftValue != null && rightValue != null) {
           if (executeComparison(comparison, rightValue, leftValue)) {
@@ -356,13 +373,13 @@ public class DualSimulationProcess<W extends Window> extends PatternMatchingProc
     }
   }
 
-  private boolean compareWithElementSelector(QueryVertex currentCandidateVertex,
-      Comparison comparison, Collection<QueryVertex> streamVerticesToCompareWith) {
+  private boolean compareWithElementSelector(Element currentCandidateVertex,
+      Comparison comparison, Collection<Element> streamVerticesToCompareWith) {
     PropertyValue leftValue;
     PropertyValue rightValue;
     leftValue = PropertyValue.create(currentCandidateVertex.getId());
     boolean result = false;
-    for (Vertex opponent : streamVerticesToCompareWith) {
+    for (var opponent : streamVerticesToCompareWith) {
       rightValue = PropertyValue.create(opponent.getId());
       if (executeComparison(comparison, rightValue, leftValue)) {
         result = true;
