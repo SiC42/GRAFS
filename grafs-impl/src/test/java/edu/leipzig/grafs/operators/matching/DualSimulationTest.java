@@ -15,6 +15,7 @@ import java.time.Duration;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.windowing.time.Time;
+import org.junit.Ignore;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -230,10 +231,6 @@ public class DualSimulationTest extends MatchingTestBase {
         + "(carol)-[ckb]->(bob)"
         + "(carol)-[ckd]->(dave)"
         + "(dave)-[dkc]->(carol)"
-        + "(eve)-[ekb]->(bob)"
-        + "(eve)-[eka]->(alice)"
-        + "(frank)-[fkd]->(dave)"
-        + "(frank)-[fkc]->(carol)"
         + "]";
     loader.appendFromString(appendDsString);
     var expectedEcs = loader.createTripletsByGraphVariables("ds");
@@ -258,10 +255,6 @@ public class DualSimulationTest extends MatchingTestBase {
         + "(carol)-[ckb]->(bob)"
         + "(carol)-[ckd]->(dave)"
         + "(dave)-[dkc]->(carol)"
-        + "(eve)-[ekb]->(bob)"
-        + "(eve)-[eka]->(alice)"
-        + "(frank)-[fkd]->(dave)"
-        + "(frank)-[fkc]->(carol)"
         + "]";
     loader.appendFromString(appendDsString);
     var expectedEcs = loader.createTripletsByGraphVariables("ds");
@@ -284,6 +277,53 @@ public class DualSimulationTest extends MatchingTestBase {
     var appendDsString = "ds {}["
         + "(gps)-[gpshmod]->(dave)"
         + "(gdbs)-[gdbshmoa]->(alice)"
+        + "]";
+    loader.appendFromString(appendDsString);
+    var expectedEcs = loader.createTripletsByGraphVariables("ds");
+
+    var resultStream = graphStream
+        .callForGC(new DualSimulation(queryStr))
+        .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        .apply();
+
+    TestUtils.assertThatStreamContains(resultStream, expectedEcs);
+  }
+
+  @Ignore
+  @Test
+  void testWithSocialGraph_WithEdgeVariableInWhere() throws Exception {
+    var loader = TestUtils.getSocialNetworkLoader();
+    var queryStr = "MATCH (a:Person)-[k:knows]->(b:Person)"
+        + "WHERE (k.since = 2015 OR a.age = 30)";
+    GraphStream graphStream = loader.createEdgeStream(config);
+    var appendDsString = "ds {}["
+        + "(frank)-[fkd]->(dave)"
+        + "(frank)-[fkc]->(carol)"
+        + "(carol)-[ckd]->(dave)"
+        + "(carol)-[ckb]->(bob)"
+        + "(bob)-[bkc]->(carol)"
+        + "(bob)-[bka]->(alice)"
+        + "(eve)-[ekb]->(bob)"
+        + "]";
+    loader.appendFromString(appendDsString);
+    var expectedEcs = loader.createTripletsByGraphVariables("ds");
+
+    var resultStream = graphStream
+        .callForGC(new DualSimulation(queryStr))
+        .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        .apply();
+
+    TestUtils.assertThatStreamContains(resultStream, expectedEcs);
+  }
+
+  @Test
+  void testWithSocialGraph_OnlyAliceWithOrs() throws Exception {
+    var loader = TestUtils.getSocialNetworkLoader();
+    var queryStr = "MATCH (a:Person)-[k:knows {since: 2014}]->(b:Person)"
+        + "WHERE (a.age = 20 OR a.name=\"Alice\")";
+    GraphStream graphStream = loader.createEdgeStream(config);
+    var appendDsString = "ds {}["
+        + "(alice)-[akb]->(bob)"
         + "]";
     loader.appendFromString(appendDsString);
     var expectedEcs = loader.createTripletsByGraphVariables("ds");
