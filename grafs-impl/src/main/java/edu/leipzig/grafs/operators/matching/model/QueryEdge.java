@@ -4,7 +4,9 @@ import edu.leipzig.grafs.model.Edge;
 import edu.leipzig.grafs.model.Element;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 import org.gradoop.common.model.impl.id.GradoopId;
 import org.gradoop.common.model.impl.id.GradoopIdSet;
 import org.gradoop.common.model.impl.properties.Properties;
@@ -19,18 +21,18 @@ public class QueryEdge extends Edge implements HasPredicate {
 
   private int order;
   private final Collection<Predicate> selfPredicates;
-  private final Collection<String> variables;
+  private final Set<String> variables;
 
   protected QueryEdge() {
     this.selfPredicates = new ArrayList<>();
-    this.variables = new ArrayList<>();
+    this.variables = new HashSet<>();
   }
 
   public QueryEdge(GradoopId id, String label, GradoopId sourceId, GradoopId targetId,
       Properties properties, GradoopIdSet graphIds) {
     super(id, label, sourceId, targetId, properties, graphIds);
     selfPredicates = new ArrayList<>();
-    variables = new ArrayList<>();
+    variables = new HashSet<>();
   }
 
   public QueryEdge(GradoopId id, String label, GradoopId sourceId, GradoopId targetId,
@@ -59,6 +61,10 @@ public class QueryEdge extends Edge implements HasPredicate {
 
   public boolean hasVariable(String variable) {
     return variables.contains(variable);
+  }
+
+  public Set<String> getVariables(){
+    return variables;
   }
 
   public int getOrder() {
