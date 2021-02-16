@@ -6,6 +6,7 @@ import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.model.Vertex;
 import edu.leipzig.grafs.operators.grouping.functions.AggregateFunction;
 import edu.leipzig.grafs.operators.grouping.model.GroupingInformation;
+import edu.leipzig.grafs.operators.grouping.model.ReversableEdge;
 import java.util.Set;
 import org.apache.flink.streaming.api.windowing.windows.Window;
 import org.apache.flink.util.Collector;
@@ -18,7 +19,7 @@ import org.gradoop.common.model.impl.id.GradoopIdSet;
  *
  * @param <W> the type of window to be used for the grouping
  */
-public class EdgeAggregation<W extends Window> extends ElementAggregation<W> {
+public class EdgeAggregation<W extends Window> extends ElementAggregation<Triplet<Vertex, Edge>, Triplet<Vertex, Edge>, W> {
 
 
   private final GroupingInformation edgeGroupInfo;
