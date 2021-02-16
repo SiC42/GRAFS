@@ -20,8 +20,10 @@ class VertexQueryFilterTest {
     var queryGraph = new Query();
     var vertexA = new QueryVertex();
     vertexA.setLabel("A");
+    vertexA.addVariable("a");
     var vertexB = new QueryVertex();
     vertexB.setLabel("B");
+    vertexB.addVariable("b");
     queryGraph.addVertex(vertexA);
     queryGraph.addVertex(vertexB);
     vertexFilter = new VertexQueryFilter(queryGraph);
