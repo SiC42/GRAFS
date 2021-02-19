@@ -11,6 +11,8 @@ import org.apache.flink.api.common.functions.MapFunction;
 
 public abstract class AbstractLatencyBenchmark extends AbstractStreamingBenchmark {
 
+  public static final String TIMESTAMP_KEY = "timestamp";
+
   public AbstractLatencyBenchmark(String[] args) {
     super(args);
   }
@@ -18,23 +20,21 @@ public abstract class AbstractLatencyBenchmark extends AbstractStreamingBenchmar
 
   @Override
   public void execute() throws Exception {
-    var timestampKey = "timestamp";
     var dataStream = this.stream.getDataStream();
     dataStream = dataStream.map(new MapFunction<Triplet<Vertex, Edge>, Triplet<Vertex, Edge>>() {
 
       @Override
       public Triplet<Vertex, Edge> map(Triplet<Vertex, Edge> triplet) throws Exception {
-        triplet.getEdge().setProperty(timestampKey, System.currentTimeMillis());
+        triplet.getEdge().setProperty(TIMESTAMP_KEY, System.currentTimeMillis());
         return triplet;
       }
     }).name("Set Timestamp").setParallelism(96);
     var graphStream = applyOperator(new GraphStream(dataStream, config));
     var afterOpStream = graphStream.getDataStream();
     var longStream = afterOpStream.map(new MapFunction<Triplet<Vertex, Edge>, Long>() {
-
       @Override
       public Long map(Triplet<Vertex, Edge> triplet) throws Exception {
-          var startTime = triplet.getEdge().getPropertyValue(timestampKey).getLong();
+          var startTime = triplet.getEdge().getPropertyValue(TIMESTAMP_KEY).getLong();
           return System.currentTimeMillis() - startTime;
       }
     }).setParallelism(96).name("Extracting Latency");
