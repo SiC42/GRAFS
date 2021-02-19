@@ -5,6 +5,7 @@ import edu.leipzig.grafs.model.streaming.AbstractStream;
 import edu.leipzig.grafs.model.streaming.GraphStream;
 import edu.leipzig.grafs.operators.grouping.DistributedWindowedGrouping;
 import edu.leipzig.grafs.operators.grouping.functions.Count;
+import edu.leipzig.grafs.operators.grouping.functions.MaxProperty;
 import edu.leipzig.grafs.operators.subgraph.Subgraph;
 import edu.leipzig.grafs.operators.subgraph.Subgraph.Strategy;
 import edu.leipzig.grafs.operators.transform.VertexTransformation;
@@ -35,6 +36,7 @@ public class CitibikePipelineBenchmark extends AbstractWindowBenchmark {
         .callForGraph(DistributedWindowedGrouping.createGrouping()
             .addVertexGroupingKey(gridCellKey)
             .addVertexAggregateFunction(new Count("stationsInGridCell"))
+            .addEdgeAggregateFunction(new MaxProperty(TIMESTAMP_KEY,TIMESTAMP_KEY))
             .build()
         )
         .withWindow(window)
