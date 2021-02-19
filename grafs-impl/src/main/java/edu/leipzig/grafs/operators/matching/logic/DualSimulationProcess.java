@@ -184,18 +184,23 @@ public class DualSimulationProcess<W extends Window> extends PatternMatchingProc
               .filter(graph.getTargetForSourceVertex((QueryVertex) sourceCandidate)::contains)
               .collect(toSet());
           for (var targetCandidate : candidatesForTarget) {
-            var edge = graph
-                .getEdgeForVertices((QueryVertex) sourceCandidate, (QueryVertex) targetCandidate);
-            var normalSource = VertexFactory.createVertex((QueryVertex) sourceCandidate);
-            var normalTarget = VertexFactory.createVertex((QueryVertex) targetCandidate);
-            var normalEdge = EdgeFactory.createEdge(edge);
-            emittableTriplets.add(new Triplet<>(normalEdge, normalSource, normalTarget));
+            var edges = graph
+                .getEdgesForVertices((QueryVertex) sourceCandidate, targetCandidate);
+            for(var edge : edges) {
+              var queryEdges = query.getEdgesForVertices(qSource, qTarget);
+              if (queryEdges.stream().anyMatch(qe -> ElementMatcher.matchesQueryElem(qe,edge))) {
+                var normalSource = VertexFactory.createVertex((QueryVertex) sourceCandidate);
+                var normalTarget = VertexFactory.createVertex(targetCandidate);
+                var normalEdge = EdgeFactory.createEdge(edge);
+                // TODO: find a better way to guarantee, that all edges are emitted once
+                emittableTriplets.add(new Triplet<>(normalEdge, normalSource, normalTarget));
+              }
+            }
           }
         }
       }
     }
     emittableTriplets.forEach(collector::collect);
-
   }
 
   private boolean checkPredicateTree(Element currentCandidate, String currentVariable,
