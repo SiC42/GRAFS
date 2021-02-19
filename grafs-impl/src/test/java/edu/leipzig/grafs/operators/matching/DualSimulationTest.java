@@ -15,8 +15,8 @@ import java.time.Duration;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.windowing.time.Time;
-import org.junit.Ignore;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 public class DualSimulationTest extends MatchingTestBase {
@@ -289,7 +289,7 @@ public class DualSimulationTest extends MatchingTestBase {
     TestUtils.assertThatStreamContains(resultStream, expectedEcs);
   }
 
-  @Ignore
+  @Disabled
   @Test
   void testWithSocialGraph_WithEdgeVariableInWhere() throws Exception {
     var loader = TestUtils.getSocialNetworkLoader();
