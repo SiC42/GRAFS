@@ -279,12 +279,10 @@ public class Graph<V extends Vertex, E extends Edge> implements Serializable {
    * @param targetVertex target vertex for which the edge should be returned
    * @return the edge that has the two given vertices as source and target vertex
    */
-  @Nullable
-  public E getEdgeForVertices(V sourceVertex, V targetVertex) {
+  public Set<E> getEdgesForVertices(V sourceVertex, V targetVertex) {
     Set<E> edgeIntersection = new HashSet<>(sourceToEdgeMap.get(sourceVertex.getId()));
     edgeIntersection.retainAll(targetToEdgeMap.get(targetVertex.getId()));
-    Iterator<E> iterator = edgeIntersection.iterator();
-    return iterator.hasNext() ? iterator.next() : null;
+    return edgeIntersection;
   }
 
   /**

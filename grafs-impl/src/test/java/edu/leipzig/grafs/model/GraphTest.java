@@ -223,8 +223,8 @@ public class GraphTest {
     graph.addVertex(target2);
     graph.addEdge(edge1);
     graph.addEdge(edge2);
-    assertThat(graph.getEdgeForVertices(source, target1), is(equalTo(edge1)));
-    assertThat(graph.getEdgeForVertices(source, target2), is(equalTo(edge2)));
+    assertThat(graph.getEdgesForVertices(source, target1).iterator().next(), is(equalTo(edge1)));
+    assertThat(graph.getEdgesForVertices(source, target2).iterator().next(), is(equalTo(edge2)));
   }
 
   @Test
