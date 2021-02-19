@@ -166,7 +166,8 @@ public abstract class AbstractBenchmark {
     if (properties.contains(OUTPUT_PATH_KEY)) {
       baseStream.getDataStream().writeAsText(properties.getProperty(OUTPUT_PATH_KEY));
     } else {
-      baseStream.addSink(new DiscardingSink<>());
+      var stream = baseStream.getDataStream();
+      stream.addSink(new DiscardingSink<>()).setParallelism(MAX_PARALLELISM);
     }
     var result = env.execute(properties.getProperty(OPERATOR_NAME_KEY));
     var timeInMilliSeconds = result.getNetRuntime(TimeUnit.MILLISECONDS);
