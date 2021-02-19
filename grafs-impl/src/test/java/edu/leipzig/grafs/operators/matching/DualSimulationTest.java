@@ -289,7 +289,7 @@ public class DualSimulationTest extends MatchingTestBase {
     TestUtils.assertThatStreamContains(resultStream, expectedEcs);
   }
 
-  @Disabled
+  @Disabled // As there is no WHERE-Support for Edges for now
   @Test
   void testWithSocialGraph_WithEdgeVariableInWhere() throws Exception {
     var loader = TestUtils.getSocialNetworkLoader();
