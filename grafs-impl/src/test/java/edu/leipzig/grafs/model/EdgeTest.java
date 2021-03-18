@@ -87,17 +87,5 @@ public class EdgeTest {
       EdgeFactory.initEdge(edgeId, null, sourceId, targetId);
     });
   }
-
-  @Test
-  public void createInvertedEdgeTest() {
-    GradoopId edgeId = GradoopId.get();
-    GradoopId sourceId = GradoopId.get();
-    GradoopId targetId = GradoopId.get();
-    Edge e = EdgeFactory.initEdge(edgeId, sourceId, targetId);
-    Edge invertedE = e.createReverseEdge();
-    assertEquals(invertedE.getSourceId(), invertedE.getSourceId());
-    assertEquals(invertedE.getTargetId(), invertedE.getTargetId());
-    assertEquals(invertedE, invertedE);
-  }
 }
 

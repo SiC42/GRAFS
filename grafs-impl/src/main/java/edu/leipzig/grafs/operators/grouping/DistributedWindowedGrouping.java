@@ -11,6 +11,7 @@ import edu.leipzig.grafs.operators.grouping.logic.TripletKeySelector;
 import edu.leipzig.grafs.operators.grouping.logic.VertexAggregation;
 import edu.leipzig.grafs.operators.grouping.model.AggregateMode;
 import edu.leipzig.grafs.operators.grouping.model.GroupingInformation;
+import edu.leipzig.grafs.operators.grouping.model.ReversableEdge;
 import java.util.Set;
 import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.api.common.functions.MapFunction;
@@ -88,7 +89,7 @@ public class DistributedWindowedGrouping extends AbstractWindowedGrouping<Abstra
     var aggregatedOnSourceStream = aggregateOnVertex(expandedStream, AggregateMode.SOURCE, wi);
     var aggregatedOnVertexStream = aggregateOnVertex(aggregatedOnSourceStream,
         AggregateMode.TARGET, wi);
-    var reducedStream = aggregatedOnVertexStream.filter(ec -> !ec.getEdge().isReverse()).name("Filter reverse edges out");
+    var reducedStream = filterReverseEdges(aggregatedOnVertexStream);
     var aggregatedOnEdgeStream = aggregateOnEdge(reducedStream, wi);
     var graphId = GradoopId.get();
     return aggregatedOnEdgeStream.map(
@@ -107,16 +108,33 @@ public class DistributedWindowedGrouping extends AbstractWindowedGrouping<Abstra
    * @param stream stream which should be enriched by reverse edges
    * @return stream with reverse edges
    */
-  private SingleOutputStreamOperator<Triplet<Vertex, Edge>> createStreamWithReverseEdges(
+  private SingleOutputStreamOperator<Triplet<Vertex, ReversableEdge>> createStreamWithReverseEdges(
       DataStream<Triplet<Vertex, Edge>> stream) {
     return stream
-        .flatMap(new FlatMapFunction<Triplet<Vertex, Edge>, Triplet<Vertex, Edge>>() {
+        .flatMap(new FlatMapFunction<Triplet<Vertex, Edge>, Triplet<Vertex, ReversableEdge>>() {
           @Override
-          public void flatMap(Triplet<Vertex, Edge> value, Collector<Triplet<Vertex, Edge>> out) {
-            out.collect(value.createReverseTriplet());
-            out.collect(value);
+          public void flatMap(Triplet<Vertex, Edge> triplet, Collector<Triplet<Vertex, ReversableEdge>> out) {
+            out.collect(triplet.createReverseTriplet());
+            var revEdge = ReversableEdge.create(triplet.getEdge(), false);
+            out.collect(new Triplet<>(revEdge, triplet.getSourceVertex(), triplet.getTargetVertex()));
           }
         }).name("Create Reverse Edges");
+  }
+
+  private SingleOutputStreamOperator<Triplet<Vertex, Edge>> filterReverseEdges(
+      DataStream<Triplet<Vertex, ReversableEdge>> aggregatedOnVertexStream) {
+    return aggregatedOnVertexStream
+        .flatMap(new FlatMapFunction<Triplet<Vertex, ReversableEdge>, Triplet<Vertex, Edge>>() {
+          @Override
+          public void flatMap(Triplet<Vertex, ReversableEdge> ec,
+              Collector<Triplet<Vertex, Edge>> collector) throws Exception {
+            if (!ec.getEdge().isReverse()) {
+              var revEdge = ec.getEdge();
+              var edge = revEdge.toEdge();
+              collector.collect(new Triplet<>(edge, ec.getSourceVertex(), ec.getTargetVertex()));
+            }
+          }
+        }).name("Filter reverse edges out");
   }
 
   /**
@@ -128,8 +146,8 @@ public class DistributedWindowedGrouping extends AbstractWindowedGrouping<Abstra
    *               the grouping key is generated)
    * @return stream on which the indicated vertices are grouped
    */
-  private <W extends Window> DataStream<Triplet<Vertex, Edge>> aggregateOnVertex(
-      DataStream<Triplet<Vertex, Edge>> stream,
+  private <W extends Window> DataStream<Triplet<Vertex, ReversableEdge>> aggregateOnVertex(
+      DataStream<Triplet<Vertex, ReversableEdge>> stream,
       AggregateMode mode, WindowingInformation<W> wi) {
     var windowedStream = createKeyedWindowedStream(stream, vertexGi, mode, wi);
     return windowedStream.process(
@@ -160,11 +178,11 @@ public class DistributedWindowedGrouping extends AbstractWindowedGrouping<Abstra
    *             be keyed upon
    * @return stream that is keyed based on the given mode and windowed
    */
-  private <W extends Window> WindowedStream<Triplet<Vertex, Edge>, String, W> createKeyedWindowedStream(
-      DataStream<Triplet<Vertex, Edge>> es, GroupingInformation gi, AggregateMode mode,
+  private <E extends Edge, W extends Window> WindowedStream<Triplet<Vertex, E>, String, W> createKeyedWindowedStream(
+      DataStream<Triplet<Vertex, E>> es, GroupingInformation gi, AggregateMode mode,
       WindowingInformation<W> wi) {
     var windowedStream = es
-        .keyBy(new TripletKeySelector(gi, mode))
+        .keyBy(new TripletKeySelector<>(gi, mode))
         .window(wi.getWindow());
     windowedStream = applyOtherWindowInformation(windowedStream, wi);
     return windowedStream;

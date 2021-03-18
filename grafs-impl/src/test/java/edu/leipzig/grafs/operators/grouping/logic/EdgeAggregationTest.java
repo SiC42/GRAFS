@@ -25,7 +25,7 @@ class EdgeAggregationTest {
     aggMap.add(TestUtils.INT_ADD_FUNC.apply("e"));
     var vertexAggregation = new EdgeAggregation<>(groupInfo, aggMap, GRADOOP_ID_VAL_8);
 
-    var collector = new DummyCollector();
+    var collector = new DummyCollector<>();
     var loader = AsciiGraphLoader.fromString(
         "(a18 {n : \"A\", a : 18})," +
             "(c20 {n : \"B\", a : 20})," +

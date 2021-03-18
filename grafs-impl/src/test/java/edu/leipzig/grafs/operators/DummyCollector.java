@@ -7,21 +7,21 @@ import java.util.ArrayList;
 import java.util.List;
 import org.apache.flink.util.Collector;
 
-public class DummyCollector implements Collector<Triplet<Vertex, Edge>> {
+public class DummyCollector<V extends Vertex, E extends Edge> implements Collector<Triplet<V, E>> {
 
-  private final List<Triplet<Vertex, Edge>> collected;
+  private final List<Triplet<V, E>> collected;
 
   public DummyCollector() {
     collected = new ArrayList<>();
   }
 
-  public List<Triplet<Vertex, Edge>> getCollected() {
+  public List<Triplet<V, E>> getCollected() {
     return collected;
   }
 
 
   @Override
-  public void collect(Triplet<Vertex, Edge> triplet) {
+  public void collect(Triplet<V, E> triplet) {
     collected.add(triplet);
   }
 

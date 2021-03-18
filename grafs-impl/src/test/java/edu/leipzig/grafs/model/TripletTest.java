@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import edu.leipzig.grafs.factory.EdgeFactory;
+import edu.leipzig.grafs.operators.grouping.model.ReversableEdge;
 import org.junit.jupiter.api.Test;
 
 class TripletTest {
@@ -82,9 +83,9 @@ class TripletTest {
     var v2 = new Vertex();
 
     var e = EdgeFactory.createEdge(v1, v2);
-    var reverseE = e.createReverseEdge();
+    var reverseE = ReversableEdge.create(e, true);
     var triplet = new Triplet<>(e, v1, v2);
-    triplet = triplet.createReverseTriplet();
-    assertThat(triplet.getEdge(), is(equalTo(reverseE)));
+    var revTriplet = triplet.createReverseTriplet();
+    assertThat(revTriplet.getEdge(), is(equalTo(reverseE)));
   }
 }

@@ -118,7 +118,7 @@ public class TestUtils {
       return element.getPropertyValue(key);
     }
   };
-  private static final Comparator<Triplet<Vertex, Edge>> tripletComparator = (t1, t2) -> {
+  private static final Comparator<Triplet<? extends Vertex, ? extends Edge>> tripletComparator = (t1, t2) -> {
     int difference;
 
     // compare edges
@@ -325,9 +325,9 @@ public class TestUtils {
    * @param expectedCollection first collection
    * @param actualCollection   second collection
    */
-  public static void validateTripletCollections(
-      Collection<Triplet<Vertex, Edge>> expectedCollection,
-      Collection<Triplet<Vertex, Edge>> actualCollection) {
+  public static <V1 extends Vertex, E1 extends Edge, V2 extends Vertex, E2 extends Edge> void validateTripletCollections(
+      Collection<Triplet<V1, E1>> expectedCollection,
+      Collection<Triplet<V2, E2>> actualCollection) {
     assertNotNull(expectedCollection, "first collection was null");
     assertNotNull(expectedCollection, "second collection was null");
     assertEquals(expectedCollection.size(), actualCollection.size(), String.format(

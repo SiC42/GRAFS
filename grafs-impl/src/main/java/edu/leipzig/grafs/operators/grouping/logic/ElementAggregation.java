@@ -12,8 +12,8 @@ import org.apache.flink.streaming.api.windowing.windows.Window;
  *
  * @param <W> the type of window to be used for the grouping
  */
-public abstract class ElementAggregation<W extends Window> extends
-    ProcessWindowFunction<Triplet<Vertex, Edge>, Triplet<Vertex, Edge>, String, W> implements
+public abstract class ElementAggregation<E extends Edge, W extends Window> extends
+    ProcessWindowFunction<Triplet<Vertex, E>, Triplet<Vertex, E>, String, W> implements
     ElementAggregationI {
 
 }

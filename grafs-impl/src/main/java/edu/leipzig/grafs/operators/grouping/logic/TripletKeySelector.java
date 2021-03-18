@@ -13,7 +13,7 @@ import org.apache.flink.api.java.functions.KeySelector;
  * Key selector used for grouping that returns a string representation of an {@link Triplet} using
  * the grouping information.
  */
-public class TripletKeySelector implements KeySelector<Triplet<Vertex, Edge>, String> {
+public class TripletKeySelector<V extends Vertex, E extends Edge> implements KeySelector<Triplet<V, E>, String> {
 
   private final GroupingInformation gi;
   private final AggregateMode makeKeyFor;
@@ -52,7 +52,7 @@ public class TripletKeySelector implements KeySelector<Triplet<Vertex, Edge>, St
   public static String generateKeyForVertex(Vertex vertex, GroupingInformation vertexGi) {
     StringBuilder sb = new StringBuilder();
     sb.append("(");
-    sb = keyStringBuilder(sb, vertex, vertexGi);
+    keyStringBuilder(sb, vertex, vertexGi);
     sb.append(")");
     return sb.toString();
   }
@@ -67,7 +67,7 @@ public class TripletKeySelector implements KeySelector<Triplet<Vertex, Edge>, St
   public static String generateKeyForEdge(Edge edge, GroupingInformation edgeGi) {
     StringBuilder sb = new StringBuilder();
     sb.append("[");
-    sb = keyStringBuilder(sb, edge, edgeGi);
+    keyStringBuilder(sb, edge, edgeGi);
     sb.append("]");
     var source = String.format("(%s)", edge.getSourceId().toString());
     var target = String.format("(%s)", edge.getTargetId().toString());
@@ -131,7 +131,7 @@ public class TripletKeySelector implements KeySelector<Triplet<Vertex, Edge>, St
    * @return key for the triplet that represents the group of the selected element
    */
   @Override
-  public String getKey(Triplet triplet) {
+  public String getKey(Triplet<V,E> triplet) {
     final String EMPTY_VERTEX = "()";
     final String EMPTY_EDGE = "[]";
     switch (makeKeyFor) {
