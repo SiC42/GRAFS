@@ -11,7 +11,7 @@ import edu.leipzig.grafs.operators.grouping.logic.TripletKeySelector;
 import edu.leipzig.grafs.operators.grouping.logic.VertexAggregation;
 import edu.leipzig.grafs.operators.grouping.model.AggregateMode;
 import edu.leipzig.grafs.operators.grouping.model.GroupingInformation;
-import edu.leipzig.grafs.operators.grouping.model.ReversableEdge;
+import edu.leipzig.grafs.operators.grouping.model.ReversibleEdge;
 import java.util.Set;
 import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.api.common.functions.MapFunction;
@@ -108,25 +108,25 @@ public class DistributedWindowedGrouping extends AbstractWindowedGrouping<Abstra
    * @param stream stream which should be enriched by reverse edges
    * @return stream with reverse edges
    */
-  private SingleOutputStreamOperator<Triplet<Vertex, ReversableEdge>> createStreamWithReverseEdges(
+  private SingleOutputStreamOperator<Triplet<Vertex, ReversibleEdge>> createStreamWithReverseEdges(
       DataStream<Triplet<Vertex, Edge>> stream) {
     return stream
-        .flatMap(new FlatMapFunction<Triplet<Vertex, Edge>, Triplet<Vertex, ReversableEdge>>() {
+        .flatMap(new FlatMapFunction<Triplet<Vertex, Edge>, Triplet<Vertex, ReversibleEdge>>() {
           @Override
-          public void flatMap(Triplet<Vertex, Edge> triplet, Collector<Triplet<Vertex, ReversableEdge>> out) {
+          public void flatMap(Triplet<Vertex, Edge> triplet, Collector<Triplet<Vertex, ReversibleEdge>> out) {
             out.collect(triplet.createReverseTriplet());
-            var revEdge = ReversableEdge.create(triplet.getEdge(), false);
+            var revEdge = ReversibleEdge.create(triplet.getEdge(), false);
             out.collect(new Triplet<>(revEdge, triplet.getSourceVertex(), triplet.getTargetVertex()));
           }
         }).name("Create Reverse Edges");
   }
 
   private SingleOutputStreamOperator<Triplet<Vertex, Edge>> filterReverseEdges(
-      DataStream<Triplet<Vertex, ReversableEdge>> aggregatedOnVertexStream) {
+      DataStream<Triplet<Vertex, ReversibleEdge>> aggregatedOnVertexStream) {
     return aggregatedOnVertexStream
-        .flatMap(new FlatMapFunction<Triplet<Vertex, ReversableEdge>, Triplet<Vertex, Edge>>() {
+        .flatMap(new FlatMapFunction<Triplet<Vertex, ReversibleEdge>, Triplet<Vertex, Edge>>() {
           @Override
-          public void flatMap(Triplet<Vertex, ReversableEdge> ec,
+          public void flatMap(Triplet<Vertex, ReversibleEdge> ec,
               Collector<Triplet<Vertex, Edge>> collector) throws Exception {
             if (!ec.getEdge().isReverse()) {
               var revEdge = ec.getEdge();
@@ -146,8 +146,8 @@ public class DistributedWindowedGrouping extends AbstractWindowedGrouping<Abstra
    *               the grouping key is generated)
    * @return stream on which the indicated vertices are grouped
    */
-  private <W extends Window> DataStream<Triplet<Vertex, ReversableEdge>> aggregateOnVertex(
-      DataStream<Triplet<Vertex, ReversableEdge>> stream,
+  private <W extends Window> DataStream<Triplet<Vertex, ReversibleEdge>> aggregateOnVertex(
+      DataStream<Triplet<Vertex, ReversibleEdge>> stream,
       AggregateMode mode, WindowingInformation<W> wi) {
     var windowedStream = createKeyedWindowedStream(stream, vertexGi, mode, wi);
     return windowedStream.process(

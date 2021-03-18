@@ -2,7 +2,7 @@ package edu.leipzig.grafs.model;
 
 import edu.leipzig.grafs.factory.EdgeFactory;
 import edu.leipzig.grafs.factory.VertexFactory;
-import edu.leipzig.grafs.operators.grouping.model.ReversableEdge;
+import edu.leipzig.grafs.operators.grouping.model.ReversibleEdge;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Objects;
@@ -142,8 +142,8 @@ public class Triplet<V extends Vertex, E extends Edge> implements Serializable {
    * Creates a copy of this <tt>Triplet</tt>, but with source and target vertex reversed and the
    * appropriate flags in edge set.
    */
-  public Triplet<V, ReversableEdge> createReverseTriplet() {
-    var reverseEdge = ReversableEdge.create(edge, true);
+  public Triplet<V, ReversibleEdge> createReverseTriplet() {
+    var reverseEdge = ReversibleEdge.create(edge, true);
     return new Triplet<>(reverseEdge, targetVertex, sourceVertex);
   }
 

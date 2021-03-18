@@ -2,13 +2,12 @@ package edu.leipzig.grafs.operators.grouping.logic;
 
 import edu.leipzig.grafs.factory.EdgeFactory;
 import edu.leipzig.grafs.factory.VertexFactory;
-import edu.leipzig.grafs.model.Edge;
 import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.model.Vertex;
 import edu.leipzig.grafs.operators.grouping.functions.AggregateFunction;
 import edu.leipzig.grafs.operators.grouping.model.AggregateMode;
 import edu.leipzig.grafs.operators.grouping.model.GroupingInformation;
-import edu.leipzig.grafs.operators.grouping.model.ReversableEdge;
+import edu.leipzig.grafs.operators.grouping.model.ReversibleEdge;
 import java.util.HashSet;
 import java.util.Set;
 import org.apache.flink.streaming.api.windowing.windows.Window;
@@ -21,7 +20,7 @@ import org.gradoop.common.model.impl.id.GradoopId;
  *
  * @param <W> the type of window to be used for the grouping
  */
-public class VertexAggregation<W extends Window> extends ElementAggregation<ReversableEdge, W> {
+public class VertexAggregation<W extends Window> extends ElementAggregation<ReversibleEdge, W> {
 
   private final GroupingInformation vertexGroupInfo;
   private final Set<AggregateFunction> aggregateFunctions;
@@ -54,8 +53,8 @@ public class VertexAggregation<W extends Window> extends ElementAggregation<Reve
    */
   @Override
   public void process(String obsoleteStr, Context obsoleteContext,
-      Iterable<Triplet<Vertex, ReversableEdge>> tripletIt,
-      Collector<Triplet<Vertex, ReversableEdge>> out) {
+      Iterable<Triplet<Vertex, ReversibleEdge>> tripletIt,
+      Collector<Triplet<Vertex, ReversibleEdge>> out) {
     var alreadyAggregated = new HashSet<GradoopId>();
     var aggregatedVertex = new Vertex();
 
@@ -86,21 +85,21 @@ public class VertexAggregation<W extends Window> extends ElementAggregation<Reve
         continue;
       }
       Vertex finalVertex = VertexFactory.createVertex(aggregatedVertex);
-      Triplet<Vertex, ReversableEdge> aggregatedEC;
+      Triplet<Vertex, ReversibleEdge> aggregatedEC;
       var edge = triplet.getEdge();
       if (aggregateMode.equals(AggregateMode.SOURCE)) {
         var newEdge = EdgeFactory.createEdge(edge.getLabel(),
             finalVertex.getId(),
             triplet.getTargetVertex().getId(),
             edge.getProperties());
-        var revEdge = ReversableEdge.create(newEdge,false);
+        var revEdge = ReversibleEdge.create(newEdge,false);
         aggregatedEC = new Triplet<>(revEdge, finalVertex, triplet.getTargetVertex());
       } else { // TARGET-mode
         var newEdge = EdgeFactory.createEdge(edge.getLabel(),
             triplet.getSourceVertex().getId(),
             finalVertex.getId(),
             edge.getProperties());
-        var revEdge = ReversableEdge.create(newEdge,false);
+        var revEdge = ReversibleEdge.create(newEdge,false);
         aggregatedEC = new Triplet<>(revEdge, triplet.getSourceVertex(), finalVertex);
       }
       out.collect(aggregatedEC);

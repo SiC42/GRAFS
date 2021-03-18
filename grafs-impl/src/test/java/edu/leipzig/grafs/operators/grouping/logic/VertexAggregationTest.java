@@ -8,7 +8,7 @@ import edu.leipzig.grafs.operators.DummyCollector;
 import edu.leipzig.grafs.operators.grouping.functions.AggregateFunction;
 import edu.leipzig.grafs.operators.grouping.model.AggregateMode;
 import edu.leipzig.grafs.operators.grouping.model.GroupingInformation;
-import edu.leipzig.grafs.operators.grouping.model.ReversableEdge;
+import edu.leipzig.grafs.operators.grouping.model.ReversibleEdge;
 import edu.leipzig.grafs.util.AsciiGraphLoader;
 import edu.leipzig.grafs.util.TestUtils;
 import java.util.ArrayList;
@@ -28,7 +28,7 @@ class VertexAggregationTest {
     var vertexAggregation = new VertexAggregation<>(groupInfo, aggMap,
         AggregateMode.SOURCE);
 
-    var collector = new DummyCollector<Vertex, ReversableEdge>();
+    var collector = new DummyCollector<Vertex, ReversibleEdge>();
     AsciiGraphLoader loader = AsciiGraphLoader.fromString(
         "(a18 {n : \"A\", a : 18})," +
             "(a20 {n : \"A\", a : 20})," +
@@ -43,7 +43,7 @@ class VertexAggregationTest {
 
     var tripletList = loader.createTriplets()
         .stream()
-        .map(ec -> new Triplet<>(ReversableEdge.create(ec.getEdge(), false),
+        .map(ec -> new Triplet<>(ReversibleEdge.create(ec.getEdge(), false),
             ec.getSourceVertex(),
             ec.getTargetVertex()
         ))
@@ -78,7 +78,7 @@ class VertexAggregationTest {
     var vertexAggregation = new VertexAggregation<>(groupInfo, aggMap,
         AggregateMode.TARGET);
 
-    var collector = new DummyCollector<Vertex, ReversableEdge>();
+    var collector = new DummyCollector<Vertex, ReversibleEdge>();
     AsciiGraphLoader loader = AsciiGraphLoader.fromString(
         "(a18 {n : \"A\", a : 18})," +
             "(a20 {n : \"A\", a : 20})," +
@@ -92,7 +92,7 @@ class VertexAggregationTest {
 
     var tripletList = loader.createTriplets()
         .stream()
-        .map(ec -> new Triplet<>(ReversableEdge.create(ec.getEdge(), false),
+        .map(ec -> new Triplet<>(ReversibleEdge.create(ec.getEdge(), false),
             ec.getSourceVertex(),
             ec.getTargetVertex()
         ))
@@ -127,7 +127,7 @@ class VertexAggregationTest {
     var vertexAggregation = new VertexAggregation<>(groupInfo, aggMap,
         AggregateMode.SOURCE);
 
-    var collector = new DummyCollector<Vertex, ReversableEdge>();
+    var collector = new DummyCollector<Vertex, ReversibleEdge>();
     AsciiGraphLoader loader = AsciiGraphLoader.fromString(
         "(a18 {n : \"A\", a : 18})," +
             "(a20 {n : \"A\", a : 20})," +
@@ -141,7 +141,7 @@ class VertexAggregationTest {
 
     var tripletList = loader.createTriplets()
         .stream()
-        .map(ec -> new Triplet<>(ReversableEdge.create(ec.getEdge(), false),
+        .map(ec -> new Triplet<>(ReversibleEdge.create(ec.getEdge(), false),
             ec.getSourceVertex(),
             ec.getTargetVertex()
         ))
@@ -173,7 +173,7 @@ class VertexAggregationTest {
 
     var expectedTripletCol = expectedOutputLoader.createTriplets()
         .stream()
-        .map(ec -> new Triplet<>(ReversableEdge.create(ec.getEdge(), false),
+        .map(ec -> new Triplet<>(ReversibleEdge.create(ec.getEdge(), false),
             ec.getSourceVertex(),
             ec.getTargetVertex()
         ))
