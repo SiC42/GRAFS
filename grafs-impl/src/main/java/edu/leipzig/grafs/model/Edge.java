@@ -13,7 +13,6 @@ public class Edge extends GraphElement {
 
   private GradoopId sourceId;
   private GradoopId targetId;
-  private boolean reverse;
 
 
   /**
@@ -87,42 +86,10 @@ public class Edge extends GraphElement {
     this.targetId = targetId;
   }
 
-  /**
-   * Marks this edge as reverse. Reverse edges are used for certain parameters, where we group by
-   * the vertice in a edge, as we can't group them otherwise
-   */
-  private void setReverse() {
-    reverse = true;
-  }
-
-  /**
-   * Returns true if this edge is marked as reverse.
-   *
-   * @return true if this edge is marked as reverse
-   */
-  public boolean isReverse() {
-    return reverse;
-  }
-
-  /**
-   * Create a copy of this edge, with source and target vertex reversed and the appropriate flag
-   * set.
-   *
-   * @return "reverse" edge, with source and target vertex reversed and the appropriate flag set.
-   */
-  public Edge createReverseEdge() {
-    Edge reverseEdge = EdgeFactory
-        .initEdge(this.getId(), this.getLabel(), this.getTargetId(), this.getSourceId(),
-            this.getProperties(), this.getGraphIds());
-    reverseEdge.setReverse();
-    return reverseEdge;
-  }
-
   @Override
   public String toString() {
-    return String.format("[%s, reverse=%b]",
-        super.toString(),
-        reverse);
+    return String.format("[%s]",
+        super.toString());
   }
 
 }
