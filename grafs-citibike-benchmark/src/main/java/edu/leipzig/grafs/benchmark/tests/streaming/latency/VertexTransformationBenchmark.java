@@ -16,9 +16,9 @@ public class VertexTransformationBenchmark extends AbstractLatencyBenchmark {
   }
 
   public AbstractStream<?> applyOperator(GraphStream stream) {
-    return stream.transformEdges(e -> {
-      e.setProperty("edgetransformed", PropertyValue.create(true));
-      return e;
+    return stream.transformVertices(v -> {
+      v.setProperty("vertexTransformed", PropertyValue.create(true));
+      return v;
     });
   }
 
