@@ -17,9 +17,9 @@ public class VertexTransformationBenchmark extends AbstractBenchmark {
   }
 
   public AbstractStream<?> applyOperator(GraphStream stream) {
-    return stream.transformEdges(e -> {
-      e.setProperty("edgetransformed", PropertyValue.create(true));
-      return e;
+    return stream.transformVertices(v -> {
+      v.setProperty("vertextransformed", PropertyValue.create(true));
+      return v;
     });
   }
 
