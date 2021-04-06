@@ -15,6 +15,9 @@ import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.DataStreamUtils;
 import org.apache.flink.streaming.api.functions.sink.SinkFunction;
 import org.apache.flink.streaming.api.functions.source.SourceFunction;
+import org.apache.flink.streaming.api.windowing.assigners.TumblingEventTimeWindows;
+import org.apache.flink.streaming.api.windowing.assigners.WindowAssigner;
+import org.apache.flink.streaming.api.windowing.time.Time;
 import org.apache.flink.streaming.api.windowing.windows.Window;
 
 public abstract class AbstractStream<S extends AbstractStream<?>> {
@@ -52,7 +55,7 @@ public abstract class AbstractStream<S extends AbstractStream<?>> {
   }
 
   public <FW extends Window, W extends WindowsI<?>> S applyWindowedOperator(
-      WindowedOperatorI<W> operatorI, WindowingInformation<?> wi) {
+      WindowedOperatorI operatorI, WindowingInformation<?> wi) {
     stream = operatorI.execute(stream, wi);
     return getThis();
   }
@@ -88,19 +91,22 @@ public abstract class AbstractStream<S extends AbstractStream<?>> {
     return DataStreamUtils.collect(stream);
   }
 
-  public static class InitialWindowBuilder<S extends AbstractStream<S>, WBase extends WindowsI<? extends Window>> {
+  public static class InitialWindowBuilder<S extends AbstractStream<S>> {
 
     private final S stream;
-    private final WindowedOperatorI<WBase> operator;
+    private final WindowedOperatorI operator;
 
     public InitialWindowBuilder(S stream,
-        WindowedOperatorI<WBase> operator) {
+        WindowedOperatorI operator) {
 
       this.stream = stream;
       this.operator = operator;
     }
 
-    public <WExtension extends WBase> WindowBuilder<S, WBase> withWindow(WExtension window) {
+    public <W extends Window> WindowBuilder<S, W> withWindow(
+        WindowAssigner<Object, W> window) {
+      stream.getDataStream().windowAll(window);
+      stream.getDataStream().windowAll(TumblingEventTimeWindows.of(Time.minutes(5)));
       return new WindowBuilder<>(stream, operator, window);
     }
   }

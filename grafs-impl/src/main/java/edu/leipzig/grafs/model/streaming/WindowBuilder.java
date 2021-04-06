@@ -2,38 +2,38 @@ package edu.leipzig.grafs.model.streaming;
 
 import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.model.window.WindowingInformation;
-import edu.leipzig.grafs.model.window.WindowsI;
 import edu.leipzig.grafs.operators.interfaces.window.WindowedOperatorI;
+import org.apache.flink.streaming.api.windowing.assigners.TumblingEventTimeWindows;
+import org.apache.flink.streaming.api.windowing.assigners.WindowAssigner;
 import org.apache.flink.streaming.api.windowing.evictors.Evictor;
 import org.apache.flink.streaming.api.windowing.time.Time;
 import org.apache.flink.streaming.api.windowing.triggers.Trigger;
 import org.apache.flink.streaming.api.windowing.windows.Window;
-import org.apache.flink.util.OutputTag;
 
-public class WindowBuilder<S extends AbstractStream<S>, WBase extends WindowsI<?>> {
+public class WindowBuilder<S extends AbstractStream<S>, W extends Window> {
 
 
   private final S stream;
-  private final WindowedOperatorI<?> operator;
+  private final WindowedOperatorI operator;
   private final WindowingInformation<?> wi;
 
-  public <W extends WBase> WindowBuilder(S stream, WindowedOperatorI<WBase> operator, W window) {
+  public WindowBuilder(S stream, WindowedOperatorI operator, WindowAssigner<Object,W> window) {
     this.stream = stream;
     this.operator = operator;
-    wi = new WindowingInformation<>(window.getFlinkWindowAssigner());
+    wi = new WindowingInformation<>(window);
   }
 
-  public WindowBuilder<S, WBase> trigger(Trigger<? super Triplet<?, ?>, ? super Window> trigger) {
+  public WindowBuilder<S, W> trigger(Trigger<? super Triplet<?, ?>, ? super Window> trigger) {
     wi.addTrigger(trigger);
     return this;
   }
 
-  public WindowBuilder<S, WBase> evictor(Evictor<? super Triplet<?, ?>, ? super Window> evictor) {
+  public WindowBuilder<S, W> evictor(Evictor<? super Triplet<?, ?>, ? super Window> evictor) {
     wi.addEvictor(evictor);
     return this;
   }
 
-  public WindowBuilder<S, WBase> allowedLateness(Time lateness) {
+  public WindowBuilder<S, W> allowedLateness(Time lateness) {
     wi.addAllowedLateness(lateness);
     return this;
   }

@@ -27,7 +27,7 @@ import org.gradoop.common.model.impl.id.GradoopId;
  * and applies the given aggregation functions to the resulting element. This is done in a Window of
  * the stream.
  */
-public class DistributedWindowedGrouping extends AbstractWindowedGrouping<AbstractTumblingWindows> {
+public class DistributedWindowedGrouping extends AbstractWindowedGrouping {
 
   /**
    * Constructs the operator with the given grouping information, aggregation functions and the

@@ -14,8 +14,8 @@ import java.util.Set;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.windowing.windows.Window;
 
-public abstract class AbstractWindowedGrouping<W extends WindowsI<? extends Window>> implements
-    WindowedGraphToGraphOperatorI<W> {
+public abstract class AbstractWindowedGrouping implements
+    WindowedGraphToGraphOperatorI {
 
   protected final GroupingInformation vertexGi;
   protected final Set<AggregateFunction> vertexAggregateFunctions;
@@ -192,7 +192,7 @@ public abstract class AbstractWindowedGrouping<W extends WindowsI<? extends Wind
       return this;
     }
 
-    public abstract AbstractWindowedGrouping<W> build();
+    public abstract AbstractWindowedGrouping build();
   }
 
 }

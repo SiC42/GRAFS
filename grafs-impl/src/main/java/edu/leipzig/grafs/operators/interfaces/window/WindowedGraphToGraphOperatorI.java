@@ -11,7 +11,7 @@ import org.apache.flink.streaming.api.windowing.windows.Window;
  * with graph collections and handle them well internally, however that is not build in
  * automatically.
  */
-public interface WindowedGraphToGraphOperatorI<W extends WindowsI<? extends Window>> extends
-    WindowedOperatorI<W> {
+public interface WindowedGraphToGraphOperatorI extends
+    WindowedOperatorI {
 
 }

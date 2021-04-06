@@ -55,14 +55,14 @@ public class GCStream extends AbstractStream<GCStream> implements GCStreamOperat
     return new GCStream(result, config);
   }
 
-  public <FW extends Window, W extends WindowsI<FW>> InitialWindowBuilder<GraphStream, W> callForGraph(
-      WindowedGraphCollectionToGraphOperatorI<W> operator) {
+  public InitialWindowBuilder<GraphStream> callForGraph(
+      WindowedGraphCollectionToGraphOperatorI operator) {
     return new InitialWindowBuilder<>(new GraphStream(stream, config), operator);
   }
 
   //@Override
-  public <FW extends Window, W extends WindowsI<? extends FW>> InitialWindowBuilder<GCStream, W> callForGC(
-      WindowedGraphCollectionToGraphCollectionOperatorI<W> operator) {
+  public InitialWindowBuilder<GCStream> callForGC(
+      WindowedGraphCollectionToGraphCollectionOperatorI operator) {
     return new InitialWindowBuilder<>(new GCStream(stream, config), operator);
   }
 

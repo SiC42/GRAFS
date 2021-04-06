@@ -21,7 +21,7 @@ import org.apache.flink.streaming.api.windowing.windows.Window;
  * applying a window.
  */
 public class DualSimulation implements
-    WindowedGraphToGraphCollectionOperatorI<WindowsI<? extends Window>> {
+    WindowedGraphToGraphCollectionOperatorI {
 
   /**
    * Query graph used to find pattern matches

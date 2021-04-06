@@ -18,7 +18,7 @@ import org.apache.flink.streaming.api.windowing.windows.Window;
  * and applies the given aggregation functions to the resulting element. This is done in a Window of
  * the stream.
  */
-public class AllWindowedGrouping extends AbstractWindowedGrouping<WindowsI<? extends Window>> {
+public class AllWindowedGrouping extends AbstractWindowedGrouping {
 
 
   /**
