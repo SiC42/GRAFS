@@ -19,7 +19,8 @@ public class ReversibleEdge extends Edge {
    * @param properties properties for the edge
    * @param graphIds   graph ids for the edge
    */
-  private ReversibleEdge(boolean reverse, GradoopId id, String label, GradoopId sourceId, GradoopId targetId,
+  private ReversibleEdge(boolean reverse, GradoopId id, String label, GradoopId sourceId,
+      GradoopId targetId,
       Properties properties,
       GradoopIdSet graphIds) {
     super(id, label, sourceId, targetId, properties, graphIds);
@@ -30,11 +31,13 @@ public class ReversibleEdge extends Edge {
   public static ReversibleEdge create(Edge e, boolean reverse) {
     ReversibleEdge revEdge;
     if (reverse) {
-      revEdge = new ReversibleEdge(reverse, e.getId(), e.getLabel(), e.getTargetId(), e.getSourceId(),
+      revEdge = new ReversibleEdge(reverse, e.getId(), e.getLabel(), e.getTargetId(),
+          e.getSourceId(),
           e.getProperties(),
           e.getGraphIds());
     } else {
-      revEdge = new ReversibleEdge(reverse, e.getId(), e.getLabel(), e.getSourceId(), e.getTargetId(),
+      revEdge = new ReversibleEdge(reverse, e.getId(), e.getLabel(), e.getSourceId(),
+          e.getTargetId(),
           e.getProperties(),
           e.getGraphIds());
     }
@@ -46,7 +49,7 @@ public class ReversibleEdge extends Edge {
         this.getProperties(), this.getGraphIds());
   }
 
-  public boolean isReverse(){
+  public boolean isReverse() {
     return reverse;
   }
 

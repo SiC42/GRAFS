@@ -3,7 +3,6 @@ package edu.leipzig.grafs.model.streaming;
 import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.model.window.WindowingInformation;
 import edu.leipzig.grafs.operators.interfaces.window.WindowedOperatorI;
-import org.apache.flink.streaming.api.windowing.assigners.TumblingEventTimeWindows;
 import org.apache.flink.streaming.api.windowing.assigners.WindowAssigner;
 import org.apache.flink.streaming.api.windowing.evictors.Evictor;
 import org.apache.flink.streaming.api.windowing.time.Time;
@@ -17,7 +16,7 @@ public class WindowBuilder<S extends AbstractStream<S>, W extends Window> {
   private final WindowedOperatorI operator;
   private final WindowingInformation<?> wi;
 
-  public WindowBuilder(S stream, WindowedOperatorI operator, WindowAssigner<Object,W> window) {
+  public WindowBuilder(S stream, WindowedOperatorI operator, WindowAssigner<Object, W> window) {
     this.stream = stream;
     this.operator = operator;
     wi = new WindowingInformation<>(window);

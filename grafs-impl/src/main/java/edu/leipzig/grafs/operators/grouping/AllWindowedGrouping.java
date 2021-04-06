@@ -4,7 +4,6 @@ import edu.leipzig.grafs.model.Edge;
 import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.model.Vertex;
 import edu.leipzig.grafs.model.window.WindowingInformation;
-import edu.leipzig.grafs.model.window.WindowsI;
 import edu.leipzig.grafs.operators.grouping.functions.AggregateFunction;
 import edu.leipzig.grafs.operators.grouping.logic.AllWindowAggregation;
 import edu.leipzig.grafs.operators.grouping.model.GroupingInformation;
@@ -91,7 +90,7 @@ public class AllWindowedGrouping extends AbstractWindowedGrouping {
   /**
    * Builder that provides an intuitive way to generate a {@link DistributedWindowedGrouping}-object.
    */
-  public static final class GroupingBuilder extends AbstractGroupingBuilder<WindowsI<?>> {
+  public static final class GroupingBuilder extends AbstractGroupingBuilder {
 
     /**
      * Builds the grouping.

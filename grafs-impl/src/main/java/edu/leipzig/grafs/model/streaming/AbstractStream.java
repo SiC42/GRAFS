@@ -4,7 +4,10 @@ import edu.leipzig.grafs.model.Edge;
 import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.model.Vertex;
 import edu.leipzig.grafs.model.window.WindowingInformation;
-import edu.leipzig.grafs.model.window.WindowsI;
+import edu.leipzig.grafs.operators.interfaces.nonwindow.GraphCollectionToGraphCollectionOperatorI;
+import edu.leipzig.grafs.operators.interfaces.nonwindow.GraphCollectionToGraphOperatorI;
+import edu.leipzig.grafs.operators.interfaces.window.WindowedGraphCollectionToGraphCollectionOperatorI;
+import edu.leipzig.grafs.operators.interfaces.window.WindowedGraphCollectionToGraphOperatorI;
 import edu.leipzig.grafs.operators.interfaces.window.WindowedOperatorI;
 import edu.leipzig.grafs.util.FlinkConfig;
 import java.io.IOException;
@@ -54,8 +57,8 @@ public abstract class AbstractStream<S extends AbstractStream<?>> {
     return stream;
   }
 
-  public <FW extends Window, W extends WindowsI<?>> S applyWindowedOperator(
-      WindowedOperatorI operatorI, WindowingInformation<?> wi) {
+  public S applyWindowedOperator(
+      WindowedOperatorI<?,?> operatorI, WindowingInformation<?> wi) {
     stream = operatorI.execute(stream, wi);
     return getThis();
   }
@@ -94,10 +97,10 @@ public abstract class AbstractStream<S extends AbstractStream<?>> {
   public static class InitialWindowBuilder<S extends AbstractStream<S>> {
 
     private final S stream;
-    private final WindowedOperatorI operator;
+    private final WindowedOperatorI<?,?> operator;
 
     public InitialWindowBuilder(S stream,
-        WindowedOperatorI operator) {
+        WindowedOperatorI<?,?> operator) {
 
       this.stream = stream;
       this.operator = operator;
@@ -109,6 +112,27 @@ public abstract class AbstractStream<S extends AbstractStream<?>> {
       stream.getDataStream().windowAll(TumblingEventTimeWindows.of(Time.minutes(5)));
       return new WindowBuilder<>(stream, operator, window);
     }
+  }
+
+  public GraphStream callForGraph(GraphCollectionToGraphOperatorI operator) {
+    DataStream<Triplet<Vertex, Edge>> result = operator.execute(stream);
+    return new GraphStream(result, config);
+  }
+
+  public GCStream callForGC(GraphCollectionToGraphCollectionOperatorI operator) {
+    var result = operator.execute(stream);
+    return new GCStream(result, config);
+  }
+
+  public InitialWindowBuilder<GraphStream> callForGraph(
+      WindowedGraphCollectionToGraphOperatorI operator) {
+    return new InitialWindowBuilder<>(new GraphStream(stream, config), operator);
+  }
+
+  //@Override
+  public InitialWindowBuilder<GCStream> callForGC(
+      WindowedGraphCollectionToGraphCollectionOperatorI operator) {
+    return new InitialWindowBuilder<>(new GCStream(stream, config), operator);
   }
 
 }

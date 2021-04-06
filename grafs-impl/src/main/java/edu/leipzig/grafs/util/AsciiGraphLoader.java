@@ -229,7 +229,8 @@ public class AsciiGraphLoader {
    * @param expected graph variables that should be selected
    * @return graphs for the selected graph variables
    */
-  public edu.leipzig.grafs.model.Graph<Vertex, Edge> createGraphByGraphVariables(String... expected) {
+  public edu.leipzig.grafs.model.Graph<Vertex, Edge> createGraphByGraphVariables(
+      String... expected) {
     var vertices = getVerticesByGraphVariables(expected);
     var edges = getEdgesByGraphVariables(expected);
     return createGraph(vertices, edges);

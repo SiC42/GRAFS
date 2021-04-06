@@ -4,7 +4,6 @@ import edu.leipzig.grafs.model.Edge;
 import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.model.Vertex;
 import edu.leipzig.grafs.model.window.WindowingInformation;
-import edu.leipzig.grafs.model.window.WindowsI;
 import edu.leipzig.grafs.operators.grouping.functions.AggregateFunction;
 import edu.leipzig.grafs.operators.grouping.model.GroupingInformation;
 import edu.leipzig.grafs.operators.interfaces.window.WindowedGraphToGraphOperatorI;
@@ -82,7 +81,7 @@ public abstract class AbstractWindowedGrouping implements
   /**
    * Builder that provides an intuitive way to generate a {@link AllWindowedGrouping}-object.
    */
-  public static abstract class AbstractGroupingBuilder<W extends WindowsI<? extends Window>> {
+  public static abstract class AbstractGroupingBuilder {
 
     final GroupingInformation vertexGi;
     final Set<AggregateFunction> vertexAggFunctions;
@@ -106,7 +105,7 @@ public abstract class AbstractWindowedGrouping implements
      * @param vertexGroupingKey grouping key for vertices
      * @return the build with the given grouping key applied
      */
-    public AbstractGroupingBuilder<W> addVertexGroupingKey(String vertexGroupingKey) {
+    public AbstractGroupingBuilder addVertexGroupingKey(String vertexGroupingKey) {
       vertexGi.addKey(vertexGroupingKey);
       return this;
     }
@@ -117,7 +116,7 @@ public abstract class AbstractWindowedGrouping implements
      * @param vertexGroupingKeys set of grouping keys for vertices
      * @return the build with the given grouping keys applied
      */
-    public AbstractGroupingBuilder<W> addVertexGroupingKeys(Set<String> vertexGroupingKeys) {
+    public AbstractGroupingBuilder addVertexGroupingKeys(Set<String> vertexGroupingKeys) {
       vertexGi.addKeys(vertexGroupingKeys);
       return this;
     }
@@ -128,7 +127,7 @@ public abstract class AbstractWindowedGrouping implements
      * @param edgeGroupingKey grouping key for edges
      * @return the build with the given grouping key applied
      */
-    public AbstractGroupingBuilder<W> addEdgeGroupingKey(String edgeGroupingKey) {
+    public AbstractGroupingBuilder addEdgeGroupingKey(String edgeGroupingKey) {
       edgeGi.addKey(edgeGroupingKey);
       return this;
     }
@@ -139,7 +138,7 @@ public abstract class AbstractWindowedGrouping implements
      * @param edgeGroupingKeys grouping keys for edges
      * @return the build with the given grouping keys applied
      */
-    public AbstractGroupingBuilder<W> addEdgeGroupingKeys(Set<String> edgeGroupingKeys) {
+    public AbstractGroupingBuilder addEdgeGroupingKeys(Set<String> edgeGroupingKeys) {
       edgeGi.addKeys(edgeGroupingKeys);
       return this;
     }
@@ -150,7 +149,7 @@ public abstract class AbstractWindowedGrouping implements
      * @param useVertexLabel true, iff vertex label shall be used for grouping
      * @return this builder
      */
-    public AbstractGroupingBuilder<W> useVertexLabel(boolean useVertexLabel) {
+    public AbstractGroupingBuilder useVertexLabel(boolean useVertexLabel) {
       vertexGi.useLabel(useVertexLabel);
       return this;
     }
@@ -161,7 +160,7 @@ public abstract class AbstractWindowedGrouping implements
      * @param useEdgeLabel true, iff edge label shall be used for grouping
      * @return this builder
      */
-    public AbstractGroupingBuilder<W> useEdgeLabel(boolean useEdgeLabel) {
+    public AbstractGroupingBuilder useEdgeLabel(boolean useEdgeLabel) {
       edgeGi.useLabel(useEdgeLabel);
       return this;
     }
@@ -173,7 +172,7 @@ public abstract class AbstractWindowedGrouping implements
      * @param aggregateFunction vertex aggregate mapping
      * @return this builder
      */
-    public AbstractGroupingBuilder<W> addVertexAggregateFunction(
+    public AbstractGroupingBuilder addVertexAggregateFunction(
         AggregateFunction aggregateFunction) {
       Objects.requireNonNull(aggregateFunction, "Aggregate function must not be null");
       vertexAggFunctions.add(aggregateFunction);
@@ -186,7 +185,7 @@ public abstract class AbstractWindowedGrouping implements
      * @param eFunctions edge aggregate mapping
      * @return this builder
      */
-    public AbstractGroupingBuilder<W> addEdgeAggregateFunction(AggregateFunction eFunctions) {
+    public AbstractGroupingBuilder addEdgeAggregateFunction(AggregateFunction eFunctions) {
       Objects.requireNonNull(eFunctions, "Aggregate function must not be null");
       aggregateFunctions.add(eFunctions);
       return this;

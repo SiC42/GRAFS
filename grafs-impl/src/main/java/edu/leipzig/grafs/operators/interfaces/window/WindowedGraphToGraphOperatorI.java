@@ -1,8 +1,5 @@
 package edu.leipzig.grafs.operators.interfaces.window;
 
-import edu.leipzig.grafs.model.window.WindowsI;
-import org.apache.flink.streaming.api.windowing.windows.Window;
-
 /**
  * Interface for operators which takes a graph and produces one graph.
  * <p>

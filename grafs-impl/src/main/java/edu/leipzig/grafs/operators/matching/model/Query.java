@@ -8,7 +8,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -30,7 +29,7 @@ import org.s1ck.gdl.utils.Comparator;
 public class Query extends Graph<QueryVertex, QueryEdge> implements Serializable {
 
   private Predicate predicates;
-  private Map<String,QueryVertex> variableToVertexMap;
+  private Map<String, QueryVertex> variableToVertexMap;
 
   public Query() {
     super();
@@ -208,7 +207,7 @@ public class Query extends Graph<QueryVertex, QueryEdge> implements Serializable
       throws IOException {
     super.writeObject(out);
     out.writeInt(variableToVertexMap.size());
-    for(Entry<String, QueryVertex> entry: variableToVertexMap.entrySet()){
+    for (Entry<String, QueryVertex> entry : variableToVertexMap.entrySet()) {
       out.writeObject(entry.getKey());
       out.writeObject(entry.getValue());
     }
@@ -220,7 +219,7 @@ public class Query extends Graph<QueryVertex, QueryEdge> implements Serializable
     super.readObject(in);
     var size = in.readInt();
     variableToVertexMap = new HashMap<>();
-    for(var i = 0; i < size; i++){
+    for (var i = 0; i < size; i++) {
       var key = (String) in.readObject();
       var value = (QueryVertex) in.readObject();
       variableToVertexMap.put(key, value);

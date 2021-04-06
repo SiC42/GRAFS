@@ -31,11 +31,11 @@ public class Reduce implements GraphCollectionToGraphOperatorI {
   public DataStream<Triplet<Vertex, Edge>> execute(DataStream<Triplet<Vertex, Edge>> stream) {
     Consumer<GraphElement> setGraphIds = ge -> ge.setGraphIds(GradoopIdSet.fromExisting(newId));
     return stream.map(triplet -> {
-          setGraphIds.accept(triplet.getEdge());
-          setGraphIds.accept(triplet.getSourceVertex());
-          setGraphIds.accept(triplet.getTargetVertex());
-          return triplet;
-        })
+      setGraphIds.accept(triplet.getEdge());
+      setGraphIds.accept(triplet.getSourceVertex());
+      setGraphIds.accept(triplet.getTargetVertex());
+      return triplet;
+    })
         .name("Reduce Operator");
   }
 

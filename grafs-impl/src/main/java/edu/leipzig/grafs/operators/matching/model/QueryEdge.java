@@ -19,9 +19,9 @@ import org.s1ck.gdl.model.predicates.expressions.Comparison;
 
 public class QueryEdge extends Edge implements HasPredicate {
 
-  private int order;
   private final Collection<Predicate> selfPredicates;
   private final Set<String> variables;
+  private int order;
 
   protected QueryEdge() {
     this.selfPredicates = new ArrayList<>();
@@ -63,7 +63,7 @@ public class QueryEdge extends Edge implements HasPredicate {
     return variables.contains(variable);
   }
 
-  public Set<String> getVariables(){
+  public Set<String> getVariables() {
     return variables;
   }
 

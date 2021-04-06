@@ -80,14 +80,14 @@ public class AllWindowAggregation<W extends Window> extends
       Edge lastEdge = null;
       var aggregatedEdge = EdgeFactory.createEdge();
       for (var edge : groupedEdgesMap.get(key)) {
-        aggregatedEdge = (Edge) aggregateElement(aggregatedEdge, edge, edgeAggregateFunctions);
+        aggregatedEdge = aggregateElement(aggregatedEdge, edge, edgeAggregateFunctions);
         lastEdge = edge;
         edges.remove(edge.getId());
       }
-      aggregatedEdge = (Edge) checkForMissingAggregationsAndApply(edgeAggregateFunctions,
+      aggregatedEdge = checkForMissingAggregationsAndApply(edgeAggregateFunctions,
           aggregatedEdge);
 
-      aggregatedEdge = (Edge) setGroupedProperties(edgeGroupInfo, aggregatedEdge, lastEdge);
+      aggregatedEdge = setGroupedProperties(edgeGroupInfo, aggregatedEdge, lastEdge);
       var source = lastEdge.getSourceId();
       var target = lastEdge.getTargetId();
       aggregatedEdge.setSourceId(source);
@@ -124,10 +124,10 @@ public class AllWindowAggregation<W extends Window> extends
       for (var curVertex : groupedVertices) {
         if (isInitialAggregation) {
           isInitialAggregation = false;
-          aggregatedVertex = (Vertex) setGroupedProperties(vertexGroupInfo,
+          aggregatedVertex = setGroupedProperties(vertexGroupInfo,
               aggregatedVertex, curVertex);
         }
-        aggregatedVertex = (Vertex) aggregateElement(aggregatedVertex, curVertex,
+        aggregatedVertex = aggregateElement(aggregatedVertex, curVertex,
             vertexAggregateFunctions);
 
         // update edges
@@ -137,7 +137,7 @@ public class AllWindowAggregation<W extends Window> extends
         updateTargetForEdges(edges, aggregatedVertex, edgesForTarget);
         vertices.remove(curVertex.getId());
       }
-      aggregatedVertex = (Vertex) checkForMissingAggregationsAndApply(vertexAggregateFunctions,
+      aggregatedVertex = checkForMissingAggregationsAndApply(vertexAggregateFunctions,
           aggregatedVertex);
       aggregatedVertex.setGraphIds(GradoopIdSet.fromExisting(newGraphId));
       vertices.put(aggregatedVertex.getId(), aggregatedVertex);

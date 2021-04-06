@@ -3,7 +3,6 @@ package edu.leipzig.grafs.operators.grouping;
 import edu.leipzig.grafs.model.Edge;
 import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.model.Vertex;
-import edu.leipzig.grafs.model.window.AbstractTumblingWindows;
 import edu.leipzig.grafs.model.window.WindowingInformation;
 import edu.leipzig.grafs.operators.grouping.functions.AggregateFunction;
 import edu.leipzig.grafs.operators.grouping.logic.EdgeAggregation;
@@ -113,10 +112,12 @@ public class DistributedWindowedGrouping extends AbstractWindowedGrouping {
     return stream
         .flatMap(new FlatMapFunction<Triplet<Vertex, Edge>, Triplet<Vertex, ReversibleEdge>>() {
           @Override
-          public void flatMap(Triplet<Vertex, Edge> triplet, Collector<Triplet<Vertex, ReversibleEdge>> out) {
+          public void flatMap(Triplet<Vertex, Edge> triplet,
+              Collector<Triplet<Vertex, ReversibleEdge>> out) {
             out.collect(triplet.createReverseTriplet());
             var revEdge = ReversibleEdge.create(triplet.getEdge(), false);
-            out.collect(new Triplet<>(revEdge, triplet.getSourceVertex(), triplet.getTargetVertex()));
+            out.collect(
+                new Triplet<>(revEdge, triplet.getSourceVertex(), triplet.getTargetVertex()));
           }
         }).name("Create Reverse Edges");
   }
@@ -191,8 +192,7 @@ public class DistributedWindowedGrouping extends AbstractWindowedGrouping {
   /**
    * Builder that provides an intuitive way to generate a {@link DistributedWindowedGrouping}-object.
    */
-  public static final class GroupingBuilder extends
-      AbstractGroupingBuilder<AbstractTumblingWindows> {
+  public static final class GroupingBuilder extends AbstractGroupingBuilder {
 
 
     /**
