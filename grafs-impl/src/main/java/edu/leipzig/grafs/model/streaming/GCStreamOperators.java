@@ -42,8 +42,8 @@ public interface GCStreamOperators {
    *                    stream
    * @return result of given operator G
    */
-  default GraphStream reduce(FilterFunction<GradoopIdSet> idSetFilter) {
-    return callForGraph(new Reduce(idSetFilter));
+  default GraphStream reduce() {
+    return callForGraph(new Reduce());
   }
 
   /**
