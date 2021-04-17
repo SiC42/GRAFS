@@ -108,7 +108,7 @@ public class Triplet<V extends Vertex, E extends Edge> implements Serializable {
     return sourceVertex;
   }
 
-  public void setSourceVertex(V sourceVertex) {
+  protected void setSourceVertex(V sourceVertex) {
     checkIfIdsMatch(edge, sourceVertex, targetVertex);
     this.sourceVertex = sourceVertex;
   }
@@ -122,7 +122,7 @@ public class Triplet<V extends Vertex, E extends Edge> implements Serializable {
     return targetVertex;
   }
 
-  public void setTargetVertex(V targetVertex) {
+  protected void setTargetVertex(V targetVertex) {
     checkIfIdsMatch(edge, sourceVertex, targetVertex);
     this.targetVertex = targetVertex;
   }
