@@ -58,7 +58,7 @@ public abstract class AbstractStream<S extends AbstractStream<?>> {
   }
 
   public S applyWindowedOperator(
-      WindowedOperatorI<?,?> operatorI, WindowingInformation<?> wi) {
+      WindowedOperatorI operatorI, WindowingInformation<?> wi) {
     stream = operatorI.execute(stream, wi);
     return getThis();
   }
@@ -97,10 +97,10 @@ public abstract class AbstractStream<S extends AbstractStream<?>> {
   public static class InitialWindowBuilder<S extends AbstractStream<S>> {
 
     private final S stream;
-    private final WindowedOperatorI<?,?> operator;
+    private final WindowedOperatorI operator;
 
     public InitialWindowBuilder(S stream,
-        WindowedOperatorI<?,?> operator) {
+        WindowedOperatorI operator) {
 
       this.stream = stream;
       this.operator = operator;
