@@ -25,22 +25,15 @@ public interface GCStreamOperators {
    */
   GCStream callForGC(GraphCollectionToGraphCollectionOperatorI operator);
 
-//  <WA extends Window, W extends AbstractWindows<WA>> IntermediateStream<GraphStream, WA, W> callForGraph(
-//      WindowedGraphCollectionToGraphOperatorI<W> operator);
-//
-//  <WA extends Window, W extends AbstractWindows<WA>> IntermediateStream<GCStream, WA, W> callForGC(
-//      WindowedGraphCollectionToGraphCollectionOperatorI<W> operator);
 
   // ---------------------------------------------------------------------------
   //  Operators
   // ---------------------------------------------------------------------------
 
   /**
-   * Applies the Reduce Operator onto the graph collection stream, creating a graph stream
+   * Applies the Reduce Operator onto the graph collection stream, creating a graph stream.
    *
-   * @param idSetFilter defines a filter to filter out elements that shouldn't be part of the graph
-   *                    stream
-   * @return result of given operator G
+   * @return result of given operator
    */
   default GraphStream reduce() {
     return callForGraph(new Reduce());
