@@ -73,11 +73,18 @@ public class DualSimulationProcess<W extends Window> extends PatternMatchingProc
       Iterable<Triplet<QueryVertex, QueryEdge>> tripletElements,
       Collector<Triplet<Vertex, Edge>> collector) {
 
-    var variablesToElementMap = new MultiMap<String, Element>(); // used for process
+    var windowGraph = extractWindowGraph(tripletElements);
+    var variablesToElementMap = mapQueryVariablesToElements(windowGraph);
+    dualSimulationAlgorithm(windowGraph, variablesToElementMap, collector);
+  }
+
+
+
+  private Graph<QueryVertex, QueryEdge> extractWindowGraph(Iterable<Triplet<QueryVertex, QueryEdge>> tripletElements){
     var vertexMap = new HashMap<GradoopId, QueryVertex>();
     var edgeMap = new HashMap<GradoopId, QueryEdge>();
 
-    // Map triplets to above defined maps
+    // Map triplets to above defined maps and assign the variables
     for (var triplet : tripletElements) {
       // source
       var source = triplet.getSourceVertex();
@@ -109,20 +116,32 @@ public class DualSimulationProcess<W extends Window> extends PatternMatchingProc
       }
       edgeMap.put(alreadyContainedEdge.getId(), alreadyContainedEdge);
     }
-    for (var vertex : vertexMap.values()) {
+
+    return new Graph<>(vertexMap.values(), edgeMap.values());
+  }
+  private MultiMap<String, Element> mapQueryVariablesToElements(Graph<QueryVertex, QueryEdge> windowGraph) {
+    var variablesToElementMap = new MultiMap<String, Element>();
+    for (var vertex : windowGraph.getVertices()) {
       for (var variable : vertex.getVariables()) {
         variablesToElementMap.put(variable, vertex);
       }
     }
-
-    for (var edge : edgeMap.values()) {
+    for (var edge : windowGraph.getEdges()) {
       for (var variable : edge.getVariables()) {
         variablesToElementMap.put(variable, edge);
       }
     }
+    return variablesToElementMap;
+  }
 
-    var graph = new Graph<>(vertexMap.values(), edgeMap.values());
-
+  /**
+   * Uses the algorithm from the above mentioned DualIso paper and adds query support via additional filtering.
+   * @param windowGraph Graph on which the pattern matching should be applied
+   * @param variablesToElementMap Multi map of query variables and the associated elements
+   * @param collector A collector for emitting elements.
+   */
+  private void dualSimulationAlgorithm(Graph<QueryVertex, QueryEdge> windowGraph,
+      MultiMap<String, Element> variablesToElementMap, Collector<Triplet<Vertex, Edge>> collector) {
     var changed = true;
     while (changed) {
       changed = false;
@@ -137,12 +156,12 @@ public class DualSimulationProcess<W extends Window> extends PatternMatchingProc
             var candidate = (QueryVertex) candidateIt.next();
             if (checkPredicateTree(candidate, queryVariable, query.getPredicates(),
                 variablesToElementMap)) {
-              // TODO: Edge checking probably goes somewhere here.Preparations are made, edge should be passable to checkPredicateTree
+              // TODO: Edge checking probably goes somewhere here. Preparations are made, edge should be passable to checkPredicateTree
               var targetCandidates = variablesToElementMap
                   .get(queryVertexTargetVariable)
                   .stream()
                   .map(e -> (QueryVertex) e)
-                  .filter(graph.getTargetForSourceVertex(candidate)::contains).collect(toSet());
+                  .filter(windowGraph.getTargetForSourceVertex(candidate)::contains).collect(toSet());
               targetCandidates = targetCandidates.stream()
                   .filter(v ->
                       checkPredicateTree(v, queryVertexTargetVariable, query.getPredicates(),
@@ -181,10 +200,10 @@ public class DualSimulationProcess<W extends Window> extends PatternMatchingProc
               .get(qTarget.getVariable())
               .stream()
               .map(e -> (QueryVertex) e)
-              .filter(graph.getTargetForSourceVertex((QueryVertex) sourceCandidate)::contains)
+              .filter(windowGraph.getTargetForSourceVertex((QueryVertex) sourceCandidate)::contains)
               .collect(toSet());
           for (var targetCandidate : candidatesForTarget) {
-            var edges = graph
+            var edges = windowGraph
                 .getEdgesForVertices((QueryVertex) sourceCandidate, targetCandidate);
             for (var edge : edges) {
               var queryEdges = query.getEdgesForVertices(qSource, qTarget);
