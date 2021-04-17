@@ -9,6 +9,10 @@ import org.apache.flink.streaming.api.functions.windowing.ProcessAllWindowFuncti
 import org.apache.flink.streaming.api.windowing.windows.Window;
 import org.apache.flink.util.Collector;
 
+/**
+ * Base class for all Patter Matching Operators.
+ * @param <W> type of window used for the pattern matching
+ */
 public abstract class PatternMatchingProcess<W extends Window> extends
     ProcessAllWindowFunction<Triplet<QueryVertex, QueryEdge>, Triplet<Vertex, Edge>, W> {
 

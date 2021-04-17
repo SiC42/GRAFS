@@ -17,6 +17,11 @@ import org.s1ck.gdl.model.comparables.PropertySelector;
 import org.s1ck.gdl.model.predicates.Predicate;
 import org.s1ck.gdl.model.predicates.expressions.Comparison;
 
+/**
+ * Represents a vertex in the query graph. Mainly implements logic used for predicates and predicate
+ * comparison. This class mimics the logic of the QueryEdge used in the original SGraPMa master
+ * thesis by Abdalrahman Alkamel.
+ */
 public class QueryVertex extends Vertex implements HasPredicate {
 
   private final Collection<Predicate> selfPredicates;
@@ -85,7 +90,7 @@ public class QueryVertex extends Vertex implements HasPredicate {
 
   public <E extends Element> boolean validatePredicate(E e) {
     boolean result = true;
-    for (Predicate p : this.selfPredicates) { // only comparisons we have here and with values
+    for (Predicate p : this.selfPredicates) { // only comparisons and with values
       if (result) {
         if (p.getClass() == Comparison.class) {
           var comparison = (Comparison) p;

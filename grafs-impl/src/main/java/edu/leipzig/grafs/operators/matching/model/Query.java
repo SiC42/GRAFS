@@ -26,6 +26,10 @@ import org.s1ck.gdl.model.predicates.booleans.And;
 import org.s1ck.gdl.model.predicates.expressions.Comparison;
 import org.s1ck.gdl.utils.Comparator;
 
+/**
+ * Represents the query graph.
+ * This class mimics the logic of the Query used in the original SGraPMa master thesis by Abdalrahman Alkamel.
+ */
 public class Query extends Graph<QueryVertex, QueryEdge> implements Serializable {
 
   private Predicate predicates;
@@ -35,7 +39,6 @@ public class Query extends Graph<QueryVertex, QueryEdge> implements Serializable
     super();
     this.variableToVertexMap = new HashMap<>();
   }
-
 
   public Query(String queryString, String timestampKey, List<String> variableOrder) {
     // "g[(alice)-[e1:knows {since : 2014}]->(bob)]"

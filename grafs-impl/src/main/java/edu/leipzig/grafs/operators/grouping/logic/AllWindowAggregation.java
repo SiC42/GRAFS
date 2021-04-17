@@ -16,6 +16,10 @@ import org.apache.flink.util.Collector;
 import org.gradoop.common.model.impl.id.GradoopId;
 import org.gradoop.common.model.impl.id.GradoopIdSet;
 
+/**
+ * Centralized variant of the aggregation process.
+ * @param <W> type of window used for the aggregation
+ */
 public class AllWindowAggregation<W extends Window> extends
     ProcessAllWindowFunction<Triplet<Vertex, Edge>, Triplet<Vertex, Edge>, W> implements
     ElementAggregationI {
@@ -44,10 +48,15 @@ public class AllWindowAggregation<W extends Window> extends
   }
 
 
+  /**
+   * Aggregates all elements in the window and outputs the resulting aggregated graph as stream.
+   * @param context unused
+   * @param triplets  iterable of the triplets in this window
+   * @param collector the collector in which the aggregated triplet are collected
+   */
   @Override
   public void process(Context context, Iterable<Triplet<Vertex, Edge>> triplets,
-      Collector<Triplet<Vertex, Edge>> collector)
-      throws Exception {
+      Collector<Triplet<Vertex, Edge>> collector) {
     GradoopId newGraphId = GradoopId.get();
     MultiMap<GradoopId, GradoopId> sourceVertexToEdgeMap = new MultiMap<>();
     MultiMap<GradoopId, GradoopId> targetVertexToEdgeMap = new MultiMap<>();

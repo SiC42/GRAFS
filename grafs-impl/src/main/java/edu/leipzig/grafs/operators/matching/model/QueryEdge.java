@@ -17,6 +17,11 @@ import org.s1ck.gdl.model.comparables.PropertySelector;
 import org.s1ck.gdl.model.predicates.Predicate;
 import org.s1ck.gdl.model.predicates.expressions.Comparison;
 
+/**
+ * Represents an edge in the query graph. Mainly implements logic used for predicates and predicate
+ * comparison. This class mimics the logic of the QueryEdge used in the original SGraPMa master
+ * thesis by Abdalrahman Alkamel.
+ */
 public class QueryEdge extends Edge implements HasPredicate {
 
   private final Collection<Predicate> selfPredicates;

@@ -12,6 +12,10 @@ import org.s1ck.gdl.model.comparables.PropertySelector;
 import org.s1ck.gdl.model.predicates.Predicate;
 import org.s1ck.gdl.model.predicates.expressions.Comparison;
 
+/**
+ * Class used for filtering the candidates for the query graph. This class is basically
+ * copied from the original SGraPMa master thesis by Abdalrahman Alkamel.
+ */
 public class FilterCandidates implements FilterFunction<Triplet<QueryVertex, QueryEdge>> {
 
   private final boolean filterForVertexOnly;
@@ -32,17 +36,18 @@ public class FilterCandidates implements FilterFunction<Triplet<QueryVertex, Que
    * modify the elements on which the predicate is applied. Violating this assumption can lead to
    * incorrect results.
    *
-   * @param streamObject The value to be filtered.
-   * @return True for values that should be retained, false for values to be filtered out.
+   * @param triplet The triplet to be tested for filtering.
+   * @return <tt>true</tt> for triplets that should be retained, <tt>false</tt> for triplets to be
+   * filtered out.
    * @throws Exception This method may throw exceptions. Throwing an exception will cause the
    *                   operation to fail and may trigger recovery.
    */
   @Override
-  public boolean filter(Triplet<QueryVertex, QueryEdge> streamObject) throws Exception {
+  public boolean filter(Triplet<QueryVertex, QueryEdge> triplet) throws Exception {
     if (filterForVertexOnly) {
-      return filterVertexOnly(streamObject);
+      return filterVertexOnly(triplet);
     } else {
-      return filterEdgesWithVertices(streamObject);
+      return filterEdgesWithVertices(triplet);
     }
   }
 

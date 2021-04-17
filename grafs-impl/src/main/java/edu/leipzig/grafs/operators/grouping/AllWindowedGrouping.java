@@ -16,6 +16,8 @@ import org.apache.flink.streaming.api.windowing.windows.Window;
  * This operator groups the graph elements based on the given grouping information into one element
  * and applies the given aggregation functions to the resulting element. This is done in a Window of
  * the stream.
+ *
+ * This is a centralized version, i.e. all elements in a window are processed in one task slot (/one worker).
  */
 public class AllWindowedGrouping extends AbstractWindowedGrouping {
 
