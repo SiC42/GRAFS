@@ -27,15 +27,25 @@ public class Reduce implements GraphCollectionToGraphOperatorI {
    */
   @Override
   public DataStream<Triplet<Vertex, Edge>> execute(DataStream<Triplet<Vertex, Edge>> stream) {
-    Consumer<GraphElement> setGraphIds = ge -> ge.setGraphIds(GradoopIdSet.fromExisting(newId));
-    return stream.map(triplet -> {
-      setGraphIds.accept(triplet.getEdge());
-      setGraphIds.accept(triplet.getSourceVertex());
-      setGraphIds.accept(triplet.getTargetVertex());
+    return stream.map(new ReduceFunction(newId)).name("Reduce Operator");
+  }
+
+  private static class ReduceFunction implements
+      MapFunction<Triplet<Vertex, Edge>, Triplet<Vertex, Edge>> {
+
+    protected GradoopId newId;
+
+    public ReduceFunction(GradoopId id) {
+      this.newId = id;
+    }
+
+    @Override
+    public Triplet<Vertex, Edge> map(Triplet<Vertex, Edge> triplet) throws Exception {
+      triplet.getEdge().setGraphIds(GradoopIdSet.fromExisting(newId));
+      triplet.getSourceVertex().setGraphIds(GradoopIdSet.fromExisting(newId));
       triplet.getTargetVertex().setGraphIds(GradoopIdSet.fromExisting(newId));
       return triplet;
-    })
-        .name("Reduce Operator");
+    }
   }
 
 }
