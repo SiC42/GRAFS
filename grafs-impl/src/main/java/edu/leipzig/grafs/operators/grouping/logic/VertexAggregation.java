@@ -92,14 +92,14 @@ public class VertexAggregation<W extends Window> extends ElementAggregation<Reve
             finalVertex.getId(),
             triplet.getTargetVertex().getId(),
             edge.getProperties());
-        var revEdge = ReversibleEdge.create(newEdge,false);
+        var revEdge = ReversibleEdge.create(newEdge, false);
         aggregatedEC = new Triplet<>(revEdge, finalVertex, triplet.getTargetVertex());
       } else { // TARGET-mode
         var newEdge = EdgeFactory.createEdge(edge.getLabel(),
             triplet.getSourceVertex().getId(),
             finalVertex.getId(),
             edge.getProperties());
-        var revEdge = ReversibleEdge.create(newEdge,false);
+        var revEdge = ReversibleEdge.create(newEdge, false);
         aggregatedEC = new Triplet<>(revEdge, triplet.getSourceVertex(), finalVertex);
       }
       out.collect(aggregatedEC);

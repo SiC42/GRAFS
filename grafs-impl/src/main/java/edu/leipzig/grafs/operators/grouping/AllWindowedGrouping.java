@@ -4,7 +4,6 @@ import edu.leipzig.grafs.model.Edge;
 import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.model.Vertex;
 import edu.leipzig.grafs.model.window.WindowingInformation;
-import edu.leipzig.grafs.model.window.WindowsI;
 import edu.leipzig.grafs.operators.grouping.functions.AggregateFunction;
 import edu.leipzig.grafs.operators.grouping.logic.AllWindowAggregation;
 import edu.leipzig.grafs.operators.grouping.model.GroupingInformation;
@@ -18,7 +17,7 @@ import org.apache.flink.streaming.api.windowing.windows.Window;
  * and applies the given aggregation functions to the resulting element. This is done in a Window of
  * the stream.
  */
-public class AllWindowedGrouping extends AbstractWindowedGrouping<WindowsI<? extends Window>> {
+public class AllWindowedGrouping extends AbstractWindowedGrouping {
 
 
   /**
@@ -91,7 +90,7 @@ public class AllWindowedGrouping extends AbstractWindowedGrouping<WindowsI<? ext
   /**
    * Builder that provides an intuitive way to generate a {@link DistributedWindowedGrouping}-object.
    */
-  public static final class GroupingBuilder extends AbstractGroupingBuilder<WindowsI<?>> {
+  public static final class GroupingBuilder extends AbstractGroupingBuilder {
 
     /**
      * Builds the grouping.

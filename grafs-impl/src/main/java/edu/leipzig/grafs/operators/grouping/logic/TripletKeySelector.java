@@ -13,7 +13,8 @@ import org.apache.flink.api.java.functions.KeySelector;
  * Key selector used for grouping that returns a string representation of an {@link Triplet} using
  * the grouping information.
  */
-public class TripletKeySelector<V extends Vertex, E extends Edge> implements KeySelector<Triplet<V, E>, String> {
+public class TripletKeySelector<V extends Vertex, E extends Edge> implements
+    KeySelector<Triplet<V, E>, String> {
 
   private final GroupingInformation gi;
   private final AggregateMode makeKeyFor;
@@ -131,7 +132,7 @@ public class TripletKeySelector<V extends Vertex, E extends Edge> implements Key
    * @return key for the triplet that represents the group of the selected element
    */
   @Override
-  public String getKey(Triplet<V,E> triplet) {
+  public String getKey(Triplet<V, E> triplet) {
     final String EMPTY_VERTEX = "()";
     final String EMPTY_EDGE = "[]";
     switch (makeKeyFor) {

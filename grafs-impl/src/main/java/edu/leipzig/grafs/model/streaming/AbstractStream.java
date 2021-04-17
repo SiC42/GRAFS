@@ -4,7 +4,10 @@ import edu.leipzig.grafs.model.Edge;
 import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.model.Vertex;
 import edu.leipzig.grafs.model.window.WindowingInformation;
-import edu.leipzig.grafs.model.window.WindowsI;
+import edu.leipzig.grafs.operators.interfaces.nonwindow.GraphCollectionToGraphCollectionOperatorI;
+import edu.leipzig.grafs.operators.interfaces.nonwindow.GraphCollectionToGraphOperatorI;
+import edu.leipzig.grafs.operators.interfaces.window.WindowedGraphCollectionToGraphCollectionOperatorI;
+import edu.leipzig.grafs.operators.interfaces.window.WindowedGraphCollectionToGraphOperatorI;
 import edu.leipzig.grafs.operators.interfaces.window.WindowedOperatorI;
 import edu.leipzig.grafs.util.FlinkConfig;
 import java.io.IOException;
@@ -15,6 +18,9 @@ import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.DataStreamUtils;
 import org.apache.flink.streaming.api.functions.sink.SinkFunction;
 import org.apache.flink.streaming.api.functions.source.SourceFunction;
+import org.apache.flink.streaming.api.windowing.assigners.TumblingEventTimeWindows;
+import org.apache.flink.streaming.api.windowing.assigners.WindowAssigner;
+import org.apache.flink.streaming.api.windowing.time.Time;
 import org.apache.flink.streaming.api.windowing.windows.Window;
 
 public abstract class AbstractStream<S extends AbstractStream<?>> {
@@ -51,8 +57,8 @@ public abstract class AbstractStream<S extends AbstractStream<?>> {
     return stream;
   }
 
-  public <FW extends Window, W extends WindowsI<?>> S applyWindowedOperator(
-      WindowedOperatorI<W> operatorI, WindowingInformation<?> wi) {
+  public S applyWindowedOperator(
+      WindowedOperatorI<?,?> operatorI, WindowingInformation<?> wi) {
     stream = operatorI.execute(stream, wi);
     return getThis();
   }
@@ -88,21 +94,45 @@ public abstract class AbstractStream<S extends AbstractStream<?>> {
     return DataStreamUtils.collect(stream);
   }
 
-  public static class InitialWindowBuilder<S extends AbstractStream<S>, WBase extends WindowsI<? extends Window>> {
+  public static class InitialWindowBuilder<S extends AbstractStream<S>> {
 
     private final S stream;
-    private final WindowedOperatorI<WBase> operator;
+    private final WindowedOperatorI<?,?> operator;
 
     public InitialWindowBuilder(S stream,
-        WindowedOperatorI<WBase> operator) {
+        WindowedOperatorI<?,?> operator) {
 
       this.stream = stream;
       this.operator = operator;
     }
 
-    public <WExtension extends WBase> WindowBuilder<S, WBase> withWindow(WExtension window) {
+    public <W extends Window> WindowBuilder<S, W> withWindow(
+        WindowAssigner<Object, W> window) {
+      stream.getDataStream().windowAll(window);
+      stream.getDataStream().windowAll(TumblingEventTimeWindows.of(Time.minutes(5)));
       return new WindowBuilder<>(stream, operator, window);
     }
+  }
+
+  public GraphStream callForGraph(GraphCollectionToGraphOperatorI operator) {
+    DataStream<Triplet<Vertex, Edge>> result = operator.execute(stream);
+    return new GraphStream(result, config);
+  }
+
+  public GCStream callForGC(GraphCollectionToGraphCollectionOperatorI operator) {
+    var result = operator.execute(stream);
+    return new GCStream(result, config);
+  }
+
+  public InitialWindowBuilder<GraphStream> callForGraph(
+      WindowedGraphCollectionToGraphOperatorI operator) {
+    return new InitialWindowBuilder<>(new GraphStream(stream, config), operator);
+  }
+
+  //@Override
+  public InitialWindowBuilder<GCStream> callForGC(
+      WindowedGraphCollectionToGraphCollectionOperatorI operator) {
+    return new InitialWindowBuilder<>(new GCStream(stream, config), operator);
   }
 
 }

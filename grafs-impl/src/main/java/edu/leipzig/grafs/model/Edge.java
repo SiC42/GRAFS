@@ -1,7 +1,6 @@
 package edu.leipzig.grafs.model;
 
 import edu.leipzig.grafs.exceptions.VerticesAlreadySetException;
-import edu.leipzig.grafs.factory.EdgeFactory;
 import org.gradoop.common.model.impl.id.GradoopId;
 import org.gradoop.common.model.impl.id.GradoopIdSet;
 import org.gradoop.common.model.impl.properties.Properties;

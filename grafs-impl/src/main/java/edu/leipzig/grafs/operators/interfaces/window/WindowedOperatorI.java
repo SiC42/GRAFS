@@ -4,13 +4,12 @@ import edu.leipzig.grafs.model.Edge;
 import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.model.Vertex;
 import edu.leipzig.grafs.model.window.WindowingInformation;
-import edu.leipzig.grafs.model.window.WindowsI;
 import org.apache.flink.streaming.api.datastream.AllWindowedStream;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.WindowedStream;
 import org.apache.flink.streaming.api.windowing.windows.Window;
 
-public interface WindowedOperatorI<W extends WindowsI<? extends Window>> {
+public interface WindowedOperatorI {
 
   /**
    * Applies the given operator to the stream.

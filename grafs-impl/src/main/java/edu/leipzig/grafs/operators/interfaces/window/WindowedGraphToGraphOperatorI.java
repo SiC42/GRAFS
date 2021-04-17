@@ -1,8 +1,5 @@
 package edu.leipzig.grafs.operators.interfaces.window;
 
-import edu.leipzig.grafs.model.window.WindowsI;
-import org.apache.flink.streaming.api.windowing.windows.Window;
-
 /**
  * Interface for operators which takes a graph and produces one graph.
  * <p>
@@ -11,7 +8,7 @@ import org.apache.flink.streaming.api.windowing.windows.Window;
  * with graph collections and handle them well internally, however that is not build in
  * automatically.
  */
-public interface WindowedGraphToGraphOperatorI<W extends WindowsI<? extends Window>> extends
-    WindowedOperatorI<W> {
+public interface WindowedGraphToGraphOperatorI extends
+    WindowedOperatorI {
 
 }

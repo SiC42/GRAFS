@@ -10,7 +10,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import org.gradoop.common.model.impl.id.GradoopId;
 
 /**
  * This class represents a multimap, i.e. a map which can hold multiple (distinct) values for each
@@ -37,10 +36,10 @@ public class MultiMap<K, V> implements Serializable {
    * Initializes an empty multi map with the default initial capacity (16) and the default load
    * factor (0.75).
    */
-  public MultiMap(MultiMap<K,V> otherMultiMap) {
+  public MultiMap(MultiMap<K, V> otherMultiMap) {
     this();
-    for(var key : otherMultiMap.keySet()){
-      for(var value : otherMultiMap.get(key)){
+    for (var key : otherMultiMap.keySet()) {
+      for (var value : otherMultiMap.get(key)) {
         put(key, value);
       }
     }
@@ -327,7 +326,7 @@ public class MultiMap<K, V> implements Serializable {
       out.writeObject(key);
       var values = map.get(key);
       out.writeInt(values.size());
-      for(var value : values){
+      for (var value : values) {
         out.writeObject(value);
       }
     }
@@ -337,10 +336,10 @@ public class MultiMap<K, V> implements Serializable {
       throws IOException, ClassNotFoundException {
     var keySetSize = in.readInt();
     map = new HashMap<>();
-    for(int i = 0; i< keySetSize; i++){
+    for (int i = 0; i < keySetSize; i++) {
       var key = (K) in.readObject();
       var valueSetSize = in.readInt();
-      for(int j = 0; j< valueSetSize; j++){
+      for (int j = 0; j < valueSetSize; j++) {
         var value = (V) in.readObject();
         put(key, value);
       }

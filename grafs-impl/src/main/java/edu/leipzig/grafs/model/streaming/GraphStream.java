@@ -3,7 +3,6 @@ package edu.leipzig.grafs.model.streaming;
 import edu.leipzig.grafs.model.Edge;
 import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.model.Vertex;
-import edu.leipzig.grafs.model.window.WindowsI;
 import edu.leipzig.grafs.operators.interfaces.nonwindow.GraphToGraphCollectionOperatorI;
 import edu.leipzig.grafs.operators.interfaces.nonwindow.GraphToGraphOperatorI;
 import edu.leipzig.grafs.operators.interfaces.window.WindowedGraphToGraphCollectionOperatorI;
@@ -11,7 +10,6 @@ import edu.leipzig.grafs.operators.interfaces.window.WindowedGraphToGraphOperato
 import edu.leipzig.grafs.util.FlinkConfig;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.functions.source.SourceFunction;
-import org.apache.flink.streaming.api.windowing.windows.Window;
 
 /**
  * Model that abstracts the data stream to a edge(container)-stream.
@@ -63,13 +61,13 @@ public class GraphStream extends AbstractStream<GraphStream> implements GraphStr
     return new GCStream(result, config);
   }
 
-  public <FW extends Window, W extends WindowsI<? extends FW>> InitialWindowBuilder<GraphStream, W> callForGraph(
-      WindowedGraphToGraphOperatorI<W> operator) {
+  public InitialWindowBuilder<GraphStream> callForGraph(
+      WindowedGraphToGraphOperatorI operator) {
     return new InitialWindowBuilder<>(new GraphStream(stream, config), operator);
   }
 
-  public <FW extends Window, W extends WindowsI<? extends FW>> InitialWindowBuilder<GCStream, W> callForGC(
-      WindowedGraphToGraphCollectionOperatorI<W> operator) {
+  public InitialWindowBuilder<GCStream> callForGC(
+      WindowedGraphToGraphCollectionOperatorI operator) {
     return new InitialWindowBuilder<>(new GCStream(stream, config), operator);
   }
 }

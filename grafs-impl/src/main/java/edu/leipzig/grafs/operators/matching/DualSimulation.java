@@ -4,7 +4,6 @@ import edu.leipzig.grafs.model.Edge;
 import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.model.Vertex;
 import edu.leipzig.grafs.model.window.WindowingInformation;
-import edu.leipzig.grafs.model.window.WindowsI;
 import edu.leipzig.grafs.operators.interfaces.window.WindowedGraphToGraphCollectionOperatorI;
 import edu.leipzig.grafs.operators.matching.logic.DualSimulationProcess;
 import edu.leipzig.grafs.operators.matching.logic.FilterCandidates;
@@ -21,7 +20,7 @@ import org.apache.flink.streaming.api.windowing.windows.Window;
  * applying a window.
  */
 public class DualSimulation implements
-    WindowedGraphToGraphCollectionOperatorI<WindowsI<? extends Window>> {
+    WindowedGraphToGraphCollectionOperatorI {
 
   /**
    * Query graph used to find pattern matches

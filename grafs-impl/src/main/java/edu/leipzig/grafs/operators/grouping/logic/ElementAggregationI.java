@@ -111,7 +111,8 @@ public interface ElementAggregationI {
    * @param aggregationElement element on which the aggregate was applied upon
    * @return the aggregation element with all missing aggregate set to the default value
    */
-  default <E extends Element> E checkForMissingAggregationsAndApply(Set<AggregateFunction> aggregateFunctions,
+  default <E extends Element> E checkForMissingAggregationsAndApply(
+      Set<AggregateFunction> aggregateFunctions,
       E aggregationElement) {
     for (var func : aggregateFunctions) {
       var aggregateKey = func.getAggregatePropertyKey();

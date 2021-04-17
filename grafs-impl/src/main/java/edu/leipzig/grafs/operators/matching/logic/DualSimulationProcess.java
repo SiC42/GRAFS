@@ -186,9 +186,9 @@ public class DualSimulationProcess<W extends Window> extends PatternMatchingProc
           for (var targetCandidate : candidatesForTarget) {
             var edges = graph
                 .getEdgesForVertices((QueryVertex) sourceCandidate, targetCandidate);
-            for(var edge : edges) {
+            for (var edge : edges) {
               var queryEdges = query.getEdgesForVertices(qSource, qTarget);
-              if (queryEdges.stream().anyMatch(qe -> ElementMatcher.matchesQueryElem(qe,edge))) {
+              if (queryEdges.stream().anyMatch(qe -> ElementMatcher.matchesQueryElem(qe, edge))) {
                 var normalSource = VertexFactory.createVertex((QueryVertex) sourceCandidate);
                 var normalTarget = VertexFactory.createVertex(targetCandidate);
                 var normalEdge = EdgeFactory.createEdge(edge);

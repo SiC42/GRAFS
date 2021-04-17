@@ -52,6 +52,7 @@ public class QueryVertex extends Vertex implements HasPredicate {
   public void addVariable(String variable) {
     this.variables.add(variable);
   }
+
   public void addVariables(Collection<String> variables) {
     this.variables.addAll(variables);
   }
