@@ -8,6 +8,7 @@ import edu.leipzig.grafs.factory.VertexFactory;
 import edu.leipzig.grafs.model.Edge;
 import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.model.Vertex;
+import edu.leipzig.grafs.model.streaming.GCStream;
 import edu.leipzig.grafs.model.streaming.GraphStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -150,11 +151,43 @@ public class AsciiGraphLoader {
   }
 
   // ---------------------------------------------------------------------------
-  //  Triplet Collections and EdgeStream methods
+  //  Triplet Collections and Stream methods
   // ---------------------------------------------------------------------------
 
   /**
-   * Creates an triplet stream with the given config.
+   * Creates an graph stream with the given config.
+   * <p>
+   * The expected parameter specifies which edges should be used. Other edges are omitted.
+   * Note: This can emit a stream which is technically a graph collection stream (multiple graph ids)
+   *
+   * @param config   config used to produce the stream
+   * @param expected graph variables that should be selected
+   * @return stream of selected edges
+   */
+  public GraphStream createGraphStreamByGraphVariables(FlinkConfig config, String... expected) {
+    return createGraphStream(config, createTripletsByGraphVariables(expected));
+  }
+
+  /**
+   * Creates an graph stream with the given config.
+   * Note: This can emit a stream which is technically a graph collection stream (multiple graph ids)
+   *
+   * @param config config used to produce the stream
+   * @return stream of edges loaded
+   */
+  public GraphStream createGraphStream(FlinkConfig config) {
+    return createGraphStream(config, createTriplets());
+  }
+
+  private GraphStream createGraphStream(FlinkConfig config,
+      Collection<Triplet<Vertex, Edge>> triplet) {
+    StreamExecutionEnvironment env = config.getExecutionEnvironment();
+    DataStream<Triplet<Vertex, Edge>> stream = env.fromCollection(triplet);
+    return new GraphStream(stream, config);
+  }
+
+  /**
+   * Creates an graph collection stream with the given config.
    * <p>
    * The expected parameter specifies which edges should be used. Other edges are omitted.
    *
@@ -162,25 +195,25 @@ public class AsciiGraphLoader {
    * @param expected graph variables that should be selected
    * @return stream of selected edges
    */
-  public GraphStream createEdgeStreamByGraphVariables(FlinkConfig config, String... expected) {
-    return createEdgeStream(config, createTripletsByGraphVariables(expected));
+  public GCStream createGCStreamByGraphVariables(FlinkConfig config, String... expected) {
+    return createGCStream(config, createTripletsByGraphVariables(expected));
   }
 
   /**
-   * Creates an triplet stream with the given config.
+   * Creates an graph collection stream with the given config.
    *
    * @param config config used to produce the stream
    * @return stream of edges loaded
    */
-  public GraphStream createEdgeStream(FlinkConfig config) {
-    return createEdgeStream(config, createTriplets());
+  public GCStream createGCStream(FlinkConfig config) {
+    return createGCStream(config, createTriplets());
   }
 
-  private GraphStream createEdgeStream(FlinkConfig config,
+  private GCStream createGCStream(FlinkConfig config,
       Collection<Triplet<Vertex, Edge>> triplet) {
     StreamExecutionEnvironment env = config.getExecutionEnvironment();
     DataStream<Triplet<Vertex, Edge>> stream = env.fromCollection(triplet);
-    return new GraphStream(stream, config);
+    return new GCStream(stream, config);
   }
 
   /**

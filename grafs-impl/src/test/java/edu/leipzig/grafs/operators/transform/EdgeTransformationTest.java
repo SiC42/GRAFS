@@ -43,7 +43,7 @@ public class EdgeTransformationTest extends TransformationBaseTest {
         .map(Element::getId)
         .collect(Collectors.toCollection(ArrayList::new));
 
-    var inputStream = loader.createEdgeStreamByGraphVariables(getConfig(), "g0");
+    var inputStream = loader.createGraphStreamByGraphVariables(getConfig(), "g0");
     var tripletResultIt = inputStream
         .transformEdges(EdgeTransformationTest::transformEdge)
         .collect();
@@ -62,7 +62,7 @@ public class EdgeTransformationTest extends TransformationBaseTest {
 
     Collection<Edge> referenceEdges = loader.getEdgesByGraphVariables("g01");
 
-    var inputStream = loader.createEdgeStreamByGraphVariables(getConfig(), "g0");
+    var inputStream = loader.createGraphStreamByGraphVariables(getConfig(), "g0");
     var tripletResultIt = inputStream
         .transformEdges(EdgeTransformationTest::transformEdge)
         .collect();
@@ -89,7 +89,7 @@ public class EdgeTransformationTest extends TransformationBaseTest {
     Collection<Edge> expectedEdges = loader.getEdgesByGraphVariables("g01");
     Collection<Vertex> expectedVertices = loader.getVerticesByGraphVariables("g01");
 
-    GraphStream original = loader.createEdgeStreamByGraphVariables(getConfig(), "g0");
+    GraphStream original = loader.createGraphStreamByGraphVariables(getConfig(), "g0");
 
     var tripletResultIt = original.transformEdges(EdgeTransformationTest::transformEdge).collect();
 

@@ -78,7 +78,7 @@ public class DualSimulationTest extends MatchingTestBase {
         + "(v29)-[e36]->(v30)"
         + "(v30)-[e37]->(v23)]";
     var loader = graphLoader;
-    GraphStream graphStream = loader.createEdgeStream(config);
+    GraphStream graphStream = loader.createGraphStream(config);
     loader.appendFromString(appendDsGraph);
     var expectedEcs = loader.createTripletsByGraphVariables("ds");
 
@@ -95,7 +95,7 @@ public class DualSimulationTest extends MatchingTestBase {
     var loader = TestUtils.getSocialNetworkLoader();
     var queryStr = "MATCH (alice:Person)-[k:knows]->(bob:Person)" +
         "WHERE (k.since > 2013)";
-    GraphStream graphStream = loader.createEdgeStream(config);
+    GraphStream graphStream = loader.createGraphStream(config);
     var appendDsString = "ds {}["
         + "(alice)-[akb]->(bob)"
         + "(bob)-[bka]->(alice)"
@@ -122,7 +122,7 @@ public class DualSimulationTest extends MatchingTestBase {
   void testWithSocialGraph_personKnowsPersonSince2014() throws Exception {
     var loader = TestUtils.getSocialNetworkLoader();
     var queryStr = "MATCH (a:Person)-[k:knows {since: 2014}]->(b:Person)";
-    GraphStream graphStream = loader.createEdgeStream(config);
+    GraphStream graphStream = loader.createGraphStream(config);
     var appendDsString = "ds {}["
         + "(alice)-[akb]->(bob)"
         + "(bob)-[bka]->(alice)"
@@ -144,7 +144,7 @@ public class DualSimulationTest extends MatchingTestBase {
   void testWithSocialGraph_TripleWithPersonVertices() throws Exception {
     var loader = TestUtils.getSocialNetworkLoader();
     var queryStr = "MATCH (a:Person)-[]->(b:Person)";
-    GraphStream graphStream = loader.createEdgeStream(config);
+    GraphStream graphStream = loader.createGraphStream(config);
     var appendDsString = "ds {}["
         + "(alice)-[akb]->(bob)"
         + "(bob)-[bka]->(alice)"
@@ -172,7 +172,7 @@ public class DualSimulationTest extends MatchingTestBase {
   void testWithSocialGraph_TripleWithKnowsEdge() throws Exception {
     var loader = TestUtils.getSocialNetworkLoader();
     var queryStr = "MATCH ()-[:knows]->()";
-    GraphStream graphStream = loader.createEdgeStream(config);
+    GraphStream graphStream = loader.createGraphStream(config);
     var appendDsString = "ds {}["
         + "(alice)-[akb]->(bob)"
         + "(bob)-[bka]->(alice)"
@@ -201,7 +201,7 @@ public class DualSimulationTest extends MatchingTestBase {
   void testWithSocialGraph_PersonsKnowEachOther_Since2014() throws Exception {
     var loader = TestUtils.getSocialNetworkLoader();
     var queryStr = "MATCH (a:Person)-[k1:knows {since: 2014}]->(b:Person)-[k2:knows {since: 2014}]->(a)";
-    GraphStream graphStream = loader.createEdgeStream(config);
+    GraphStream graphStream = loader.createGraphStream(config);
     var appendDsString = "ds {}["
         + "(alice)-[akb]->(bob)"
         + "(bob)-[bka]->(alice)"
@@ -223,7 +223,7 @@ public class DualSimulationTest extends MatchingTestBase {
   void testWithSocialGraph_PersonsKnowEachOther() throws Exception {
     var loader = TestUtils.getSocialNetworkLoader();
     var queryStr = "MATCH (a)-[:knows]->(b)-[:knows ]->(a)";
-    GraphStream graphStream = loader.createEdgeStream(config);
+    GraphStream graphStream = loader.createGraphStream(config);
     var appendDsString = "ds {}["
         + "(alice)-[akb]->(bob)"
         + "(bob)-[bka]->(alice)"
@@ -247,7 +247,7 @@ public class DualSimulationTest extends MatchingTestBase {
   void testWithSocialGraph_PersonsKnowEachOther_WithoutPersonLabels() throws Exception {
     var loader = TestUtils.getSocialNetworkLoader();
     var queryStr = "MATCH (a)-[]->(b)-[]->(a)";
-    GraphStream graphStream = loader.createEdgeStream(config);
+    GraphStream graphStream = loader.createGraphStream(config);
     var appendDsString = "ds {}["
         + "(alice)-[akb]->(bob)"
         + "(bob)-[bka]->(alice)"
@@ -273,7 +273,7 @@ public class DualSimulationTest extends MatchingTestBase {
   void testWithSocialGraph_forumHasModerator() throws Exception {
     var loader = TestUtils.getSocialNetworkLoader();
     var queryStr = "MATCH (:Forum)-[:hasModerator]->()";
-    GraphStream graphStream = loader.createEdgeStream(config);
+    GraphStream graphStream = loader.createGraphStream(config);
     var appendDsString = "ds {}["
         + "(gps)-[gpshmod]->(dave)"
         + "(gdbs)-[gdbshmoa]->(alice)"
@@ -295,7 +295,7 @@ public class DualSimulationTest extends MatchingTestBase {
     var loader = TestUtils.getSocialNetworkLoader();
     var queryStr = "MATCH (a:Person)-[k:knows]->(b:Person)"
         + "WHERE (k.since = 2015 OR a.age = 30)";
-    GraphStream graphStream = loader.createEdgeStream(config);
+    GraphStream graphStream = loader.createGraphStream(config);
     var appendDsString = "ds {}["
         + "(frank)-[fkd]->(dave)"
         + "(frank)-[fkc]->(carol)"
@@ -321,7 +321,7 @@ public class DualSimulationTest extends MatchingTestBase {
     var loader = TestUtils.getSocialNetworkLoader();
     var queryStr = "MATCH (a:Person)-[k:knows {since: 2014}]->(b:Person)"
         + "WHERE (a.age = 20 OR a.name=\"Alice\")";
-    GraphStream graphStream = loader.createEdgeStream(config);
+    GraphStream graphStream = loader.createGraphStream(config);
     var appendDsString = "ds {}["
         + "(alice)-[akb]->(bob)"
         + "]";

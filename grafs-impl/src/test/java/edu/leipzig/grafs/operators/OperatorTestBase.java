@@ -75,19 +75,19 @@ public abstract class OperatorTestBase {
 
   protected AsciiGraphLoader getLoaderFromString(String asciiString) {
     AsciiGraphLoader loader = AsciiGraphLoader.fromString(asciiString);
-    loader.createEdgeStream(getConfig());
+    loader.createGraphStream(getConfig());
     return loader;
   }
 
   protected AsciiGraphLoader getLoaderFromFile(String fileName) throws IOException {
     AsciiGraphLoader loader = AsciiGraphLoader.fromFile(fileName);
-    loader.createEdgeStream(getConfig());
+    loader.createGraphStream(getConfig());
     return loader;
   }
 
   protected AsciiGraphLoader getLoaderFromStream(InputStream inputStream) throws IOException {
     AsciiGraphLoader loader = AsciiGraphLoader.fromInputStream(inputStream);
-    loader.createEdgeStream(getConfig());
+    loader.createGraphStream(getConfig());
     return loader;
   }
 

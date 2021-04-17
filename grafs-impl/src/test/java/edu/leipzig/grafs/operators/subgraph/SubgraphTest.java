@@ -30,7 +30,7 @@ public class SubgraphTest extends OperatorTestBase {
         "(frank)-[fkd]->(dave)" +
         "]");
 
-    GraphStream input = loader.createEdgeStream(getConfig());
+    GraphStream input = loader.createGraphStream(getConfig());
 
     var expected =
         loader.createTripletsByGraphVariables("expected");
@@ -56,7 +56,7 @@ public class SubgraphTest extends OperatorTestBase {
         "(alice),(bob),(carol),(dave),(eve),(frank)" +
         "]");
 
-    GraphStream input = loader.createEdgeStream(getConfig());
+    GraphStream input = loader.createGraphStream(getConfig());
 
     var expected =
         loader.createTripletsByGraphVariables("expected");
@@ -84,7 +84,7 @@ public class SubgraphTest extends OperatorTestBase {
 
     loader.appendFromString("expected:_DB[]");
 
-    GraphStream input = loader.createEdgeStream(getConfig());
+    GraphStream input = loader.createGraphStream(getConfig());
 
     var expected =
         loader.createTripletsByGraphVariables("expected");
@@ -109,7 +109,7 @@ public class SubgraphTest extends OperatorTestBase {
         "(graphs)<-[ghtg2]-(gps)-[ghth]->(hadoop)" +
         "]");
 
-    GraphStream input = loader.createEdgeStream(getConfig());
+    GraphStream input = loader.createGraphStream(getConfig());
 
     var expected =
         loader.createTripletsByGraphVariables("expected");
@@ -133,7 +133,7 @@ public class SubgraphTest extends OperatorTestBase {
         "(graphs)<-[ghtg2]-(gps)-[ghth]->(hadoop)" +
         "]");
 
-    GraphStream input = loader.createEdgeStream(getConfig());
+    GraphStream input = loader.createGraphStream(getConfig());
 
     var expected =
         loader.createTripletsByGraphVariables("expected");

@@ -37,6 +37,6 @@ class EdgeStreamTest {
             .<Triplet<Vertex, Edge>>forBoundedOutOfOrderness(Duration.ZERO)
             .withTimestampAssigner((ec, timestamp) -> 0))
         .build();
-    graphStream = loader.createEdgeStream(config);
+    graphStream = loader.createGraphStream(config);
   }
 }

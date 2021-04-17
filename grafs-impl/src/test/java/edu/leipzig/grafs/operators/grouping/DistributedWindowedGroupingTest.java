@@ -47,7 +47,7 @@ public class DistributedWindowedGroupingTest {
   public void testGroupingOnSocialNetwork() throws Exception {
     AsciiGraphLoader loader = getSocialNetworkLoader();
 
-    var edgeStream = loader.createEdgeStreamByGraphVariables(config, "g0", "g1", "g2");
+    var edgeStream = loader.createGraphStreamByGraphVariables(config, "g0", "g1", "g2");
 
     var intermediateStream = edgeStream
         .callForGraph(
@@ -87,7 +87,7 @@ public class DistributedWindowedGroupingTest {
   public void testVertexPropertySymmetricGraph() throws Exception {
     AsciiGraphLoader loader = getSocialNetworkLoader();
 
-    var edgeStream = loader.createEdgeStreamByGraphVariables(config, "g2");
+    var edgeStream = loader.createGraphStreamByGraphVariables(config, "g2");
     var intermediateStream = edgeStream
         .callForGraph(
             DistributedWindowedGrouping.createGrouping()
@@ -126,7 +126,7 @@ public class DistributedWindowedGroupingTest {
     AsciiGraphLoader loader = getSocialNetworkLoader();
 
     var edgeStream = loader
-        .createEdgeStreamByGraphVariables(config, "g0", "g1", "g2");
+        .createGraphStreamByGraphVariables(config, "g0", "g1", "g2");
 
     loader.appendFromString("expected[" +
         "(leipzig {city : \"Leipzig\", count : 2L})" +
@@ -169,7 +169,7 @@ public class DistributedWindowedGroupingTest {
     AsciiGraphLoader loader = getSocialNetworkLoader();
 
     var edgeStream = loader
-        .createEdgeStreamByGraphVariables(config, "g0", "g1", "g2");
+        .createGraphStreamByGraphVariables(config, "g0", "g1", "g2");
 
     loader.appendFromString("expected[" +
         "(leipzigF {city : \"Leipzig\", gender : \"f\", count : 1L})" +
@@ -218,7 +218,7 @@ public class DistributedWindowedGroupingTest {
   public void testSingleVertexPropertyWithAbsentValue() throws Exception {
     AsciiGraphLoader loader = getSocialNetworkLoader();
 
-    var edgeStream = loader.createEdgeStreamByGraphVariables(config, "g3");
+    var edgeStream = loader.createGraphStreamByGraphVariables(config, "g3");
 
     loader.appendFromString("expected[" +
         "(dresden {city : \"Dresden\", count : 2L})" +
@@ -256,7 +256,7 @@ public class DistributedWindowedGroupingTest {
   public void testMultipleVertexPropertiesWithAbsentValue() throws Exception {
     AsciiGraphLoader loader = getSocialNetworkLoader();
 
-    var edgeStream = loader.createEdgeStreamByGraphVariables(config, "g3");
+    var edgeStream = loader.createGraphStreamByGraphVariables(config, "g3");
 
     loader.appendFromString("expected[" +
         "(dresdenF {city : \"Dresden\", gender : \"f\", count : 1L})" +
@@ -298,7 +298,7 @@ public class DistributedWindowedGroupingTest {
     AsciiGraphLoader loader = getSocialNetworkLoader();
 
     var edgeStream = loader
-        .createEdgeStreamByGraphVariables(config, "g0", "g1", "g2");
+        .createGraphStreamByGraphVariables(config, "g0", "g1", "g2");
 
     loader.appendFromString("expected[" +
         "(leipzig {city : \"Leipzig\", count : 2L})" +
@@ -375,7 +375,7 @@ public class DistributedWindowedGroupingTest {
         "(v01)-[{a : 1,b : 3,count : 1L}]->(v00)" +
         "]");
 
-    var edgeStream = loader.createEdgeStreamByGraphVariables(config, "input");
+    var edgeStream = loader.createGraphStreamByGraphVariables(config, "input");
 
     var intermediateStream = edgeStream
 
@@ -443,7 +443,7 @@ public class DistributedWindowedGroupingTest {
         "(v11)-[{a : 1,b : 2,count : 1L}]->(v01)" +
         "]");
 
-    var edgeStream = loader.createEdgeStreamByGraphVariables(config, "input");
+    var edgeStream = loader.createGraphStreamByGraphVariables(config, "input");
     var intermediateStream = edgeStream
 
         .callForGraph(
@@ -475,7 +475,7 @@ public class DistributedWindowedGroupingTest {
   public void testVertexAndEdgePropertyWithAbsentValues() throws Exception {
     AsciiGraphLoader loader = getSocialNetworkLoader();
 
-    var edgeStream = loader.createEdgeStreamByGraphVariables(config, "g3");
+    var edgeStream = loader.createGraphStreamByGraphVariables(config, "g3");
 
     loader.appendFromString("expected[" +
         "(dresden {city : \"Dresden\", count : 2L})" +
@@ -516,7 +516,7 @@ public class DistributedWindowedGroupingTest {
   public void testVertexLabel() throws Exception {
     AsciiGraphLoader loader = getSocialNetworkLoader();
 
-    var edgeStream = loader.createEdgeStream(config);
+    var edgeStream = loader.createGraphStream(config);
 
     loader.appendFromString("expected[" +
         "(p:Person  {count : 6L})" +
@@ -558,7 +558,7 @@ public class DistributedWindowedGroupingTest {
     AsciiGraphLoader loader = getSocialNetworkLoader();
 
     var edgeStream = loader
-        .createEdgeStreamByGraphVariables(config, "g0", "g1", "g2");
+        .createGraphStreamByGraphVariables(config, "g0", "g1", "g2");
 
     loader.appendFromString("expected[" +
         "(l:Person {city : \"Leipzig\", count : 2L})" +
@@ -601,7 +601,7 @@ public class DistributedWindowedGroupingTest {
   public void testVertexLabelAndSingleVertexPropertyWithAbsentValue() throws Exception {
     AsciiGraphLoader loader = getSocialNetworkLoader();
 
-    var edgeStream = loader.createEdgeStream(config);
+    var edgeStream = loader.createGraphStream(config);
 
     loader.appendFromString("expected[" +
         "(pL:Person {city : \"Leipzig\", count : 2L})" +
@@ -653,7 +653,7 @@ public class DistributedWindowedGroupingTest {
     AsciiGraphLoader loader = getSocialNetworkLoader();
 
     var edgeStream = loader
-        .createEdgeStreamByGraphVariables(config, "g0", "g1", "g2");
+        .createGraphStreamByGraphVariables(config, "g0", "g1", "g2");
 
     loader.appendFromString("expected[" +
         "(p:Person {count : 6L})" +
@@ -692,7 +692,7 @@ public class DistributedWindowedGroupingTest {
   public void testVertexLabelAndSingleEdgePropertyWithAbsentValue() throws Exception {
     AsciiGraphLoader loader = getSocialNetworkLoader();
 
-    var edgeStream = loader.createEdgeStream(config);
+    var edgeStream = loader.createGraphStream(config);
 
     loader.appendFromString("expected[" +
         "(p:Person  {count : 6L})" +
@@ -738,7 +738,7 @@ public class DistributedWindowedGroupingTest {
     AsciiGraphLoader loader = getSocialNetworkLoader();
 
     var edgeStream = loader
-        .createEdgeStreamByGraphVariables(config, "g0", "g1", "g2");
+        .createGraphStreamByGraphVariables(config, "g0", "g1", "g2");
 
     loader.appendFromString("expected[" +
         "(l:Person {city : \"Leipzig\", count : 2L})" +
@@ -784,7 +784,7 @@ public class DistributedWindowedGroupingTest {
   public void testVertexAndEdgeLabel() throws Exception {
     AsciiGraphLoader loader = getSocialNetworkLoader();
 
-    var edgeStream = loader.createEdgeStream(config);
+    var edgeStream = loader.createGraphStream(config);
 
     loader.appendFromString("expected[" +
         "(p:Person  {count : 6L})" +
@@ -829,7 +829,7 @@ public class DistributedWindowedGroupingTest {
     AsciiGraphLoader loader = getSocialNetworkLoader();
 
     var edgeStream = loader
-        .createEdgeStreamByGraphVariables(config, "g0", "g1", "g2");
+        .createGraphStreamByGraphVariables(config, "g0", "g1", "g2");
 
     loader.appendFromString("expected[" +
         "(l:Person {city : \"Leipzig\", count : 2L})" +
@@ -874,7 +874,7 @@ public class DistributedWindowedGroupingTest {
     AsciiGraphLoader loader = getSocialNetworkLoader();
 
     var edgeStream = loader
-        .createEdgeStreamByGraphVariables(config, "g0", "g1", "g2");
+        .createGraphStreamByGraphVariables(config, "g0", "g1", "g2");
 
     loader.appendFromString("expected[" +
         "(pL:Person {city : \"Leipzig\", count : 2L})" +
@@ -919,7 +919,7 @@ public class DistributedWindowedGroupingTest {
   public void testVertexAndEdgeLabelAndSingleVertexPropertyWithAbsentValue() throws Exception {
     AsciiGraphLoader loader = getSocialNetworkLoader();
 
-    var edgeStream = loader.createEdgeStream(config);
+    var edgeStream = loader.createGraphStream(config);
 
     loader.appendFromString("expected[" +
         "(pL:Person {city : \"Leipzig\", count : 2L})" +
@@ -974,7 +974,7 @@ public class DistributedWindowedGroupingTest {
     AsciiGraphLoader loader = getSocialNetworkLoader();
 
     var edgeStream = loader
-        .createEdgeStreamByGraphVariables(config, "g0", "g1", "g2");
+        .createGraphStreamByGraphVariables(config, "g0", "g1", "g2");
 
     loader.appendFromString("expected[" +
         "(p:Person {count : 6L})" +
@@ -1014,7 +1014,7 @@ public class DistributedWindowedGroupingTest {
   public void testVertexAndEdgeLabelAndSingleEdgePropertyWithAbsentValue() throws Exception {
     AsciiGraphLoader loader = getSocialNetworkLoader();
 
-    var edgeStream = loader.createEdgeStream(config);
+    var edgeStream = loader.createGraphStream(config);
 
     loader.appendFromString("expected[" +
         "(p:Person  {count : 6L})" +
@@ -1064,7 +1064,7 @@ public class DistributedWindowedGroupingTest {
       throws Exception {
     AsciiGraphLoader loader = getSocialNetworkLoader();
 
-    var edgeStream = loader.createEdgeStream(config);
+    var edgeStream = loader.createGraphStream(config);
 
     loader.appendFromString("expected[" +
         "(pL:Person {city : \"Leipzig\", count : 2L})" +
@@ -1141,7 +1141,7 @@ public class DistributedWindowedGroupingTest {
         "(v5)-[{b : 1}]->(v3)" +
         "]");
 
-    var edgeStream = loader.createEdgeStreamByGraphVariables(config, "input");
+    var edgeStream = loader.createGraphStreamByGraphVariables(config, "input");
 
     loader.appendFromString("expected[" +
         "(v00:Blue)" +
@@ -1194,7 +1194,7 @@ public class DistributedWindowedGroupingTest {
         "(v5)-[{b : 1}]->(v3)" +
         "]");
 
-    var edgeStream = loader.createEdgeStreamByGraphVariables(config, "input");
+    var edgeStream = loader.createGraphStreamByGraphVariables(config, "input");
 
     loader.appendFromString("expected[" +
         "(v00:Blue {count : 3L})" +
@@ -1250,7 +1250,7 @@ public class DistributedWindowedGroupingTest {
         "(v5)-[{b : 1}]->(v3)" +
         "]");
 
-    var edgeStream = loader.createEdgeStreamByGraphVariables(config, "input");
+    var edgeStream = loader.createGraphStreamByGraphVariables(config, "input");
 
     loader.appendFromString("expected[" +
         "(v00:Blue {sumA :  9})" +
@@ -1306,7 +1306,7 @@ public class DistributedWindowedGroupingTest {
         "(v5)-[{b : 1}]->(v3)" +
         "]");
 
-    var edgeStream = loader.createEdgeStreamByGraphVariables(config, "input");
+    var edgeStream = loader.createGraphStreamByGraphVariables(config, "input");
 
     loader.appendFromString("expected[" +
         "(v00:Blue {sumA :  7})" +
@@ -1362,7 +1362,7 @@ public class DistributedWindowedGroupingTest {
         "(v5)-->(v3)" +
         "]");
 
-    var edgeStream = loader.createEdgeStreamByGraphVariables(config, "input");
+    var edgeStream = loader.createGraphStreamByGraphVariables(config, "input");
 
     loader.appendFromString("expected[" +
         "(v00:Blue {sumA :  " + NULL_STRING + "})" +
@@ -1418,7 +1418,7 @@ public class DistributedWindowedGroupingTest {
         "(v5)-[{b : 1}]->(v3)" +
         "]");
 
-    var edgeStream = loader.createEdgeStreamByGraphVariables(config, "input");
+    var edgeStream = loader.createGraphStreamByGraphVariables(config, "input");
 
     loader.appendFromString("expected[" +
         "(v00:Blue {minA : 2})" +
@@ -1474,7 +1474,7 @@ public class DistributedWindowedGroupingTest {
         "(v5)-[{b : 1}]->(v3)" +
         "]");
 
-    var edgeStream = loader.createEdgeStreamByGraphVariables(config, "input");
+    var edgeStream = loader.createGraphStreamByGraphVariables(config, "input");
 
     loader.appendFromString("expected[" +
         "(v00:Blue {minA : 3})" +
@@ -1530,7 +1530,7 @@ public class DistributedWindowedGroupingTest {
         "(v5)-->(v3)" +
         "]");
 
-    var edgeStream = loader.createEdgeStreamByGraphVariables(config, "input");
+    var edgeStream = loader.createGraphStreamByGraphVariables(config, "input");
 
     loader.appendFromString("expected[" +
         "(v00:Blue {minA :  " + NULL_STRING + "})" +
@@ -1585,7 +1585,7 @@ public class DistributedWindowedGroupingTest {
         "(v5)-[{b : 1}]->(v3)" +
         "]");
 
-    var edgeStream = loader.createEdgeStreamByGraphVariables(config, "input");
+    var edgeStream = loader.createGraphStreamByGraphVariables(config, "input");
 
     loader.appendFromString("expected[" +
         "(v00:Blue {maxA : 4})" +
@@ -1640,7 +1640,7 @@ public class DistributedWindowedGroupingTest {
         "(v5)-[{b : 1}]->(v3)" +
         "]");
 
-    var edgeStream = loader.createEdgeStreamByGraphVariables(config, "input");
+    var edgeStream = loader.createGraphStreamByGraphVariables(config, "input");
 
     loader.appendFromString("expected[" +
         "(v00:Blue {maxA : 3})" +
@@ -1695,7 +1695,7 @@ public class DistributedWindowedGroupingTest {
         "(v5)-->(v3)" +
         "]");
 
-    var edgeStream = loader.createEdgeStreamByGraphVariables(config, "input");
+    var edgeStream = loader.createGraphStreamByGraphVariables(config, "input");
 
     loader.appendFromString("expected[" +
         "(v00:Blue {maxA :  " + NULL_STRING + "})" +
@@ -1750,7 +1750,7 @@ public class DistributedWindowedGroupingTest {
         "(v5)-[{b : 1}]->(v3)" +
         "]");
 
-    var edgeStream = loader.createEdgeStreamByGraphVariables(config, "input");
+    var edgeStream = loader.createGraphStreamByGraphVariables(config, "input");
 
     loader.appendFromString("expected[" +
         "(v00:Blue {minA : 2,maxA : 4,sumA : 9,count : 3L})" +
