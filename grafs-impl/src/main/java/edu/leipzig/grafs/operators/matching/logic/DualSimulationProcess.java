@@ -38,7 +38,8 @@ import org.s1ck.gdl.model.predicates.expressions.Comparison;
 
 /**
  * Applies a dual simulation algorithm (based on <a href="https://ieeexplore.ieee.org/abstract/document/6906821">"DualIso:
- * An Algorithm for Subgraph Pattern Matching on Very Large Labeled Graphs"</a> by Saltz et al.)
+ * An Algorithm for Subgraph Pattern Matching on Very Large Labeled Graphs"</a> by Saltz et al. and the SGraPMa master
+ *  * thesis by Abdalrahman Alkamel)
  *
  * @param <W> type of window used
  */
@@ -46,6 +47,10 @@ public class DualSimulationProcess<W extends Window> extends PatternMatchingProc
 
   private final Query query;
 
+  /**
+   * Construct the dual simulation process with the given query
+   * @param query gdl query to be used for the pattern matching process
+   */
   public DualSimulationProcess(Query query) {
     this.query = query;
   }
@@ -222,6 +227,14 @@ public class DualSimulationProcess<W extends Window> extends PatternMatchingProc
     emittableTriplets.forEach(collector::collect);
   }
 
+  /**
+   * Checks predicate tree for a match. Based on SGraPMa and basically unchanged.
+   * @param currentCandidate Current candidate for which the predicate tree check should be applied
+   * @param currentVariable Current variable
+   * @param predicates Predicate tree for the query
+   * @param variableToVerticesMap Multi map of query variables and the associated elements. Used to find elements if the current candidate is in a comparison statement
+   * @return <tt>true</tt> if the check was successful and the candidate is still a candidate of the variable, <tt>false</tt> otherwise
+   */
   private boolean checkPredicateTree(Element currentCandidate, String currentVariable,
       Predicate predicates,
       MultiMap<String, Element> variableToVerticesMap) {
@@ -325,7 +338,7 @@ public class DualSimulationProcess<W extends Window> extends PatternMatchingProc
     return true;// no comparison? error? fall back to dual simulation?
   }
 
-  private boolean compareSingleVariable(Element currenCandidate, Comparison comparison,
+  private boolean compareSingleVariable(Element currentCandidate, Comparison comparison,
       ComparableExpression left, ComparableExpression right) {
     PropertyValue leftValue = null;
     PropertyValue rightValue = null;
@@ -333,7 +346,7 @@ public class DualSimulationProcess<W extends Window> extends PatternMatchingProc
       if (((PropertySelector) left).getPropertyName().equals("__label__")) {
         return true;
       }
-      leftValue = currenCandidate
+      leftValue = currentCandidate
           .getPropertyValue(((PropertySelector) left).getPropertyName());
       if (right.getClass().equals(Literal.class)) {
         rightValue = PropertyValue.create(((Literal) right).getValue());
@@ -344,7 +357,7 @@ public class DualSimulationProcess<W extends Window> extends PatternMatchingProc
         if (((PropertySelector) right).getPropertyName().equals("__label__")) {
           return true;
         }
-        rightValue = currenCandidate
+        rightValue = currentCandidate
             .getPropertyValue(((PropertySelector) right).getPropertyName());
       }
     }
