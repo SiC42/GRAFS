@@ -436,40 +436,4 @@ public class DualSimulationProcess<W extends Window> extends PatternMatchingProc
     }
   }
 
-  private boolean checkParentsAndChildren(QueryVertex currentCandidateVertex,
-      Collection<Triplet<QueryVertex, QueryEdge>> queryTriples,
-      Iterable<Triplet<QueryVertex, QueryEdge>> candidatesInWindow) {
-    java.util.function.Predicate<Triplet<QueryVertex, QueryEdge>> oneVertexInTripletMatchesCurVertex = e ->
-        ElementMatcher.matchesQueryElem(e.getSourceVertex(), currentCandidateVertex) ||
-            ElementMatcher.matchesQueryElem(e.getTargetVertex(), currentCandidateVertex);
-
-    var queryRelatives = queryTriples
-        .stream()
-        .filter(oneVertexInTripletMatchesCurVertex)
-        .collect(Collectors.toList());
-    List<Triplet<QueryVertex, QueryEdge>> candidateRelatives = StreamSupport
-        .stream(candidatesInWindow.spliterator(), false)
-        .filter(t -> t.getSourceVertex().equals(currentCandidateVertex) ||
-            t.getTargetVertex().equals(currentCandidateVertex))
-        .collect(Collectors.toList());
-
-    for (var relative : queryRelatives) {
-      boolean exist = false;
-      java.util.function.Predicate<Triplet<QueryVertex, QueryEdge>> tripletMatchesRelative = t ->
-          ElementMatcher.matchesQueryElem(relative.getSourceVertex(), t.getSourceVertex()) &&
-              ElementMatcher.matchesQueryElem(relative.getTargetVertex(), t.getTargetVertex()) &&
-              ElementMatcher.matchesQueryElem(relative.getEdge(), t.getEdge());
-      for (var candidate : candidateRelatives) {
-        exist = tripletMatchesRelative.test(candidate);
-        if (exist) {
-          break;
-        }
-      }
-      if (!exist) {
-        return false;
-      }
-    }
-    return true;
-  }
-
 }
