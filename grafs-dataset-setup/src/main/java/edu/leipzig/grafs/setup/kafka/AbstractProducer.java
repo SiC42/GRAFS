@@ -1,7 +1,7 @@
 package edu.leipzig.grafs.setup.kafka;
 
-import edu.leipzig.grafs.serialization.SimpleStringSchemaWithEnd;
 import edu.leipzig.grafs.setup.AbstractCmdBase;
+import edu.leipzig.grafs.setup.serialization.SimpleStringSchemaWithEnd;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
