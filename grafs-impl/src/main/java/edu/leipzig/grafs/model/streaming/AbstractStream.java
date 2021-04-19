@@ -108,8 +108,6 @@ public abstract class AbstractStream<S extends AbstractStream<?>> {
 
     public <W extends Window> WindowBuilder<S, W> withWindow(
         WindowAssigner<Object, W> window) {
-      stream.getDataStream().windowAll(window);
-      stream.getDataStream().windowAll(TumblingEventTimeWindows.of(Time.minutes(5)));
       return new WindowBuilder<>(stream, operator, window);
     }
   }
