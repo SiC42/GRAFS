@@ -1,13 +1,12 @@
 package edu.leipzig.grafs.benchmark.tests.streaming.latency;
 
-import edu.leipzig.grafs.benchmark.tests.streaming.AbstractStreamingBenchmark;
 import edu.leipzig.grafs.model.streaming.AbstractStream;
 import edu.leipzig.grafs.model.streaming.GraphStream;
-import edu.leipzig.grafs.model.window.TumblingProcessingTimeWindows;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.apache.flink.streaming.api.windowing.assigners.TumblingProcessingTimeWindows;
 import org.apache.flink.streaming.api.windowing.time.Time;
 import org.apache.flink.streaming.api.windowing.triggers.Trigger;
 import org.apache.flink.streaming.api.windowing.windows.TimeWindow;

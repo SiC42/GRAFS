@@ -2,9 +2,9 @@ package edu.leipzig.grafs.benchmark.tests.fixed;
 
 import edu.leipzig.grafs.model.streaming.AbstractStream;
 import edu.leipzig.grafs.model.streaming.GraphStream;
-import edu.leipzig.grafs.model.window.TumblingEventTimeWindows;
 import edu.leipzig.grafs.operators.grouping.AllWindowedGrouping;
 import edu.leipzig.grafs.operators.grouping.functions.Count;
+import org.apache.flink.streaming.api.windowing.assigners.TumblingEventTimeWindows;
 import org.apache.flink.streaming.api.windowing.time.Time;
 
 public class AllWindowedGroupingBenchmark extends AbstractFixedSizeBenchmark {
