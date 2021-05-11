@@ -10,6 +10,8 @@ import edu.leipzig.grafs.operators.interfaces.window.WindowedGraphCollectionToGr
 import edu.leipzig.grafs.util.FlinkConfig;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.functions.source.SourceFunction;
+import org.apache.flink.streaming.api.windowing.assigners.WindowAssigner;
+import org.apache.flink.streaming.api.windowing.windows.Window;
 
 public class GCStream extends AbstractStream<GCStream> implements GCStreamOperators {
 
@@ -53,15 +55,9 @@ public class GCStream extends AbstractStream<GCStream> implements GCStreamOperat
     return new GCStream(result, config);
   }
 
-  public InitialWindowBuilder<GraphStream> callForGraph(
-      WindowedGraphCollectionToGraphOperatorI operator) {
-    return new InitialWindowBuilder<>(new GraphStream(stream, config), operator);
-  }
-
-  //@Override
-  public InitialWindowBuilder<GCStream> callForGC(
-      WindowedGraphCollectionToGraphCollectionOperatorI operator) {
-    return new InitialWindowBuilder<>(new GCStream(stream, config), operator);
+  public <W extends Window> WindowBuilder<GCStream, W> window(
+      WindowAssigner<Object, W> window) {
+    return new WindowBuilder<>(this, window);
   }
 
 }

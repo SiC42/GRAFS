@@ -1,6 +1,8 @@
 package edu.leipzig.grafs.benchmark.tests.fixed;
 
+import edu.leipzig.grafs.model.Edge;
 import edu.leipzig.grafs.model.Triplet;
+import edu.leipzig.grafs.model.Vertex;
 import edu.leipzig.grafs.model.streaming.AbstractStream;
 import edu.leipzig.grafs.model.streaming.GraphStream;
 import edu.leipzig.grafs.operators.matching.DualSimulation;
@@ -20,14 +22,14 @@ public class DualSimulationMatchingBenchmark extends AbstractFixedSizeBenchmark 
 
   public AbstractStream<?> applyOperator(GraphStream stream) {
     var query = "MATCH (v1)-[]->(v2)-[]->(v1)";
-    return stream.callForGC(new DualSimulation(query))
-        .withWindow(TumblingEventTimeWindows.of(Time.minutes(2)))
-        .apply();
+    return stream
+        .window(TumblingEventTimeWindows.of(Time.minutes(2)))
+        .callForGC(new DualSimulation(query));
   }
 
   // Has to be overriden if we change the query to filter specific vertices
   @Override
-  protected boolean filter(Triplet triplet) {
+  protected boolean filter(Triplet<Vertex, Edge> triplet) {
     return super.filter(triplet);
   }
 }

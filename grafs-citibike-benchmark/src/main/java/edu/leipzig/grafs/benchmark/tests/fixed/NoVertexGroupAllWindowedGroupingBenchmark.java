@@ -23,9 +23,9 @@ public class NoVertexGroupAllWindowedGroupingBenchmark extends AbstractFixedSize
         .addVertexAggregateFunction(new Count("used"))
         .addEdgeGroupingKey("bike_id")
         .addEdgeAggregateFunction(new Count("used"));
-    return stream.callForGraph(groupingBuilder.build())
-        .withWindow(TumblingEventTimeWindows.of(Time.minutes(2)))
-        .apply();
+    return stream
+        .window(TumblingEventTimeWindows.of(Time.minutes(2)))
+        .callForGraph(groupingBuilder.build());
   }
 
 }

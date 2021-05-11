@@ -1,8 +1,14 @@
 package edu.leipzig.grafs.model.streaming;
 
+import edu.leipzig.grafs.model.Edge;
 import edu.leipzig.grafs.model.Triplet;
+import edu.leipzig.grafs.model.Vertex;
 import edu.leipzig.grafs.model.window.WindowingInformation;
+import edu.leipzig.grafs.operators.interfaces.nonwindow.GraphCollectionToGraphCollectionOperatorI;
+import edu.leipzig.grafs.operators.interfaces.nonwindow.GraphCollectionToGraphOperatorI;
 import edu.leipzig.grafs.operators.interfaces.window.WindowedOperatorI;
+import edu.leipzig.grafs.util.FlinkConfig;
+import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.windowing.assigners.WindowAssigner;
 import org.apache.flink.streaming.api.windowing.evictors.Evictor;
 import org.apache.flink.streaming.api.windowing.time.Time;
@@ -13,12 +19,10 @@ public class WindowBuilder<S extends AbstractStream<S>, W extends Window> {
 
 
   private final S stream;
-  private final WindowedOperatorI operator;
   private final WindowingInformation<?> wi;
 
-  public WindowBuilder(S stream, WindowedOperatorI operator, WindowAssigner<Object, W> window) {
+  public WindowBuilder(S stream, WindowAssigner<Object, W> window) {
     this.stream = stream;
-    this.operator = operator;
     wi = new WindowingInformation<>(window);
   }
 
@@ -37,7 +41,13 @@ public class WindowBuilder<S extends AbstractStream<S>, W extends Window> {
     return this;
   }
 
-  public S apply() {
-    return stream.applyWindowedOperator(operator, wi);
+  public GraphStream callForGraph(WindowedOperatorI<S,GraphStream> operator) {
+    DataStream<Triplet<Vertex, Edge>> result = operator.execute(stream.getDataStream(), wi);
+    return new GraphStream(result, stream.config);
+  }
+
+  public GCStream callForGC(WindowedOperatorI<S,GCStream> operator) {
+    var result = operator.execute(stream.getDataStream(), wi);
+    return new GCStream(result, stream.config);
   }
 }

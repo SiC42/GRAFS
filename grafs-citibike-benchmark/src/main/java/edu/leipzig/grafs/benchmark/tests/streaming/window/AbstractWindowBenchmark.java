@@ -3,6 +3,7 @@ package edu.leipzig.grafs.benchmark.tests.streaming.window;
 import edu.leipzig.grafs.benchmark.tests.streaming.AbstractStreamingBenchmark;
 import edu.leipzig.grafs.model.streaming.AbstractStream;
 import edu.leipzig.grafs.model.streaming.GraphStream;
+import edu.leipzig.grafs.model.streaming.WindowBuilder;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;

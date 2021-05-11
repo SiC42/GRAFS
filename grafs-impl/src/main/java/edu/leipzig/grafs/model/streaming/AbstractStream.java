@@ -94,24 +94,6 @@ public abstract class AbstractStream<S extends AbstractStream<?>> {
     return DataStreamUtils.collect(stream);
   }
 
-  public static class InitialWindowBuilder<S extends AbstractStream<S>> {
-
-    private final S stream;
-    private final WindowedOperatorI operator;
-
-    public InitialWindowBuilder(S stream,
-        WindowedOperatorI operator) {
-
-      this.stream = stream;
-      this.operator = operator;
-    }
-
-    public <W extends Window> WindowBuilder<S, W> withWindow(
-        WindowAssigner<Object, W> window) {
-      return new WindowBuilder<>(stream, operator, window);
-    }
-  }
-
   public GraphStream callForGraph(GraphCollectionToGraphOperatorI operator) {
     DataStream<Triplet<Vertex, Edge>> result = operator.execute(stream);
     return new GraphStream(result, config);
@@ -120,17 +102,6 @@ public abstract class AbstractStream<S extends AbstractStream<?>> {
   public GCStream callForGC(GraphCollectionToGraphCollectionOperatorI operator) {
     var result = operator.execute(stream);
     return new GCStream(result, config);
-  }
-
-  public InitialWindowBuilder<GraphStream> callForGraph(
-      WindowedGraphCollectionToGraphOperatorI operator) {
-    return new InitialWindowBuilder<>(new GraphStream(stream, config), operator);
-  }
-
-  //@Override
-  public InitialWindowBuilder<GCStream> callForGC(
-      WindowedGraphCollectionToGraphCollectionOperatorI operator) {
-    return new InitialWindowBuilder<>(new GCStream(stream, config), operator);
   }
 
 }

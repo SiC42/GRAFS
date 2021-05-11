@@ -83,9 +83,8 @@ public class DualSimulationTest extends MatchingTestBase {
     var expectedEcs = loader.createTripletsByGraphVariables("ds");
 
     var resultStream = graphStream
-        .callForGC(new DualSimulation(queryPaperGraphGdlStr))
-        .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
-        .apply();
+        .window(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        .callForGC(new DualSimulation(queryPaperGraphGdlStr));
 
     TestUtils.assertThatStreamContains(resultStream, expectedEcs);
   }
@@ -112,9 +111,8 @@ public class DualSimulationTest extends MatchingTestBase {
     var expectedEcs = loader.createTripletsByGraphVariables("ds");
 
     var resultStream = graphStream
-        .callForGC(new DualSimulation(queryStr))
-        .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
-        .apply();
+        .window(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        .callForGC(new DualSimulation(queryStr));
     TestUtils.assertThatStreamContains(resultStream, expectedEcs);
   }
 
@@ -133,9 +131,8 @@ public class DualSimulationTest extends MatchingTestBase {
     var expectedEcs = loader.createTripletsByGraphVariables("ds");
 
     var resultStream = graphStream
-        .callForGC(new DualSimulation(queryStr))
-        .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
-        .apply();
+        .window(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        .callForGC(new DualSimulation(queryStr));
 
     TestUtils.assertThatStreamContains(resultStream, expectedEcs);
   }
@@ -161,9 +158,8 @@ public class DualSimulationTest extends MatchingTestBase {
     var expectedEcs = loader.createTripletsByGraphVariables("ds");
 
     var resultStream = graphStream
-        .callForGC(new DualSimulation(queryStr))
-        .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
-        .apply();
+        .window(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        .callForGC(new DualSimulation(queryStr));
 
     TestUtils.assertThatStreamContains(resultStream, expectedEcs);
   }
@@ -189,10 +185,8 @@ public class DualSimulationTest extends MatchingTestBase {
     var expectedEcs = loader.createTripletsByGraphVariables("ds");
 
     var resultStream = graphStream
-
-        .callForGC(new DualSimulation(queryStr))
-        .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
-        .apply();
+        .window(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        .callForGC(new DualSimulation(queryStr));
 
     TestUtils.assertThatStreamContains(resultStream, expectedEcs);
   }
@@ -212,9 +206,8 @@ public class DualSimulationTest extends MatchingTestBase {
     var expectedEcs = loader.createTripletsByGraphVariables("ds");
 
     var resultStream = graphStream
-        .callForGC(new DualSimulation(queryStr))
-        .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
-        .apply();
+        .window(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        .callForGC(new DualSimulation(queryStr));
 
     TestUtils.assertThatStreamContains(resultStream, expectedEcs);
   }
@@ -236,9 +229,8 @@ public class DualSimulationTest extends MatchingTestBase {
     var expectedEcs = loader.createTripletsByGraphVariables("ds");
 
     var resultStream = graphStream
-        .callForGC(new DualSimulation(queryStr))
-        .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
-        .apply();
+        .window(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        .callForGC(new DualSimulation(queryStr));
 
     TestUtils.assertThatStreamContains(resultStream, expectedEcs);
   }
@@ -262,9 +254,8 @@ public class DualSimulationTest extends MatchingTestBase {
     var resultStream = graphStream
         .callForGraph(
             new Subgraph(v -> v.getLabel().equals("Person"), null, Strategy.VERTEX_INDUCED))
-        .callForGC(new DualSimulation(queryStr))
-        .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
-        .apply();
+        .window(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        .callForGC(new DualSimulation(queryStr));
 
     TestUtils.assertThatStreamContains(resultStream, expectedEcs);
   }
@@ -282,9 +273,8 @@ public class DualSimulationTest extends MatchingTestBase {
     var expectedEcs = loader.createTripletsByGraphVariables("ds");
 
     var resultStream = graphStream
-        .callForGC(new DualSimulation(queryStr))
-        .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
-        .apply();
+        .window(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        .callForGC(new DualSimulation(queryStr));
 
     TestUtils.assertThatStreamContains(resultStream, expectedEcs);
   }
@@ -309,9 +299,8 @@ public class DualSimulationTest extends MatchingTestBase {
     var expectedEcs = loader.createTripletsByGraphVariables("ds");
 
     var resultStream = graphStream
-        .callForGC(new DualSimulation(queryStr))
-        .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
-        .apply();
+        .window(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        .callForGC(new DualSimulation(queryStr));
 
     TestUtils.assertThatStreamContains(resultStream, expectedEcs);
   }
@@ -329,9 +318,8 @@ public class DualSimulationTest extends MatchingTestBase {
     var expectedEcs = loader.createTripletsByGraphVariables("ds");
 
     var resultStream = graphStream
-        .callForGC(new DualSimulation(queryStr))
-        .withWindow(TumblingEventTimeWindows.of(Time.milliseconds(10)))
-        .apply();
+        .window(TumblingEventTimeWindows.of(Time.milliseconds(10)))
+        .callForGC(new DualSimulation(queryStr));
 
     TestUtils.assertThatStreamContains(resultStream, expectedEcs);
   }

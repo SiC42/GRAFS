@@ -25,9 +25,8 @@ public class AllWindowedGroupingBenchmark extends AbstractFixedSizeBenchmark {
         .addEdgeGroupingKey("bike_id")
         .addEdgeAggregateFunction(new Count("used"));
     return stream
-        .callForGraph(groupingBuilder.build())
-        .withWindow(TumblingEventTimeWindows.of(Time.minutes(2)))
-        .apply();
+        .window(TumblingEventTimeWindows.of(Time.minutes(2)))
+        .callForGraph(groupingBuilder.build());
   }
 
 }

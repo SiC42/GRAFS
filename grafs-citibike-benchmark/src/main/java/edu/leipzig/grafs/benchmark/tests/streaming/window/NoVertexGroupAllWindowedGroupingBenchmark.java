@@ -21,7 +21,9 @@ public class NoVertexGroupAllWindowedGroupingBenchmark extends AbstractWindowBen
         .addVertexAggregateFunction(new Count("used"))
         .addEdgeGroupingKey("bike_id")
         .addEdgeAggregateFunction(new Count("used"));
-    return stream.callForGraph(groupingBuilder.build()).withWindow(window).apply();
+    return stream
+        .window(window)
+        .callForGraph(groupingBuilder.build());
   }
 
 }

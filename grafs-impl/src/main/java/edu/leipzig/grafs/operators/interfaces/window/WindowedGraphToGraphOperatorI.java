@@ -1,5 +1,7 @@
 package edu.leipzig.grafs.operators.interfaces.window;
 
+import edu.leipzig.grafs.model.streaming.GraphStream;
+
 /**
  * Interface for operators which takes a graph and produces one graph.
  * <p>
@@ -9,6 +11,6 @@ package edu.leipzig.grafs.operators.interfaces.window;
  * automatically.
  */
 public interface WindowedGraphToGraphOperatorI extends
-    WindowedOperatorI {
+    WindowedOperatorI<GraphStream, GraphStream> {
 
 }

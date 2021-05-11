@@ -35,13 +35,11 @@ public class CitibikePipelineBenchmark extends AbstractFixedSizeBenchmark {
           return v;
         }));
     var groupedStream = transformedStream
+        .window(TumblingEventTimeWindows.of(Time.minutes(2)))
         .callForGraph(DistributedWindowedGrouping.createGrouping()
-            .addVertexGroupingKey(gridCellKey)
-            .addVertexAggregateFunction(new Count("stationsInGridCell"))
-            .build()
-        )
-        .withWindow(TumblingEventTimeWindows.of(Time.minutes(2)))
-        .apply();
+        .addVertexGroupingKey(gridCellKey)
+        .addVertexAggregateFunction(new Count("stationsInGridCell"))
+        .build());
 
     return groupedStream
         .callForGraph(new Subgraph(v -> v.getPropertyValue(gridCellKey).getInt() > 10, null,

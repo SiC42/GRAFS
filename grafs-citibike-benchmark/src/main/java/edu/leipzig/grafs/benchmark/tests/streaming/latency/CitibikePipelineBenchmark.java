@@ -33,18 +33,15 @@ public class CitibikePipelineBenchmark extends AbstractWindowBenchmark {
           return v;
         }));
     var groupedStream = transformedStream
+        .window(window)
         .callForGraph(DistributedWindowedGrouping.createGrouping()
             .addVertexGroupingKey(gridCellKey)
             .addVertexAggregateFunction(new Count("stationsInGridCell"))
             .addEdgeAggregateFunction(new MaxProperty(TIMESTAMP_KEY,TIMESTAMP_KEY))
             .build()
-        )
-        .withWindow(window)
-        .apply();
-    var finalStream = groupedStream
+        );
+    return groupedStream
         .callForGraph(new Subgraph(v -> v.getPropertyValue(gridCellKey).getInt() > 10, null,
             Strategy.VERTEX_INDUCED));
-
-    return finalStream;
   }
 }
