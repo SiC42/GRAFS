@@ -78,6 +78,13 @@ public abstract class AbstractStream<S extends AbstractStream<?>> {
   }
 
   /**
+   * Returns the applied config.
+   */
+  public FlinkConfig getConfig(){
+    return config;
+  }
+
+  /**
    * Prints the stream to stdout.
    */
   public void print() {

@@ -1,13 +1,12 @@
-package edu.leipzig.grafs.model.streaming;
+package edu.leipzig.grafs.model.window;
 
 import edu.leipzig.grafs.model.Edge;
 import edu.leipzig.grafs.model.Triplet;
 import edu.leipzig.grafs.model.Vertex;
-import edu.leipzig.grafs.model.window.WindowingInformation;
-import edu.leipzig.grafs.operators.interfaces.nonwindow.GraphCollectionToGraphCollectionOperatorI;
-import edu.leipzig.grafs.operators.interfaces.nonwindow.GraphCollectionToGraphOperatorI;
+import edu.leipzig.grafs.model.streaming.AbstractStream;
+import edu.leipzig.grafs.model.streaming.GCStream;
+import edu.leipzig.grafs.model.streaming.GraphStream;
 import edu.leipzig.grafs.operators.interfaces.window.WindowedOperatorI;
-import edu.leipzig.grafs.util.FlinkConfig;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.windowing.assigners.WindowAssigner;
 import org.apache.flink.streaming.api.windowing.evictors.Evictor;
@@ -43,11 +42,11 @@ public class WindowBuilder<S extends AbstractStream<S>, W extends Window> {
 
   public GraphStream callForGraph(WindowedOperatorI<S,GraphStream> operator) {
     DataStream<Triplet<Vertex, Edge>> result = operator.execute(stream.getDataStream(), wi);
-    return new GraphStream(result, stream.config);
+    return new GraphStream(result, stream.getConfig());
   }
 
   public GCStream callForGC(WindowedOperatorI<S,GCStream> operator) {
     var result = operator.execute(stream.getDataStream(), wi);
-    return new GCStream(result, stream.config);
+    return new GCStream(result, stream.getConfig());
   }
 }
